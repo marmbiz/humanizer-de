@@ -1,0 +1,539 @@
+================================================================================
+TONE-OF-VOICE GUIDELINES FOR AUTHENTIC GERMAN WRITING
+German Humanizer Skill Reference
+================================================================================
+
+These guidelines define how authentic German writing should sound. They serve as
+a reference for:
+- Creating realistic "bad" examples (KI-generated text)
+- Creating authentic "better" examples (human-written text)
+- Maintaining consistent German voice across documentation
+- Testing the skill's effectiveness
+
+Applicable to: Germany, Austria, Switzerland (DACH region)
+Focus: Wikipedia-style articles and technical documentation
+Philosophy: "Darf Ecken haben" (can have edges) – authenticity over perfection
+
+================================================================================
+SECTION 1: CORE PRINCIPLES
+================================================================================
+
+1.1 DIRECTNESS OVER METAPHOR
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+German writing is direct and concrete.
+
+NOT:  "Das Unternehmen steht als Zeichen für Innovation in der Branche"
+YES:  "Das Unternehmen ist innovativ"
+      "Das Unternehmen führt neue Technologien ein"
+
+NOT:  "Die Stadt war Zeugnis von vergangener Größe"
+YES:  "Die Stadt war einmal bedeutsam"
+      "Die Stadt verlor an Bedeutung"
+
+NOT:  "Der Fluss spielt eine Rolle für das Ökosystem"
+YES:  "Der Fluss beeinflusst das Ökosystem"
+      "Das Ökosystem hängt vom Fluss ab"
+
+Pattern: Replace abstract nouns with concrete verbs
+Abstract nouns (Metapher, Zeugnis, Rolle, Beweis) = LLM marker
+Concrete verbs (ist, hat, macht, führt) = Human marker
+
+---
+
+1.2 CONCRETE DETAILS OVER ABSTRACTIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+German readers expect specificity. Vagueness sounds like KI.
+
+NOT:  "Eine beachtliche Bevölkerung wuchs in dieser Periode"
+YES:  "Die Bevölkerung wuchs von 50.000 auf 150.000 (1950-2000)"
+
+NOT:  "Die Kunstwerke von großem Wert sind bemerkenswert"
+YES:  "Das Altargemälde aus dem 15. Jahrhundert kostet heute €2 Millionen"
+
+NOT:  "Es gibt mehrere Aktivitäten in der Region"
+YES:  "Die Region hat drei Fabriken, einen Hafen und zwei Universitäten"
+
+Pattern: Numbers, dates, names, and measurable facts are authentic
+Vague descriptors (beachtlich, bedeutsam, mehrere, verschiedene) = KI marker
+
+---
+
+1.3 ACTIVE VERBS OVER NOMINALIZATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+German speakers use action verbs, not abstract nouns.
+
+NOT:  "Das Wirtschaftswachstum war evident"
+      "Die Bevölkerungsstabilität wurde erreicht"
+      "Die Technologieverbesserung resultierte in..."
+YES:  "Die Wirtschaft wuchs"
+      "Die Bevölkerung stabilisierte sich"
+      "Die Technologie wurde besser"
+
+NOT:  "Die Durchführung der Reform war schwierig"
+YES:  "Die Reform war schwierig zu durchführen"
+      "Die Reformierung war schwierig"
+
+Pattern: Look for -ung, -heit, -schaft, -ity nouns
+Replace with simple verbs
+
+---
+
+1.4 SIMPLICITY OVER COMPLEXITY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Authentic German writing uses shorter sentences. Long nested structures
+sound artificial.
+
+NOT:  "Das Unternehmen, das 1950 gegründet wurde und sich auf die Herstellung
+       von Produkten spezialisiert, die für die Industrie unerlässlich sind,
+       beschäftigt heute über 500 Mitarbeiter."
+
+YES:  "Das Unternehmen wurde 1950 gegründet. Es stellt industrielle
+       Grundprodukte her. Heute arbeiten dort 500 Menschen."
+
+NOT:  "Infolgedessen, basierend auf den vorangegangenen Analysen und unter
+       Berücksichtigung der regionalen Besonderheiten, kann man zu dem
+       Ergebnis kommen, dass..."
+
+YES:  "Daraus folgt: Das System funktioniert in der Region."
+
+Pattern: Break long sentences at conjunctions
+One idea per sentence is often best
+Clause count: max 2-3 dependent clauses per sentence (KI often does 4+)
+
+---
+
+1.5 VARIETY OVER PATTERN
+━━━━━━━━━━━━━━━━━━━━━━━
+Humans vary sentence structure. KI repeats patterns mechanically.
+
+NOT:  "Das Museum wurde 1890 gegründet. Das Museum hat 50.000 Objekte.
+       Das Museum ist bekannt für seine Sammlung. Das Museum zieht
+       jährlich 100.000 Besucher an."
+
+YES:  "Das Museum wurde 1890 gegründet. Es hat 50.000 Objekte, darunter
+       eine berühmte Sammlung. Jährlich kommen 100.000 Besucher."
+
+Pattern: No sentence should start like the previous one (within 3 sentences)
+Vary: Subject, Verb, Object positions
+Connect: Use different transition types (aber, weil, darum, etc.)
+
+---
+
+1.6 PERSONALITY OVER NEUTRALITY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Authentic writing has voice, even in formal contexts. Sterile neutrality
+sounds like KI.
+
+NOT:  "Es kann festgestellt werden, dass das Klima temperat ist"
+YES:  "Das Klima ist mild"
+      "Hier ist es mild - schneefreie Winter, gemäßigte Sommer"
+
+NOT:  "Die Häufigkeit des Auftretens von X ist beträchtlich"
+YES:  "X kommt häufig vor"
+      "X ist ein häufiges Problem"
+
+NOT:  "Es wurde realisiert, dass die Situation problematisch war"
+YES:  "Das Team erkannte das Problem"
+      "Es wurde schnell klar: Das würde nicht funktionieren"
+
+Pattern: Use active voice
+Use colloquial but correct structures
+Let slight informality show through
+
+================================================================================
+SECTION 2: REGIONAL CHARACTERISTICS (DACH)
+================================================================================
+
+These guidelines apply to German, Austrian, and Swiss German writing.
+
+2.1 GERMANY (Standard German)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- Formal but direct
+- Clear subject-verb-object order often
+- Practical focus
+- Industrial/scientific terminology common
+
+Example:
+"Die Fabrik stellt Maschinenbauteile her. Sie wurde 1950 gegründet
+und beschäftigt 200 Arbeiter. Der jährliche Umsatz beträgt 50 Millionen Euro."
+
+2.2 AUSTRIA (Österreich)
+━━━━━━━━━━━━━━━━━━━━━━━━
+- Slightly more elaborate than German
+- Musical quality to language
+- Historical references valued
+- Some unique vocabulary (Greißler instead of Lebensmittelgeschäft)
+
+Example:
+"Das Schloss war im 18. Jahrhundert Sitz der Adelsfamilie von Greuth.
+Heute ist es ein Museum, das alljährlich viele Besucher anzieht.
+Die wertvollen Kunstsammlungen geben Aufschluss über die Kultur
+dieser Epoche."
+
+2.3 SWITZERLAND (Schweiz)
+━━━━━━━━━━━━━━━━━━━━━━━
+- More direct than Austria, more elaborate than Germany
+- French and Italian influences
+- Precision valued (exact measurements, official terminology)
+- Some unique terms (Einkaufszentrum instead of Handelszentrum)
+
+Example:
+"Das Unternehmen beschäftigt 150 Mitarbeiter in der Nordwestschweiz.
+Seine Produkte entsprechen internationalen Qualitätsstandards.
+Im Jahr 2023 betrug der Umsatz CHF 75 Millionen."
+
+For Humanizer Deutsch:
+- Accept regional variations
+- Translate numbers to German words (eins, zwei, drei...) when appropriate
+- Use regional terms where natural
+- Example: "Beim Greißler kaufen" (Austria) vs "Im Lebensmittelgeschäft einkaufen" (Germany)
+  BOTH are authentic – don't "correct" one to the other
+
+================================================================================
+SECTION 3: WIKIPEDIA-SPECIFIC AUTHENTICITY
+================================================================================
+
+3.1 NEUTRALITY WITH PERSONALITY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Wikipedia style: Neutral Point of View (NPOV) doesn't mean sterile.
+
+NOT:  "Die innovative Technologie repräsentiert einen paradigmalen Wandel
+       und symbolisiert das Streben der Menschheit nach Fortschritt"
+
+YES:  "Die Technologie wurde 1995 erfunden und änderte die Industrie"
+
+NOT:  "Die atemberaubende Schönheit der Landschaft fasziniert Besucher"
+
+YES:  "Die Landschaft ist bekannt für ihre Bergformationen.
+       Das UNESCO-Welterbe zieht jährlich 500.000 Besucher an."
+
+Pattern: State facts, not opinions
+Use attributed statements for perspectives ("Kritiker argumentieren, dass...")
+Let numbers and facts speak
+
+---
+
+3.2 CITATIONS AND REFERENCES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Authentic Wikipedia writing has clear references.
+
+AVOID:
+- "Experten sagen..." (vague authority)
+- "Es ist bekannt, dass..." (unsourced claim)
+- "Viele Menschen glauben..." (no citation)
+- "Stand 2023..." (search engine, not Wikipedia)
+
+PREFER:
+- "[1]" at end of factual claim
+- "Laut einer 2023er Studie der XY Universität..."
+- Actual sources that can be verified
+
+---
+
+3.3 WIKITEXT vs MARKDOWN AUTHENTICITY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Wikipedia uses Wikitext, not Markdown.
+
+KI often generates:
+- # Heading instead of == Heading ==
+- **bold** instead of '''bold'''
+- • bullets instead of * bullets
+
+Real Wikipedia uses:
+- == Heading == (equals signs)
+- '''bold''' (three single quotes)
+- * bullets (asterisks in wikitext)
+- {{cite book|...}} (template syntax)
+
+================================================================================
+SECTION 4: EEAT PRINCIPLES
+================================================================================
+
+EEAT = Expertise, Experience, Authority, Trustworthiness
+(Google's evaluation criteria, but applies to quality German writing)
+
+4.1 EXPERTISE
+━━━━━━━━━━━━━
+The author knows the subject.
+
+SOUNDS EXPERT:
+"Die Fabrik nutzt CNC-Maschinen zur Präzisionsfertigung.
+Der Toleranzbereich liegt unter 0,1 Millimeter."
+
+SOUNDS LIKE KI:
+"Die Einrichtung nutzt hochmoderne Geräte für optimale Ergebnisse"
+
+Signal: Specific technical terms, exact numbers, insider knowledge
+
+---
+
+4.2 EXPERIENCE
+━━━━━━━━━━━━━━
+The author has practical knowledge.
+
+SOUNDS EXPERIENCED:
+"Im Sommer ist die Stadt überfüllt mit Touristen. Der beste Besuchsmonat
+ist September – das Wetter ist noch gut, aber weniger Menschen sind unterwegs."
+
+SOUNDS LIKE KI:
+"Die Stadt präsentiert sich als ideales Reiseziel mit diversifizierten
+Aktivitäten für all Arten von Besuchern"
+
+Signal: Practical details, edge cases, "insider" perspective
+
+---
+
+4.3 AUTHORITY
+━━━━━━━━━━━━
+The author is credible on this topic.
+
+SOUNDS AUTHORITATIVE:
+"Die Methode, die Wilhelm Schmidt 1920 entwickelte, ist immer noch Standard
+in der Industrie. Modern Maschinen folgen seinem Grundprinzip."
+
+SOUNDS LIKE KI:
+"Die Methode wird von Fachleuten überall als bedeutsam anerkannt
+und repräsentiert einen Durchbruch in der modernen Praxis"
+
+Signal: Historical knowledge, specific names, documented claims
+
+---
+
+4.4 TRUSTWORTHINESS
+━━━━━━━━━━━━━━━━━━
+The author is honest about limitations.
+
+SOUNDS TRUSTWORTHY:
+"Wenig ist über die frühe Geschichte bekannt. Die ältesten Dokumente
+stammen aus 1650, sind aber lückenhaft."
+
+SOUNDS LIKE KI:
+"Eine umfassende historische Analyse zeigt, dass die Entwicklung
+der Stadt von Anfang an bemerkenswert war"
+
+Signal: Acknowledges gaps, doesn't over-claim, cites sources
+
+================================================================================
+SECTION 5: IDENTIFYING KI VOICE vs HUMAN VOICE
+================================================================================
+
+Checklist to distinguish authentic German from KI-generated text:
+
+KI MARKERS (Red flags):
+□ Every sentence has similar length
+□ Abstract nouns (-ung, -heit, -schaft) are overused
+□ Phrases like "es ist wichtig zu bemerken"
+□ Metaphors (steht als Zeugnis, spielt eine Rolle)
+□ No contractions or colloquialisms
+□ Numbers written as words only (fünfzig) not mixed with digits
+□ Every paragraph has same structure
+□ No personality or voice
+□ Perfect spelling/grammar everywhere
+□ Vague sources or "it is known that"
+□ Markdown instead of Wikitext
+
+HUMAN MARKERS (Green flags):
+□ Sentence length varies (5 words to 25 words)
+□ Concrete nouns and active verbs dominate
+□ Direct statements: "Die Stadt ist groß"
+□ Practical examples with numbers
+□ Some regional variations in word choice
+□ Personality showing through
+□ Occasional typos or stylistic choices
+□ Specific citations
+□ Clear sources attributed
+□ Correct format for context (Wikitext for Wikipedia)
+
+================================================================================
+SECTION 6: WRITING AUTHENTIC EXAMPLES
+================================================================================
+
+When creating "before" and "after" examples for the Humanizer skill:
+
+6.1 WRITING THE "BEFORE" (KI-generated) EXAMPLE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Start with a simple fact
+2. Add abstract nouns and metaphors
+3. Use complex sentence structures
+4. Add unnecessary transitions
+5. Include vague statements
+6. Don't vary sentence rhythm
+
+Example process:
+Fact: "The city was founded in 1200"
+↓ (Add abstraction)
+"Die Stadtgründung im Jahr 1200 war ein bedeutsames Ereignis"
+↓ (Add metaphor)
+"Die Gründung der Stadt im Jahr 1200 war ein Zeugnis für den
+Expansionsdrang der damaligen Zeit"
+↓ (Make it worse)
+"Es kann festgestellt werden, dass die Gründung der Stadt im Jahr 1200,
+ein Ereignis von großer historischer Bedeutung, ein Zeugnis für den
+Expansionsdrang und die Ambitionen der damaligen Zeit darstellte"
+
+That's how KI output looks – too much abstraction for a simple fact.
+
+---
+
+6.2 WRITING THE "AFTER" (Human-authentic) EXAMPLE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Start with concrete fact
+2. Add context directly
+3. Use shorter, varied sentences
+4. Show personality or insider knowledge
+5. Be specific when possible
+6. Trust the reader
+
+Example:
+"Die Stadt wurde 1200 gegründet. Die Lage an einem Handelsweg
+machte sie schnell wohlhabend. Noch heute sieht man die mittelalterliche
+Stadtmauer – 3 Kilometer Umfang und an vielen Stellen noch intakt."
+
+This sounds:
+✓ Direct
+✓ Knowledgeable (specific details about walls)
+✓ Accessible
+✓ Human-written
+
+================================================================================
+SECTION 7: REGIONAL DIALECT CONSIDERATIONS
+================================================================================
+
+Note: Humanizer Deutsch works with Standard German (Standarddeutsch),
+not regional dialects.
+
+However, regional writing styles differ:
+
+7.1 SWISS FORMAL REGISTERS
+"Das Unternehmen hat sich der Qualitätssicherung verschrieben."
+(More formal tone is normal in Switzerland)
+
+7.2 AUSTRIAN AFFINITY FOR DETAIL
+"Das Schloss stammt aus dem späten 18. Jahrhundert und weist
+neben der barocken Fassade auch gotische Elemente auf."
+(Austrian writing often includes more architectural/historical detail)
+
+7.3 GERMAN DIRECTNESS
+"Die Fabrik stellt Schrauben her. 2.000 Stück pro Tag."
+(German writing can be more terse and direct)
+
+None of these are "wrong" – they're authentic regional variations.
+The Humanizer Deutsch skill should accept all three regions.
+
+================================================================================
+SECTION 8: COMMON KI MISTAKES IN GERMAN
+================================================================================
+
+These are German-specific patterns that LLMs often get wrong:
+
+8.1 CASE SYSTEM MISUSE
+KI sometimes uses nominative where genitive is needed:
+NOT:  "Der Präsident von das Unternehmen"
+YES:  "Der Präsident des Unternehmens"
+
+Pattern: LLMs struggle with German's case system
+Signal: Case errors indicate likely LLM output
+
+---
+
+8.2 GENITIVE MISUSE
+KI overuses genitive where simpler constructions exist:
+NOT:  "Der Ort der Durchführung der Konferenz"
+YES:  "Der Konferenzort" or "Wo die Konferenz stattfand"
+
+Pattern: Nested genitives sound academic and artificial
+Signal: More than 2 genitives in a row = KI marker
+
+---
+
+8.3 SUBJUNCTIVE (KONJUNKTIV) MISUSE
+KI uses subjunctive in inappropriate contexts:
+NOT:  "Es könnte gesagt werden, dass die Wissenschaft wichtig wäre"
+YES:  "Die Wissenschaft ist wichtig"
+
+Pattern: English subjunctive doesn't map to German rules
+Signal: Inappropriate subjunctive = likely KI
+
+---
+
+8.4 ANGLICISMS AND FALSE FRIENDS
+KI generates English-influenced German:
+NOT:  "Das Meeting wurde sehr produktiv" (German uses Besprechung)
+NOT:  "Ich bin boring" (confuses English with German – "langweilig" means dull)
+
+Pattern: LLMs trained on mixed-language corpora
+Signal: Anglicisms in inappropriate contexts
+
+================================================================================
+SECTION 9: TESTING THE HUMANIZER SKILL
+================================================================================
+
+Use these authentic examples to test if the skill works:
+
+TEST 1: Symbolic language
+Input:  "Die Stadt steht als Zeugnis für mittelalterliche Handwerkskunst"
+Should detect: "Übermäßige Betonung von Symbolik"
+Output: "Die Stadt zeigt mittelalterliche Handwerkskunst"
+
+TEST 2: Advertising language
+Input:  "Die atemberaubende Landschaft mit ihrem reichen Kulturerbe
+         lockt Besucher aus aller Welt an"
+Should detect: "Werbesprache"
+Output: "Die Landschaft zieht Besucher an. Das kulturelle Erbe ist vielfältig"
+
+TEST 3: Mechanical conjunctions
+Input:  "Das Unternehmen wurde 1950 gegründet. Darüber hinaus hat es
+         200 Mitarbeiter. Außerdem ist es in 10 Ländern tätig."
+Should detect: "Mechanische Konjunktionen"
+Output: "Das Unternehmen wurde 1950 gegründet. Es hat 200 Mitarbeiter
+         in 10 Ländern"
+
+TEST 4: Vague authority
+Input:  "Branchenberichte zeigen, dass der Markt wächst"
+Should detect: "Vage Autoritäten"
+Output: "Der Markt wächst" (then request specific source)
+
+TEST 5: Meta-commentary
+Input:  "Es ist wichtig zu bemerken, dass die Bevölkerung wuchs"
+Should detect: "Redaktionelle Kommentare"
+Output: "Die Bevölkerung wuchs"
+
+================================================================================
+SECTION 10: QUICK REFERENCE
+================================================================================
+
+German Authenticity Checklist:
+
+COPY THIS WHEN WRITING EXAMPLES:
+
+✓ Concrete over abstract
+✓ Verbs over nouns
+✓ Short sentences (mix lengths)
+✓ Specific numbers and dates
+✓ Show personality
+✓ Vary sentence structure
+✓ Use simple transitions
+✓ Trust the reader
+✓ No metaphors
+✓ No meta-commentary ("it is important to note...")
+✓ Direct statements
+✓ EEAT principles present
+✓ Regional authenticity (DACH)
+✓ Wikipedia style (if applicable)
+✓ Correct German case system
+✓ Correct Wikitext (if applicable)
+
+================================================================================
+END OF TONE-OF-VOICE GUIDELINES
+================================================================================
+
+These guidelines help maintain authentic German voice across:
+- The SKILL.md examples
+- The README.md documentation
+- The WARP.md development guide
+- Any extensions to the Humanizer Deutsch project
+
+When in doubt, ask: "Would a German speaker write it this way,
+or does it sound like a translation from English?"
+
+If it sounds like a translation, humanize it.
