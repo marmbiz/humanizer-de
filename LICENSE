@@ -1,7 +1,23 @@
-This project is released into the public domain.
+MIT License
 
-No rights reserved. Use it however you want.
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software.
 
-Based on:
-- Original Humanizer skill by blader (https://github.com/blader/humanizer)
-- German Wikipedia: Anzeichen für KI-generierte Inhalte
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
+
+---
+
+Attribution:
+
+This project is based on:
+- Original Humanizer skill by blader (MIT License)
+  https://github.com/blader/humanizer
+
+- Pattern descriptions adapted from German Wikipedia (CC BY-SA 4.0)
+  "Anzeichen für KI-generierte Inhalte"
+  https://de.wikipedia.org/wiki/Wikipedia:Anzeichen_für_KI-generierte_Inhalte
+
+German adaptation by Martin Moeller (www.martin-moeller.biz)

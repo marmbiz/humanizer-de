@@ -306,7 +306,10 @@ Dieses Skill basiert auf:
 
 ## Lizenz
 
-Public Domain. Keine Rechte vorbehalten. Nutzen Sie es, wie Sie möchten.
+MIT License - Frei nutzbar, modifizierbar und verteilbar.
+
+Basiert auf dem Original [Humanizer](https://github.com/blader/humanizer) (MIT) und
+[Wikipedia: Anzeichen für KI-generierte Inhalte](https://de.wikipedia.org/wiki/Wikipedia:Anzeichen_f%C3%BCr_KI-generierte_Inhalte) (CC BY-SA 4.0).
 
 ---
 
