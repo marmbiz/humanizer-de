@@ -579,14 +579,15 @@ Häuffige Indikatoren:
 
 ## Ausgabeformat
 
-Geben Sie die Überarbeitung in drei Stufen aus:
+**Niemals den vollständigen Text ausgeben.** Nur geänderte Stellen zeigen.
 
-1. **Entwurf (humanisiert):** Erste überarbeitete Version
-2. **Kurzaudit:** "Was macht den Text noch offensichtlich KI-generiert?"
-3. **Finale Version:** Zweiter Durchlauf nach dem Audit
+Ausgabe in drei Stufen:
 
-Optional:
-- Kurze Zusammenfassung der wichtigsten Änderungen (nur wenn hilfreich)
+1. **Gefundene Muster:** Liste der erkannten KI-Tells (max. 6 Bullet Points, konkret mit Zitat aus dem Text)
+2. **Geänderte Stellen:** Nur die überarbeiteten Abschnitte, jeweils als Vorher/Nachher-Paar
+3. **Kurzaudit + finale Korrekturen:** Max. 3 verbleibende Tells + nur die nochmals geänderten Sätze
+
+Wenn eine Datei übergeben wird: Änderungen direkt mit dem Edit-Tool in die Datei schreiben, keinen Text ausgeben.
 
 ## Verwendungsbeispiel
 
@@ -599,23 +600,34 @@ Zusammenfassend kann man sagen, dass die Alpen ein wichtiges kulturelles Erbe da
 es zu schützen gilt. Lassen Sie mich wissen, wenn Sie weitere Informationen benötigen!
 ```
 
-### Entwurf (humanisiert)
-```
-Die Schweizer Alpen beeindrucken durch ihre Landschaft. Diese Gebirgskette prägt Europas Geographie
-und Kultur seit Jahrtausenden. Die Region ist bekannt bei Wanderern und zieht viele Touristen an.
-Die Alpen sind wichtig für das europäische Kulturerbe und verdienen Schutz.
-```
+### Gefundene Muster
+- Muster 1: "steht als Zeugnis für" → Symbolik-Floskel
+- Muster 1: "spielt eine wichtige Rolle bei" → Symbolik-Floskel
+- Muster 4: "Darüber hinaus" → mechanische Konjunktion
+- Muster 5: "Zusammenfassend kann man sagen" → Abschnitts-Zusammenfassung
+- Muster 18: "Lassen Sie mich wissen" → kollaborative Kommunikation
 
-### Kurzaudit: Was macht den Text noch offensichtlich KI-generiert?
-- Satzrhythmus ist noch etwas gleichförmig.
-- Einige Formulierungen bleiben neutral-abstrakt ("wichtig für das Kulturerbe").
+### Geänderte Stellen
 
-### Finale Version (nach Audit)
-```
-Die Schweizer Alpen sind markant, nicht nur wegen der Höhe, sondern wegen ihrer prägenden Rolle in Europas Landschaft und Geschichte.
-Viele Menschen kommen zum Wandern, Klettern oder einfach, um die Region zu erleben.
-Als Kultur- und Naturraum haben die Alpen bis heute großes Gewicht und sollten entsprechend geschützt werden.
-```
+**Satz 1:**
+❌ "Die atemberaubende Schönheit der Schweizer Alpen steht als Zeugnis für die Großartigkeit der Natur."
+✓ "Die Schweizer Alpen beeindrucken – nicht wegen ihrer Höhe allein, sondern wegen ihrer Präsenz."
+
+**Satz 2–3:**
+❌ "Diese Gebirgskette spielt eine wichtige Rolle bei der Gestaltung der europäischen Geographie und Kultur. Darüber hinaus ist die Region von unschätzbarem Wert für Wanderer und Touristen."
+✓ "Die Gebirgskette prägt Europas Geographie und Kultur seit Jahrhunderten. Wanderer und Touristen kommen aus diesem Grund."
+
+**Satz 4–5:**
+❌ "Zusammenfassend kann man sagen, dass die Alpen ein wichtiges kulturelles Erbe darstellen, das es zu schützen gilt. Lassen Sie mich wissen, wenn Sie weitere Informationen benötigen!"
+✓ "Als Kultur- und Naturraum haben die Alpen bis heute großes Gewicht – und sollten entsprechend geschützt werden."
+
+### Kurzaudit
+- Satzrhythmus noch etwas gleichförmig (alle Sätze ähnlich lang)
+- "großes Gewicht" bleibt etwas abstrakt
+
+**Finale Korrektur (nur geänderter Satz):**
+❌ "Als Kultur- und Naturraum haben die Alpen bis heute großes Gewicht – und sollten entsprechend geschützt werden."
+✓ "Als Kultur- und Naturraum sind die Alpen seit Jahrhunderten relevant. Schutz ist keine Option, sondern Pflicht."
 
 ---
 
