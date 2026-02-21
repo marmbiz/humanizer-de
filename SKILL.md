@@ -1,10 +1,10 @@
 ---
 name: Humanizer (Deutsch)
-description: Erkennt und entfernt KI-generierte Schreibmuster aus deutschsprachigen Texten. Basiert auf der Wikipedia-Analyse von Anzeichen für KI-generierte Inhalte.
-version: 1.0.0
+description: Erkennt und entfernt KI-generierte Schreibmuster aus deutschsprachigen Texten. Basierend auf der deutschen und englischen Wikipedia-Leitlinie zu KI-Schreibmustern, inklusive zweitem Anti-KI-Audit-Durchlauf.
+version: 2.2.0-de.2
 author: Martin Moeller
 maintainer_website: "https://www.martin-moeller.biz"
-based_on: "German Wikipedia: Anzeichen für KI-generierte Inhalte"
+based_on: "German + English Wikipedia: Anzeichen/Signs of AI writing"
 original_skill: "https://github.com/blader/humanizer"
 tags: [writing, ai-detection, german, wikipedia, text-improvement]
 allowed_tools: [Read, Write, Edit, Grep, Glob]
@@ -34,6 +34,31 @@ Das Skill befolgt die Prinzipien von EEAT (Expertise, Erfahrung, Autorität, Ver
 ```
 
 Oder direkt: "Humanisiere diesen Text" oder "Entferne KI-Muster aus diesem Abschnitt"
+
+## Aufgabe und Ablauf
+
+Wenn Sie einen Text humanisieren, arbeiten Sie in dieser Reihenfolge:
+
+1. KI-Muster im Text erkennen
+2. Problematische Stellen neu schreiben
+3. Bedeutung und Fakten erhalten
+4. Zielton einhalten (formal, technisch, locker, etc.)
+5. Eine echte menschliche Stimme einbauen
+6. Finalen Anti-KI-Pass ausführen:
+   - Frage: "Was macht den Text noch offensichtlich KI-generiert?"
+   - Kurze, konkrete Tells benennen
+   - Zweite Überarbeitung liefern: "Jetzt so umschreiben, dass es nicht offensichtlich KI-generiert wirkt."
+
+## Persönlichkeit und Stimme
+
+Ein "sauberer" Text ohne KI-Muster ist noch nicht automatisch menschlich. Zu glatte Texte bleiben verdächtig.
+
+Achten Sie deshalb zusätzlich auf:
+- Variierendes Satztempo (kurz/lang gemischt)
+- Konkrete Perspektive statt neutraler Floskeln
+- Ehrliche Nuancen statt glatter Eindeutigkeit
+- Gezielte Ich-Perspektive, wenn der Kontext sie erlaubt
+- Weniger Symmetrie, mehr natürliche Sprache
 
 ## Die 31 Muster
 
@@ -552,6 +577,17 @@ Häuffige Indikatoren:
 
 ---
 
+## Ausgabeformat
+
+Geben Sie die Überarbeitung in drei Stufen aus:
+
+1. **Entwurf (humanisiert):** Erste überarbeitete Version
+2. **Kurzaudit:** "Was macht den Text noch offensichtlich KI-generiert?"
+3. **Finale Version:** Zweiter Durchlauf nach dem Audit
+
+Optional:
+- Kurze Zusammenfassung der wichtigsten Änderungen (nur wenn hilfreich)
+
 ## Verwendungsbeispiel
 
 ### Input
@@ -563,11 +599,22 @@ Zusammenfassend kann man sagen, dass die Alpen ein wichtiges kulturelles Erbe da
 es zu schützen gilt. Lassen Sie mich wissen, wenn Sie weitere Informationen benötigen!
 ```
 
-### Output (Humanisiert)
+### Entwurf (humanisiert)
 ```
 Die Schweizer Alpen beeindrucken durch ihre Landschaft. Diese Gebirgskette prägt Europas Geographie
 und Kultur seit Jahrtausenden. Die Region ist bekannt bei Wanderern und zieht viele Touristen an.
 Die Alpen sind wichtig für das europäische Kulturerbe und verdienen Schutz.
+```
+
+### Kurzaudit: Was macht den Text noch offensichtlich KI-generiert?
+- Satzrhythmus ist noch etwas gleichförmig.
+- Einige Formulierungen bleiben neutral-abstrakt ("wichtig für das Kulturerbe").
+
+### Finale Version (nach Audit)
+```
+Die Schweizer Alpen sind markant, nicht nur wegen der Höhe, sondern wegen ihrer prägenden Rolle in Europas Landschaft und Geschichte.
+Viele Menschen kommen zum Wandern, Klettern oder einfach, um die Region zu erleben.
+Als Kultur- und Naturraum haben die Alpen bis heute großes Gewicht und sollten entsprechend geschützt werden.
 ```
 
 ---

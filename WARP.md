@@ -1,4 +1,4 @@
-# WARP – Humanizer (Deutsch) Entwicklerleitfaden
+# WARP – Humanizer (Deutsch) Entwicklerleitfaden (v2.2.0-de.2)
 
 **WARP** = "Workflow, Architecture, References, Principles"
 
@@ -74,6 +74,17 @@ humanizer-de/
 6. **README.md aktualisieren**: Fügen Sie das Muster der Zusammenfassung hinzu.
 
 7. **Nummer aktualisieren**: Wenn Sie ein Muster hinzufügen, passen Sie alle späteren Nummern an.
+
+### 1b. Upstream-Sync aus `blader/humanizer`
+
+Bei jedem Update des Original-Skills:
+
+1. Letzten Upstream-Stand prüfen (Release/Tag; falls keines vorhanden: `main`-HEAD-Commit dokumentieren).
+2. Upstream `SKILL.md`, `README.md`, `WARP.md` laden.
+3. Diff gegen `humanizer-de` erstellen.
+4. Relevante Änderungen übernehmen (Workflow, Prompt-Logik, Beispiele).
+5. Deutsche Anpassungen erhalten (DACH-Stil, deutsche Wikipedia, lokale Metadaten).
+6. Versionshistorie in `README.md` aktualisieren.
 
 ### 2. Ein bestehendes Muster verbessern
 
@@ -236,7 +247,7 @@ Das Projekt folgt [Semantic Versioning](https://semver.org/):
 - **Minor (1.0.0 → 1.1.0):** Neue Muster hinzugefügt
 - **Patch (1.0.0 → 1.0.1):** Verbesserungen an bestehenden Mustern
 
-Aktuelle Version: **1.0.0** – stabiler Startzustand mit 31 Mustern
+Aktuelle Version: **2.2.0-de.2** – Upstream v2.2.0 integriert, gegen `main` (`d8085c7`) geprüft, deutsche Anpassung erhalten
 
 ### Testing
 
@@ -244,7 +255,7 @@ Aktuelle Version: **1.0.0** – stabiler Startzustand mit 31 Mustern
 
 1. **Installationstest:**
    ```bash
-   cp -r humanizer-de ~/.claude/skills/humanizer-de
+   cp -r humanizer-de ~/.codex/skills/humanizer-de
    ```
 
 2. **Funktionstest:**
@@ -355,5 +366,5 @@ Dieses Projekt wird von der Community gepflegt. Jeder kann:
 
 **Projekt-Maintainer:** Martin Moeller (www.martin-moeller.biz)
 **Lokal gespeichert:** `/Users/mm/Local Sites/humanizer/`
-**Version:** 1.0.0
+**Version:** 2.2.0-de.2
 **Basiert auf:** Original Humanizer von blader + German Wikipedia Analyse

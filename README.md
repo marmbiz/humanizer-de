@@ -2,9 +2,11 @@
 
 KI-Schreibmuster erkennen und entfernen. Für deutschsprachige Texte.
 
+**Version:** 2.2.0-de.2
+
 **Autor:** Martin Moeller | [www.martin-moeller.biz](https://www.martin-moeller.biz)
 
-**Basiert auf:** [Anzeichen für KI-generierte Inhalte](https://de.wikipedia.org/wiki/Wikipedia:Anzeichen_f%C3%BCr_KI-generierte_Inhalte) der Deutschen Wikipedia
+**Basiert auf:** [Anzeichen für KI-generierte Inhalte](https://de.wikipedia.org/wiki/Wikipedia:Anzeichen_f%C3%BCr_KI-generierte_Inhalte) der Deutschen Wikipedia + [Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing) der englischen Wikipedia
 **Original Skill:** [Humanizer](https://github.com/blader/humanizer) von [blader](https://github.com/blader)
 
 ---
@@ -23,13 +25,13 @@ Das Skill folgt deutschen Schreibkonventionen und den Prinzipien von EEAT (Exper
 
 ### Option 1: Verzeichnis kopieren
 
-1. Kopieren Sie alle Dateien aus diesem Ordner nach `~/.claude/skills/humanizer-de/`
+1. Kopieren Sie alle Dateien aus diesem Ordner nach `~/.codex/skills/humanizer-de/`
 2. Starten Sie Claude Code neu oder laden Sie die Skills neu
 
 ### Option 2: Symbolic Link (Linux/Mac)
 
 ```bash
-ln -s /Users/mm/Local\ Sites/humanizer ~/.claude/skills/humanizer-de
+ln -s /Users/mm/Local\ Sites/humanizer ~/.codex/skills/humanizer-de
 ```
 
 Dann Claude Code neu starten.
@@ -71,6 +73,26 @@ Entferne nur sprachliche Muster, nicht die Formatierung
 ## Was das Skill erkennt
 
 Das Skill analysiert **31 verschiedene KI-Schreibmuster** in 5 Kategorien:
+
+## Was ist neu seit 1.0.0?
+
+- Upstream-Sync auf den aktuellen Humanizer-Stand (v2.2.0 als Basis)
+- Gegen den neuesten Upstream-Stand geprüft (`blader/humanizer` `main` @ `d8085c7`, 2026-02-21)
+- Neuer verpflichtender 2-Pass-Workflow:
+  - Entwurf humanisieren
+  - Kurzaudit: "Was macht den Text noch offensichtlich KI-generiert?"
+  - Finale, zweite Überarbeitung
+- Stärkerer Fokus auf menschliche Stimme statt nur Musterentfernung
+
+## Beibehaltene deutsche Besonderheiten
+
+Diese Upstream-Synchronisierung hat alle lokalen Kernmerkmale beibehalten:
+
+- 31 deutsche Muster (statt der 24 Muster im Original)
+- DACH-Schreibfokus und deutsche Stilkonventionen
+- Deutsche Wikipedia als primäre Referenz plus englische Wikipedia als Ergänzung
+- Wikitext-/Referenz-Muster für deutschsprachige Wikipedia-Arbeit
+- Lokale Metadaten und Maintainer-Informationen der deutschen Version
 
 ### Sprache und Tonfall (12 Muster)
 - Übermäßige Betonung von Symbolik ("steht als Zeugnis")
@@ -289,6 +311,14 @@ Haben Sie ein Problem gefunden oder eine Verbesserung?
 - **[Original Humanizer Skill](https://github.com/blader/humanizer)** – Englische Version
 - **[Claude Code](https://claude.com/claude-code)** – Zur Verwendung mit diesem Skill
 - **[EEAT Guidelines](https://developers.google.com/search/docs/beginner/eeat-signals)** – Google Search Guidelines
+
+---
+
+## Versionshistorie
+
+- **2.2.0-de.2** - Gegen Upstream `main` (`d8085c7`, 2026-02-21) validiert; Ausgabe-Beispiel im SKILL auf Entwurf -> Audit -> Final konsistent gemacht; deutsche Besonderheiten explizit verifiziert
+- **2.2.0-de.1** - Upstream v2.2.0 eingearbeitet, zweiter Anti-KI-Audit-Durchlauf eingeführt (Entwurf -> Audit -> Final)
+- **1.0.0** - Initiale deutsche Version mit 31 Mustern auf Basis der deutschen Wikipedia
 
 ---
 
