@@ -2,7 +2,7 @@
 
 KI-Schreibmuster erkennen und entfernen. Für deutschsprachige Texte.
 
-**Version:** 2.2.0-de.2
+**Version:** 2.3.0-de.1
 
 **Autor:** Martin Moeller | [www.martin-moeller.biz](https://www.martin-moeller.biz)
 
@@ -72,68 +72,88 @@ Entferne nur sprachliche Muster, nicht die Formatierung
 
 ## Was das Skill erkennt
 
-Das Skill analysiert **31 verschiedene KI-Schreibmuster** in 5 Kategorien:
+Das Skill analysiert **34 verschiedene KI-Schreibmuster** in 6 Kategorien, priorisiert nach Schweregrad (HIGH / MEDIUM / LOW):
 
-## Was ist neu seit 1.0.0?
+## Was ist neu?
 
-- Upstream-Sync auf den aktuellen Humanizer-Stand (v2.2.0 als Basis)
-- Gegen den neuesten Upstream-Stand geprüft (`blader/humanizer` `main` @ `d8085c7`, 2026-02-21)
-- Neuer verpflichtender 2-Pass-Workflow:
-  - Entwurf humanisieren
-  - Kurzaudit: "Was macht den Text noch offensichtlich KI-generiert?"
-  - Finale, zweite Überarbeitung
-- Stärkerer Fokus auf menschliche Stimme statt nur Musterentfernung
+### 2.3.0-de.1 (aktuell)
+- 3 neue Muster aus Upstream-PR #39 adaptiert: Persuasive Autoritäts-Floskeln, Signposting, Fragmentierte Überschriften
+- Severity-Ranking (HIGH / MEDIUM / LOW) für alle 34 Muster eingeführt (inspiriert von Upstream-PR #51)
+- Modus-System: Locker / Sachlich / Formal – steuert, wie aggressiv korrigiert wird
+- "Nicht anfassen"-Regeln und Leitplanken hinzugefügt
+- Kurzreferenz-Tabelle für schnelles Scannen
+- Unnötige Trennlinien (`---`) entfernt
 
-## Beibehaltene deutsche Besonderheiten
-
-Diese Upstream-Synchronisierung hat alle lokalen Kernmerkmale beibehalten:
-
-- 31 deutsche Muster (statt der 24 Muster im Original)
-- DACH-Schreibfokus und deutsche Stilkonventionen
+### Seit 1.0.0
+- Upstream v2.2.0 eingearbeitet, zweiter Anti-KI-Audit-Durchlauf
+- DACH-Schreibfokus und deutsche Stilkonventionen beibehalten
 - Deutsche Wikipedia als primäre Referenz plus englische Wikipedia als Ergänzung
-- Wikitext-/Referenz-Muster für deutschsprachige Wikipedia-Arbeit
-- Lokale Metadaten und Maintainer-Informationen der deutschen Version
+
+## 34 Muster in 6 Kategorien
 
 ### Sprache und Tonfall (12 Muster)
-- Übermäßige Betonung von Symbolik ("steht als Zeugnis")
-- Werbesprache und Superlative ("atemberaubend")
-- Redaktionelle Kommentare ("es ist wichtig zu bemerken")
-- Mechanische Konjunktionen ("darüber hinaus", "außerdem")
-- Abschnitts-Zusammenfassungen ("insgesamt")
-- Unpassendes "Fazit"
-- Zu perfekte Schlussfolgerungen
-- Negative Parallelismen ("nicht nur... sondern auch")
-- Trikolon-Überbenutzung (Regel der Drei)
-- Oberflächliche Partizip-I-Konstruktionen
-- Vage Autoritäten ("Branchenberichte zeigen")
-- Falsche Erweiterungen ("von... bis")
+
+| # | Muster | Schwere |
+|---|--------|---------|
+| 1 | Übermäßige Betonung von Symbolik ("steht als Zeugnis") | HIGH |
+| 2 | Werbesprache und Superlative ("atemberaubend") | HIGH |
+| 3 | Redaktionelle Kommentare ("es ist wichtig zu bemerken") | HIGH |
+| 4 | Mechanische Konjunktionen ("darüber hinaus", "außerdem") | HIGH |
+| 5 | Abschnitts-Zusammenfassungen ("insgesamt") | HIGH |
+| 6 | Unpassendes "Fazit" | MEDIUM |
+| 7 | Zu perfekte Schlussfolgerungen | MEDIUM |
+| 8 | Negative Parallelismen ("nicht nur... sondern auch") | MEDIUM |
+| 9 | Trikolon-Überbenutzung (Regel der Drei) | MEDIUM |
+| 10 | Oberflächliche Partizip-I-Konstruktionen | HIGH |
+| 11 | Vage Autoritäten ("Branchenberichte zeigen") | HIGH |
+| 12 | Falsche Erweiterungen ("von... bis") | MEDIUM |
 
 ### Stil (4 Muster)
-- Übermäßige Fettschrift
-- Falsche Listen-Formatierung
-- Emojis vor Überschriften
-- Gedankenstriche-Überbenutzung (Anglizismus)
+
+| # | Muster | Schwere |
+|---|--------|---------|
+| 13 | Übermäßige Fettschrift | MEDIUM |
+| 14 | Falsche Listen-Formatierung | LOW |
+| 15 | Emojis vor Überschriften | LOW |
+| 16 | Gedankenstriche-Überbenutzung (Anglizismus) | MEDIUM |
 
 ### Kommunikation (6 Muster)
-- Briefartiges Schreiben
-- Kollaborative Kommunikation ("Ich hoffe, das hilft")
-- Hinweise auf Wissensgrenzen ("Stand Datum")
-- Prompt-Ablehnung ("Als KI kann ich nicht...")
-- Platzhaltertext ("[Name einfügen]")
-- Links zu Suchanfragen statt Referenzen
+
+| # | Muster | Schwere |
+|---|--------|---------|
+| 17 | Briefartiges Schreiben | HIGH |
+| 18 | Kollaborative Kommunikation ("Ich hoffe, das hilft") | HIGH |
+| 19 | Hinweise auf Wissensgrenzen ("Stand Datum") | HIGH |
+| 20 | Prompt-Ablehnung ("Als KI kann ich nicht...") | HIGH |
+| 21 | Platzhaltertext ("[Name einfügen]") | HIGH |
+| 22 | Links zu Suchanfragen statt Referenzen | HIGH |
 
 ### Auszeichnungstext (6 Muster)
-- Markdown statt Wikitext
-- Fehlerhafter Wikitext
-- Defekte Links
-- Ungültige DOI/ISBNs
-- Inkorrekte Referenzen-Formate
-- Falsche Kategorien
+
+| # | Muster | Schwere |
+|---|--------|---------|
+| 23 | Markdown statt Wikitext | MEDIUM |
+| 24 | Fehlerhafter Wikitext | MEDIUM |
+| 25 | Defekte Links | MEDIUM |
+| 26 | Ungültige DOI/ISBNs | MEDIUM |
+| 27 | Inkorrekte Referenzen-Formate | MEDIUM |
+| 28 | Falsche Kategorien | MEDIUM |
 
 ### Verschiedenes (3 Muster)
-- Abrupte Abbrüche
-- Wechsel im Schreibstil
-- Ausführliche Bearbeitungszusammenfassungen in Ich-Form
+
+| # | Muster | Schwere |
+|---|--------|---------|
+| 29 | Abrupte Abbrüche | LOW |
+| 30 | Wechsel im Schreibstil | MEDIUM |
+| 31 | Bearbeitungszusammenfassungen in Ich-Form | LOW |
+
+### Rhetorik und Struktur (3 Muster) — NEU
+
+| # | Muster | Schwere |
+|---|--------|---------|
+| 32 | Persuasive Autoritäts-Floskeln ("Im Kern", "In Wirklichkeit") | MEDIUM |
+| 33 | Signposting und Ankündigungen ("Schauen wir uns an") | MEDIUM |
+| 34 | Fragmentierte Überschriften (generischer Einzeiler nach Heading) | LOW |
 
 ---
 
@@ -316,6 +336,7 @@ Haben Sie ein Problem gefunden oder eine Verbesserung?
 
 ## Versionshistorie
 
+- **2.3.0-de.1** - 3 neue Muster (PR #39: Persuasive Floskeln, Signposting, Fragmentierte Überschriften); Severity-Ranking und Modus-System (PR #51); Quick-Reference-Tabelle (PR #52); Trennlinien entfernt (PR #57)
 - **2.2.0-de.2** - Gegen Upstream `main` (`d8085c7`, 2026-02-21) validiert; Ausgabe-Beispiel im SKILL auf Entwurf -> Audit -> Final konsistent gemacht; deutsche Besonderheiten explizit verifiziert
 - **2.2.0-de.1** - Upstream v2.2.0 eingearbeitet, zweiter Anti-KI-Audit-Durchlauf eingeführt (Entwurf -> Audit -> Final)
 - **1.0.0** - Initiale deutsche Version mit 31 Mustern auf Basis der deutschen Wikipedia
