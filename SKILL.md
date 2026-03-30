@@ -1,7 +1,7 @@
 ---
 name: Humanizer (Deutsch)
-description: Erkennt und entfernt KI-generierte Schreibmuster aus deutschsprachigen Texten. Basierend auf der deutschen und englischen Wikipedia-Leitlinie zu KI-Schreibmustern, inklusive zweitem Anti-KI-Audit-Durchlauf. Erkennt u.a. aufgeblähte Symbolik, Werbesprache, mechanische Konjunktionen, vage Autoritäten, Gedankenstriche-Übernutzung, Trikolon, KI-Vokabular, negative Parallelismen, persuasive Floskeln, Signposting und fragmentierte Überschriften.
-version: 2.3.0-de.1
+description: Erkennt und entfernt KI-generierte Schreibmuster aus deutschsprachigen Texten. Basierend auf der deutschen und englischen Wikipedia-Leitlinie zu KI-Schreibmustern, inklusive zweitem Anti-KI-Audit-Durchlauf und optionaler Stimmkalibrierung. Erkennt u.a. aufgeblähte Symbolik, Werbesprache, mechanische Konjunktionen, vage Autoritäten, Gedankenstriche-Übernutzung, Trikolon, KI-Vokabular, negative Parallelismen, persuasive Floskeln, Signposting, fragmentierte Überschriften, rhetorische Fake-Fragen, Menschheits-Eröffnungen, "heutige Welt"-Framing und aspirative Unternehmensschlüsse.
+version: 3.0.0-de.1
 author: Martin Moeller
 maintainer_website: "https://www.martin-moeller.biz"
 based_on: "German + English Wikipedia: Anzeichen/Signs of AI writing"
@@ -58,6 +58,26 @@ Wenn Sie einen Text humanisieren, arbeiten Sie in dieser Reihenfolge:
 6. **NICHT ANFASSEN prüfen** – Verstöße rückgängig machen.
 7. **Finaler Anti-KI-Pass**: "Was macht den Text noch offensichtlich KI-generiert?" Kurze, konkrete Tells benennen. Dann: "Jetzt so umschreiben, dass es nicht offensichtlich KI-generiert wirkt." Zweite Überarbeitung liefern.
 
+## Stimmkalibrierung (optional)
+
+Wenn der Benutzer eine Schreibprobe mitliefert (eigener Text), analysieren Sie diese vor dem Umschreiben:
+
+1. **Probe zuerst lesen.** Notieren Sie:
+   - Satzlängen-Muster (kurz und knapp? Lang und fließend? Gemischt?)
+   - Wortwahl-Niveau (umgangssprachlich? Akademisch? Dazwischen?)
+   - Wie Absätze beginnen (direkt rein? Erst Kontext setzen?)
+   - Zeichensetzungs-Gewohnheiten (viele Gedankenstriche? Klammer-Einschübe? Semikolons?)
+   - Wiederkehrende Formulierungen oder sprachliche Eigenheiten
+   - Wie Übergänge funktionieren (explizite Konnektoren? Einfach nächster Punkt?)
+
+2. **Stimme im Rewrite übernehmen.** Nicht nur KI-Muster entfernen – durch Muster aus der Probe ersetzen. Wenn der Autor kurze Sätze schreibt, keine langen produzieren. Wenn er "Zeug" und "Sachen" sagt, nicht zu "Elemente" und "Komponenten" upgraden.
+
+3. **Ohne Probe** auf das Standardverhalten zurückfallen (natürliche, abwechslungsreiche Stimme aus dem Abschnitt "Persönlichkeit und Stimme").
+
+### Probe bereitstellen
+- Inline: "Humanisiere diesen Text. Hier ist eine Probe meines Schreibstils: [Probe]"
+- Datei: "Humanisiere diesen Text. Verwende meinen Stil aus [Dateipfad] als Referenz."
+
 ## Kurzreferenz
 
 | # | Muster | Schwere | Schlüssel-Indikatoren |
@@ -96,8 +116,12 @@ Wenn Sie einen Text humanisieren, arbeiten Sie in dieser Reihenfolge:
 | 32 | Persuasive Autoritäts-Floskeln | MEDIUM | "Die eigentliche Frage ist", "Im Kern", "In Wirklichkeit" |
 | 33 | Signposting und Ankündigungen | MEDIUM | "Schauen wir uns an", "Hier ist, was Sie wissen müssen" |
 | 34 | Fragmentierte Überschriften | LOW | Generischer Einzeiler nach Überschrift ("Geschwindigkeit zählt.") |
+| 35 | Rhetorische Fragen als Fake-Engagement | MEDIUM | "Aber was bedeutet das?", "Haben Sie sich jemals gefragt?" |
+| 36 | Universelle Menschheitserfahrungs-Eröffnung | MEDIUM | "Seit jeher", "Seit Anbeginn der Zivilisation", "Schon immer" |
+| 37 | "In der heutigen X-Welt" Framing | MEDIUM | "In der heutigen digitalen Welt", "Im Zeitalter der..." |
+| 38 | Aspirativer Unternehmensschluss | MEDIUM | "bestens aufgestellt", "die Möglichkeiten sind grenzenlos" |
 
-## Die 34 Muster
+## Die 38 Muster
 
 ### Sprache und Tonfall (12 Muster)
 
@@ -560,7 +584,7 @@ Häufige Indikatoren:
 
 **Lösung:** Entfernen oder in neutrale Form umwandeln ("Absatz über X hinzugefügt").
 
-### Rhetorik und Struktur (3 Muster)
+### Rhetorik und Struktur (7 Muster)
 
 #### 32. Persuasive Autoritäts-Floskeln [MEDIUM]
 
@@ -611,6 +635,62 @@ Häufige Indikatoren:
 > ## Performance
 >
 > Wenn Nutzer eine langsame Seite sehen, verlassen sie die Website. Eine Google-Studie von 2023 ergab, dass 53% der mobilen Nutzer Seiten verlassen, die länger als drei Sekunden laden.
+
+#### 35. Rhetorische Fragen als Fake-Engagement [MEDIUM]
+
+**Wendungen, auf die Sie achten sollten:** "Aber was bedeutet das für...?", "Haben Sie sich jemals gefragt, warum...?", "Doch was steckt dahinter?", "Was heißt das konkret?", "Wer profitiert davon?", "Warum ist das wichtig?"
+
+**Problem:** LLMs streuen rhetorische Fragen ein, um Engagement vorzutäuschen. Die Frage wird sofort im nächsten Satz beantwortet – der Leser hatte nie eine echte Wahl, mitzudenken. Anders als Muster 33 (Signposting, das Inhalt ankündigt), simuliert dieses Muster einen Dialog, der keiner ist. Die Frage fügt nichts hinzu; sie verzögert nur die eigentliche Aussage.
+
+**Kein Problem, wenn:** Der Text ein FAQ-Format hat, eine tatsächliche Frage-Antwort-Struktur verfolgt oder der Autor eine provokante These aufstellt, die er dann widerlegt.
+
+**Beispiel:**
+
+❌ Schlecht: "Aber was bedeutet das für den Mittelstand? Die Antwort ist einfacher als gedacht: Unternehmen müssen sich anpassen."
+
+✓ Besser: "Der Mittelstand muss sich anpassen."
+
+#### 36. Universelle Menschheitserfahrungs-Eröffnung [MEDIUM]
+
+**Wendungen, auf die Sie achten sollten:** "Seit jeher", "Seit Anbeginn der Zivilisation", "Schon immer hat die Menschheit...", "Im Laufe der Geschichte", "Seit Menschengedenken", "Von Anfang an", "Schon die alten Griechen/Römer..."
+
+**Problem:** LLMs eröffnen Texte mit grandiosen Menschheitsaussagen, um einem Alltagsthema historisches Gewicht zu verleihen. Ein Blogpost über Projektmanagement beginnt dann mit "Seit Anbeginn der Zivilisation haben Menschen nach Wegen gesucht, Arbeit zu organisieren." Die Eröffnung ist austauschbar, sagt nichts Konkretes und passt auf jedes Thema. Anders als Muster 1 (Symbolik-Inflation, das einzelne Fakten aufbläht), bläst dieses Muster den gesamten Einstieg auf.
+
+**Kein Problem, wenn:** Der historische Bezug spezifisch ist (Datum, Name, Ort) und direkt zum Thema führt. Ein Geschichtsartikel darf so beginnen.
+
+**Beispiel:**
+
+❌ Schlecht: "Seit Anbeginn der Zivilisation suchen Menschen nach Wegen, effizienter zu kommunizieren. Im Zeitalter der Digitalisierung hat sich diese Suche grundlegend verändert."
+
+✓ Besser: "E-Mail hat den Geschäftsbrief abgelöst. Slack hat die E-Mail nicht abgelöst – aber den Ton verändert."
+
+#### 37. "In der heutigen X-Welt" Framing [MEDIUM]
+
+**Wendungen, auf die Sie achten sollten:** "In der heutigen digitalen Welt", "In einer zunehmend vernetzten Welt", "In Zeiten von...", "Im Zeitalter der Digitalisierung", "In der heutigen schnelllebigen Gesellschaft", "In einer Welt, in der...", "Angesichts der rasanten Entwicklung"
+
+**Problem:** LLMs rahmen gewöhnliche Themen mit Zeitgeist-Floskeln, die nichts aussagen. Jeder weiß, dass die Welt digital und vernetzt ist – das muss nicht in jedem Absatz stehen. Die Formulierung ist so generisch, dass sie auf jeden Artikel passt, und genau das macht sie zum KI-Tell. Anders als Muster 36 (Menschheits-Eröffnung, die in die Vergangenheit greift), greift dieses Muster in die Gegenwart, um Relevanz vorzutäuschen.
+
+**Kein Problem, wenn:** Der Kontext tatsächlich einen historischen Vergleich erfordert ("Im Gegensatz zur analogen Verwaltung der 1990er-Jahre...") und spezifisch wird.
+
+**Beispiel:**
+
+❌ Schlecht: "In der heutigen digitalen Welt ist eine starke Online-Präsenz für Unternehmen unerlässlich."
+
+✓ Besser: "Ohne Website findet ein Handwerksbetrieb heute kaum noch Kunden unter 40."
+
+#### 38. Aspirativer Unternehmensschluss [MEDIUM]
+
+**Wendungen, auf die Sie achten sollten:** "bestens aufgestellt für die Zukunft", "die Möglichkeiten sind grenzenlos", "bereit für die nächste Stufe", "an der Schwelle zu einer neuen Ära", "die Weichen sind gestellt", "mit Zuversicht in die Zukunft blicken", "das Potenzial ist enorm", "auf Erfolgskurs"
+
+**Problem:** LLMs schließen Texte mit optimistischen Zukunftsaussagen, die nichts Konkretes sagen. Der Schluss klingt nach Pressemitteilung oder Geschäftsbericht-Phrasen. Anders als Muster 7 (Dichotomie-Schluss, der "Trotz X... steht Y vor Z" nutzt) und Muster 5 (Abschnitts-Zusammenfassung), erzeugt dieses Muster einen unverdienten Optimismus-Kick am Ende.
+
+**Kein Problem, wenn:** Der Text tatsächlich ein Geschäftsbericht oder eine Pressemitteilung ist, wo solche Formulierungen Konvention sind.
+
+**Beispiel:**
+
+❌ Schlecht: "Mit dieser Strategie ist das Unternehmen bestens aufgestellt für die Zukunft. Die Möglichkeiten sind grenzenlos."
+
+✓ Besser: "Ob die Strategie aufgeht, zeigt sich im nächsten Quartal."
 
 ## Persönlichkeit und Stimme
 

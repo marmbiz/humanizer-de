@@ -1,4 +1,4 @@
-# WARP – Humanizer (Deutsch) Entwicklerleitfaden (v2.3.0-de.1)
+# WARP – Humanizer (Deutsch) Entwicklerleitfaden (v3.0.0-de.1)
 
 **WARP** = "Workflow, Architecture, References, Principles"
 
@@ -24,7 +24,7 @@ humanizer-de/
 
 | Datei | Zweck | Wartung |
 |-------|-------|---------|
-| **SKILL.md** | Definiert alle 34 Muster und deren Logik | Primäre Quelle; hier beginnt jede Änderung |
+| **SKILL.md** | Definiert alle 38 Muster und deren Logik | Primäre Quelle; hier beginnt jede Änderung |
 | **README.md** | Wie Benutzer das Skill verwenden | Muss mit SKILL.md synchron bleiben |
 | **WARP.md** | Developer-Dokumentation | Dieser Leitfaden – aktualisieren Sie ihn, wenn sich die Struktur ändert |
 | **tone-of-voice.txt** | Deutsche Schreib-Authentizität-Richtlinien | Referenz für Beispiele und Dokumentation |
@@ -39,7 +39,7 @@ humanizer-de/
 
 **Schritte:**
 
-1. **Im SKILL.md forschen**: Überprüfen Sie alle 34 bestehenden Muster, um sicherzustellen, dass das Muster nicht bereits abgedeckt ist.
+1. **Im SKILL.md forschen**: Überprüfen Sie alle 38 bestehenden Muster, um sicherzustellen, dass das Muster nicht bereits abgedeckt ist.
 
 2. **Deutsche Wikipedia prüfen**: Das primäre Referenzmaterial ist [Anzeichen für KI-generierte Inhalte](https://de.wikipedia.org/wiki/Wikipedia:Anzeichen_f%C3%BCr_KI-generierte_Inhalte) auf der Deutschen Wikipedia. Prüfen Sie, ob das neue Muster dort genannt wird.
 
@@ -70,7 +70,7 @@ humanizer-de/
    - Kommunikation (6)
    - Auszeichnungstext (6)
    - Verschiedenes (3)
-   - Rhetorik und Struktur (3)
+   - Rhetorik und Struktur (7)
 
 5b. **Schweregrad zuweisen**: HIGH (immer korrigieren), MEDIUM (je nach Modus), LOW (nur wenn klar vorhanden)
 
@@ -151,7 +151,7 @@ Häuffige Indikatoren:
 
 ### Kategorisierung
 
-Die 34 Muster sind in 6 Kategorien eingeteilt, jeweils mit Schweregrad (HIGH/MEDIUM/LOW):
+Die 38 Muster sind in 6 Kategorien eingeteilt, jeweils mit Schweregrad (HIGH/MEDIUM/LOW):
 
 | Kategorie | Anzahl | Fokus |
 |-----------|--------|-------|
@@ -160,7 +160,7 @@ Die 34 Muster sind in 6 Kategorien eingeteilt, jeweils mit Schweregrad (HIGH/MED
 | Kommunikation | 6 | Chatbot-artiges Verhalten |
 | Auszeichnungstext | 6 | Markdown/Wikitext/Referenz-Probleme |
 | Verschiedenes | 3 | Alles andere |
-| Rhetorik und Struktur | 3 | Persuasive Floskeln, Signposting, fragmentierte Überschriften |
+| Rhetorik und Struktur | 7 | Persuasive Floskeln, Signposting, fragmentierte Überschriften, rhetorische Fake-Fragen, Menschheits-Eröffnungen, "heutige Welt"-Framing, aspirative Unternehmensschlüsse |
 
 Zusätzliche Strukturelemente seit v2.3.0:
 - **Modus-System:** Locker / Sachlich / Formal – steuert Korrektur-Intensität
@@ -256,7 +256,7 @@ Das Projekt folgt [Semantic Versioning](https://semver.org/):
 - **Minor (1.0.0 → 1.1.0):** Neue Muster hinzugefügt
 - **Patch (1.0.0 → 1.0.1):** Verbesserungen an bestehenden Mustern
 
-Aktuelle Version: **2.3.0-de.1** – 3 neue Muster, Severity-Ranking, Modus-System, Kurzreferenz, Leitplanken
+Aktuelle Version: **3.0.0-de.1** – Stimmkalibrierung, 38 Muster (4 neue: Rhetorische Fake-Fragen, Menschheits-Eröffnungen, "heutige Welt"-Framing, Aspirative Unternehmensschlüsse), Severity-Ranking, Modus-System
 
 ### Testing
 
@@ -317,7 +317,7 @@ Martin Moeller ([www.martin-moeller.biz](https://www.martin-moeller.biz)) ist de
 
 ### F: Warum nicht mehr oder weniger Muster?
 
-Die 34 Muster basieren auf der Deutsch Wikipedia-Seite "Anzeichen für KI-generierte Inhalte" und dem Original-Humanizer von blader. Wenn Wikipedia oder der Upstream aktualisiert werden, sollten wir das prüfen.
+Die 38 Muster basieren auf der deutschen Wikipedia-Seite "Anzeichen für KI-generierte Inhalte" und dem Original-Humanizer von blader. Wenn Wikipedia oder der Upstream aktualisiert werden, sollten wir das prüfen.
 
 ### F: Sollte ich englische Muster einfach übersetzen?
 
@@ -332,7 +332,7 @@ Beispiel: Ein Muster sagt "vermeiden Sie Partizip-I", aber `tone-of-voice.txt` s
 
 **Lösung:** Das Skill ist für Muster, nicht absolute Regeln. Wenn ein Muster vom Kontext abhängt, erklären Sie das in der Erklärung "Warum LLMs das tun".
 
-### F: Sollte ich alle 34 Muster sofort testen?
+### F: Sollte ich alle 38 Muster sofort testen?
 
 Nein. Priorisieren Sie:
 1. HIGH-Muster zuerst
@@ -376,5 +376,5 @@ Dieses Projekt wird von der Community gepflegt. Jeder kann:
 
 **Projekt-Maintainer:** Martin Moeller (www.martin-moeller.biz)
 **Lokal gespeichert:** `/Users/mm/Local Sites/humanizer/`
-**Version:** 2.3.0-de.1
+**Version:** 3.0.0-de.1
 **Basiert auf:** Original Humanizer von blader + German Wikipedia Analyse

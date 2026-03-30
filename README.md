@@ -2,7 +2,7 @@
 
 KI-Schreibmuster erkennen und entfernen. Für deutschsprachige Texte.
 
-**Version:** 2.3.0-de.1
+**Version:** 3.0.0-de.1
 
 **Autor:** Martin Moeller | [www.martin-moeller.biz](https://www.martin-moeller.biz)
 
@@ -60,6 +60,20 @@ oder
 Entferne KI-Muster aus diesem Absatz
 ```
 
+### Mit Stimmkalibrierung
+
+```
+/humanizer
+
+Hier ist eine Probe meines Schreibstils:
+[2-3 Absätze eigenen Texts einfügen]
+
+Jetzt humanisiere diesen Text:
+[KI-Text einfügen]
+```
+
+Das Skill analysiert Satzrhythmus, Wortwahl und Eigenheiten und wendet sie auf das Rewrite an.
+
 ### Spezifische Muster adressieren
 
 ```
@@ -72,11 +86,16 @@ Entferne nur sprachliche Muster, nicht die Formatierung
 
 ## Was das Skill erkennt
 
-Das Skill analysiert **34 verschiedene KI-Schreibmuster** in 6 Kategorien, priorisiert nach Schweregrad (HIGH / MEDIUM / LOW):
+Das Skill analysiert **38 verschiedene KI-Schreibmuster** in 6 Kategorien, priorisiert nach Schweregrad (HIGH / MEDIUM / LOW):
 
 ## Was ist neu?
 
-### 2.3.0-de.1 (aktuell)
+### 3.0.0-de.1 (aktuell)
+- Stimmkalibrierung: Schreibstil des Benutzers aus Proben übernehmen (adaptiert von Upstream-PR #64)
+- 4 neue Muster aus Upstream-PR #67 adaptiert: Rhetorische Fake-Fragen, Menschheits-Eröffnungen, "heutige Welt"-Framing, Aspirative Unternehmensschlüsse
+- 38 Muster insgesamt
+
+### 2.3.0-de.1
 - 3 neue Muster aus Upstream-PR #39 adaptiert: Persuasive Autoritäts-Floskeln, Signposting, Fragmentierte Überschriften
 - Severity-Ranking (HIGH / MEDIUM / LOW) für alle 34 Muster eingeführt (inspiriert von Upstream-PR #51)
 - Modus-System: Locker / Sachlich / Formal – steuert, wie aggressiv korrigiert wird
@@ -89,7 +108,7 @@ Das Skill analysiert **34 verschiedene KI-Schreibmuster** in 6 Kategorien, prior
 - DACH-Schreibfokus und deutsche Stilkonventionen beibehalten
 - Deutsche Wikipedia als primäre Referenz plus englische Wikipedia als Ergänzung
 
-## 34 Muster in 6 Kategorien
+## 38 Muster in 6 Kategorien
 
 ### Sprache und Tonfall (12 Muster)
 
@@ -147,13 +166,17 @@ Das Skill analysiert **34 verschiedene KI-Schreibmuster** in 6 Kategorien, prior
 | 30 | Wechsel im Schreibstil | MEDIUM |
 | 31 | Bearbeitungszusammenfassungen in Ich-Form | LOW |
 
-### Rhetorik und Struktur (3 Muster) — NEU
+### Rhetorik und Struktur (7 Muster)
 
 | # | Muster | Schwere |
 |---|--------|---------|
 | 32 | Persuasive Autoritäts-Floskeln ("Im Kern", "In Wirklichkeit") | MEDIUM |
 | 33 | Signposting und Ankündigungen ("Schauen wir uns an") | MEDIUM |
 | 34 | Fragmentierte Überschriften (generischer Einzeiler nach Heading) | LOW |
+| 35 | Rhetorische Fragen als Fake-Engagement ("Aber was bedeutet das?") | MEDIUM |
+| 36 | Universelle Menschheitserfahrungs-Eröffnung ("Seit jeher...") | MEDIUM |
+| 37 | "In der heutigen X-Welt" Framing ("In der heutigen digitalen Welt") | MEDIUM |
+| 38 | Aspirativer Unternehmensschluss ("bestens aufgestellt") | MEDIUM |
 
 ---
 
@@ -336,6 +359,7 @@ Haben Sie ein Problem gefunden oder eine Verbesserung?
 
 ## Versionshistorie
 
+- **3.0.0-de.1** - Stimmkalibrierung (PR #64); 4 neue Muster (PR #67: Rhetorische Fake-Fragen, Menschheits-Eröffnungen, "heutige Welt"-Framing, Aspirative Unternehmensschlüsse); 38 Muster insgesamt
 - **2.3.0-de.1** - 3 neue Muster (PR #39: Persuasive Floskeln, Signposting, Fragmentierte Überschriften); Severity-Ranking und Modus-System (PR #51); Quick-Reference-Tabelle (PR #52); Trennlinien entfernt (PR #57)
 - **2.2.0-de.2** - Gegen Upstream `main` (`d8085c7`, 2026-02-21) validiert; Ausgabe-Beispiel im SKILL auf Entwurf -> Audit -> Final konsistent gemacht; deutsche Besonderheiten explizit verifiziert
 - **2.2.0-de.1** - Upstream v2.2.0 eingearbeitet, zweiter Anti-KI-Audit-Durchlauf eingeführt (Entwurf -> Audit -> Final)
