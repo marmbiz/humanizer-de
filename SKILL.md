@@ -107,9 +107,9 @@ Wenn der Benutzer eine Schreibprobe mitliefert (eigener Text), analysieren Sie d
 | 21 | Platzhaltertext | HIGH | "[Name einfügen]", "[Datum hier]", "TODO:" |
 | 22 | Links zu Suchanfragen | HIGH | "https://www.google.com/search?q=..." |
 | 23 | Markdown statt Wikitext | MEDIUM | `# Überschrift` statt `== Überschrift ==` |
-| 24 | Fehlerhafter Wikitext | MEDIUM | Unvollständige Template-Tags, ungültige Syntax |
+| 24 | Fehlerhafter Wikitext und KI-Tool-Artefakte | MEDIUM | Unvollständige Template-Tags, oaicite, contentReference |
 | 25 | Defekte Links | MEDIUM | 404-Fehler, Links zu nicht-existenten Artikeln |
-| 26 | Ungültige DOI/ISBNs | MEDIUM | Erfundene Referenzen mit ungültigen Checksummen |
+| 26 | Zitatfabrikation und ungültige Referenzen | MEDIUM | Erfundene Quellen, ungültige DOIs/ISBNs, halluzinierte Publikationen |
 | 27 | Inkorrekte Referenzen-Format | MEDIUM | Englisches Datumsformat, falsche Reihenfolge |
 | 28 | Falsche Kategorien | MEDIUM | `[[Category:...]]` statt `[[Kategorie:...]]` |
 | 29 | Abrupte Abbrüche | LOW | Text bricht mitten im Satz ab |
@@ -542,7 +542,7 @@ Häufige Indikatoren:
 **Lösung:** Prüfen und korrigieren oder entfernen.
 
 #### 26. Zitatfabrikation und ungültige Referenzen [MEDIUM]
-**Problem:** LLMs erfinden Quellen, die echt aussehen aber nicht existieren. Das reicht von ungültigen DOI-Prüfziffern bis zu komplett halluzinierten Publikationen.
+**Problem:** LLMs erfinden Quellen, die echt aussehen, aber nicht existieren. Das reicht von ungültigen DOI-Prüfziffern bis zu komplett halluzinierten Publikationen.
 
 Häufige Indikatoren:
 - DOI mit ungültiger Prüfziffer
@@ -554,7 +554,7 @@ Häufige Indikatoren:
 
 **Warum LLMs das tun:** Kann keine echten Quellen recherchieren und erzeugt plausibel aussehende Referenzen aus dem Training.
 
-**Lösung:** Jeden Quellennachweis verifizieren. Bei Zweifel: entfernen oder mit [QUELLE NICHT VERIFIZIERT] markieren. Nie eine erfundene Quelle stehenlassen.
+**Lösung:** Jeden Quellennachweis verifizieren. Bei Zweifel: entfernen oder mit [QUELLE NICHT VERIFIZIERT] markieren. Nie eine erfundene Quelle stehen lassen.
 
 #### 27. Inkorrekte Referenzen-Format [MEDIUM]
 **Problem:** Zitierformat entspricht nicht deutschen Wikipedia-Standards.
