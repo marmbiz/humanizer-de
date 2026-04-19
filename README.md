@@ -2,7 +2,7 @@
 
 KI-Schreibmuster erkennen und entfernen. Für deutschsprachige Texte.
 
-**Version:** 3.0.0-de.1
+**Version:** 3.1.0-de.1
 
 **Autor:** Martin Moeller | [www.martin-moeller.biz](https://www.martin-moeller.biz)
 
@@ -86,11 +86,23 @@ Entferne nur sprachliche Muster, nicht die Formatierung
 
 ## Was das Skill erkennt
 
-Das Skill analysiert **38 verschiedene KI-Schreibmuster** in 6 Kategorien, priorisiert nach Schweregrad (HIGH / MEDIUM / LOW):
+Das Skill analysiert **41 verschiedene KI-Schreibmuster** in 7 Kategorien, priorisiert nach Schweregrad (HIGH / MEDIUM / LOW):
 
 ## Was ist neu?
 
-### 3.0.0-de.1 (aktuell)
+### 3.1.0-de.1 (aktuell)
+- 3 neue Muster: Passivkonstruktionen (#39), Konditional-Stapel (#40), Fehlkalibriertes epistemisches Vertrauen (#41)
+- Muster 8 erweitert: abgehackte Verneinungsfragmente ("kein Raten.")
+- Muster 16 erweitert: Ersetzungshierarchie, gepaarte Einschübe, Spaced/Double-Hyphen-Varianten
+- Muster 24 erweitert: KI-Tool-Artefakte (oaicite, contentReference, turn0search0)
+- Muster 26 erweitert: vollständige Zitatfabrikation (halluzinierte Quellen)
+- Neue Quick Checklist (Vor-Ausgabe-Audit)
+- Neue "Nie kürzen"-Regel im Ablauf und in den Leitplanken
+- Neuer Gedankenstrich-Scan-Schritt im Ablauf
+- 41 Muster insgesamt in 7 Kategorien
+- Upstream-Integration: PRs #79, #80, #84, #85, #94, #96
+
+### 3.0.0-de.1
 - Stimmkalibrierung: Schreibstil des Benutzers aus Proben übernehmen (adaptiert von Upstream-PR #64)
 - 4 neue Muster aus Upstream-PR #67 adaptiert: Rhetorische Fake-Fragen, Menschheits-Eröffnungen, "heutige Welt"-Framing, Aspirative Unternehmensschlüsse
 - 38 Muster insgesamt
@@ -108,7 +120,7 @@ Das Skill analysiert **38 verschiedene KI-Schreibmuster** in 6 Kategorien, prior
 - DACH-Schreibfokus und deutsche Stilkonventionen beibehalten
 - Deutsche Wikipedia als primäre Referenz plus englische Wikipedia als Ergänzung
 
-## 38 Muster in 6 Kategorien
+## 41 Muster in 7 Kategorien
 
 ### Sprache und Tonfall (12 Muster)
 
@@ -121,7 +133,7 @@ Das Skill analysiert **38 verschiedene KI-Schreibmuster** in 6 Kategorien, prior
 | 5 | Abschnitts-Zusammenfassungen ("insgesamt") | HIGH |
 | 6 | Unpassendes "Fazit" | MEDIUM |
 | 7 | Zu perfekte Schlussfolgerungen | MEDIUM |
-| 8 | Negative Parallelismen ("nicht nur... sondern auch") | MEDIUM |
+| 8 | Negative Parallelismen und abgehackte Verneinungen | MEDIUM |
 | 9 | Trikolon-Überbenutzung (Regel der Drei) | MEDIUM |
 | 10 | Oberflächliche Partizip-I-Konstruktionen | HIGH |
 | 11 | Vage Autoritäten ("Branchenberichte zeigen") | HIGH |
@@ -134,7 +146,7 @@ Das Skill analysiert **38 verschiedene KI-Schreibmuster** in 6 Kategorien, prior
 | 13 | Übermäßige Fettschrift | MEDIUM |
 | 14 | Falsche Listen-Formatierung | LOW |
 | 15 | Emojis vor Überschriften | LOW |
-| 16 | Gedankenstriche-Überbenutzung (Anglizismus) | MEDIUM |
+| 16 | Gedankenstriche-Überbenutzung (Varianten, Einschübe) | MEDIUM |
 
 ### Kommunikation (6 Muster)
 
@@ -152,9 +164,9 @@ Das Skill analysiert **38 verschiedene KI-Schreibmuster** in 6 Kategorien, prior
 | # | Muster | Schwere |
 |---|--------|---------|
 | 23 | Markdown statt Wikitext | MEDIUM |
-| 24 | Fehlerhafter Wikitext | MEDIUM |
+| 24 | Fehlerhafter Wikitext und KI-Tool-Artefakte | MEDIUM |
 | 25 | Defekte Links | MEDIUM |
-| 26 | Ungültige DOI/ISBNs | MEDIUM |
+| 26 | Zitatfabrikation und ungültige Referenzen | MEDIUM |
 | 27 | Inkorrekte Referenzen-Formate | MEDIUM |
 | 28 | Falsche Kategorien | MEDIUM |
 
@@ -177,6 +189,14 @@ Das Skill analysiert **38 verschiedene KI-Schreibmuster** in 6 Kategorien, prior
 | 36 | Universelle Menschheitserfahrungs-Eröffnung ("Seit jeher...") | MEDIUM |
 | 37 | "In der heutigen X-Welt" Framing ("In der heutigen digitalen Welt") | MEDIUM |
 | 38 | Aspirativer Unternehmensschluss ("bestens aufgestellt") | MEDIUM |
+
+### Argumentation und Evidenz (3 Muster)
+
+| # | Muster | Schwere |
+|---|--------|---------|
+| 39 | Passivkonstruktionen und subjektlose Fragmente | MEDIUM |
+| 40 | Konditional-Stapel ("Wenn X..., und wenn Y...") | MEDIUM |
+| 41 | Fehlkalibriertes epistemisches Vertrauen | MEDIUM |
 
 ---
 
@@ -359,7 +379,7 @@ Haben Sie ein Problem gefunden oder eine Verbesserung?
 
 ## Versionshistorie
 
-- **3.0.0-de.1** - Stimmkalibrierung (PR #64); 4 neue Muster (PR #67: Rhetorische Fake-Fragen, Menschheits-Eröffnungen, "heutige Welt"-Framing, Aspirative Unternehmensschlüsse); 38 Muster insgesamt
+- **3.0.0-de.1** - Stimmkalibrierung (PR #64); 4 neue Muster (PR #67); 38 Muster
 - **2.3.0-de.1** - 3 neue Muster (PR #39: Persuasive Floskeln, Signposting, Fragmentierte Überschriften); Severity-Ranking und Modus-System (PR #51); Quick-Reference-Tabelle (PR #52); Trennlinien entfernt (PR #57)
 - **2.2.0-de.2** - Gegen Upstream `main` (`d8085c7`, 2026-02-21) validiert; Ausgabe-Beispiel im SKILL auf Entwurf -> Audit -> Final konsistent gemacht; deutsche Besonderheiten explizit verifiziert
 - **2.2.0-de.1** - Upstream v2.2.0 eingearbeitet, zweiter Anti-KI-Audit-Durchlauf eingeführt (Entwurf -> Audit -> Final)

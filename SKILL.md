@@ -1,7 +1,7 @@
 ---
 name: Humanizer (Deutsch)
-description: Erkennt und entfernt KI-generierte Schreibmuster aus deutschsprachigen Texten. Basierend auf der deutschen und englischen Wikipedia-Leitlinie zu KI-Schreibmustern, inklusive zweitem Anti-KI-Audit-Durchlauf und optionaler Stimmkalibrierung. Erkennt u.a. aufgeblähte Symbolik, Werbesprache, mechanische Konjunktionen, vage Autoritäten, Gedankenstriche-Übernutzung, Trikolon, KI-Vokabular, negative Parallelismen, persuasive Floskeln, Signposting, fragmentierte Überschriften, rhetorische Fake-Fragen, Menschheits-Eröffnungen, "heutige Welt"-Framing und aspirative Unternehmensschlüsse.
-version: 3.0.0-de.1
+description: Erkennt und entfernt KI-generierte Schreibmuster aus deutschsprachigen Texten. Basierend auf der deutschen und englischen Wikipedia-Leitlinie zu KI-Schreibmustern, inklusive zweitem Anti-KI-Audit-Durchlauf und optionaler Stimmkalibrierung. Erkennt u.a. aufgeblähte Symbolik, Werbesprache, mechanische Konjunktionen, vage Autoritäten, Gedankenstriche-Übernutzung, Trikolon, KI-Vokabular, negative Parallelismen, Passivkonstruktionen, persuasive Floskeln, Signposting, fragmentierte Überschriften, rhetorische Fake-Fragen, Menschheits-Eröffnungen, "heutige Welt"-Framing, aspirative Unternehmensschlüsse, Konditional-Stapel und fehlkalibriertes epistemisches Vertrauen.
+version: 3.1.0-de.1
 author: Martin Moeller
 maintainer_website: "https://www.martin-moeller.biz"
 based_on: "German + English Wikipedia: Anzeichen/Signs of AI writing"
@@ -55,8 +55,10 @@ Wenn Sie einen Text humanisieren, arbeiten Sie in dieser Reihenfolge:
 3. **MEDIUM-Muster scannen.** Je nach Modus korrigieren.
 4. **LOW-Muster scannen.** Korrigieren wenn klar vorhanden; im Formal-Modus überspringen.
 5. **Stimme einbringen**, wenn Modus Locker.
-6. **NICHT ANFASSEN prüfen** – Verstöße rückgängig machen.
-7. **Finaler Anti-KI-Pass**: "Was macht den Text noch offensichtlich KI-generiert?" Kurze, konkrete Tells benennen. Dann: "Jetzt so umschreiben, dass es nicht offensichtlich KI-generiert wirkt." Zweite Überarbeitung liefern.
+6. **Nie kürzen.** Die Ausgabe muss alles abdecken, was das Original enthält. Sätze umschreiben, nicht löschen. Hat das Original fünf Absätze, hat das Ergebnis fünf Absätze.
+7. **NICHT ANFASSEN prüfen** – Verstöße rückgängig machen.
+8. **Gedankenstrich-Scan**: Text nach gehäuften Gedankenstrichen (–, —, --) durchsuchen. Mehr als ein Gedankenstrich pro Absatz → ersetzen (siehe Muster 16).
+9. **Finaler Anti-KI-Pass**: "Was macht den Text noch offensichtlich KI-generiert?" Kurze, konkrete Tells benennen. Dann: "Jetzt so umschreiben, dass es nicht offensichtlich KI-generiert wirkt." Zweite Überarbeitung liefern.
 
 ## Stimmkalibrierung (optional)
 
@@ -89,7 +91,7 @@ Wenn der Benutzer eine Schreibprobe mitliefert (eigener Text), analysieren Sie d
 | 5 | Abschnitts-Zusammenfassungen | HIGH | "zusammenfassend", "insgesamt", "kurz gesagt" |
 | 6 | Unpassendes "Fazit" | MEDIUM | "== Fazit ==", "== Zusammenfassung ==" |
 | 7 | Zu perfekte Dichotomie | MEDIUM | "Trotz X... steht Y vor Z", "Obwohl... jedoch..." |
-| 8 | Negative Parallelismen | MEDIUM | "nicht nur... sondern auch", symmetrische Satzstrukturen |
+| 8 | Negative Parallelismen und abgehackte Verneinungen | MEDIUM | "nicht nur... sondern auch", "kein Raten.", symmetrische Satzstrukturen |
 | 9 | Trikolon (Regel der Drei) | MEDIUM | Tripel-Aufzählungen ohne echten Grund |
 | 10 | Partizip-I-Konstruktionen | HIGH | "gewährleistend", "hervorhebend", "ermöglichend" |
 | 11 | Vage Autoritäten | HIGH | "Branchenberichte zeigen", "Manche argumentieren" |
@@ -97,7 +99,7 @@ Wenn der Benutzer eine Schreibprobe mitliefert (eigener Text), analysieren Sie d
 | 13 | Übermäßige Fettschrift | MEDIUM | **wichtige Wörter** in Absätzen fett |
 | 14 | Falsche Listen | LOW | `•` statt `-`, Markdown-Syntax statt Wikitext |
 | 15 | Emojis vor Überschriften | LOW | "🎓 Bildung", "📊 Statistiken" |
-| 16 | Gedankenstriche Überbenutzung | MEDIUM | Em-Dashes als Anglizismus, mehrere pro Absatz |
+| 16 | Gedankenstriche Überbenutzung | MEDIUM | Mehrere pro Absatz, gepaarte Einschübe, --/—/– Varianten |
 | 17 | Briefartiges Schreiben | HIGH | "Betreff:", "Liebe Wikipedia-Editoren", "Mit freundlichen Grüßen" |
 | 18 | Kollaborative Kommunikation | HIGH | "Ich hoffe, das hilft", "Natürlich!", "Lassen Sie mich wissen" |
 | 19 | Hinweise auf Wissensgrenzen | HIGH | "Stand [Datum]", "Bis zu meinem letzten Update" |
@@ -120,8 +122,11 @@ Wenn der Benutzer eine Schreibprobe mitliefert (eigener Text), analysieren Sie d
 | 36 | Universelle Menschheitserfahrungs-Eröffnung | MEDIUM | "Seit jeher", "Seit Anbeginn der Zivilisation", "Schon immer" |
 | 37 | "In der heutigen X-Welt" Framing | MEDIUM | "In der heutigen digitalen Welt", "Im Zeitalter der..." |
 | 38 | Aspirativer Unternehmensschluss | MEDIUM | "bestens aufgestellt", "die Möglichkeiten sind grenzenlos" |
+| 39 | Passivkonstruktionen und subjektlose Fragmente | MEDIUM | "wurde durchgeführt", "es wird empfohlen", "Keine Konfiguration nötig." |
+| 40 | Konditional-Stapel | MEDIUM | "Wenn das Argument stimmt, und wenn die Evidenz...", gehäufte "wenn"-Klauseln |
+| 41 | Fehlkalibriertes epistemisches Vertrauen | MEDIUM | Über-Behauptung: "grundlegend", "entscheidend"; Über-Absicherung: "scheint möglicherweise" |
 
-## Die 38 Muster
+## Die 41 Muster
 
 ### Sprache und Tonfall (12 Muster)
 
@@ -244,21 +249,26 @@ Häufige Indikatoren:
 
 ✓ Besser: "Das Land macht technologische Fortschritte, kämpft aber mit wirtschaftlichen Problemen."
 
-#### 8. Negative Parallelismen [MEDIUM]
-**Problem:** "Nicht nur... sondern auch" – zu argumentativ, zu literarisch.
+#### 8. Negative Parallelismen und abgehackte Verneinungen [MEDIUM]
+**Problem:** "Nicht nur... sondern auch" – zu argumentativ, zu literarisch. Dazu kommen abgehackte Verneinungsfragmente am Satzende wie "kein Raten", "kein Aufwand", die als Kurzform statt als echter Satz angehängt werden.
 
 Häufige Indikatoren:
 - "nicht nur... sondern auch"
 - "weder... noch... sondern"
 - Symmetrische Satzstrukturen
+- Abgehackte Verneinungen am Satzende: "kein Raten.", "keine Kompromisse.", "kein Aufwand."
 
-**Warum LLMs das tun:** Rhetorische Effekte aus literarischen Quellen.
+**Warum LLMs das tun:** Rhetorische Effekte aus literarischen Quellen. Die abgehackten Fragmente imitieren knappen Werbetext.
 
 **Beispiel:**
 
 ❌ Schlecht: "Die Stadt ist nicht nur ein Handelszentrum, sondern auch ein Kulturzentrum."
 
 ✓ Besser: "Die Stadt ist Handels- und Kulturzentrum."
+
+❌ Schlecht (abgehackte Verneinung): "Die Optionen kommen aus dem gewählten Element, kein Raten."
+
+✓ Besser: "Die Optionen kommen aus dem gewählten Element, ohne dass der Nutzer raten muss."
 
 #### 9. Trikolon (Regel der Drei) [MEDIUM]
 **Problem:** Übermäßige Nutzung der Regel-der-Drei als rhetorisches Mittel.
@@ -372,16 +382,33 @@ Häufige Indikatoren:
 **Lösung:** Entfernen.
 
 #### 16. Gedankenstriche Überbenutzung [MEDIUM]
-**Problem:** Em-Dashes (Gedankenstriche) als Anglizismus zu häufig.
+**Problem:** Gedankenstriche (–, —, --) werden von LLMs als Stilmittel übermäßig eingesetzt. Ein einzelner Gedankenstrich pro Absatz kann legitim sein; mehrere pro Absatz sind ein starker KI-Tell.
 
 Häufige Indikatoren:
 - "Das Projekt – durchgeführt von..." (statt Komma)
 - Mehrere Gedankenstriche pro Absatz
 - Als Satzzeichen statt Klammer verwendet
+- Gepaarte Einschübe: "Der Bericht – der drei Kontinente abdeckte – kam zum Schluss..."
+- Spaced Em-Dashes: "Die Politik — ohne Vorwarnung angekündigt — betrifft..."
+- Doppelstriche als Ersatz: "Die Änderungen -- laut Kritikern überfällig -- treten sofort in Kraft."
 
-**Warum LLMs das tun:** Englische Schreibweise wird imitiert.
+**Warum LLMs das tun:** Englische Schreibweise wird imitiert. Gepaarte Einschübe sehen eingeschoben aus, nicht geschrieben.
 
-**Lösung:** In deutsche Struktur umwandeln (Komma, Klammer, oder Punkt).
+**Ersetzungshierarchie** (in Prioritätsreihenfolge):
+1. **Punkt** (80% der Fälle – zwei Sätze statt eines mit Strich)
+2. **Komma**
+3. **Doppelpunkt**
+4. **Semikolon**
+5. **Klammer**
+6. **Satz umschreiben**
+
+**Beispiel:**
+
+❌ Schlecht: "Die neue Regelung – ohne Vorwarnung angekündigt – betrifft Tausende. Die Änderungen – laut Kritikern überfällig – treten sofort in Kraft."
+
+✓ Besser: "Die neue Regelung wurde ohne Vorwarnung angekündigt und betrifft Tausende. Die Änderungen treten sofort in Kraft, was Kritiker für überfällig halten."
+
+**Kein Problem, wenn:** Ein einzelner Gedankenstrich pro Absatz als bewusstes Stilmittel dient und sich nicht wiederholt.
 
 ### Kommunikation (6 Muster)
 
@@ -486,17 +513,21 @@ Häufige Indikatoren:
 
 **Lösung:** Konvertieren zu Wikitext.
 
-#### 24. Fehlerhafter Wikitext [MEDIUM]
-**Problem:** Wikitext-Syntax ist ungültig oder unvollständig.
+#### 24. Fehlerhafter Wikitext und KI-Tool-Artefakte [MEDIUM]
+**Problem:** Wikitext-Syntax ist ungültig oder unvollständig. Zusätzlich hinterlassen KI-Tools technische Artefakte im Text.
 
 Häufige Indikatoren:
 - "gehe zu [[Suche Nr. 42]]"
 - Unvollständige Template-Tags
 - `{{cite book|author=` ohne Schließ-`}}`
+- `oaicite:0` oder `oaicite:ref` Tags (ChatGPT-Artefakt)
+- `contentReference[oaicite:0]` Spans
+- `turn0search0` Referenzen (Copilot-Artefakt)
+- Markdown-Formatierung in Word- oder PDF-Dokumenten
 
-**Warum LLMs das tun:** Wikitext-Syntax wurde nicht korrekt generiert.
+**Warum LLMs das tun:** Wikitext-Syntax wurde nicht korrekt generiert. KI-Tools fügen interne Referenz-Tags ein, die im Export nicht bereinigt werden.
 
-**Lösung:** Reparieren oder entfernen.
+**Lösung:** Reparieren oder entfernen. KI-Tool-Artefakte immer vollständig löschen.
 
 #### 25. Defekte Links [MEDIUM]
 **Problem:** Zu viele rote Links oder tote Referenzen.
@@ -510,17 +541,20 @@ Häufige Indikatoren:
 
 **Lösung:** Prüfen und korrigieren oder entfernen.
 
-#### 26. Ungültige DOI/ISBNs [MEDIUM]
-**Problem:** Erfundene Referenzen mit ungültigen Checksummen.
+#### 26. Zitatfabrikation und ungültige Referenzen [MEDIUM]
+**Problem:** LLMs erfinden Quellen, die echt aussehen aber nicht existieren. Das reicht von ungültigen DOI-Prüfziffern bis zu komplett halluzinierten Publikationen.
 
 Häufige Indikatoren:
 - DOI mit ungültiger Prüfziffer
 - ISBN mit Tippfehler
-- Erfundene akademische Quellen
+- Erfundene akademische Quellen (Journal existiert nicht, Ausgabe existiert nicht)
+- Autoren existieren, aber die genannte Publikation nicht
+- Defekte externe Links mit `utm_source=`-Parametern
+- Unbenutzte benannte Referenzen (`<ref name="..."/>` ohne zugehörige Definition)
 
-**Warum LLMs das tun:** Kann keine echten Nummern recherchieren.
+**Warum LLMs das tun:** Kann keine echten Quellen recherchieren und erzeugt plausibel aussehende Referenzen aus dem Training.
 
-**Lösung:** Verifizieren oder entfernen.
+**Lösung:** Jeden Quellennachweis verifizieren. Bei Zweifel: entfernen oder mit [QUELLE NICHT VERIFIZIERT] markieren. Nie eine erfundene Quelle stehenlassen.
 
 #### 27. Inkorrekte Referenzen-Format [MEDIUM]
 **Problem:** Zitierformat entspricht nicht deutschen Wikipedia-Standards.
@@ -692,6 +726,84 @@ Häufige Indikatoren:
 
 ✓ Besser: "Ob die Strategie aufgeht, zeigt sich im nächsten Quartal."
 
+### Argumentation und Evidenz (3 Muster)
+
+#### 39. Passivkonstruktionen und subjektlose Fragmente [MEDIUM]
+
+**Problem:** LLMs verstecken den Akteur durch Passiv oder lassen das Subjekt ganz weg. Fragmente wie "Keine Konfiguration nötig." oder "Wird automatisch gespeichert." verschleiern, wer handelt. Aktive Formulierungen machen den Satz klarer und direkter.
+
+Häufige Indikatoren:
+- "wurde durchgeführt" (statt "Team X führte durch")
+- "es wird empfohlen" (statt "wir empfehlen")
+- "Keine Konfiguration nötig."
+- "Wird automatisch gespeichert."
+- "Kann ohne Weiteres angepasst werden."
+
+**Warum LLMs das tun:** Passiv erzeugt einen objektiven, formellen Ton, der auf den ersten Blick akademisch wirkt. Subjektlose Fragmente imitieren knappen Dokumentationsstil.
+
+**Formal-Modus-Ausnahme:** In wissenschaftlichen Texten sind Passivkonstruktionen Konvention ("wurde analysiert", "es konnte gezeigt werden"). In diesem Modus nur bei klarer Übernutzung eingreifen.
+
+**Beispiel:**
+
+❌ Schlecht: "Keine Konfigurationsdatei nötig. Die Ergebnisse werden automatisch gespeichert."
+
+✓ Besser: "Sie brauchen keine Konfigurationsdatei. Das System speichert die Ergebnisse automatisch."
+
+#### 40. Konditional-Stapel [MEDIUM]
+
+**Problem:** LLMs häufen "wenn"-Klauseln in Schlussfolgerungen, statt direkt auszusagen, was die Analyse ergeben hat. Eine einzelne Bedingung an einem echten Verzweigungspunkt ist normal; ein Cluster davon in einer Conclusion signalisiert, dass der Autor nicht hinter seiner eigenen Arbeit steht.
+
+Häufige Indikatoren:
+- "Wenn das Argument stimmt, und wenn die Evidenz diese Lesart stützt..."
+- "Sofern der Kontext wie beschrieben war..."
+- Mehrere "wenn/falls/sofern"-Klauseln in einem Absatz
+- Hedging-Ketten in Schlussfolgerungen
+
+**Warum LLMs das tun:** Versucht, Verantwortung für Aussagen zu vermeiden, indem jede Behauptung durch Bedingungen relativiert wird.
+
+**Kein Problem, wenn:** Der Text tatsächlich unterschiedliche Szenarien analysiert, bei denen die Bedingungen echte Verzweigungen darstellen.
+
+**Beispiel:**
+
+❌ Schlecht: "Wenn das Argument stimmt, und wenn die Evidenz diese Lesart stützt, dann könnte die Politik einen gewissen Effekt gehabt haben – sofern der Kontext wie beschrieben war."
+
+✓ Besser: "Die Evidenz stützt das Argument, dass die Politik in diesem Kontext einen Effekt hatte."
+
+#### 41. Fehlkalibriertes epistemisches Vertrauen [MEDIUM]
+
+**Problem:** LLMs schwanken zwischen zwei Extremen: Über-Behauptung (Aussagen mit "grundlegend", "entscheidend", "zweifellos" aufladen) und Über-Absicherung (alles mit "scheint möglicherweise", "könnte eventuell" relativieren). Beide Extreme sind KI-Tells. Die Lösung ist nicht, Behauptungen durch Hedges zu ersetzen, sondern den Anspruch zu verengen.
+
+Häufige Indikatoren:
+- Über-Behauptung: "grundlegend verändert", "entscheidend geprägt", "zweifellos", "vollständig revolutioniert"
+- Über-Absicherung: "scheint möglicherweise", "könnte eventuell", "dürfte unter Umständen"
+- Beides im selben Text (starke Behauptungen in einem Absatz, maximales Hedging im nächsten)
+
+**Warum LLMs das tun:** Über-Behauptung kommt aus dem Training auf persuasive Texte. Über-Absicherung aus RLHF und Sicherheitstraining, das Vorsicht belohnt.
+
+**Kein Problem, wenn:** Der Autor bewusst eine starke These aufstellt (Essay, Meinungsartikel) oder echte Unsicherheit benennt ("Die Daten lassen keine eindeutige Schlussfolgerung zu").
+
+**Beispiel:**
+
+❌ Schlecht (Über-Behauptung): "Die Daten zeigen zweifellos, dass Remote-Arbeit die Produktivität grundlegend verändert hat."
+
+✓ Besser: "In den untersuchten Unternehmen stieg die Produktivität im ersten Jahr der Remote-Arbeit um durchschnittlich 8 Prozent."
+
+❌ Schlecht (Über-Absicherung): "Es scheint, dass die Politik möglicherweise einen gewissen Effekt auf die Ergebnisse gehabt haben könnte."
+
+✓ Besser: "Die Politik führte in zwei von drei untersuchten Fällen zu einer moderaten Verbesserung."
+
+## Quick Checklist (Vor-Ausgabe-Audit)
+
+Vor der Ausgabe schnell prüfen:
+
+- [ ] Drei aufeinanderfolgende Sätze gleiche Länge? → Einen aufbrechen
+- [ ] Absatz endet mit kurzem Einzeiler? → Ending variieren
+- [ ] Gedankenstrich vor einer "Enthüllung"? → Ersetzen (Muster 16)
+- [ ] Metapher wird erklärt? → Leser vertrauen, Erklärung streichen
+- [ ] "Darüber hinaus" / "Jedoch" / "Ferner"? → Streichen oder umformulieren
+- [ ] Regel der Drei? → Auf 2 oder 4 ändern
+- [ ] Passiv wo Aktiv möglich wäre? → Akteur benennen (Muster 39)
+
 ## Persönlichkeit und Stimme
 
 Ein "sauberer" Text ohne KI-Muster ist noch nicht automatisch menschlich. Zu glatte Texte bleiben verdächtig.
@@ -718,6 +830,7 @@ Achten Sie deshalb zusätzlich auf:
 - Nie Stimme in formale/akademische Texte einbringen.
 - Nie direkte Zitate von echten Personen bearbeiten.
 - Nie Muster bearbeiten, die 3+ Mal konsistent auftreten – stattdessen markieren.
+- Nie kürzen. Die Ausgabe muss alles abdecken, was das Original enthält. Sätze umschreiben, nicht löschen.
 - Wenn der Text bereits sauber ist: das sagen und aufhören.
 - **Geltungsbereich:** Arbeitet auf direkt übergebenem Text. Dateibasierte Nutzung erfordert Read/Write in `allowed_tools`.
 

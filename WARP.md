@@ -1,4 +1,4 @@
-# WARP – Humanizer (Deutsch) Entwicklerleitfaden (v3.0.0-de.1)
+# WARP – Humanizer (Deutsch) Entwicklerleitfaden (v3.1.0-de.1)
 
 **WARP** = "Workflow, Architecture, References, Principles"
 
@@ -24,7 +24,7 @@ humanizer-de/
 
 | Datei | Zweck | Wartung |
 |-------|-------|---------|
-| **SKILL.md** | Definiert alle 38 Muster und deren Logik | Primäre Quelle; hier beginnt jede Änderung |
+| **SKILL.md** | Definiert alle 41 Muster und deren Logik | Primäre Quelle; hier beginnt jede Änderung |
 | **README.md** | Wie Benutzer das Skill verwenden | Muss mit SKILL.md synchron bleiben |
 | **WARP.md** | Developer-Dokumentation | Dieser Leitfaden – aktualisieren Sie ihn, wenn sich die Struktur ändert |
 | **tone-of-voice.txt** | Deutsche Schreib-Authentizität-Richtlinien | Referenz für Beispiele und Dokumentation |
@@ -39,7 +39,7 @@ humanizer-de/
 
 **Schritte:**
 
-1. **Im SKILL.md forschen**: Überprüfen Sie alle 38 bestehenden Muster, um sicherzustellen, dass das Muster nicht bereits abgedeckt ist.
+1. **Im SKILL.md forschen**: Überprüfen Sie alle 41 bestehenden Muster, um sicherzustellen, dass das Muster nicht bereits abgedeckt ist.
 
 2. **Deutsche Wikipedia prüfen**: Das primäre Referenzmaterial ist [Anzeichen für KI-generierte Inhalte](https://de.wikipedia.org/wiki/Wikipedia:Anzeichen_f%C3%BCr_KI-generierte_Inhalte) auf der Deutschen Wikipedia. Prüfen Sie, ob das neue Muster dort genannt wird.
 
@@ -64,13 +64,14 @@ humanizer-de/
    - Das bessere Beispiel sollte authentisch deutsch klingen
    - Verwenden Sie die Richtlinien in `tone-of-voice.txt`
 
-5. **Kategorie wählen**: Ordnen Sie es einer der 6 Kategorien zu:
+5. **Kategorie wählen**: Ordnen Sie es einer der 7 Kategorien zu:
    - Sprache und Tonfall (12)
    - Stil (4)
    - Kommunikation (6)
    - Auszeichnungstext (6)
    - Verschiedenes (3)
    - Rhetorik und Struktur (7)
+   - Argumentation und Evidenz (3)
 
 5b. **Schweregrad zuweisen**: HIGH (immer korrigieren), MEDIUM (je nach Modus), LOW (nur wenn klar vorhanden)
 
@@ -151,7 +152,7 @@ Häuffige Indikatoren:
 
 ### Kategorisierung
 
-Die 38 Muster sind in 6 Kategorien eingeteilt, jeweils mit Schweregrad (HIGH/MEDIUM/LOW):
+Die 41 Muster sind in 7 Kategorien eingeteilt, jeweils mit Schweregrad (HIGH/MEDIUM/LOW):
 
 | Kategorie | Anzahl | Fokus |
 |-----------|--------|-------|
@@ -161,6 +162,7 @@ Die 38 Muster sind in 6 Kategorien eingeteilt, jeweils mit Schweregrad (HIGH/MED
 | Auszeichnungstext | 6 | Markdown/Wikitext/Referenz-Probleme |
 | Verschiedenes | 3 | Alles andere |
 | Rhetorik und Struktur | 7 | Persuasive Floskeln, Signposting, fragmentierte Überschriften, rhetorische Fake-Fragen, Menschheits-Eröffnungen, "heutige Welt"-Framing, aspirative Unternehmensschlüsse |
+| Argumentation und Evidenz | 3 | Passivkonstruktionen, Konditional-Stapel, fehlkalibriertes epistemisches Vertrauen |
 
 Zusätzliche Strukturelemente seit v2.3.0:
 - **Modus-System:** Locker / Sachlich / Formal – steuert Korrektur-Intensität
@@ -256,7 +258,7 @@ Das Projekt folgt [Semantic Versioning](https://semver.org/):
 - **Minor (1.0.0 → 1.1.0):** Neue Muster hinzugefügt
 - **Patch (1.0.0 → 1.0.1):** Verbesserungen an bestehenden Mustern
 
-Aktuelle Version: **3.0.0-de.1** – Stimmkalibrierung, 38 Muster (4 neue: Rhetorische Fake-Fragen, Menschheits-Eröffnungen, "heutige Welt"-Framing, Aspirative Unternehmensschlüsse), Severity-Ranking, Modus-System
+Aktuelle Version: **3.1.0-de.1** – 41 Muster (3 neue: Passivkonstruktionen, Konditional-Stapel, Fehlkalibriertes epistemisches Vertrauen), erweiterte Muster 8/16/24/26, Quick Checklist, Nie-kürzen-Regel, Gedankenstrich-Scan. Upstream-Integration von PRs #79, #80, #84, #85, #94, #96.
 
 ### Testing
 
@@ -317,7 +319,7 @@ Martin Moeller ([www.martin-moeller.biz](https://www.martin-moeller.biz)) ist de
 
 ### F: Warum nicht mehr oder weniger Muster?
 
-Die 38 Muster basieren auf der deutschen Wikipedia-Seite "Anzeichen für KI-generierte Inhalte" und dem Original-Humanizer von blader. Wenn Wikipedia oder der Upstream aktualisiert werden, sollten wir das prüfen.
+Die 41 Muster basieren auf der deutschen Wikipedia-Seite "Anzeichen für KI-generierte Inhalte" und dem Original-Humanizer von blader. Wenn Wikipedia oder der Upstream aktualisiert werden, sollten wir das prüfen.
 
 ### F: Sollte ich englische Muster einfach übersetzen?
 
@@ -332,7 +334,7 @@ Beispiel: Ein Muster sagt "vermeiden Sie Partizip-I", aber `tone-of-voice.txt` s
 
 **Lösung:** Das Skill ist für Muster, nicht absolute Regeln. Wenn ein Muster vom Kontext abhängt, erklären Sie das in der Erklärung "Warum LLMs das tun".
 
-### F: Sollte ich alle 38 Muster sofort testen?
+### F: Sollte ich alle 41 Muster sofort testen?
 
 Nein. Priorisieren Sie:
 1. HIGH-Muster zuerst
@@ -376,5 +378,5 @@ Dieses Projekt wird von der Community gepflegt. Jeder kann:
 
 **Projekt-Maintainer:** Martin Moeller (www.martin-moeller.biz)
 **Lokal gespeichert:** `/Users/mm/Local Sites/humanizer/`
-**Version:** 3.0.0-de.1
+**Version:** 3.1.0-de.1
 **Basiert auf:** Original Humanizer von blader + German Wikipedia Analyse
