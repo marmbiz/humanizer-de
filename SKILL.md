@@ -929,7 +929,7 @@ Vor der Ausgabe schnell prüfen:
 
 - [ ] Drei aufeinanderfolgende Sätze gleiche Länge, ohne dass eine Stimmprobe diesen Rhythmus vorgibt? → Einen aufbrechen
 - [ ] Generischer, inhaltsloser Einzeiler direkt nach einer Überschrift? → Entfernen oder integrieren (Muster 34). Bewusste Punchlines am Absatzende sind davon ausgenommen.
-- [ ] Gedankenstrich vor einer "Enthüllung"? → Ersetzen (Muster 16)
+- [ ] Gedankenstrich vor einer „Enthüllung" als wiederkehrendes Muster (mehrfach im Text oder mehr als einer pro Absatz)? → Ersetzen (Muster 16). Ein einzelner, bewusst gesetzter Gedankenstrich ist zulässig.
 - [ ] Metapher wird unmittelbar danach redundant erklärt? → Redundanz auflösen, Substanz erhalten
 - [ ] "Darüber hinaus" / "Jedoch" / "Ferner" mechanisch? → Streichen oder umformulieren (Muster 4)
 - [ ] Regel der Drei ohne sachlichen Grund? → Auf 2 oder 4 ändern (Muster 9)
