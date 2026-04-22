@@ -1,7 +1,7 @@
 ---
 name: Humanizer (Deutsch)
 description: Erkennt und entfernt KI-generierte Schreibmuster aus deutschsprachigen Texten. Basierend auf Wikipedia-Leitlinien (Anzeichen für KI-generierte Inhalte, Erkennung KI-Einsatz, Schnelltest KI), inklusive zweitem Anti-KI-Audit-Durchlauf und optionaler Stimmkalibrierung. Erkennt u.a. aufgeblähte Symbolik, Werbesprache, mechanische Konjunktionen, vage Autoritäten, Gedankenstriche-Übernutzung, Trikolon, KI-Vokabular, negative Parallelismen, Passivkonstruktionen, persuasive Floskeln, Signposting, fragmentierte Überschriften, rhetorische Fake-Fragen, Menschheits-Eröffnungen, "heutige Welt"-Framing, aspirative Unternehmensschlüsse, Konditional-Stapel, fehlkalibriertes epistemisches Vertrauen, Beleginkongruenz, versteckte Unicode-Zeichen, Standard-Kapitel ohne Substanz und Anglizismus-Strukturen.
-version: 3.2.2-de.1
+version: 3.2.3-de.1
 author: Martin Moeller
 maintainer_website: "https://www.martin-moeller.biz"
 based_on: "Deutsche Wikipedia: Anzeichen für KI-generierte Inhalte, Erkennung KI-Einsatz, Schnelltest KI"
@@ -908,7 +908,9 @@ Harte Indikatoren (klare Tells):
 - Unnötige Possessivpronomen – allgemeines Übersetzungsdeutsch, Stilglättung
 - Einzelne Lehnwörter („Meeting", „Team", „Feedback") – im Zielregister oft normal
 
-**Register-Hinweis:** In Blogposts, Social-Media-Texten und Business-Dokumentation sind einzelne der obigen „harten" Formen teils etabliert. Nur eingreifen, wenn sie gehäuft auftreten oder das Zielregister formal ist.
+**Register-Hinweis:**
+- **False Friends** (eventuell/aktuell/sensibel in falscher Bedeutung) sind semantische Fehler – immer korrigieren, unabhängig vom Register.
+- **Calques und syntaktische Transfers** sind registerabhängig. In Blogposts, Social-Media-Texten und Business-Dokumentation können sie etabliert sein; dort nur eingreifen, wenn sie gehäuft auftreten oder das Zielregister formal ist.
 
 **Warum LLMs das tun:** Englisches Trainingsmaterial dominiert. Deutsche Ausgaben folgen englischen Strukturen, besonders bei direkter Übersetzung aus englischen Quellen.
 
@@ -932,9 +934,9 @@ Vor der Ausgabe schnell prüfen:
 - [ ] "Darüber hinaus" / "Jedoch" / "Ferner"? → Streichen oder umformulieren
 - [ ] Regel der Drei? → Auf 2 oder 4 ändern
 - [ ] Passiv wo Aktiv möglich wäre? → Akteur benennen (Muster 39)
-- [ ] Quelle belegt die Aussage tatsächlich? → Prüfen oder `[BELEG PRÜFEN]` markieren (Muster 42)
+- [ ] Quelle geprüft und belegt die Aussage? → Bei nachweisbarer Inkongruenz `[BELEG PRÜFEN]` markieren; bei nicht prüfbarer Quelle keine Kongruenz-Diagnose (Muster 42)
 - [ ] Unsichtbare Unicode-Zeichen im Text? → Entfernen (Muster 43)
-- [ ] Standard-Kapitel mit unbelegtem Fülltext? → Konkretisieren, umwidmen oder in bestehende Kapitel integrieren (Muster 44)
+- [ ] Standard-Kapitel mit unbelegtem Fülltext? → Konkretisieren, umwidmen, integrieren, oder bei echter Substanzlosigkeit mit `[SUBSTANZ PRÜFEN]` markieren und stehen lassen (Muster 44)
 - [ ] Englische Satzmuster wörtlich übersetzt („macht Sinn")? → Natürliches Deutsch (Muster 45)
 
 ## Persönlichkeit und Stimme
