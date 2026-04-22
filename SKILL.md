@@ -1,7 +1,7 @@
 ---
 name: Humanizer (Deutsch)
 description: Erkennt und entfernt KI-generierte Schreibmuster aus deutschsprachigen Texten. Basierend auf Wikipedia-Leitlinien (Anzeichen für KI-generierte Inhalte, Erkennung KI-Einsatz, Schnelltest KI), inklusive zweitem Anti-KI-Audit-Durchlauf und optionaler Stimmkalibrierung. Erkennt u.a. aufgeblähte Symbolik, Werbesprache, mechanische Konjunktionen, vage Autoritäten, Gedankenstriche-Übernutzung, Trikolon, KI-Vokabular, negative Parallelismen, Passivkonstruktionen, persuasive Floskeln, Signposting, fragmentierte Überschriften, rhetorische Fake-Fragen, Menschheits-Eröffnungen, "heutige Welt"-Framing, aspirative Unternehmensschlüsse, Konditional-Stapel, fehlkalibriertes epistemisches Vertrauen, Beleginkongruenz, versteckte Unicode-Zeichen, Standard-Kapitel ohne Substanz und Anglizismus-Strukturen.
-version: 3.2.3-de.1
+version: 3.2.4-de.1
 author: Martin Moeller
 maintainer_website: "https://www.martin-moeller.biz"
 based_on: "Deutsche Wikipedia: Anzeichen für KI-generierte Inhalte, Erkennung KI-Einsatz, Schnelltest KI"
@@ -55,7 +55,7 @@ Wenn Sie einen Text humanisieren, arbeiten Sie in dieser Reihenfolge:
 3. **MEDIUM-Muster scannen.** Je nach Modus korrigieren.
 4. **LOW-Muster scannen.** Korrigieren wenn klar vorhanden; im Formal-Modus überspringen.
 5. **Stimme einbringen**, wenn Modus Locker.
-6. **Nie kürzen.** Die Ausgabe muss alles abdecken, was das Original enthält. Sätze umschreiben, nicht löschen. Hat das Original fünf Absätze, hat das Ergebnis fünf Absätze.
+6. **Nie Substanz kürzen.** Sachliche Aussagen und Informationsgehalt des Originals bleiben erhalten; Sätze umschreiben statt streichen. **Ausgenommen:** KI-Artefakte ohne Informationsgehalt, deren Lösung im jeweiligen Muster explizit „entfernen" oder „löschen" lautet (u. a. Muster 2, 3, 6, 17, 18, 19, 20, 21, 22, 24, 43). Diese Artefakte werden bereinigt, nicht umgeschrieben – das ist keine Substanzkürzung. Absatzanzahl und Informationsgehalt bleiben im substanztragenden Teil unverändert.
 7. **NICHT ANFASSEN prüfen** – Verstöße rückgängig machen.
 8. **Gedankenstrich-Scan**: Text nach gehäuften Gedankenstrichen (–, —, --) durchsuchen. Mehr als ein Gedankenstrich pro Absatz → ersetzen (siehe Muster 16).
 9. **Finaler Anti-KI-Pass**: "Was macht den Text noch offensichtlich KI-generiert?" Kurze, konkrete Tells benennen. Dann: "Jetzt so umschreiben, dass es nicht offensichtlich KI-generiert wirkt." Zweite Überarbeitung liefern.
@@ -492,7 +492,7 @@ Häufige Indikatoren:
 
 **Warum LLMs das tun:** Kann keine echten Werte generieren, hinterlässt Platzhalter.
 
-**Lösung:** Entfernen oder recherchieren und füllen.
+**Lösung:** Entfernen. Füllen nur, wenn der tatsächliche Wert aus dem übergebenen Kontext sicher ableitbar ist; externe Recherche liegt außerhalb des Skill-Umfangs. Im Zweifel entfernen.
 
 #### 22. Links zu Suchanfragen statt Referenzen [HIGH]
 **Problem:** URLs sind Google-Suchanfragen statt echte Referenzen.
@@ -504,7 +504,7 @@ Häufige Indikatoren:
 
 **Warum LLMs das tun:** Kann keine echte URL recherchieren.
 
-**Lösung:** Entfernen oder durch echte Quellen ersetzen.
+**Lösung:** Entfernen. Ersetzen nur, wenn eine echte, im Kontext vorhandene Quelle verfügbar ist; eigene Web-Recherche liegt außerhalb des Skill-Umfangs. Eine Quelle zu erfinden ist verboten (siehe Leitplanken).
 
 ### Auszeichnungstext (6 Muster)
 
@@ -561,7 +561,7 @@ Häufige Indikatoren:
 
 **Warum LLMs das tun:** Kann keine echten Quellen recherchieren und erzeugt plausibel aussehende Referenzen aus dem Training.
 
-**Lösung:** Jeden Quellennachweis verifizieren. Bei Zweifel: entfernen oder mit [QUELLE NICHT VERIFIZIERT] markieren. Nie eine erfundene Quelle stehen lassen.
+**Lösung:** Formale Plausibilität jeder Quelle mit den verfügbaren Mitteln prüfen (Format, interne Konsistenz, DOI-/ISBN-Prüfziffer, `utm_source`-Fingerabdrücke, existierende Autoren-Publikation-Kombinationen im übergebenen Kontext). Externe Online-Verifikation liegt außerhalb des Skill-Umfangs – in diesem Fall mit [QUELLE NICHT VERIFIZIERT] markieren. Bei nachweisbarer Fabrikation: entfernen. Nie eine Quelle erfinden oder stehen lassen, die als erfunden erkannt wurde.
 
 #### 27. Inkorrekte Referenzen-Format [MEDIUM]
 **Problem:** Zitierformat entspricht nicht deutschen Wikipedia-Standards.
@@ -930,14 +930,15 @@ Vor der Ausgabe schnell prüfen:
 - [ ] Drei aufeinanderfolgende Sätze gleiche Länge? → Einen aufbrechen
 - [ ] Absatz endet mit kurzem Einzeiler? → Ending variieren
 - [ ] Gedankenstrich vor einer "Enthüllung"? → Ersetzen (Muster 16)
-- [ ] Metapher wird erklärt? → Leser vertrauen, Erklärung streichen
-- [ ] "Darüber hinaus" / "Jedoch" / "Ferner"? → Streichen oder umformulieren
-- [ ] Regel der Drei? → Auf 2 oder 4 ändern
-- [ ] Passiv wo Aktiv möglich wäre? → Akteur benennen (Muster 39)
+- [ ] Metapher wird unmittelbar danach redundant erklärt? → Redundanz auflösen, Substanz erhalten
+- [ ] "Darüber hinaus" / "Jedoch" / "Ferner" mechanisch? → Streichen oder umformulieren (Muster 4)
+- [ ] Regel der Drei ohne sachlichen Grund? → Auf 2 oder 4 ändern (Muster 9)
+- [ ] Passiv wo Aktiv möglich wäre (außer im Formal-Modus, dort nur bei klarer Übernutzung)? → Akteur benennen (Muster 39)
 - [ ] Quelle geprüft und belegt die Aussage? → Bei nachweisbarer Inkongruenz `[BELEG PRÜFEN]` markieren; bei nicht prüfbarer Quelle keine Kongruenz-Diagnose (Muster 42)
 - [ ] Unsichtbare Unicode-Zeichen im Text? → Entfernen (Muster 43)
 - [ ] Standard-Kapitel mit unbelegtem Fülltext? → Konkretisieren, umwidmen, integrieren, oder bei echter Substanzlosigkeit mit `[SUBSTANZ PRÜFEN]` markieren und stehen lassen (Muster 44)
-- [ ] Calques oder False Friends („am Ende des Tages", „eventuell" im Sinn von „schließlich")? → Natürliches Deutsch (Muster 45)
+- [ ] Calques (z. B. „am Ende des Tages", „in Reihenfolge zu")? → Im Modus Locker ggf. zulässig, sonst durch natürliches Deutsch ersetzen (Muster 45)
+- [ ] False Friends („eventuell" im Sinn „schließlich", „aktuell" im Sinn „tatsächlich", „sensibel" im Sinn „vernünftig")? → Immer korrigieren, unabhängig vom Modus (Muster 45)
 
 ## Persönlichkeit und Stimme
 
@@ -957,15 +958,15 @@ Achten Sie deshalb zusätzlich auf:
 - **Direkte Zitate von echten Personen.** Als [ZITAT – NICHT BEARBEITET] markieren.
 - **Technische Spezifikationen, Formeln, Code.** Genauigkeit geht vor Stil.
 - **Juristische oder regulatorische Sprache.** Bestimmte Formulierungen haben rechtliches Gewicht.
-- **Muster, die 3+ Mal konsistent auftreten.** Als bewusste stilistische Entscheidung behandeln. Mit [MÖGLICHE STILISTISCHE WAHL – NICHT BEARBEITET] markieren und Häufigkeit nennen.
+- **Weiche stilistische Muster, die 3+ Mal konsistent auftreten.** Gilt nur für MEDIUM/LOW-Muster aus stilistischen Kategorien (Betonung, Übergänge, Parallelismen, Register, Interpunktion). Solche Häufungen können bewusste Stilwahl sein – mit [MÖGLICHE STILISTISCHE WAHL – NICHT BEARBEITET] markieren und Häufigkeit nennen. **Nicht** anwenden auf: HIGH-Muster, technisch/strukturelle Befunde (Muster 21–24, 43), belegbezogene Befunde (Muster 11, 26, 42), False Friends aus Muster 45. Diese sind bei jedem Vorkommen einzeln zu korrigieren oder zu markieren – ihre Häufung verstärkt das Problem, sie wird nicht zur stilistischen Wahl.
 
 ## Leitplanken
 
 - Nie eine Quelle erfinden. Echte Quelle, markieren, oder entfernen.
 - Nie Stimme in formale/akademische Texte einbringen.
 - Nie direkte Zitate von echten Personen bearbeiten.
-- Nie Muster bearbeiten, die 3+ Mal konsistent auftreten – stattdessen markieren.
-- Nie kürzen. Die Ausgabe muss alles abdecken, was das Original enthält. Sätze umschreiben, nicht löschen.
+- Nie **weiche stilistische Muster** (MEDIUM/LOW) bearbeiten, die 3+ Mal konsistent auftreten – stattdessen markieren. HIGH-Muster, Strukturbefunde (21–24, 43), belegbezogene Befunde (11, 26, 42) und False Friends (45) sind ausgenommen und bleiben einzeln zu korrigieren.
+- Nie **Substanz** kürzen. Sachliche Aussagen und Informationsgehalt bleiben erhalten; Sätze umschreiben statt streichen. Artefakte ohne Informationsgehalt, deren Lösung im Muster explizit „entfernen/löschen" lautet (u. a. Muster 2, 3, 6, 17, 18, 19, 20, 21, 22, 24, 43), sind davon ausgenommen.
 - Wenn der Text bereits sauber ist: das sagen und aufhören.
 - **Kombinations-Prinzip:** Gilt nur für die **stilistische Gesamtdiagnose** „wirkt der Text KI-generiert?". Für diese Einschätzung ist ein einzelnes weiches Muster selten aussagekräftig – erst die Kombination mehrerer stilistischer Muster aus unterschiedlichen Kategorien rechtfertigt eine breite Überarbeitung. **Ausgenommen:** Technische/strukturelle Befunde (Muster 21, 22, 23, 24, 43), belegbezogene Befunde (Muster 11, 26, 42) und eindeutige Regelverstöße dürfen und sollen schon als Einzelbefund korrigiert werden. HIGH-Muster bleiben wie in Schritt 2 des Ablaufs beschrieben einzeln zu scannen.
 - **Geltungsbereich:** Arbeitet auf direkt übergebenem Text. Dateibasierte Nutzung erfordert Read/Write in `allowed_tools`.
