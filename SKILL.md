@@ -1,7 +1,7 @@
 ---
 name: Humanizer (Deutsch)
 description: Erkennt und entfernt KI-generierte Schreibmuster aus deutschsprachigen Texten. Basierend auf Wikipedia-Leitlinien (Anzeichen für KI-generierte Inhalte, Erkennung KI-Einsatz, Schnelltest KI), inklusive zweitem Anti-KI-Audit-Durchlauf und optionaler Stimmkalibrierung. Erkennt u.a. aufgeblähte Symbolik, Werbesprache, mechanische Konjunktionen, vage Autoritäten, Gedankenstriche-Übernutzung, Trikolon, KI-Vokabular, negative Parallelismen, Passivkonstruktionen, persuasive Floskeln, Signposting, fragmentierte Überschriften, rhetorische Fake-Fragen, Menschheits-Eröffnungen, "heutige Welt"-Framing, aspirative Unternehmensschlüsse, Konditional-Stapel, fehlkalibriertes epistemisches Vertrauen, Beleginkongruenz, versteckte Unicode-Zeichen, Standard-Kapitel ohne Substanz und Anglizismus-Strukturen.
-version: 3.2.0-de.1
+version: 3.2.1-de.1
 author: Martin Moeller
 maintainer_website: "https://www.martin-moeller.biz"
 based_on: "Deutsche Wikipedia: Anzeichen für KI-generierte Inhalte, Erkennung KI-Einsatz, Schnelltest KI"
@@ -126,9 +126,9 @@ Wenn der Benutzer eine Schreibprobe mitliefert (eigener Text), analysieren Sie d
 | 40 | Konditional-Stapel | MEDIUM | "Wenn das Argument stimmt, und wenn die Evidenz...", gehäufte "wenn"-Klauseln |
 | 41 | Fehlkalibriertes epistemisches Vertrauen | MEDIUM | Über-Behauptung: "grundlegend", "entscheidend"; Über-Absicherung: "scheint möglicherweise" |
 | 42 | Beleginkongruenz | HIGH | Quelle existiert, belegt aber die Aussage nicht |
-| 43 | Versteckte Unicode-Zeichen | HIGH | Zero-Width-Space (U+200B), Soft-Hyphen, typografische Apostrophe, BOM |
-| 44 | Standard-Kapitel ohne Substanz | MEDIUM | "== Herausforderungen ==", "== Zukunftsperspektiven ==", "== Bedeutung ==" |
-| 45 | Anglizismus-Strukturen | MEDIUM | "macht Sinn", "in Bezug auf", "am Ende des Tages", unnötiges Possessivpronomen |
+| 43 | Versteckte Unicode-Zeichen | HIGH | Zero-Width-Space (U+200B), Soft-Hyphen, BOM, Bidi-Controls (U+202A–E, U+2066–9) |
+| 44 | Standard-Kapitel ohne Substanz | MEDIUM | Standard-Überschrift + unbelegter Fülltext; nicht kürzen, sondern konkretisieren/integrieren |
+| 45 | Anglizismus-Strukturen | MEDIUM | Harte Calques & False Friends: "am Ende des Tages", "Sinn machen", "realisieren" = "merken" |
 
 ## Die 45 Muster
 
@@ -811,14 +811,19 @@ Diese Muster sind in Version 3.2 neu aufgenommen und konzeptuell den bestehenden
 
 Häufige Indikatoren:
 - Die Quelle behandelt das Thema nur am Rand, wird aber als zentraler Beleg präsentiert
+- Widerspruch zwischen Aussage und Quelle (Quelle sagt das Gegenteil oder differenziert stärker)
+- Scope-Mismatch: Zeitraum, Region oder Population der Quelle passt nicht zur Behauptung (z. B. US-Studie als Beleg für deutsche Verhältnisse, Studie von 2015 für Aussage über 2024)
 - Jahreszahlen in der Aussage weichen von denen der Quelle ab
 - Konkrete Zahlen werden zitiert, die so in der Quelle nicht stehen
 - Seitenzahl verweist auf Inhalte, die nichts mit der Aussage zu tun haben
+- Sekundärquelle (Blog, Zeitungsartikel) wird als Primärbeleg für eine Forschungsaussage präsentiert
 - Eine allgemeine Übersichtsquelle wird für eine sehr spezifische Aussage herangezogen
 
 **Warum LLMs das tun:** Abrufbare Quellen aus dem Training werden thematisch passend zugeordnet, ohne dass der konkrete Inhalt gegen die Aussage geprüft werden kann.
 
-**Lösung:** Jeden Quellennachweis gegen die konkrete Aussage prüfen. Bei Inkongruenz entweder Aussage an Quelle anpassen, Quelle ersetzen oder mit `[BELEG PRÜFEN]` markieren. Niemals eine inhaltlich unpassende Quelle stehen lassen.
+**Operative Schranke:** Nur dann als Beleginkongruenz markieren, wenn die Quelle tatsächlich geprüft wurde oder eindeutig prüfbar ist (Link funktioniert, Seite nennbar, Volltext zugänglich). Ohne Prüfmöglichkeit keine Kongruenz-Vorwürfe erheben – sonst droht Halluzination in die andere Richtung.
+
+**Lösung:** Quellennachweis gegen die konkrete Aussage prüfen, sofern möglich. Bei nachweisbarer Inkongruenz entweder Aussage an Quelle anpassen, Quelle ersetzen oder mit `[BELEG PRÜFEN]` markieren. Bei nicht prüfbarer Quelle nur dann markieren, wenn andere Indikatoren (erfundene DOI, offenkundig fehlende Seitenangabe) greifen – dann über Muster 26 abhandeln.
 
 **Beispiel:**
 
@@ -831,39 +836,45 @@ Häufige Indikatoren:
 
 **Kategorie:** Auszeichnungstext
 
-**Problem:** KI-Tools hinterlassen unsichtbare Unicode-Zeichen im Text. Diese sind für das Auge nicht sichtbar, stören aber Wiki-Syntax, Volltextsuche, Screenreader und Textvergleich. Ergänzt Muster 24 um die unsichtbare Ebene.
+**Problem:** KI-Tools hinterlassen unsichtbare Unicode-Zeichen im Text. Diese sind für das Auge nicht wahrnehmbar, stören aber Wiki-Syntax, Volltextsuche, Screenreader und Textvergleich. Ergänzt Muster 24 um die unsichtbare Ebene. Nur echte Hidden Characters – sichtbare Typografie (Anführungszeichen, Apostrophe) gehört nicht hierher.
 
 Häufige Indikatoren:
 - Zero-Width Space (U+200B)
 - Zero-Width Non-Joiner (U+200C)
 - Zero-Width Joiner (U+200D)
+- Word Joiner (U+2060)
 - Byte Order Mark (U+FEFF) mitten im Text
 - Soft-Hyphen (U+00AD) an ungewöhnlichen Stellen
-- Nicht-umbrechbares Leerzeichen (U+00A0), wo normales Leerzeichen erwartet wird
-- Typografische Anführungszeichen/Apostrophe, wo gerade Varianten erwartet werden (oder umgekehrt, je nach Konvention)
+- Bidi-Steuerzeichen: U+202A–U+202E (Left/Right-to-Left Embedding/Override/Pop), U+2066–U+2069 (Isolates)
 
-**Warum LLMs das tun:** Modelle produzieren gelegentlich Tokens mit unsichtbaren Sonderzeichen. Copy-Paste aus KI-Oberflächen schleppt zusätzliche Formatierungsartefakte mit.
+**Warum LLMs das tun:** Modelle produzieren gelegentlich Tokens mit unsichtbaren Sonderzeichen. Copy-Paste aus KI-Oberflächen schleppt zusätzliche Formatierungsartefakte mit. Bidi-Controls können auch gezielt zur Verschleierung von Prompt-Inhalten genutzt werden.
 
-**Lösung:** Regex-Scan auf `[\u200B-\u200D\uFEFF\u00AD]` und ersatzlos entfernen. Nicht-umbrechbare Leerzeichen auf normales Leerzeichen setzen, außer in stehenden Wendungen („5 km", „§ 12"). Anführungszeichen an Kontextkonvention anpassen.
+**Lösung:** Regex-Scan auf `[\u200B-\u200D\u2060\uFEFF\u00AD\u202A-\u202E\u2066-\u2069]` und ersatzlos entfernen. Nicht verwechseln mit legitimen Unicode-Gebrauchsfällen: U+00A0 (geschütztes Leerzeichen) in stehenden Wendungen wie „5 km" oder „§ 12" ist korrekt und gehört nicht in dieses Muster.
 
 #### 44. Standard-Kapitel ohne Substanz [MEDIUM]
 
 **Kategorie:** Stil
 
-**Problem:** Generische Kapitelüberschriften mit allgemeinem, unbelegtem Inhalt. Erweitert Muster 6 (unpassendes „Fazit") auf häufigere Varianten. Diese Überschriften wirken strukturell vollständig, transportieren aber keine artikelspezifische Information.
+**Problem:** Das Problem ist **nicht** die Überschrift an sich, sondern der generische, unbelegte Fülltext darunter. Überschriften wie „Bedeutung" oder „Relevanz" können in enzyklopädischen Texten legitim sein, wenn der Abschnitt konkrete Belege enthält. Tell ist die Kombination aus Standard-Überschrift + substanzloser Allgemeinplätze.
+
+**Abgrenzung:**
+- Muster 5 (Zusammenfassungen): Sprachmarker „zusammenfassend" im Fließtext
+- Muster 6 (Fazit): spezifisch die Überschrift „Fazit"/„Zusammenfassung"
+- Muster 34 (Fragmentierte Überschriften): Einzeiler direkt nach Überschrift
+- Muster 44: ganzer Abschnitt unter Standard-Überschrift ohne konkrete Information
 
 Häufige Indikatoren:
-- „== Herausforderungen =="
-- „== Zukunftsperspektiven =="
-- „== Bedeutung =="
-- „== Relevanz =="
-- „== Ausblick =="
-- „== Chancen und Risiken =="
-- Alle gefolgt von allgemeinen Aussagen ohne konkrete Fakten, Zahlen oder Belege
+- Überschriften: „== Herausforderungen ==", „== Zukunftsperspektiven ==", „== Bedeutung ==", „== Relevanz ==", „== Ausblick ==", „== Chancen und Risiken =="
+- Darunter: allgemeine Aussagen ohne konkrete Fakten, Zahlen oder Belege
+- Prognose-Sprech ohne Träger („Experten erwarten", „es ist zu erwarten")
+- Bloße Wiederholung von Punkten aus früheren Abschnitten unter neuer Überschrift
 
 **Warum LLMs das tun:** Nachahmung formaler akademischer und journalistischer Strukturen. Standard-Kapitel füllen Platz, wo keine konkrete Information verfügbar ist.
 
-**Lösung:** Entweder streichen oder mit spezifischen Fakten, Zahlen und Belegen füllen. Im Zweifel: Substanz in bestehende thematische Kapitel integrieren, Standard-Überschrift entfernen.
+**Lösung:** Nicht kürzen (Leitplanke „Nie kürzen" gilt). Vorgehen in dieser Reihenfolge:
+1. **Substanz finden:** Prüfen, ob unter der Überschrift tatsächlich eine Aussage steckt, die bloß verwässert formuliert ist. Wenn ja: konkretisieren, Belege einfügen.
+2. **Integrieren:** Falls der Abschnitt nur thematisch Bekanntes wiederholt, Inhalt in bestehende thematische Kapitel verschieben und die Standard-Überschrift entfernen. Der Text selbst bleibt im Artikel erhalten.
+3. **Umwidmen:** Generische Überschrift durch spezifische ersetzen („Zukunftsperspektiven" → „Marktprognosen 2025–2030"), wenn der Inhalt das trägt.
 
 **Beispiel:**
 
@@ -872,33 +883,39 @@ Häufige Indikatoren:
 >
 > Die Zukunft der Technologie ist vielversprechend. Experten erwarten weitere Fortschritte und neue Einsatzmöglichkeiten. Unternehmen sollten sich frühzeitig auf die Veränderungen einstellen.
 
-✓ Besser: Abschnitt streichen oder durch konkrete Entwicklungsprognosen mit Quelle ersetzen (z. B. „Der VDMA erwartet bis 2030 ein Marktwachstum von 12 Prozent jährlich.").
+✓ Besser (umgewidmet + konkretisiert):
+> == Marktprognosen ==
+>
+> Der VDMA erwartet bis 2030 ein jährliches Marktwachstum von 12 Prozent.<ref>VDMA Branchenbericht 2024, S. 42.</ref> Treiber sind vor allem der Ausbau industrieller Anwendungen.
 
 #### 45. Anglizismus-Strukturen [MEDIUM]
 
 **Kategorie:** Sprache und Tonfall
 
-**Problem:** KI übersetzt englische Satzmuster wörtlich ins Deutsche. Grammatikalisch oft korrekt, stilistisch aber ungelenk und typisch für maschinelle Übersetzung.
+**Problem:** KI überträgt englische Satzmuster, Kollokationen und Bedeutungen wörtlich ins Deutsche. Das Muster zielt nur auf **harte Transfers**: Calques (Lehnübersetzungen), False Friends (Falschfreunde) und syntaktische Muster, die im Deutschen als Übersetzungsdeutsch auffallen. Einzelne Anglizismen in Business- oder Umgangssprache sind **kein** Anzeichen.
 
-Häufige Indikatoren:
-- „macht Sinn" (makes sense) – deutsch: „ergibt Sinn"
-- „in Bezug auf" als Füllphrase statt schlichter Präposition („zu", „bei", „für")
-- „basiert auf" übernutzt, wo „beruht auf" oder „folgt" präziser wäre
-- „realisieren" im Sinne von „erkennen" / „merken" (to realize)
-- Unnötiges Possessivpronomen: „seine Bedeutung" wo Deutsch ohne auskommt („die Bedeutung")
-- „Am Ende des Tages" (at the end of the day) als Schlussformel
-- „in Reihenfolge zu" / „um zu … in der Lage zu sein" (in order to)
-- „adressieren" im Sinne von „angehen" / „behandeln" (to address)
+Harte Indikatoren (klare Tells):
+- **Calques:** „am Ende des Tages" (at the end of the day), „in Reihenfolge zu" (in order to), „das macht keinen Unterschied für mich" (that makes no difference to me), „zu Beginn mit" (to begin with)
+- **False Friends:** „realisieren" im Sinne von „merken/erkennen" (to realize, statt „umsetzen"), „eventuell" als „schließlich" (eventually), „sensibel" als „sinnvoll" (sensible), „kontrollieren" als „beherrschen" (to control)
+- **Syntaktische Transfers:** englische Wortstellung in Relativsätzen („das Unternehmen, welches gegründet wurde in 1990"), nachgestellte Präpositionalphrasen nach englischem Muster („das Buch über Berlin von Peter Schneider geschrieben")
+- **Kollokations-Kalke:** „Sinn machen" (makes sense) – korrekt: „Sinn ergeben"
 
-**Warum LLMs das tun:** Englisches Trainingsmaterial dominiert. Deutsche Ausgaben folgen englischen Strukturen und Kollokationen, weil das Modell zwischen Sprachen nicht sauber trennt.
+**Kein Tell (weglassen oder mit Vorsicht):**
+- „basiert auf", „in Bezug auf", „adressieren" – sind in heutigem Geschäfts- und Wissenschaftsdeutsch etabliert
+- Unnötige Possessivpronomen – ist allgemeines Übersetzungsdeutsch, gehört eher in die Stilglättung
+- Einzelne Lehnwörter („Meeting", „Team", „Feedback") – im Zielregister oft normal
 
-**Lösung:** Durch natürliche deutsche Formulierungen ersetzen. Im Zweifel: Wie würde ein Muttersprachler den Satz formulieren, ohne englisches Original im Kopf?
+**Register-Hinweis:** In Blogposts, Social-Media-Texten und Business-Dokumentation sind einzelne der obigen „harten" Formen teils etabliert. Nur eingreifen, wenn sie gehäuft auftreten oder das Zielregister formal ist.
+
+**Warum LLMs das tun:** Englisches Trainingsmaterial dominiert. Deutsche Ausgaben folgen englischen Strukturen, besonders bei direkter Übersetzung aus englischen Quellen.
+
+**Lösung:** Durch deutsches Äquivalent ersetzen. Prüffrage: Würde ein Muttersprachler ohne englische Vorlage so formulieren?
 
 **Beispiel:**
 
-❌ Schlecht: „Das Konzept macht Sinn in Bezug auf die aktuelle Marktsituation und basiert auf den Annahmen seiner Gründer."
+❌ Schlecht: „Am Ende des Tages realisierte das Team, dass die Strategie keinen Sinn machte."
 
-✓ Besser: „Das Konzept passt zur aktuellen Marktsituation und folgt den Annahmen der Gründer."
+✓ Besser: „Schließlich merkte das Team, dass die Strategie keinen Sinn ergab."
 
 ## Quick Checklist (Vor-Ausgabe-Audit)
 
@@ -913,7 +930,7 @@ Vor der Ausgabe schnell prüfen:
 - [ ] Passiv wo Aktiv möglich wäre? → Akteur benennen (Muster 39)
 - [ ] Quelle belegt die Aussage tatsächlich? → Prüfen oder `[BELEG PRÜFEN]` markieren (Muster 42)
 - [ ] Unsichtbare Unicode-Zeichen im Text? → Entfernen (Muster 43)
-- [ ] Generische Kapitelüberschriften („Herausforderungen", „Zukunftsperspektiven")? → Streichen oder füllen (Muster 44)
+- [ ] Standard-Kapitel mit unbelegtem Fülltext? → Konkretisieren, umwidmen oder in bestehende Kapitel integrieren (Muster 44)
 - [ ] Englische Satzmuster wörtlich übersetzt („macht Sinn")? → Natürliches Deutsch (Muster 45)
 
 ## Persönlichkeit und Stimme
@@ -944,7 +961,7 @@ Achten Sie deshalb zusätzlich auf:
 - Nie Muster bearbeiten, die 3+ Mal konsistent auftreten – stattdessen markieren.
 - Nie kürzen. Die Ausgabe muss alles abdecken, was das Original enthält. Sätze umschreiben, nicht löschen.
 - Wenn der Text bereits sauber ist: das sagen und aufhören.
-- **Kombinations-Prinzip:** Ein einzelnes Muster ist selten aussagekräftig. Erst die Kombination mehrerer Muster – besonders aus unterschiedlichen Kategorien (Sprache + Struktur + Evidenz) – rechtfertigt eine substanzielle Überarbeitung. Einzelbefunde ohne Häufung können bewusste stilistische Entscheidungen sein und sollten mit Augenmaß behandelt werden.
+- **Kombinations-Prinzip:** Gilt nur für die **stilistische Gesamtdiagnose** „wirkt der Text KI-generiert?". Für diese Einschätzung ist ein einzelnes weiches Muster selten aussagekräftig – erst die Kombination mehrerer stilistischer Muster aus unterschiedlichen Kategorien rechtfertigt eine breite Überarbeitung. **Ausgenommen:** Technische Befunde (Muster 22, 23, 24, 43), belegbezogene Befunde (Muster 11, 21, 26, 42) und eindeutige Regelverstöße dürfen und sollen schon als Einzelbefund korrigiert werden. HIGH-Muster bleiben wie in Schritt 2 des Ablaufs beschrieben einzeln zu scannen.
 - **Geltungsbereich:** Arbeitet auf direkt übergebenem Text. Dateibasierte Nutzung erfordert Read/Write in `allowed_tools`.
 
 ## Ausgabeformat
