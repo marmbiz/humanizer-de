@@ -546,7 +546,7 @@ Häufige Indikatoren:
 
 **Warum LLMs das tun:** Halluziniert Artikel-Titel.
 
-**Lösung:** Prüfen und korrigieren oder entfernen.
+**Lösung:** Mit den verfügbaren Mitteln prüfen (Syntax, Plausibilität, interne Konsistenz, offensichtliche Tippfehler im übergebenen Kontext). Bei nachweisbarem Defekt: korrigieren oder entfernen. Externe Online-Verifikation eines Links liegt außerhalb des Skill-Umfangs – in diesem Fall mit [LINK NICHT VERIFIZIERT] markieren statt blind zu entfernen.
 
 #### 26. Zitatfabrikation und ungültige Referenzen [MEDIUM]
 **Problem:** LLMs erfinden Quellen, die echt aussehen, aber nicht existieren. Das reicht von ungültigen DOI-Prüfziffern bis zu komplett halluzinierten Publikationen.
@@ -1009,7 +1009,7 @@ Sachlich (angenommen – kein Kontext angegeben)
 
 **Satz 1:**
 ❌ "Die atemberaubende Schönheit der Schweizer Alpen steht als Zeugnis für die Großartigkeit der Natur."
-✓ "Die Schweizer Alpen beeindrucken – nicht wegen ihrer Höhe allein, sondern wegen ihrer Präsenz."
+✓ "Die Schweizer Alpen prägen das Landschaftsbild Mitteleuropas."
 
 **Satz 2–3:**
 ❌ "Diese Gebirgskette spielt eine wichtige Rolle bei der Gestaltung der europäischen Geographie und Kultur. Darüber hinaus ist die Region von unschätzbarem Wert für Wanderer und Touristen."
@@ -1025,7 +1025,7 @@ Sachlich (angenommen – kein Kontext angegeben)
 
 **Finale Korrektur (nur geänderter Satz):**
 ❌ "Als Kultur- und Naturraum haben die Alpen bis heute großes Gewicht – und sollten entsprechend geschützt werden."
-✓ "Als Kultur- und Naturraum sind die Alpen seit Jahrhunderten relevant. Schutz ist keine Option, sondern Pflicht."
+✓ "Als Kultur- und Naturraum sind die Alpen seit Jahrhunderten bedeutsam und gelten als schutzwürdig."
 
 ## Hinweise zum Skill
 
