@@ -1,7 +1,7 @@
 ---
 name: Humanizer (Deutsch)
 description: Erkennt und entfernt KI-generierte Schreibmuster aus deutschsprachigen Texten. Basierend auf Wikipedia-Leitlinien (Anzeichen für KI-generierte Inhalte, Erkennung KI-Einsatz, Schnelltest KI), inklusive zweitem Anti-KI-Audit-Durchlauf und optionaler Stimmkalibrierung. Erkennt u.a. aufgeblähte Symbolik, Werbesprache, mechanische Konjunktionen, vage Autoritäten, Gedankenstriche-Übernutzung, Trikolon, KI-Vokabular, negative Parallelismen, Passivkonstruktionen, persuasive Floskeln, Signposting, fragmentierte Überschriften, rhetorische Fake-Fragen, Menschheits-Eröffnungen, "heutige Welt"-Framing, aspirative Unternehmensschlüsse, Konditional-Stapel, fehlkalibriertes epistemisches Vertrauen, Beleginkongruenz, versteckte Unicode-Zeichen, Standard-Kapitel ohne Substanz und Anglizismus-Strukturen.
-version: 3.2.1-de.1
+version: 3.2.2-de.1
 author: Martin Moeller
 maintainer_website: "https://www.martin-moeller.biz"
 based_on: "Deutsche Wikipedia: Anzeichen für KI-generierte Inhalte, Erkennung KI-Einsatz, Schnelltest KI"
@@ -128,7 +128,7 @@ Wenn der Benutzer eine Schreibprobe mitliefert (eigener Text), analysieren Sie d
 | 42 | Beleginkongruenz | HIGH | Quelle existiert, belegt aber die Aussage nicht |
 | 43 | Versteckte Unicode-Zeichen | HIGH | Zero-Width-Space (U+200B), Soft-Hyphen, BOM, Bidi-Controls (U+202A–E, U+2066–9) |
 | 44 | Standard-Kapitel ohne Substanz | MEDIUM | Standard-Überschrift + unbelegter Fülltext; nicht kürzen, sondern konkretisieren/integrieren |
-| 45 | Anglizismus-Strukturen | MEDIUM | Harte Calques & False Friends: "am Ende des Tages", "Sinn machen", "realisieren" = "merken" |
+| 45 | Anglizismus-Strukturen | MEDIUM | Harte Calques & False Friends: "am Ende des Tages", "eventuell" = "schließlich", "aktuell" = "tatsächlich" |
 
 ## Die 45 Muster
 
@@ -823,7 +823,7 @@ Häufige Indikatoren:
 
 **Operative Schranke:** Nur dann als Beleginkongruenz markieren, wenn die Quelle tatsächlich geprüft wurde oder eindeutig prüfbar ist (Link funktioniert, Seite nennbar, Volltext zugänglich). Ohne Prüfmöglichkeit keine Kongruenz-Vorwürfe erheben – sonst droht Halluzination in die andere Richtung.
 
-**Lösung:** Quellennachweis gegen die konkrete Aussage prüfen, sofern möglich. Bei nachweisbarer Inkongruenz entweder Aussage an Quelle anpassen, Quelle ersetzen oder mit `[BELEG PRÜFEN]` markieren. Bei nicht prüfbarer Quelle nur dann markieren, wenn andere Indikatoren (erfundene DOI, offenkundig fehlende Seitenangabe) greifen – dann über Muster 26 abhandeln.
+**Lösung:** Quellennachweis gegen die konkrete Aussage prüfen, sofern möglich. Bei nachweisbarer Inkongruenz entweder Aussage an Quelle anpassen, Quelle ersetzen oder mit `[BELEG PRÜFEN]` markieren. Bei nicht prüfbarer Quelle keine Kongruenz-Diagnose erheben. Fabrikationsindikatoren (erfundene DOI/ISBN, nicht existierendes Journal) fallen unter Muster 26.
 
 **Beispiel:**
 
@@ -875,6 +875,7 @@ Häufige Indikatoren:
 1. **Substanz finden:** Prüfen, ob unter der Überschrift tatsächlich eine Aussage steckt, die bloß verwässert formuliert ist. Wenn ja: konkretisieren, Belege einfügen.
 2. **Integrieren:** Falls der Abschnitt nur thematisch Bekanntes wiederholt, Inhalt in bestehende thematische Kapitel verschieben und die Standard-Überschrift entfernen. Der Text selbst bleibt im Artikel erhalten.
 3. **Umwidmen:** Generische Überschrift durch spezifische ersetzen („Zukunftsperspektiven" → „Marktprognosen 2025–2030"), wenn der Inhalt das trägt.
+4. **Fallback bei echter Substanzlosigkeit:** Wenn weder konkrete Aussage noch tragbare Paraphrase noch thematische Zuordnung möglich ist, Abschnitt mit `[SUBSTANZ PRÜFEN]` markieren und wörtlich stehen lassen. Streichung oder Inhaltsergänzung liegt dann beim menschlichen Redigat, nicht beim Skill-Durchlauf. So bleibt die „Nie kürzen"-Leitplanke gewahrt, ohne Inhalt zu erfinden.
 
 **Beispiel:**
 
@@ -895,14 +896,16 @@ Häufige Indikatoren:
 **Problem:** KI überträgt englische Satzmuster, Kollokationen und Bedeutungen wörtlich ins Deutsche. Das Muster zielt nur auf **harte Transfers**: Calques (Lehnübersetzungen), False Friends (Falschfreunde) und syntaktische Muster, die im Deutschen als Übersetzungsdeutsch auffallen. Einzelne Anglizismen in Business- oder Umgangssprache sind **kein** Anzeichen.
 
 Harte Indikatoren (klare Tells):
-- **Calques:** „am Ende des Tages" (at the end of the day), „in Reihenfolge zu" (in order to), „das macht keinen Unterschied für mich" (that makes no difference to me), „zu Beginn mit" (to begin with)
-- **False Friends:** „realisieren" im Sinne von „merken/erkennen" (to realize, statt „umsetzen"), „eventuell" als „schließlich" (eventually), „sensibel" als „sinnvoll" (sensible), „kontrollieren" als „beherrschen" (to control)
+- **Calques:** „am Ende des Tages" (at the end of the day), „in Reihenfolge zu" (in order to), „zu Beginn mit" (to begin with), „das macht keinen Unterschied für mich" (that makes no difference to me)
+- **False Friends:** „eventuell" als „schließlich" (eventually, korrekt: „schließlich"/„am Ende"), „aktuell" als „tatsächlich" (actually, korrekt: „tatsächlich"/„eigentlich"), „sensibel" als „vernünftig/umsichtig" (sensible, korrekt: „vernünftig"/„besonnen")
 - **Syntaktische Transfers:** englische Wortstellung in Relativsätzen („das Unternehmen, welches gegründet wurde in 1990"), nachgestellte Präpositionalphrasen nach englischem Muster („das Buch über Berlin von Peter Schneider geschrieben")
-- **Kollokations-Kalke:** „Sinn machen" (makes sense) – korrekt: „Sinn ergeben"
 
-**Kein Tell (weglassen oder mit Vorsicht):**
-- „basiert auf", „in Bezug auf", „adressieren" – sind in heutigem Geschäfts- und Wissenschaftsdeutsch etabliert
-- Unnötige Possessivpronomen – ist allgemeines Übersetzungsdeutsch, gehört eher in die Stilglättung
+**Kein belastbarer Tell (weglassen):**
+- „basiert auf", „in Bezug auf", „adressieren" – in Geschäfts- und Wissenschaftsdeutsch etabliert
+- „Sinn machen" – im heutigen Standarddeutsch etabliert; stilistische Präferenz, kein KI-Tell
+- „realisieren" im Sinne von „erkennen/begreifen" – lexikalisch etabliert (Duden, DWDS)
+- „kontrollieren" als „beherrschen" – Bedeutungen überlappen im Deutschen bereits
+- Unnötige Possessivpronomen – allgemeines Übersetzungsdeutsch, Stilglättung
 - Einzelne Lehnwörter („Meeting", „Team", „Feedback") – im Zielregister oft normal
 
 **Register-Hinweis:** In Blogposts, Social-Media-Texten und Business-Dokumentation sind einzelne der obigen „harten" Formen teils etabliert. Nur eingreifen, wenn sie gehäuft auftreten oder das Zielregister formal ist.
@@ -913,9 +916,10 @@ Harte Indikatoren (klare Tells):
 
 **Beispiel:**
 
-❌ Schlecht: „Am Ende des Tages realisierte das Team, dass die Strategie keinen Sinn machte."
+❌ Schlecht: „Am Ende des Tages erkannte das Team eventuell, dass die Strategie aktuell nicht trug."
+(eventuell = eventually = „schließlich"; aktuell = actually = „tatsächlich")
 
-✓ Besser: „Schließlich merkte das Team, dass die Strategie keinen Sinn ergab."
+✓ Besser: „Schließlich erkannte das Team, dass die Strategie tatsächlich nicht trug."
 
 ## Quick Checklist (Vor-Ausgabe-Audit)
 
@@ -961,7 +965,7 @@ Achten Sie deshalb zusätzlich auf:
 - Nie Muster bearbeiten, die 3+ Mal konsistent auftreten – stattdessen markieren.
 - Nie kürzen. Die Ausgabe muss alles abdecken, was das Original enthält. Sätze umschreiben, nicht löschen.
 - Wenn der Text bereits sauber ist: das sagen und aufhören.
-- **Kombinations-Prinzip:** Gilt nur für die **stilistische Gesamtdiagnose** „wirkt der Text KI-generiert?". Für diese Einschätzung ist ein einzelnes weiches Muster selten aussagekräftig – erst die Kombination mehrerer stilistischer Muster aus unterschiedlichen Kategorien rechtfertigt eine breite Überarbeitung. **Ausgenommen:** Technische Befunde (Muster 22, 23, 24, 43), belegbezogene Befunde (Muster 11, 21, 26, 42) und eindeutige Regelverstöße dürfen und sollen schon als Einzelbefund korrigiert werden. HIGH-Muster bleiben wie in Schritt 2 des Ablaufs beschrieben einzeln zu scannen.
+- **Kombinations-Prinzip:** Gilt nur für die **stilistische Gesamtdiagnose** „wirkt der Text KI-generiert?". Für diese Einschätzung ist ein einzelnes weiches Muster selten aussagekräftig – erst die Kombination mehrerer stilistischer Muster aus unterschiedlichen Kategorien rechtfertigt eine breite Überarbeitung. **Ausgenommen:** Technische/strukturelle Befunde (Muster 21, 22, 23, 24, 43), belegbezogene Befunde (Muster 11, 26, 42) und eindeutige Regelverstöße dürfen und sollen schon als Einzelbefund korrigiert werden. HIGH-Muster bleiben wie in Schritt 2 des Ablaufs beschrieben einzeln zu scannen.
 - **Geltungsbereich:** Arbeitet auf direkt übergebenem Text. Dateibasierte Nutzung erfordert Read/Write in `allowed_tools`.
 
 ## Ausgabeformat
