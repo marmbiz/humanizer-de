@@ -1,10 +1,10 @@
 ---
 name: Humanizer (Deutsch)
-description: Erkennt und entfernt KI-generierte Schreibmuster aus deutschsprachigen Texten. Basierend auf der deutschen und englischen Wikipedia-Leitlinie zu KI-Schreibmustern, inklusive zweitem Anti-KI-Audit-Durchlauf und optionaler Stimmkalibrierung. Erkennt u.a. aufgeblähte Symbolik, Werbesprache, mechanische Konjunktionen, vage Autoritäten, Gedankenstriche-Übernutzung, Trikolon, KI-Vokabular, negative Parallelismen, Passivkonstruktionen, persuasive Floskeln, Signposting, fragmentierte Überschriften, rhetorische Fake-Fragen, Menschheits-Eröffnungen, "heutige Welt"-Framing, aspirative Unternehmensschlüsse, Konditional-Stapel und fehlkalibriertes epistemisches Vertrauen.
-version: 3.1.0-de.1
+description: Erkennt und entfernt KI-generierte Schreibmuster aus deutschsprachigen Texten. Basierend auf Wikipedia-Leitlinien (Anzeichen für KI-generierte Inhalte, Erkennung KI-Einsatz, Schnelltest KI), inklusive zweitem Anti-KI-Audit-Durchlauf und optionaler Stimmkalibrierung. Erkennt u.a. aufgeblähte Symbolik, Werbesprache, mechanische Konjunktionen, vage Autoritäten, Gedankenstriche-Übernutzung, Trikolon, KI-Vokabular, negative Parallelismen, Passivkonstruktionen, persuasive Floskeln, Signposting, fragmentierte Überschriften, rhetorische Fake-Fragen, Menschheits-Eröffnungen, "heutige Welt"-Framing, aspirative Unternehmensschlüsse, Konditional-Stapel, fehlkalibriertes epistemisches Vertrauen, Beleginkongruenz, versteckte Unicode-Zeichen, Standard-Kapitel ohne Substanz und Anglizismus-Strukturen.
+version: 3.2.0-de.1
 author: Martin Moeller
 maintainer_website: "https://www.martin-moeller.biz"
-based_on: "German + English Wikipedia: Anzeichen/Signs of AI writing"
+based_on: "Deutsche Wikipedia: Anzeichen für KI-generierte Inhalte, Erkennung KI-Einsatz, Schnelltest KI"
 original_skill: "https://github.com/blader/humanizer"
 tags: [writing, ai-detection, german, wikipedia, text-improvement]
 allowed_tools: [Read, Write, Edit, Grep, Glob]
@@ -125,8 +125,12 @@ Wenn der Benutzer eine Schreibprobe mitliefert (eigener Text), analysieren Sie d
 | 39 | Passivkonstruktionen und subjektlose Fragmente | MEDIUM | "wurde durchgeführt", "es wird empfohlen", "Keine Konfiguration nötig." |
 | 40 | Konditional-Stapel | MEDIUM | "Wenn das Argument stimmt, und wenn die Evidenz...", gehäufte "wenn"-Klauseln |
 | 41 | Fehlkalibriertes epistemisches Vertrauen | MEDIUM | Über-Behauptung: "grundlegend", "entscheidend"; Über-Absicherung: "scheint möglicherweise" |
+| 42 | Beleginkongruenz | HIGH | Quelle existiert, belegt aber die Aussage nicht |
+| 43 | Versteckte Unicode-Zeichen | HIGH | Zero-Width-Space (U+200B), Soft-Hyphen, typografische Apostrophe, BOM |
+| 44 | Standard-Kapitel ohne Substanz | MEDIUM | "== Herausforderungen ==", "== Zukunftsperspektiven ==", "== Bedeutung ==" |
+| 45 | Anglizismus-Strukturen | MEDIUM | "macht Sinn", "in Bezug auf", "am Ende des Tages", unnötiges Possessivpronomen |
 
-## Die 41 Muster
+## Die 45 Muster
 
 ### Sprache und Tonfall (12 Muster)
 
@@ -270,15 +274,16 @@ Häufige Indikatoren:
 
 ✓ Besser: "Die Optionen kommen aus dem gewählten Element, ohne dass der Nutzer raten muss."
 
-#### 9. Trikolon (Regel der Drei) [MEDIUM]
-**Problem:** Übermäßige Nutzung der Regel-der-Drei als rhetorisches Mittel.
+#### 9. Trikolon und schematische Aufzählungen (Regel der Drei) [MEDIUM]
+**Problem:** Übermäßige Nutzung der Regel-der-Drei als rhetorisches Mittel. Zusätzlich: auffällige Rundzahlen bei Listen (5, 7 oder 10 Punkte) als schematisches Muster.
 
 Häufige Indikatoren:
 - Drei parallele Sätze/Phrasen hintereinander
 - "X, Y und Z waren alle charakteristisch für..."
 - Tripel-Aufzählungen ohne echten Grund
+- Listen mit verdächtig runder Länge (genau 5, 7 oder 10 Punkte), wenn die Sache selbst keine solche Struktur verlangt
 
-**Warum LLMs das tun:** Trikolon ist ein starkes rhetorisches Muster in der Schreibweise.
+**Warum LLMs das tun:** Trikolon ist ein starkes rhetorisches Muster in der Schreibweise. Runde Listenlängen entstehen durch Trainingsdaten, in denen „Top 5/7/10"-Artikel häufig vorkommen.
 
 **Beispiel:**
 
@@ -317,6 +322,8 @@ Häufige Indikatoren:
 - "Mehrere Studien deuten darauf hin" (ohne Quelle)
 
 **Warum LLMs das tun:** Kann keine echten Quellen zitieren, also erfindet es Platzhalter.
+
+**Abgrenzung:** Muster 11 = keine konkrete Quelle genannt. Muster 26 = Quelle fabriziert (existiert nicht). Muster 42 = Quelle existiert, belegt aber die Aussage nicht.
 
 Keine Quelle erfinden. Entweder: echte Quelle einfügen wenn bekannt, Zuschreibung entfernen, oder mit [ECHTE QUELLE NÖTIG] markieren.
 
@@ -549,7 +556,7 @@ Häufige Indikatoren:
 - ISBN mit Tippfehler
 - Erfundene akademische Quellen (Journal existiert nicht, Ausgabe existiert nicht)
 - Autoren existieren, aber die genannte Publikation nicht
-- Defekte externe Links mit `utm_source=`-Parametern
+- Defekte externe Links mit `utm_source=`-Parametern – besonders verdächtig: `utm_source=chatgpt.com`, `utm_source=claude.ai`, `utm_source=gemini.google.com`, `utm_source=perplexity.ai` (direkter KI-Fingerabdruck)
 - Unbenutzte benannte Referenzen (`<ref name="..."/>` ohne zugehörige Definition)
 
 **Warum LLMs das tun:** Kann keine echten Quellen recherchieren und erzeugt plausibel aussehende Referenzen aus dem Training.
@@ -792,6 +799,107 @@ Häufige Indikatoren:
 
 ✓ Besser: "Die Politik führte in zwei von drei untersuchten Fällen zu einer moderaten Verbesserung."
 
+### Ergänzungen (4 Muster)
+
+Diese Muster sind in Version 3.2 neu aufgenommen und konzeptuell den bestehenden Kategorien zugeordnet.
+
+#### 42. Beleginkongruenz [HIGH]
+
+**Kategorie:** Argumentation und Evidenz
+
+**Problem:** Die angegebene Quelle existiert und ist formal korrekt zitiert, belegt aber die getroffene Aussage nicht. Anders als Muster 26 (fabrizierte Quellen) ist die Referenz real – nur der Inhalt passt nicht zur Behauptung.
+
+Häufige Indikatoren:
+- Die Quelle behandelt das Thema nur am Rand, wird aber als zentraler Beleg präsentiert
+- Jahreszahlen in der Aussage weichen von denen der Quelle ab
+- Konkrete Zahlen werden zitiert, die so in der Quelle nicht stehen
+- Seitenzahl verweist auf Inhalte, die nichts mit der Aussage zu tun haben
+- Eine allgemeine Übersichtsquelle wird für eine sehr spezifische Aussage herangezogen
+
+**Warum LLMs das tun:** Abrufbare Quellen aus dem Training werden thematisch passend zugeordnet, ohne dass der konkrete Inhalt gegen die Aussage geprüft werden kann.
+
+**Lösung:** Jeden Quellennachweis gegen die konkrete Aussage prüfen. Bei Inkongruenz entweder Aussage an Quelle anpassen, Quelle ersetzen oder mit `[BELEG PRÜFEN]` markieren. Niemals eine inhaltlich unpassende Quelle stehen lassen.
+
+**Beispiel:**
+
+❌ Schlecht: „Laut einer Studie des Fraunhofer-Instituts aus 2019 stieg die Produktivität deutscher Remote-Teams um 23 Prozent.<ref>Fraunhofer IAO: Arbeiten in der Corona-Pandemie, 2020.</ref>"
+(Quelle existiert, stammt aber aus 2020 und nennt keine 23 Prozent.)
+
+✓ Besser: Quelle auf tatsächlichen Inhalt prüfen, Aussage an die Quelle anpassen oder passende Quelle suchen.
+
+#### 43. Versteckte Unicode-Zeichen [HIGH]
+
+**Kategorie:** Auszeichnungstext
+
+**Problem:** KI-Tools hinterlassen unsichtbare Unicode-Zeichen im Text. Diese sind für das Auge nicht sichtbar, stören aber Wiki-Syntax, Volltextsuche, Screenreader und Textvergleich. Ergänzt Muster 24 um die unsichtbare Ebene.
+
+Häufige Indikatoren:
+- Zero-Width Space (U+200B)
+- Zero-Width Non-Joiner (U+200C)
+- Zero-Width Joiner (U+200D)
+- Byte Order Mark (U+FEFF) mitten im Text
+- Soft-Hyphen (U+00AD) an ungewöhnlichen Stellen
+- Nicht-umbrechbares Leerzeichen (U+00A0), wo normales Leerzeichen erwartet wird
+- Typografische Anführungszeichen/Apostrophe, wo gerade Varianten erwartet werden (oder umgekehrt, je nach Konvention)
+
+**Warum LLMs das tun:** Modelle produzieren gelegentlich Tokens mit unsichtbaren Sonderzeichen. Copy-Paste aus KI-Oberflächen schleppt zusätzliche Formatierungsartefakte mit.
+
+**Lösung:** Regex-Scan auf `[\u200B-\u200D\uFEFF\u00AD]` und ersatzlos entfernen. Nicht-umbrechbare Leerzeichen auf normales Leerzeichen setzen, außer in stehenden Wendungen („5 km", „§ 12"). Anführungszeichen an Kontextkonvention anpassen.
+
+#### 44. Standard-Kapitel ohne Substanz [MEDIUM]
+
+**Kategorie:** Stil
+
+**Problem:** Generische Kapitelüberschriften mit allgemeinem, unbelegtem Inhalt. Erweitert Muster 6 (unpassendes „Fazit") auf häufigere Varianten. Diese Überschriften wirken strukturell vollständig, transportieren aber keine artikelspezifische Information.
+
+Häufige Indikatoren:
+- „== Herausforderungen =="
+- „== Zukunftsperspektiven =="
+- „== Bedeutung =="
+- „== Relevanz =="
+- „== Ausblick =="
+- „== Chancen und Risiken =="
+- Alle gefolgt von allgemeinen Aussagen ohne konkrete Fakten, Zahlen oder Belege
+
+**Warum LLMs das tun:** Nachahmung formaler akademischer und journalistischer Strukturen. Standard-Kapitel füllen Platz, wo keine konkrete Information verfügbar ist.
+
+**Lösung:** Entweder streichen oder mit spezifischen Fakten, Zahlen und Belegen füllen. Im Zweifel: Substanz in bestehende thematische Kapitel integrieren, Standard-Überschrift entfernen.
+
+**Beispiel:**
+
+❌ Schlecht:
+> == Zukunftsperspektiven ==
+>
+> Die Zukunft der Technologie ist vielversprechend. Experten erwarten weitere Fortschritte und neue Einsatzmöglichkeiten. Unternehmen sollten sich frühzeitig auf die Veränderungen einstellen.
+
+✓ Besser: Abschnitt streichen oder durch konkrete Entwicklungsprognosen mit Quelle ersetzen (z. B. „Der VDMA erwartet bis 2030 ein Marktwachstum von 12 Prozent jährlich.").
+
+#### 45. Anglizismus-Strukturen [MEDIUM]
+
+**Kategorie:** Sprache und Tonfall
+
+**Problem:** KI übersetzt englische Satzmuster wörtlich ins Deutsche. Grammatikalisch oft korrekt, stilistisch aber ungelenk und typisch für maschinelle Übersetzung.
+
+Häufige Indikatoren:
+- „macht Sinn" (makes sense) – deutsch: „ergibt Sinn"
+- „in Bezug auf" als Füllphrase statt schlichter Präposition („zu", „bei", „für")
+- „basiert auf" übernutzt, wo „beruht auf" oder „folgt" präziser wäre
+- „realisieren" im Sinne von „erkennen" / „merken" (to realize)
+- Unnötiges Possessivpronomen: „seine Bedeutung" wo Deutsch ohne auskommt („die Bedeutung")
+- „Am Ende des Tages" (at the end of the day) als Schlussformel
+- „in Reihenfolge zu" / „um zu … in der Lage zu sein" (in order to)
+- „adressieren" im Sinne von „angehen" / „behandeln" (to address)
+
+**Warum LLMs das tun:** Englisches Trainingsmaterial dominiert. Deutsche Ausgaben folgen englischen Strukturen und Kollokationen, weil das Modell zwischen Sprachen nicht sauber trennt.
+
+**Lösung:** Durch natürliche deutsche Formulierungen ersetzen. Im Zweifel: Wie würde ein Muttersprachler den Satz formulieren, ohne englisches Original im Kopf?
+
+**Beispiel:**
+
+❌ Schlecht: „Das Konzept macht Sinn in Bezug auf die aktuelle Marktsituation und basiert auf den Annahmen seiner Gründer."
+
+✓ Besser: „Das Konzept passt zur aktuellen Marktsituation und folgt den Annahmen der Gründer."
+
 ## Quick Checklist (Vor-Ausgabe-Audit)
 
 Vor der Ausgabe schnell prüfen:
@@ -803,6 +911,10 @@ Vor der Ausgabe schnell prüfen:
 - [ ] "Darüber hinaus" / "Jedoch" / "Ferner"? → Streichen oder umformulieren
 - [ ] Regel der Drei? → Auf 2 oder 4 ändern
 - [ ] Passiv wo Aktiv möglich wäre? → Akteur benennen (Muster 39)
+- [ ] Quelle belegt die Aussage tatsächlich? → Prüfen oder `[BELEG PRÜFEN]` markieren (Muster 42)
+- [ ] Unsichtbare Unicode-Zeichen im Text? → Entfernen (Muster 43)
+- [ ] Generische Kapitelüberschriften („Herausforderungen", „Zukunftsperspektiven")? → Streichen oder füllen (Muster 44)
+- [ ] Englische Satzmuster wörtlich übersetzt („macht Sinn")? → Natürliches Deutsch (Muster 45)
 
 ## Persönlichkeit und Stimme
 
@@ -832,6 +944,7 @@ Achten Sie deshalb zusätzlich auf:
 - Nie Muster bearbeiten, die 3+ Mal konsistent auftreten – stattdessen markieren.
 - Nie kürzen. Die Ausgabe muss alles abdecken, was das Original enthält. Sätze umschreiben, nicht löschen.
 - Wenn der Text bereits sauber ist: das sagen und aufhören.
+- **Kombinations-Prinzip:** Ein einzelnes Muster ist selten aussagekräftig. Erst die Kombination mehrerer Muster – besonders aus unterschiedlichen Kategorien (Sprache + Struktur + Evidenz) – rechtfertigt eine substanzielle Überarbeitung. Einzelbefunde ohne Häufung können bewusste stilistische Entscheidungen sein und sollten mit Augenmaß behandelt werden.
 - **Geltungsbereich:** Arbeitet auf direkt übergebenem Text. Dateibasierte Nutzung erfordert Read/Write in `allowed_tools`.
 
 ## Ausgabeformat
