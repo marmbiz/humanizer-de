@@ -57,7 +57,7 @@ Wenn Sie einen Text humanisieren, arbeiten Sie in dieser Reihenfolge:
 5. **Stimme einbringen**, wenn Modus Locker.
 6. **Nie Substanz kürzen.** Sachliche Aussagen und Informationsgehalt des Originals bleiben erhalten; Sätze umschreiben statt streichen. **Ausgenommen:** KI-Artefakte ohne Informationsgehalt, deren Lösung im jeweiligen Muster explizit „entfernen" oder „löschen" lautet (u. a. Muster 2, 3, 6, 17, 18, 19, 20, 21, 22, 24, 43). Diese Artefakte werden bereinigt, nicht umgeschrieben – das ist keine Substanzkürzung. Absatzanzahl und Informationsgehalt bleiben im substanztragenden Teil unverändert.
 7. **NICHT ANFASSEN prüfen** – Verstöße rückgängig machen.
-8. **Gedankenstrich-Scan**: Text nach gehäuften Gedankenstrichen (–, —, --) durchsuchen. Mehr als ein Gedankenstrich pro Absatz → ersetzen (siehe Muster 16).
+8. **Gedankenstrich-Scan**: Text nach gehäuften Gedankenstrichen (–, —, --) durchsuchen. Mehr als ein Gedankenstrich pro Absatz → ersetzen (siehe Muster 16, inkl. Ausnahme „Kein Problem, wenn"). Bei konsistenter Häufung über 3+ Absätze gilt die Leitplanke zu weichen Mustern: markieren statt automatisch umschreiben.
 9. **Finaler Anti-KI-Pass**: "Was macht den Text noch offensichtlich KI-generiert?" Kurze, konkrete Tells benennen. Dann: "Jetzt so umschreiben, dass es nicht offensichtlich KI-generiert wirkt." Zweite Überarbeitung liefern.
 
 ## Stimmkalibrierung (optional)
@@ -927,8 +927,8 @@ Harte Indikatoren (klare Tells):
 
 Vor der Ausgabe schnell prüfen:
 
-- [ ] Drei aufeinanderfolgende Sätze gleiche Länge? → Einen aufbrechen
-- [ ] Absatz endet mit kurzem Einzeiler? → Ending variieren
+- [ ] Drei aufeinanderfolgende Sätze gleiche Länge, ohne dass eine Stimmprobe diesen Rhythmus vorgibt? → Einen aufbrechen
+- [ ] Generischer, inhaltsloser Einzeiler direkt nach einer Überschrift? → Entfernen oder integrieren (Muster 34). Bewusste Punchlines am Absatzende sind davon ausgenommen.
 - [ ] Gedankenstrich vor einer "Enthüllung"? → Ersetzen (Muster 16)
 - [ ] Metapher wird unmittelbar danach redundant erklärt? → Redundanz auflösen, Substanz erhalten
 - [ ] "Darüber hinaus" / "Jedoch" / "Ferner" mechanisch? → Streichen oder umformulieren (Muster 4)
@@ -937,7 +937,7 @@ Vor der Ausgabe schnell prüfen:
 - [ ] Quelle geprüft und belegt die Aussage? → Bei nachweisbarer Inkongruenz `[BELEG PRÜFEN]` markieren; bei nicht prüfbarer Quelle keine Kongruenz-Diagnose (Muster 42)
 - [ ] Unsichtbare Unicode-Zeichen im Text? → Entfernen (Muster 43)
 - [ ] Standard-Kapitel mit unbelegtem Fülltext? → Konkretisieren, umwidmen, integrieren, oder bei echter Substanzlosigkeit mit `[SUBSTANZ PRÜFEN]` markieren und stehen lassen (Muster 44)
-- [ ] Calques (z. B. „am Ende des Tages", „in Reihenfolge zu")? → Im Modus Locker ggf. zulässig, sonst durch natürliches Deutsch ersetzen (Muster 45)
+- [ ] Calques (z. B. „am Ende des Tages", „in Reihenfolge zu")? → Registerabhängig: im Formal-Modus ersetzen; in Locker und Sachlich nur bei Häufung oder auffälliger Wörtlichkeit (Muster 45)
 - [ ] False Friends („eventuell" im Sinn „schließlich", „aktuell" im Sinn „tatsächlich", „sensibel" im Sinn „vernünftig")? → Immer korrigieren, unabhängig vom Modus (Muster 45)
 
 ## Persönlichkeit und Stimme
