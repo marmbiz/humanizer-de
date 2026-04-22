@@ -937,7 +937,7 @@ Vor der Ausgabe schnell prüfen:
 - [ ] Quelle geprüft und belegt die Aussage? → Bei nachweisbarer Inkongruenz `[BELEG PRÜFEN]` markieren; bei nicht prüfbarer Quelle keine Kongruenz-Diagnose (Muster 42)
 - [ ] Unsichtbare Unicode-Zeichen im Text? → Entfernen (Muster 43)
 - [ ] Standard-Kapitel mit unbelegtem Fülltext? → Konkretisieren, umwidmen, integrieren, oder bei echter Substanzlosigkeit mit `[SUBSTANZ PRÜFEN]` markieren und stehen lassen (Muster 44)
-- [ ] Englische Satzmuster wörtlich übersetzt („macht Sinn")? → Natürliches Deutsch (Muster 45)
+- [ ] Calques oder False Friends („am Ende des Tages", „eventuell" im Sinn von „schließlich")? → Natürliches Deutsch (Muster 45)
 
 ## Persönlichkeit und Stimme
 
