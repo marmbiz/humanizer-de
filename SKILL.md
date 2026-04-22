@@ -41,7 +41,7 @@ Oder direkt: "Humanisiere diesen Text" oder "Entferne KI-Muster aus diesem Absch
 |---|---|---|
 | **Locker** | Blogposts, Social Media, Newsletter | Voll – Rhythmus, Meinung, Persönlichkeit hinzufügen |
 | **Sachlich** | Geschäftsberichte, Produktdokumentation, E-Mails | Moderat – KI-Tells entfernen, neutral bleiben |
-| **Formal** | Wissenschaftliche Arbeiten, juristische Texte, Fachdokumentation | Minimal – nur Tells entfernen, Struktur erhalten |
+| **Formal** | Wissenschaftliche Arbeiten, juristische Texte, Fachdokumentation | Nicht anwenden – nur Tells entfernen, Struktur erhalten |
 
 Im Zweifel: **Sachlich** annehmen und die Annahme benennen.
 „Stimme einbringen" ist modusabhängig: **voll** im Modus **Locker**, **dezent/moderat** im Modus **Sachlich** (nur so weit, wie es die Neutralität nicht gefährdet), **gar nicht** im Modus **Formal** – dort schadet es aktiv.
@@ -57,7 +57,7 @@ Wenn Sie einen Text humanisieren, arbeiten Sie in dieser Reihenfolge:
 5. **Stimme einbringen** modusabhängig: voll im Locker, dezent im Sachlich, gar nicht im Formal.
 6. **Nie Substanz kürzen.** Sachliche Aussagen und Informationsgehalt des Originals bleiben erhalten; Sätze umschreiben statt streichen. **Ausgenommen:** KI-Artefakte ohne Informationsgehalt, deren Lösung im jeweiligen Muster explizit „entfernen" oder „löschen" lautet (u. a. Muster 2, 3, 6, 17, 18, 19, 20, 21, 22, 24, 43). Diese Artefakte werden bereinigt, nicht umgeschrieben – das ist keine Substanzkürzung. Absatzanzahl und Informationsgehalt bleiben im substanztragenden Teil unverändert.
 7. **NICHT ANFASSEN prüfen** – Verstöße rückgängig machen.
-8. **Gedankenstrich-Scan**: Text nach gehäuften Gedankenstrichen (–, —, --) durchsuchen. Mehr als ein Gedankenstrich pro Absatz → ersetzen (siehe Muster 16, inkl. Ausnahme „Kein Problem, wenn"). Bei konsistenter Häufung über 3+ Absätze gilt die Leitplanke zu weichen Mustern: markieren statt automatisch umschreiben.
+8. **Gedankenstrich-Scan**: Text nach gehäuften Gedankenstrichen (–, —, --) durchsuchen. Mehr als ein Gedankenstrich pro Absatz → ersetzen (siehe Muster 16, inkl. Ausnahme „Kein Problem, wenn"). Greift zusätzlich der Fall weicher Musterhäufung aus „Nicht anfassen", geht jene Leitplanke vor (dort sind auch die Carve-outs definiert).
 9. **Finaler Anti-KI-Pass**: "Was macht den Text noch offensichtlich KI-generiert?" Kurze, konkrete Tells benennen. Dann: "Jetzt so umschreiben, dass es nicht offensichtlich KI-generiert wirkt." Zweite Überarbeitung liefern.
 
 ## Stimmkalibrierung (optional)
@@ -929,7 +929,7 @@ Vor der Ausgabe schnell prüfen:
 
 - [ ] Drei aufeinanderfolgende Sätze gleiche Länge, ohne dass eine Stimmprobe diesen Rhythmus vorgibt? → Einen aufbrechen
 - [ ] Generischer, inhaltsloser Einzeiler direkt nach einer Überschrift? → Entfernen oder integrieren (Muster 34). Bewusste Punchlines am Absatzende sind davon ausgenommen.
-- [ ] Gedankenstrich vor einer „Enthüllung" als wiederkehrendes Muster (mehrfach im Text oder mehr als einer pro Absatz)? → Ersetzen (Muster 16). Ein einzelner, bewusst gesetzter Gedankenstrich ist zulässig. Bei konsistenter Häufung über 3+ Absätze stattdessen markieren (Leitplanke weiche Muster).
+- [ ] Gedankenstrich vor einer „Enthüllung" als wiederkehrendes Muster (mehrfach im Text oder mehr als einer pro Absatz)? → Ersetzen (Muster 16). Ein einzelner, bewusst gesetzter Gedankenstrich ist zulässig. Greift zugleich „Nicht anfassen" (weiche Musterhäufung), geht diese Leitplanke vor.
 - [ ] Metapher wird unmittelbar danach redundant erklärt? → Redundanz auflösen, Substanz erhalten
 - [ ] "Darüber hinaus" / "Jedoch" / "Ferner" mechanisch? → Streichen oder umformulieren (Muster 4)
 - [ ] Regel der Drei ohne sachlichen Grund? → Auf 2 oder 4 ändern (Muster 9)
@@ -944,7 +944,7 @@ Vor der Ausgabe schnell prüfen:
 
 Ein "sauberer" Text ohne KI-Muster ist noch nicht automatisch menschlich. Zu glatte Texte bleiben verdächtig.
 
-**Hinweis:** Stimme einbringen gilt nur im Modus **Locker**. Im Modus **Sachlich** dezent halten. Im Modus **Formal** nicht anwenden.
+**Hinweis:** Stimme einbringen ist modusabhängig (siehe Schritt 0 und Ablauf 5): voll im **Locker**, dezent im **Sachlich**, nicht im **Formal**.
 
 Achten Sie deshalb zusätzlich auf:
 - Variierendes Satztempo (kurz/lang gemischt)
