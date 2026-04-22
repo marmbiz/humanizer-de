@@ -44,7 +44,7 @@ Oder direkt: "Humanisiere diesen Text" oder "Entferne KI-Muster aus diesem Absch
 | **Formal** | Wissenschaftliche Arbeiten, juristische Texte, Fachdokumentation | Minimal – nur Tells entfernen, Struktur erhalten |
 
 Im Zweifel: **Sachlich** annehmen und die Annahme benennen.
-"Stimme einbringen" gilt nur für den Modus **Locker**. Im Modus **Formal** schadet es aktiv.
+„Stimme einbringen" ist modusabhängig: **voll** im Modus **Locker**, **dezent/moderat** im Modus **Sachlich** (nur so weit, wie es die Neutralität nicht gefährdet), **gar nicht** im Modus **Formal** – dort schadet es aktiv.
 
 ## Aufgabe und Ablauf
 
@@ -54,7 +54,7 @@ Wenn Sie einen Text humanisieren, arbeiten Sie in dieser Reihenfolge:
 2. **HIGH-Muster scannen.** Alle korrigieren. (Muster 10: im Formal-Modus überspringen.)
 3. **MEDIUM-Muster scannen.** Je nach Modus korrigieren.
 4. **LOW-Muster scannen.** Korrigieren wenn klar vorhanden; im Formal-Modus überspringen.
-5. **Stimme einbringen**, wenn Modus Locker.
+5. **Stimme einbringen** modusabhängig: voll im Locker, dezent im Sachlich, gar nicht im Formal.
 6. **Nie Substanz kürzen.** Sachliche Aussagen und Informationsgehalt des Originals bleiben erhalten; Sätze umschreiben statt streichen. **Ausgenommen:** KI-Artefakte ohne Informationsgehalt, deren Lösung im jeweiligen Muster explizit „entfernen" oder „löschen" lautet (u. a. Muster 2, 3, 6, 17, 18, 19, 20, 21, 22, 24, 43). Diese Artefakte werden bereinigt, nicht umgeschrieben – das ist keine Substanzkürzung. Absatzanzahl und Informationsgehalt bleiben im substanztragenden Teil unverändert.
 7. **NICHT ANFASSEN prüfen** – Verstöße rückgängig machen.
 8. **Gedankenstrich-Scan**: Text nach gehäuften Gedankenstrichen (–, —, --) durchsuchen. Mehr als ein Gedankenstrich pro Absatz → ersetzen (siehe Muster 16, inkl. Ausnahme „Kein Problem, wenn"). Bei konsistenter Häufung über 3+ Absätze gilt die Leitplanke zu weichen Mustern: markieren statt automatisch umschreiben.
@@ -929,7 +929,7 @@ Vor der Ausgabe schnell prüfen:
 
 - [ ] Drei aufeinanderfolgende Sätze gleiche Länge, ohne dass eine Stimmprobe diesen Rhythmus vorgibt? → Einen aufbrechen
 - [ ] Generischer, inhaltsloser Einzeiler direkt nach einer Überschrift? → Entfernen oder integrieren (Muster 34). Bewusste Punchlines am Absatzende sind davon ausgenommen.
-- [ ] Gedankenstrich vor einer „Enthüllung" als wiederkehrendes Muster (mehrfach im Text oder mehr als einer pro Absatz)? → Ersetzen (Muster 16). Ein einzelner, bewusst gesetzter Gedankenstrich ist zulässig.
+- [ ] Gedankenstrich vor einer „Enthüllung" als wiederkehrendes Muster (mehrfach im Text oder mehr als einer pro Absatz)? → Ersetzen (Muster 16). Ein einzelner, bewusst gesetzter Gedankenstrich ist zulässig. Bei konsistenter Häufung über 3+ Absätze stattdessen markieren (Leitplanke weiche Muster).
 - [ ] Metapher wird unmittelbar danach redundant erklärt? → Redundanz auflösen, Substanz erhalten
 - [ ] "Darüber hinaus" / "Jedoch" / "Ferner" mechanisch? → Streichen oder umformulieren (Muster 4)
 - [ ] Regel der Drei ohne sachlichen Grund? → Auf 2 oder 4 ändern (Muster 9)
@@ -965,7 +965,7 @@ Achten Sie deshalb zusätzlich auf:
 - Nie eine Quelle erfinden. Echte Quelle, markieren, oder entfernen.
 - Nie Stimme in formale/akademische Texte einbringen.
 - Nie direkte Zitate von echten Personen bearbeiten.
-- Nie **weiche stilistische Muster** (MEDIUM/LOW) bearbeiten, die 3+ Mal konsistent auftreten – stattdessen markieren. HIGH-Muster, Strukturbefunde (21–24, 43), belegbezogene Befunde (11, 26, 42) und False Friends (45) sind ausgenommen und bleiben einzeln zu korrigieren.
+- Für weiche stilistische Muster, die 3+ Mal konsistent auftreten, gilt der Abschnitt „Nicht anfassen" (inkl. der dort genannten Carve-outs für HIGH, Strukturbefunde, Belege und False Friends). Nicht separat neu definieren.
 - Nie **Substanz** kürzen. Sachliche Aussagen und Informationsgehalt bleiben erhalten; Sätze umschreiben statt streichen. Artefakte ohne Informationsgehalt, deren Lösung im Muster explizit „entfernen/löschen" lautet (u. a. Muster 2, 3, 6, 17, 18, 19, 20, 21, 22, 24, 43), sind davon ausgenommen.
 - Wenn der Text bereits sauber ist: das sagen und aufhören.
 - **Kombinations-Prinzip:** Gilt nur für die **stilistische Gesamtdiagnose** „wirkt der Text KI-generiert?". Für diese Einschätzung ist ein einzelnes weiches Muster selten aussagekräftig – erst die Kombination mehrerer stilistischer Muster aus unterschiedlichen Kategorien rechtfertigt eine breite Überarbeitung. **Ausgenommen:** Technische/strukturelle Befunde (Muster 21, 22, 23, 24, 43), belegbezogene Befunde (Muster 11, 26, 42) und eindeutige Regelverstöße dürfen und sollen schon als Einzelbefund korrigiert werden. HIGH-Muster bleiben wie in Schritt 2 des Ablaufs beschrieben einzeln zu scannen.
