@@ -1,7 +1,7 @@
 ---
 name: Humanizer (Deutsch)
-description: Erkennt und entfernt KI-generierte Schreibmuster aus deutschsprachigen Texten. Basierend auf Wikipedia-Leitlinien (Anzeichen für KI-generierte Inhalte, Erkennung KI-Einsatz, Schnelltest KI), inklusive zweitem Anti-KI-Audit-Durchlauf und optionaler Stimmkalibrierung. Erkennt u.a. aufgeblähte Symbolik, Werbesprache, mechanische Konjunktionen, vage Autoritäten, Gedankenstriche-Übernutzung, Trikolon, KI-Vokabular, negative Parallelismen, Passivkonstruktionen, persuasive Floskeln, Signposting, fragmentierte Überschriften, rhetorische Fake-Fragen, Menschheits-Eröffnungen, "heutige Welt"-Framing, aspirative Unternehmensschlüsse, Konditional-Stapel, fehlkalibriertes epistemisches Vertrauen, Beleginkongruenz, versteckte Unicode-Zeichen, Standard-Kapitel ohne Substanz und Anglizismus-Strukturen.
-version: 3.2.4-de.1
+description: Erkennt und entfernt KI-generierte Schreibmuster aus deutschsprachigen Texten. Basierend auf Wikipedia-Leitlinien (Anzeichen für KI-generierte Inhalte, Erkennung KI-Einsatz, Schnelltest KI), inklusive zweitem Anti-KI-Audit-Durchlauf und optionaler Stimmkalibrierung. Erkennt u.a. aufgeblähte Symbolik, Werbesprache, mechanische Konjunktionen, vage Autoritäten, Gedankenstriche-Übernutzung, Trikolon, KI-Vokabular, negative Parallelismen, Passivkonstruktionen, persuasive Floskeln, Signposting, fragmentierte Überschriften, rhetorische Fake-Fragen, Menschheits-Eröffnungen, "heutige Welt"-Framing, aspirative Unternehmensschlüsse, Konditional-Stapel, fehlkalibriertes epistemisches Vertrauen, Beleginkongruenz, versteckte Unicode-Zeichen, Standard-Kapitel ohne Substanz und Anglizismus-Strukturen. Neu: falsche deutsche Anführungszeichen, englische Titel-Großschreibung, Dezimal-/Datumsformat, Apostroph-Fehler, Stichpunkt-Interpunktion, obsessive Parataxe.
+version: 3.3.0-de.1
 author: Martin Moeller
 maintainer_website: "https://www.martin-moeller.biz"
 based_on: "Deutsche Wikipedia: Anzeichen für KI-generierte Inhalte, Erkennung KI-Einsatz, Schnelltest KI"
@@ -129,8 +129,14 @@ Wenn der Benutzer eine Schreibprobe mitliefert (eigener Text), analysieren Sie d
 | 43 | Versteckte Unicode-Zeichen | HIGH | Zero-Width-Space (U+200B), Soft-Hyphen, BOM, Bidi-Controls (U+202A–E, U+2066–9) |
 | 44 | Standard-Kapitel ohne Substanz | MEDIUM | Standard-Überschrift + unbelegter Fülltext; nicht kürzen, sondern konkretisieren/integrieren |
 | 45 | Anglizismus-Strukturen | MEDIUM | Harte Calques & False Friends: "am Ende des Tages", "eventuell" = "schließlich", "aktuell" = "tatsächlich" |
+| 46 | Falsche deutsche Anführungszeichen | HIGH | Schließendes „ falsch: „Text" statt „Text" (U+201E/U+201C) |
+| 47 | Englische Titel-Großschreibung | MEDIUM | "Die Neue KI Strategie" statt Satzschreibung |
+| 48 | Englisches Dezimalformat und Datumsformat | LOW | "3.5" statt "3,5"; "May 12" statt "12. Mai" |
+| 49 | Apostroph-Fehler | MEDIUM | "Peter's" statt "Peters", englisches Genitiv-Apostroph |
+| 50 | Interpunktion bei Stichpunkt-Aufzählungen | LOW | Großbuchstaben und Punkte bei reinen Stichworten |
+| 51 | Obsessive Parataxe | MEDIUM | Zu viele gleichförmige Hauptsätze ohne Subordination |
 
-## Die 45 Muster
+## Die 51 Muster
 
 ### Sprache und Tonfall (12 Muster)
 
@@ -843,13 +849,14 @@ Häufige Indikatoren:
 - Zero-Width Non-Joiner (U+200C)
 - Zero-Width Joiner (U+200D)
 - Word Joiner (U+2060)
+- Invisible Mathematical Operators: Function Application (U+2061), Invisible Times (U+2062), Invisible Separator (U+2063), Invisible Plus (U+2064) - werden teils als KI-Wasserzeichen eingesetzt
 - Byte Order Mark (U+FEFF) mitten im Text
 - Soft-Hyphen (U+00AD) an ungewöhnlichen Stellen
-- Bidi-Steuerzeichen: U+202A–U+202E (Left/Right-to-Left Embedding/Override/Pop), U+2066–U+2069 (Isolates)
+- Bidi-Steuerzeichen: U+202A-U+202E (Left/Right-to-Left Embedding/Override/Pop), U+2066-U+2069 (Isolates)
 
 **Warum LLMs das tun:** Modelle produzieren gelegentlich Tokens mit unsichtbaren Sonderzeichen. Copy-Paste aus KI-Oberflächen schleppt zusätzliche Formatierungsartefakte mit. Bidi-Controls können auch gezielt zur Verschleierung von Prompt-Inhalten genutzt werden.
 
-**Lösung:** Regex-Scan auf `[\u200B-\u200D\u2060\uFEFF\u00AD\u202A-\u202E\u2066-\u2069]` und ersatzlos entfernen. Nicht verwechseln mit legitimen Unicode-Gebrauchsfällen: U+00A0 (geschütztes Leerzeichen) in stehenden Wendungen wie „5 km" oder „§ 12" ist korrekt und gehört nicht in dieses Muster.
+**Lösung:** Regex-Scan auf `[\u200B-\u200D\u2060-\u2064\uFEFF\u00AD\u202A-\u202E\u2066-\u2069]` und ersatzlos entfernen. U+2061-U+2064 (Invisible Mathematical Operators: Function Application, Invisible Times, Invisible Separator, Invisible Plus) werden von einigen KI-Tools als unsichtbare Wasserzeichen eingesetzt. Nicht verwechseln mit legitimen Unicode-Gebrauchsfällen: U+00A0 (geschütztes Leerzeichen) in stehenden Wendungen wie „5 km" oder „§ 12" ist korrekt und gehört nicht in dieses Muster.
 
 #### 44. Standard-Kapitel ohne Substanz [MEDIUM]
 
@@ -923,6 +930,125 @@ Harte Indikatoren (klare Tells):
 
 ✓ Besser: „Schließlich erkannte das Team, dass die Strategie tatsächlich nicht trug."
 
+### Typografie und Format (6 Muster)
+
+#### 46. Falsche deutsche Anführungszeichen [HIGH]
+
+**Kategorie:** Typografie
+
+**Problem:** Claude und andere KI-Modelle setzen das schließende deutsche Anführungszeichen systematisch falsch. Korrekt ist: öffnend „ (U+201E, doppeltes tiefes Anführungszeichen) und schließend " (U+201C, doppeltes oberes Anführungszeichen links). Stattdessen produziert Claude oft " (U+201D, doppeltes oberes Anführungszeichen rechts) als Schlusszeichen, oder mischt englische Anführungszeichen ein. Dieses Problem ist per Prompt nicht zuverlässig behebbar und erfordert Post-Processing.
+
+Korrekte deutsche Paare:
+- Doppelt: „Text" (U+201E ... U+201C)
+- Einfach: ‚Text' (U+201A ... U+2018)
+- Guillemets DE/AT: »Text« (U+00BB ... U+00AB)
+- Guillemets CH: «Text» (U+00AB ... U+00BB)
+
+Häufige Fehler:
+- „Text" (schließendes Zeichen U+201D statt U+201C)
+- "Text" (englische Anführungszeichen statt deutscher)
+- "Text" (gerade ASCII-Anführungszeichen)
+- Gemischte Stile innerhalb eines Dokuments
+
+**Warum LLMs das tun:** Vermutlich Tokenisierung, Post-Processing oder UI-Rendering. Englische Trainingsmaterial dominiert die Zeichenwahl. Per Prompt nicht zuverlässig lösbar.
+
+**Lösung:** Post-Processor/Linter einsetzen. Prüflogik: jedes öffnende „ (U+201E) muss ein schließendes " (U+201C) haben. Gerade Quotes ("...") als "nicht typografisch" markieren. Gemischte Stile flaggen.
+
+#### 47. Englische Titel-Großschreibung [MEDIUM]
+
+**Kategorie:** Typografie
+
+**Problem:** KI überträgt die englische Title-Case-Konvention ins Deutsche: "Die Neue KI Strategie Für Unternehmen". Im Deutschen gilt Satzschreibung: nur das erste Wort und Substantive werden großgeschrieben.
+
+Häufige Indikatoren:
+- Adjektive, Verben oder Präpositionen in Überschriften großgeschrieben
+- "Der Komplette Leitfaden Für Modernes Marketing"
+- "Wie Unternehmen Von KI Profitieren Können"
+
+**Warum LLMs das tun:** Englisches Title Case ist im Trainingsmaterial dominant. Deutsche Überschriften-Konvention wird nicht konsistent gelernt.
+
+**Lösung:** In Überschriften nur Substantive und Satzanfang großschreiben. Prüffrage: Steht hier ein Substantiv, oder wurde ein englisches Muster übernommen?
+
+**Beispiel:**
+
+❌ Schlecht: "Die Zukunft Der Digitalen Transformation Im Mittelstand"
+
+✓ Besser: "Die Zukunft der digitalen Transformation im Mittelstand"
+
+#### 48. Englisches Dezimalformat und Datumsformat [LOW]
+
+**Kategorie:** Typografie
+
+**Problem:** KI verwendet englische Zahlen- und Datumsformate in deutschen Texten.
+
+Häufige Indikatoren:
+- Dezimalpunkt statt Komma: "3.5 Prozent" statt "3,5 Prozent"
+- Tausenderpunkt fehlt oder falsch: "15000" statt "15.000"
+- Englisches Datumsformat: "May 12, 2026" statt "12. Mai 2026"
+- Monatsnamen auf Englisch in deutschem Fließtext
+
+**Warum LLMs das tun:** Englische Formatkonventionen aus dem Trainingsmaterial bluten in deutsche Outputs.
+
+**Lösung:** Dezimalkomma verwenden (3,5 statt 3.5). Tausenderpunkt setzen (15.000). Datumsformat: TT. Monat JJJJ.
+
+#### 49. Apostroph-Fehler [MEDIUM]
+
+**Kategorie:** Typografie
+
+**Problem:** KI überträgt den englischen Genitiv-Apostroph ins Deutsche. Im Deutschen steht kein Apostroph vor dem Genitiv-s, außer bei Eigennamen die auf s, x, z, ce enden (dort als Auslassungszeichen).
+
+Häufige Indikatoren:
+- "Martin's Profil" statt "Martins Profil"
+- "Peter's Projekt" statt "Peters Projekt"
+- "das Team's Ergebnis" statt "das Teamergebnis" / "das Ergebnis des Teams"
+- Korrektes Apostroph bei: "Hans' Auto", "Marx' Theorie" (Auslassung bei s/x/z-Endung)
+
+**Warum LLMs das tun:** Englisches Possessiv-Apostroph-Muster wird auf deutsche Texte übertragen.
+
+**Lösung:** Genitiv-Apostroph entfernen, außer bei s/x/z/ce-Endungen. Korrektes Zeichen verwenden: ' (U+2019, typografisches Apostroph), nicht ' (U+0027, gerades Apostroph).
+
+#### 50. Interpunktion bei Stichpunkt-Aufzählungen [LOW]
+
+**Kategorie:** Typografie
+
+**Problem:** KI setzt Punkte ans Ende reiner Stichwort-Aufzählungen und beginnt Stichwörter mit Großbuchstaben, auch wenn es keine vollständigen Sätze sind.
+
+Häufige Indikatoren:
+- Punkte am Ende jedes Stichpunkts bei reinen Stichworten
+- Großbuchstabe am Anfang, obwohl kein vollständiger Satz
+- Inkonsistente Mischung: manche Stichpunkte mit Punkt, manche ohne
+
+Deutsche Konvention:
+- Vollständige Sätze: Großbuchstabe + Punkt am Ende
+- Stichwörter/Fragmente: Kleinbuchstabe (es sei denn Substantiv), kein Punkt
+- Konsistenz innerhalb einer Liste ist wichtiger als die Regel selbst
+
+**Warum LLMs das tun:** Englische Konventionen und inkonsistentes Trainingsmaterial.
+
+**Lösung:** Innerhalb einer Liste konsistent bleiben. Bei reinen Stichworten: kein Punkt am Ende. Nur bei vollständigen Sätzen: Punkt.
+
+#### 51. Obsessive Parataxe [MEDIUM]
+
+**Kategorie:** Stil
+
+**Problem:** KI produziert lange Passagen mit ausschließlich Hauptsätzen gleicher Struktur. Kein Nebensatz, keine Subordination, kein Satzgefüge. Der Text wirkt monoton und roboterhaft, obwohl jeder einzelne Satz korrekt ist.
+
+Häufige Indikatoren:
+- 4+ aufeinanderfolgende Hauptsätze ohne Nebensatz
+- Alle Sätze beginnen mit Subjekt-Verb
+- Gleiche Satzlänge über mehrere Sätze
+- Fehlende Konnektoren wie "weil", "obwohl", "damit", "sodass", "nachdem"
+
+**Warum LLMs das tun:** Kurze, klare Hauptsätze erzielen bei Evaluations hohe Lesbarkeits-Scores. Das Modell optimiert auf Verständlichkeit, nicht auf Rhythmus.
+
+**Lösung:** Mindestens jeden dritten Satz als Satzgefüge umbauen (Haupt- + Nebensatz). Variation in Satzlänge und -anfang einführen. Nicht alle Sätze gleich lang machen. **Stilwahl-Carve-out:** Wenn der Autor bewusst kurze, stakkatohafte Hauptsätze als Stilmittel einsetzt (z.B. in Werbe- oder Manifesto-Texten), greift die "Nicht anfassen"-Regel (weiche Musterhäufung, 3+ Mal konsistent).
+
+**Beispiel:**
+
+❌ Schlecht: "Das Team analysierte die Daten. Die Ergebnisse waren eindeutig. Die Conversion stieg um 25 Prozent. Das Projekt wurde im Budget abgeschlossen."
+
+✓ Besser: "Das Team analysierte die Daten und kam zu einem eindeutigen Ergebnis: Die Conversion stieg um 25 Prozent, obwohl das Projekt im Budget blieb."
+
 ## Quick Checklist (Vor-Ausgabe-Audit)
 
 Vor der Ausgabe schnell prüfen:
@@ -939,6 +1065,12 @@ Vor der Ausgabe schnell prüfen:
 - [ ] Standard-Kapitel mit unbelegtem Fülltext? → Konkretisieren, umwidmen, integrieren, oder bei echter Substanzlosigkeit mit `[SUBSTANZ PRÜFEN]` markieren und stehen lassen (Muster 44)
 - [ ] Calques (z. B. „am Ende des Tages", „in Reihenfolge zu")? → Registerabhängig: im Formal-Modus ersetzen; in Locker und Sachlich nur bei Häufung oder auffälliger Wörtlichkeit (Muster 45)
 - [ ] False Friends („eventuell" im Sinn „schließlich", „aktuell" im Sinn „tatsächlich", „sensibel" im Sinn „vernünftig")? → Immer korrigieren, unabhängig vom Modus (Muster 45)
+- [ ] Anführungszeichen korrekt? „Text" mit U+201E/U+201C, nicht „Text" mit U+201D? → Post-Processor nötig (Muster 46)
+- [ ] Englische Title-Case-Großschreibung in Überschriften? → Deutsche Satzschreibung verwenden (Muster 47)
+- [ ] Dezimalpunkt statt -komma, englische Datumsformate? → Korrigieren (Muster 48)
+- [ ] Englischer Genitiv-Apostroph ("Martin's")? → Entfernen außer bei s/x/z-Endung (Muster 49)
+- [ ] Punkte am Ende von Stichwort-Bullets ohne vollständige Sätze? → Entfernen, Konsistenz prüfen (Muster 50)
+- [ ] 4+ gleichförmige Hauptsätze ohne Subordination? → Satzgefüge einbauen (Muster 51)
 
 ## Persönlichkeit und Stimme
 
