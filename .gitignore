@@ -15,3 +15,5 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.bak
+__pycache__/
+*.pyc

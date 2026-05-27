@@ -2,7 +2,7 @@
 
 KI-Schreibmuster erkennen und entfernen. Für deutschsprachige Texte.
 
-**Version:** 3.4.0-de.1
+**Version:** 3.5.0-de.1
 
 **Autor:** Martin Moeller | [www.martin-moeller.biz](https://www.martin-moeller.biz)
 
@@ -26,7 +26,7 @@ Das Skill folgt deutschen Schreibkonventionen und den Prinzipien von EEAT (Exper
 ### Option 1: Verzeichnis kopieren
 
 1. Kopieren Sie alle Dateien aus diesem Ordner nach `~/.codex/skills/humanizer-de/`
-2. Starten Sie Claude Code neu oder laden Sie die Skills neu
+2. Starten Sie Codex/Claude Code neu oder laden Sie die Skills neu
 
 ### Option 2: Symbolic Link (Linux/Mac)
 
@@ -34,19 +34,11 @@ Das Skill folgt deutschen Schreibkonventionen und den Prinzipien von EEAT (Exper
 ln -s /Users/mm/Local\ Sites/humanizer ~/.codex/skills/humanizer-de
 ```
 
-Dann Claude Code neu starten.
+Dann Codex/Claude Code neu starten.
 
 ---
 
 ## Benutzung
-
-### Mit Slash-Kommando
-
-```
-/humanizer
-```
-
-Das Skill wartet dann auf Ihren Text zum Humanisieren.
 
 ### Mit natürlicher Sprache
 
@@ -57,14 +49,12 @@ Humanisiere diesen Text für mich
 oder
 
 ```
-Entferne KI-Muster aus diesem Absatz
+Entferne KI-Muster aus diesem Absatz.
 ```
 
 ### Mit Stimmkalibrierung
 
 ```
-/humanizer
-
 Hier ist eine Probe meines Schreibstils:
 [2-3 Absätze eigenen Texts einfügen]
 
@@ -77,9 +67,7 @@ Das Skill analysiert Satzrhythmus, Wortwahl und Eigenheiten und wendet sie auf d
 ### Spezifische Muster adressieren
 
 ```
-/humanizer fokus: sprache
-
-Entferne nur sprachliche Muster, nicht die Formatierung
+Humanisiere diesen Text. Entferne nur sprachliche Muster, nicht die Formatierung.
 ```
 
 ---
@@ -90,7 +78,15 @@ Das Skill analysiert **53 verschiedene KI-Schreibmuster** in 9 Kategorien, prior
 
 ## Was ist neu?
 
-### 3.4.0-de.1 (aktuell)
+### 3.5.0-de.1 (aktuell)
+- Architektur-Upgrade: `SKILL.md` ist jetzt ein schlanker SOP-Router statt monolithischer Musterkatalog
+- Vollständiger 53er-Musterkatalog ausgelagert nach `references/patterns.md`
+- Overlap-Entscheidungen für 11/26/42/53 und 5/6/34/44 in `references/decision-tables.md`
+- Neuer Unicode-/Quote-Linter `scripts/unicode_lint.py` für Muster 43 und 46, inklusive konservativem `--fix`
+- Struktur-, Pattern-, Decision-Table- und Unicode-Tests ergänzt
+- Keine neuen Muster; v3.5 verbessert Ausführbarkeit, Kontextkosten und Verifikation
+
+### 3.4.0-de.1
 - Neue Erkennungsleitplanken: "Was NICHT zu flaggen ist" plus positive menschliche Signale
 - 2 neue Muster: Diff-verankertes Schreiben (#52), Lückenfüllende Spekulation (#53)
 - Beleg- und Substanzleitplanken für spekulative Fülltexte erweitert
@@ -388,10 +384,9 @@ Das Skill funktioniert weniger gut bei:
 
 ## Datenschutz & Sicherheit
 
-Alle Texte, die Sie diesem Skill übergeben, werden:
-- Nur in Ihrer lokalen Claude Code Umgebung verarbeitet
-- Nicht an externe Server gesendet
-- Nach der Sitzung nicht gespeichert (sofern Sie dies nicht tun)
+Dieses Repository selbst sendet keine Texte an externe Dienste. Die Verarbeitung erfolgt aber in der jeweils genutzten Agent-Umgebung (z. B. Codex oder Claude Code) und unterliegt deren Modell-, Sitzungs- und Datenschutzregeln.
+
+Lokale Dateien werden nur gespeichert, wenn Sie Änderungen ausdrücklich in Dateien schreiben lassen oder selbst speichern.
 
 ---
 
@@ -417,6 +412,7 @@ Haben Sie ein Problem gefunden oder eine Verbesserung?
 
 ## Versionshistorie
 
+- **3.5.0-de.1** - Architektur-Upgrade: schlanker SOP-Router, Musterkatalog in `references/patterns.md`, Decision Tables, Unicode-/Quote-Linter und Tests; keine neuen Muster
 - **3.4.0-de.1** - False-Positive-Guardrails; 2 neue Muster (#52–#53): Diff-verankertes Schreiben, Lückenfüllende Spekulation; Upstream PR #113 sowie v2.7.0-Ideen aus #81/#111; 53 Muster
 - **3.3.0-de.1** - 6 neue Muster (#46–#51) für Typografie und Format; Unicode-Scanner erweitert; 51 Muster
 - **3.2.4-de.1** - 4 neue Muster (#42–#45): Beleginkongruenz, versteckte Unicode-Zeichen, Standard-Kapitel ohne Substanz, Anglizismus-Strukturen; 45 Muster
