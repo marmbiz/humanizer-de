@@ -1,7 +1,7 @@
 ---
 name: Humanizer (Deutsch)
-description: Erkennt und entfernt KI-generierte Schreibmuster aus deutschsprachigen Texten. Basierend auf Wikipedia-Leitlinien (Anzeichen für KI-generierte Inhalte, Erkennung KI-Einsatz, Schnelltest KI), inklusive zweitem Anti-KI-Audit-Durchlauf und optionaler Stimmkalibrierung. Erkennt u.a. aufgeblähte Symbolik, Werbesprache, mechanische Konjunktionen, vage Autoritäten, Gedankenstriche-Übernutzung, Trikolon, KI-Vokabular, negative Parallelismen, Passivkonstruktionen, persuasive Floskeln, Signposting, fragmentierte Überschriften, rhetorische Fake-Fragen, Menschheits-Eröffnungen, "heutige Welt"-Framing, aspirative Unternehmensschlüsse, Konditional-Stapel, fehlkalibriertes epistemisches Vertrauen, Beleginkongruenz, versteckte Unicode-Zeichen, Standard-Kapitel ohne Substanz und Anglizismus-Strukturen. Neu: falsche deutsche Anführungszeichen, englische Titel-Großschreibung, Dezimal-/Datumsformat, Apostroph-Fehler, Stichpunkt-Interpunktion, obsessive Parataxe.
-version: 3.3.0-de.1
+description: Erkennt und entfernt KI-generierte Schreibmuster aus deutschsprachigen Texten. Basierend auf Wikipedia-Leitlinien (Anzeichen für KI-generierte Inhalte, Erkennung KI-Einsatz, Schnelltest KI), inklusive zweitem Anti-KI-Audit-Durchlauf, False-Positive-Guardrails und optionaler Stimmkalibrierung. Erkennt u.a. aufgeblähte Symbolik, Werbesprache, mechanische Konjunktionen, vage Autoritäten, Gedankenstriche-Übernutzung, Trikolon, KI-Vokabular, negative Parallelismen, Passivkonstruktionen, persuasive Floskeln, Signposting, fragmentierte Überschriften, rhetorische Fake-Fragen, Menschheits-Eröffnungen, "heutige Welt"-Framing, aspirative Unternehmensschlüsse, Konditional-Stapel, fehlkalibriertes epistemisches Vertrauen, Beleginkongruenz, versteckte Unicode-Zeichen, Standard-Kapitel ohne Substanz, Anglizismus-Strukturen, typografische Anglizismen, Diff-Verankerung und lückenfüllende Spekulation.
+version: 3.4.0-de.1
 author: Martin Moeller
 maintainer_website: "https://www.martin-moeller.biz"
 based_on: "Deutsche Wikipedia: Anzeichen für KI-generierte Inhalte, Erkennung KI-Einsatz, Schnelltest KI"
@@ -55,7 +55,7 @@ Wenn Sie einen Text humanisieren, arbeiten Sie in dieser Reihenfolge:
 3. **MEDIUM-Muster scannen.** Je nach Modus korrigieren.
 4. **LOW-Muster scannen.** Korrigieren wenn klar vorhanden; im Formal-Modus überspringen.
 5. **Stimme einbringen** modusabhängig: voll im Locker, dezent im Sachlich, gar nicht im Formal.
-6. **Nie Substanz kürzen.** Sachliche Aussagen und Informationsgehalt des Originals bleiben erhalten; Sätze umschreiben statt streichen. **Ausgenommen:** KI-Artefakte ohne Informationsgehalt, deren Lösung im jeweiligen Muster explizit „entfernen" oder „löschen" lautet (Muster 6, 17, 18, 19, 20, 21, 22, 24, 43). Diese Artefakte werden bereinigt, nicht umgeschrieben – das ist keine Substanzkürzung. Absatzanzahl und Informationsgehalt bleiben im substanztragenden Teil unverändert.
+6. **Nie Substanz kürzen.** Sachliche Aussagen und Informationsgehalt des Originals bleiben erhalten; Sätze umschreiben statt streichen. **Ausgenommen:** KI-Artefakte ohne Informationsgehalt, deren Lösung im jeweiligen Muster explizit „entfernen" oder „löschen" lautet (Muster 6, 17, 18, 19, 20, 21, 22, 24, 43, 53). Diese Artefakte werden bereinigt, nicht umgeschrieben – das ist keine Substanzkürzung. Absatzanzahl und Informationsgehalt bleiben im substanztragenden Teil unverändert.
 7. **NICHT ANFASSEN prüfen** – Verstöße rückgängig machen.
 8. **Gedankenstrich-Scan**: Text nach gehäuften Gedankenstrichen (–, —, --) durchsuchen. Mehr als ein Gedankenstrich pro Absatz → ersetzen (siehe Muster 16, inkl. Ausnahme „Kein Problem, wenn"). Greift zusätzlich der Fall weicher Musterhäufung aus „Nicht anfassen", geht jene Leitplanke vor (dort sind auch die Carve-outs definiert).
 9. **Finaler Anti-KI-Pass**: "Was macht den Text noch offensichtlich KI-generiert?" Kurze, konkrete Tells benennen. Dann: "Jetzt so umschreiben, dass es nicht offensichtlich KI-generiert wirkt." Zweite Überarbeitung liefern.
@@ -135,8 +135,10 @@ Wenn der Benutzer eine Schreibprobe mitliefert (eigener Text), analysieren Sie d
 | 49 | Apostroph-Fehler | MEDIUM | "Peter's" statt "Peters", englisches Genitiv-Apostroph |
 | 50 | Interpunktion bei Stichpunkt-Aufzählungen | LOW | Großbuchstaben und Punkte bei reinen Stichworten |
 | 51 | Obsessive Parataxe | MEDIUM | Zu viele gleichförmige Hauptsätze ohne Subordination |
+| 52 | Diff-verankertes Schreiben | MEDIUM | "wurde jetzt ergänzt", "neu hinzugefügt", "ersetzt die alte Lösung" |
+| 53 | Lückenfüllende Spekulation | HIGH | "hält sich bedeckt", "macht keine Angaben", "vermutlich", obwohl Quelle fehlt |
 
-## Die 51 Muster
+## Die 53 Muster
 
 ### Sprache und Tonfall (12 Muster)
 
@@ -631,7 +633,7 @@ Häufige Indikatoren:
 
 **Lösung:** Entfernen oder in neutrale Form umwandeln ("Absatz über X hinzugefügt").
 
-### Rhetorik und Struktur (7 Muster)
+### Rhetorik und Struktur (8 Muster)
 
 #### 32. Persuasive Autoritäts-Floskeln [MEDIUM]
 
@@ -739,7 +741,33 @@ Häufige Indikatoren:
 
 ✓ Besser: "Ob die Strategie aufgeht, zeigt sich im nächsten Quartal."
 
-### Argumentation und Evidenz (3 Muster)
+#### 52. Diff-verankertes Schreiben [MEDIUM]
+
+**Kategorie:** Rhetorik und Struktur
+
+**Problem:** Der Text beschreibt eine Änderungsgeschichte statt den aktuellen Sachverhalt. Das ist in Changelogs, Release Notes und Migrationsanleitungen richtig, aber in Dokumentation, Blogtexten, Hilfetexten und Kommentaren wirkt es wie ein Diff-Kommentar, der im eigentlichen Text stehen geblieben ist.
+
+Häufige Indikatoren:
+- "wurde jetzt ergänzt"
+- "neu hinzugefügt"
+- "ersetzt die alte Lösung"
+- "bisher war X, nun ist Y"
+- "die überarbeitete Version nutzt..."
+- "mit diesem Update wird..."
+
+**Warum LLMs das tun:** Modelle bekommen oft Diff-Kontext, Review-Kommentare oder Änderungsaufträge und erzählen danach den Umbau nach, statt die Zielversion als eigenständigen Text zu formulieren.
+
+**Kein Problem, wenn:** Der Text tatsächlich versioniert ist: Changelog, Release Note, Commit-Message, Migration Guide, Review-Kommentar oder redaktionelle Notiz.
+
+**Lösung:** Den Text so schreiben, dass er ohne Kenntnis der letzten Änderung funktioniert. Nicht "was wurde geändert?", sondern "was gilt jetzt?" beantworten.
+
+**Beispiel:**
+
+❌ Schlecht: "Die Plattform wurde jetzt um KI-gestützte Empfehlungen erweitert, die die alte manuelle Auswahl ersetzen."
+
+✓ Besser: "Die Plattform empfiehlt passende Inhalte automatisch auf Basis des Nutzerverhaltens."
+
+### Argumentation und Evidenz (4 Muster)
 
 #### 39. Passivkonstruktionen und subjektlose Fragmente [MEDIUM]
 
@@ -804,6 +832,38 @@ Häufige Indikatoren:
 ❌ Schlecht (Über-Absicherung): "Es scheint, dass die Politik möglicherweise einen gewissen Effekt auf die Ergebnisse gehabt haben könnte."
 
 ✓ Besser: "Die Politik führte in zwei von drei untersuchten Fällen zu einer moderaten Verbesserung."
+
+#### 53. Lückenfüllende Spekulation [HIGH]
+
+**Kategorie:** Argumentation und Evidenz
+
+**Problem:** Wenn eine Quelle fehlt, füllt die KI die Lücke mit plausibel klingendem Fülltext. Besonders bei Personen, kleinen Unternehmen oder historischen Details entstehen dann Sätze über Privatsphäre, Zurückhaltung, wahrscheinliche Herkunft oder mutmaßliche Motive, obwohl der Text eigentlich sagen müsste: nicht belegt.
+
+Häufige Indikatoren:
+- "hält sich bedeckt"
+- "macht keine Angaben zu seinem Privatleben"
+- "meidet die Öffentlichkeit"
+- "über die frühen Jahre ist wenig bekannt, was auf eine bewusste Zurückhaltung hindeutet"
+- "vermutlich wuchs sie in einem bildungsnahen Umfeld auf"
+- "dürfte seine spätere Arbeit geprägt haben"
+- "es ist anzunehmen, dass..."
+
+**Abgrenzung:**
+- Muster 11 = vage Autorität ohne konkrete Quelle ("Beobachter sagen")
+- Muster 19 = Wissensgrenzen-Disclaimer ("Bis zu meinem letzten Update")
+- Muster 26 = Quelle ist fabriziert oder formal ungültig
+- Muster 42 = Quelle existiert, belegt aber die Aussage nicht
+- Muster 53 = Quelle fehlt oder schweigt, und der Text füllt die Lücke mit Spekulation
+
+**Warum LLMs das tun:** Das Modell versucht, eine erwartete Biografie, Projektgeschichte oder Ursachenlogik zu vervollständigen. Wo Daten fehlen, erzeugt es generische Plausibilität.
+
+**Lösung:** Spekulativen Fülltext entfernen oder als unbelegt markieren. Keine Motive, Herkunft oder Persönlichkeitsmerkmale ergänzen, wenn sie nicht im übergebenen Kontext stehen. Wenn die Lücke relevant ist: "Dazu liegen im vorliegenden Material keine Angaben vor." Wenn sie nicht relevant ist: Satz weglassen.
+
+**Beispiel:**
+
+❌ Schlecht: "Über ihre frühen Jahre ist wenig bekannt, was darauf hindeutet, dass sie ihr Privatleben bewusst aus der Öffentlichkeit heraushält. Vermutlich wuchs sie in einem bildungsnahen Umfeld auf, das ihr späteres Engagement prägte."
+
+✓ Besser: "Zu ihren frühen Jahren liegen im vorliegenden Material keine belastbaren Angaben vor."
 
 ### Ergänzungen (4 Muster)
 
@@ -1049,10 +1109,44 @@ Häufige Indikatoren:
 
 ✓ Besser: "Das Team analysierte die Daten und kam zu einem eindeutigen Ergebnis: Die Conversion stieg um 25 Prozent, obwohl das Projekt im Budget blieb."
 
+## Erkennungsleitplanken: Was NICHT zu flaggen ist
+
+Ein sauberer menschlicher Text kann einzelne KI-ähnliche Merkmale enthalten. Vor jeder Überarbeitung prüfen: Liegt ein belastbares Muster vor, oder nur ein isoliertes Signal? Einzelzeichen und Einzelphrasen reichen nicht für eine breite Diagnose.
+
+### False Positives
+
+Nicht allein als KI-Tell werten:
+
+- **Fehlerfreie Grammatik und konsistenter Stil.** Professionelle Autoren und gute Redaktionen schreiben sauber.
+- **Mischung aus lockerem und formalem Register.** Das kann Fachsprache, persönliche Stimme oder Zielgruppenwechsel sein.
+- **Trockener oder "robotischer" Ton ohne konkrete Muster.** Langweilig ist nicht automatisch KI.
+- **Formales oder akademisches Vokabular.** Nur spezifische Floskelcluster sind relevant, nicht jedes anspruchsvollere Wort.
+- **Grußformeln in Kommentaren, Mails oder Diskussionsbeiträgen.** Briefartige Formen sind nur in falschem Kontext ein Problem.
+- **Einzelne Übergangswörter.** "Allerdings", "zudem" oder "darüber hinaus" sind erst bei Häufung oder mechanischem Rhythmus auffällig.
+- **Typografische Anführungszeichen allein.** Word, macOS, Google Docs und viele CMS setzen sie automatisch.
+- **Ein einzelner Gedankenstrich.** Problematisch wird er erst als wiederkehrendes Rhythmusmuster oder bei englischer Dash-Schreibweise.
+- **Unbelegte Aussagen allein.** Viele Webtexte sind unbelegt. Erst vage Autorität, Quellenfabrikation, Beleginkongruenz oder Spekulation machen es zum Muster.
+- **Korrekte komplexe Formatierung.** Templates, CMS und visuelle Editoren erzeugen sauberes Markup ohne KI.
+
+Prüfregel: **Cluster zählen, Einzelsignale nicht.** Eine einzelne stilistische Auffälligkeit bleibt stehen. Mehrere unabhängige Muster im selben Abschnitt rechtfertigen eine Überarbeitung.
+
+### Menschliche Signale erhalten
+
+Diese Merkmale eher bewahren als glätten:
+
+- **Konkrete, ungewöhnliche Details.** Namen, Orte, kleine Beobachtungen oder sperrige Originalformulierungen.
+- **Uneindeutige Haltung.** Echte Texte dürfen ambivalent sein und ungelöste Spannung stehen lassen.
+- **Zeitgebundene Referenzen.** Slang, Insider, alte Produktnamen oder subkulturelle Bezüge können menschliche Datierung zeigen.
+- **Begründbare Ich-Entscheidungen.** Wenn der Autor erklären kann, warum ein Wort oder Schnitt so gesetzt wurde, nicht mechanisch glätten.
+- **Variierende Satzlängen.** Kurze und lange Sätze im Wechsel sind ein menschliches Rhythmussignal.
+- **Echte Einschübe und Selbstkorrekturen.** Klammern, Nachträge und kleine Korrekturen können Stimme tragen.
+- **Vor-ChatGPT-Datum.** Texte oder Edits vor dem 30. November 2022 sind nur in seltenen Sonderfällen durch ChatGPT beeinflusst.
+
 ## Quick Checklist (Vor-Ausgabe-Audit)
 
 Vor der Ausgabe schnell prüfen:
 
+- [ ] Nur isoliertes Signal statt Muster-Cluster? → Nicht breit umschreiben; einzelne legitime Stelle stehen lassen
 - [ ] Drei aufeinanderfolgende Sätze gleiche Länge, ohne dass eine Stimmprobe diesen Rhythmus vorgibt? → Einen aufbrechen
 - [ ] Generischer, inhaltsloser Einzeiler direkt nach einer Überschrift? → Entfernen oder integrieren (Muster 34). Bewusste Punchlines am Absatzende sind davon ausgenommen.
 - [ ] Gedankenstrich vor einer „Enthüllung" als wiederkehrendes Muster (mehrfach im Text oder mehr als einer pro Absatz)? → Ersetzen (Muster 16). Ein einzelner, bewusst gesetzter Gedankenstrich ist zulässig. Greift zugleich „Nicht anfassen" (weiche Musterhäufung), geht diese Leitplanke vor.
@@ -1071,6 +1165,8 @@ Vor der Ausgabe schnell prüfen:
 - [ ] Englischer Genitiv-Apostroph ("Martin's")? → Entfernen außer bei s/x/z-Endung (Muster 49)
 - [ ] Punkte am Ende von Stichwort-Bullets ohne vollständige Sätze? → Entfernen, Konsistenz prüfen (Muster 50)
 - [ ] 4+ gleichförmige Hauptsätze ohne Subordination? → Satzgefüge einbauen (Muster 51)
+- [ ] Text erzählt die letzte Änderung statt den aktuellen Zustand? → Als Ist-Zustand formulieren, außer in Changelog/Release Note (Muster 52)
+- [ ] Quelle fehlt und der Text füllt die Lücke mit plausibler Spekulation? → Spekulation entfernen oder als fehlende Angabe markieren (Muster 53)
 
 ## Persönlichkeit und Stimme
 
@@ -1090,7 +1186,7 @@ Achten Sie deshalb zusätzlich auf:
 - **Direkte Zitate von echten Personen.** Als [ZITAT – NICHT BEARBEITET] markieren.
 - **Technische Spezifikationen, Formeln, Code.** Genauigkeit geht vor Stil.
 - **Juristische oder regulatorische Sprache.** Bestimmte Formulierungen haben rechtliches Gewicht.
-- **Weiche stilistische Muster, die 3+ Mal konsistent auftreten.** Gilt nur für MEDIUM/LOW-Muster aus stilistischen Kategorien (Betonung, Übergänge, Parallelismen, Register, Interpunktion). Solche Häufungen können bewusste Stilwahl sein – mit [MÖGLICHE STILISTISCHE WAHL – NICHT BEARBEITET] markieren und Häufigkeit nennen. **Nicht** anwenden auf: HIGH-Muster, technisch/strukturelle Befunde (Muster 21–24, 43), belegbezogene Befunde (Muster 11, 26, 42), False Friends aus Muster 45. Diese sind bei jedem Vorkommen einzeln zu korrigieren oder zu markieren – ihre Häufung verstärkt das Problem, sie wird nicht zur stilistischen Wahl.
+- **Weiche stilistische Muster, die 3+ Mal konsistent auftreten.** Gilt nur für MEDIUM/LOW-Muster aus stilistischen Kategorien (Betonung, Übergänge, Parallelismen, Register, Interpunktion). Solche Häufungen können bewusste Stilwahl sein – mit [MÖGLICHE STILISTISCHE WAHL – NICHT BEARBEITET] markieren und Häufigkeit nennen. **Nicht** anwenden auf: HIGH-Muster, technisch/strukturelle Befunde (Muster 21–24, 43), belegbezogene Befunde (Muster 11, 26, 42, 53), False Friends aus Muster 45. Diese sind bei jedem Vorkommen einzeln zu korrigieren oder zu markieren – ihre Häufung verstärkt das Problem, sie wird nicht zur stilistischen Wahl.
 
 ## Leitplanken
 
@@ -1098,9 +1194,9 @@ Achten Sie deshalb zusätzlich auf:
 - Nie Stimme in formale/akademische Texte einbringen.
 - Nie direkte Zitate von echten Personen bearbeiten.
 - Für weiche stilistische Muster, die 3+ Mal konsistent auftreten, gilt der Abschnitt „Nicht anfassen" (inkl. der dort genannten Carve-outs für HIGH, Strukturbefunde, Belege und False Friends). Nicht separat neu definieren.
-- Nie **Substanz** kürzen. Sachliche Aussagen und Informationsgehalt bleiben erhalten; Sätze umschreiben statt streichen. Artefakte ohne Informationsgehalt, deren Lösung im Muster explizit „entfernen/löschen" lautet (Muster 6, 17, 18, 19, 20, 21, 22, 24, 43), sind davon ausgenommen.
+- Nie **Substanz** kürzen. Sachliche Aussagen und Informationsgehalt bleiben erhalten; Sätze umschreiben statt streichen. Artefakte ohne Informationsgehalt, deren Lösung im Muster explizit „entfernen/löschen" lautet (Muster 6, 17, 18, 19, 20, 21, 22, 24, 43, 53), sind davon ausgenommen.
 - Wenn der Text bereits sauber ist: das sagen und aufhören.
-- **Kombinations-Prinzip:** Gilt nur für die **stilistische Gesamtdiagnose** „wirkt der Text KI-generiert?". Für diese Einschätzung ist ein einzelnes weiches Muster selten aussagekräftig – erst die Kombination mehrerer stilistischer Muster aus unterschiedlichen Kategorien rechtfertigt eine breite Überarbeitung. **Ausgenommen:** Technische/strukturelle Befunde (Muster 21, 22, 23, 24, 43), belegbezogene Befunde (Muster 11, 26, 42) und eindeutige Regelverstöße dürfen und sollen schon als Einzelbefund korrigiert werden. HIGH-Muster bleiben wie in Schritt 2 des Ablaufs beschrieben einzeln zu scannen.
+- **Kombinations-Prinzip:** Gilt nur für die **stilistische Gesamtdiagnose** „wirkt der Text KI-generiert?". Für diese Einschätzung ist ein einzelnes weiches Muster selten aussagekräftig – erst die Kombination mehrerer stilistischer Muster aus unterschiedlichen Kategorien rechtfertigt eine breite Überarbeitung. **Ausgenommen:** Technische/strukturelle Befunde (Muster 21, 22, 23, 24, 43), belegbezogene Befunde (Muster 11, 26, 42, 53) und eindeutige Regelverstöße dürfen und sollen schon als Einzelbefund korrigiert werden. HIGH-Muster bleiben wie in Schritt 2 des Ablaufs beschrieben einzeln zu scannen.
 - **Geltungsbereich:** Arbeitet auf direkt übergebenem Text. Dateibasierte Nutzung erfordert Read/Write in `allowed_tools`.
 
 ## Ausgabeformat

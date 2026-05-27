@@ -2,7 +2,7 @@
 
 KI-Schreibmuster erkennen und entfernen. Für deutschsprachige Texte.
 
-**Version:** 3.1.0-de.1
+**Version:** 3.4.0-de.1
 
 **Autor:** Martin Moeller | [www.martin-moeller.biz](https://www.martin-moeller.biz)
 
@@ -86,11 +86,27 @@ Entferne nur sprachliche Muster, nicht die Formatierung
 
 ## Was das Skill erkennt
 
-Das Skill analysiert **41 verschiedene KI-Schreibmuster** in 7 Kategorien, priorisiert nach Schweregrad (HIGH / MEDIUM / LOW):
+Das Skill analysiert **53 verschiedene KI-Schreibmuster** in 9 Kategorien, priorisiert nach Schweregrad (HIGH / MEDIUM / LOW):
 
 ## Was ist neu?
 
-### 3.1.0-de.1 (aktuell)
+### 3.4.0-de.1 (aktuell)
+- Neue Erkennungsleitplanken: "Was NICHT zu flaggen ist" plus positive menschliche Signale
+- 2 neue Muster: Diff-verankertes Schreiben (#52), Lückenfüllende Spekulation (#53)
+- Beleg- und Substanzleitplanken für spekulative Fülltexte erweitert
+- 53 Muster insgesamt in 9 Kategorien
+- Upstream-Integration: PR #113 sowie v2.7.0-Ideen aus #81 und #111
+
+### 3.3.0-de.1
+- 6 neue Muster: Falsche deutsche Anführungszeichen (#46), englische Titel-Großschreibung (#47), englisches Dezimal-/Datumsformat (#48), Apostroph-Fehler (#49), Stichpunkt-Interpunktion (#50), obsessive Parataxe (#51)
+- Muster 43 erweitert: Unicode-Scanner deckt U+2061-U+2064 ab
+- 51 Muster insgesamt in 9 Kategorien
+
+### 3.2.4-de.1
+- 4 neue Muster: Beleginkongruenz (#42), versteckte Unicode-Zeichen (#43), Standard-Kapitel ohne Substanz (#44), Anglizismus-Strukturen (#45)
+- 45 Muster insgesamt in 8 Kategorien
+
+### 3.1.0-de.1
 - 3 neue Muster: Passivkonstruktionen (#39), Konditional-Stapel (#40), Fehlkalibriertes epistemisches Vertrauen (#41)
 - Muster 8 erweitert: abgehackte Verneinungsfragmente ("kein Raten.")
 - Muster 16 erweitert: Ersetzungshierarchie, gepaarte Einschübe, Spaced/Double-Hyphen-Varianten
@@ -120,7 +136,7 @@ Das Skill analysiert **41 verschiedene KI-Schreibmuster** in 7 Kategorien, prior
 - DACH-Schreibfokus und deutsche Stilkonventionen beibehalten
 - Deutsche Wikipedia als primäre Referenz plus englische Wikipedia als Ergänzung
 
-## 41 Muster in 7 Kategorien
+## 53 Muster in 9 Kategorien
 
 ### Sprache und Tonfall (12 Muster)
 
@@ -178,7 +194,7 @@ Das Skill analysiert **41 verschiedene KI-Schreibmuster** in 7 Kategorien, prior
 | 30 | Wechsel im Schreibstil | MEDIUM |
 | 31 | Bearbeitungszusammenfassungen in Ich-Form | LOW |
 
-### Rhetorik und Struktur (7 Muster)
+### Rhetorik und Struktur (8 Muster)
 
 | # | Muster | Schwere |
 |---|--------|---------|
@@ -189,14 +205,36 @@ Das Skill analysiert **41 verschiedene KI-Schreibmuster** in 7 Kategorien, prior
 | 36 | Universelle Menschheitserfahrungs-Eröffnung ("Seit jeher...") | MEDIUM |
 | 37 | "In der heutigen X-Welt" Framing ("In der heutigen digitalen Welt") | MEDIUM |
 | 38 | Aspirativer Unternehmensschluss ("bestens aufgestellt") | MEDIUM |
+| 52 | Diff-verankertes Schreiben ("wurde jetzt ergänzt") | MEDIUM |
 
-### Argumentation und Evidenz (3 Muster)
+### Argumentation und Evidenz (4 Muster)
 
 | # | Muster | Schwere |
 |---|--------|---------|
 | 39 | Passivkonstruktionen und subjektlose Fragmente | MEDIUM |
 | 40 | Konditional-Stapel ("Wenn X..., und wenn Y...") | MEDIUM |
 | 41 | Fehlkalibriertes epistemisches Vertrauen | MEDIUM |
+| 53 | Lückenfüllende Spekulation ("hält sich bedeckt") | HIGH |
+
+### Ergänzungen (4 Muster)
+
+| # | Muster | Schwere |
+|---|--------|---------|
+| 42 | Beleginkongruenz | HIGH |
+| 43 | Versteckte Unicode-Zeichen | HIGH |
+| 44 | Standard-Kapitel ohne Substanz | MEDIUM |
+| 45 | Anglizismus-Strukturen | MEDIUM |
+
+### Typografie und Format (6 Muster)
+
+| # | Muster | Schwere |
+|---|--------|---------|
+| 46 | Falsche deutsche Anführungszeichen | HIGH |
+| 47 | Englische Titel-Großschreibung | MEDIUM |
+| 48 | Englisches Dezimalformat und Datumsformat | LOW |
+| 49 | Apostroph-Fehler | MEDIUM |
+| 50 | Interpunktion bei Stichpunkt-Aufzählungen | LOW |
+| 51 | Obsessive Parataxe | MEDIUM |
 
 ---
 
@@ -379,6 +417,9 @@ Haben Sie ein Problem gefunden oder eine Verbesserung?
 
 ## Versionshistorie
 
+- **3.4.0-de.1** - False-Positive-Guardrails; 2 neue Muster (#52–#53): Diff-verankertes Schreiben, Lückenfüllende Spekulation; Upstream PR #113 sowie v2.7.0-Ideen aus #81/#111; 53 Muster
+- **3.3.0-de.1** - 6 neue Muster (#46–#51) für Typografie und Format; Unicode-Scanner erweitert; 51 Muster
+- **3.2.4-de.1** - 4 neue Muster (#42–#45): Beleginkongruenz, versteckte Unicode-Zeichen, Standard-Kapitel ohne Substanz, Anglizismus-Strukturen; 45 Muster
 - **3.1.0-de.1** - 3 neue Muster (#39–#41), 4 erweiterte Muster (#8/#16/#24/#26), Quick Checklist, Nie-kürzen-Regel; Upstream PRs #79, #80, #84, #85, #94, #96; 41 Muster
 - **3.0.0-de.1** - Stimmkalibrierung (PR #64); 4 neue Muster (PR #67); 38 Muster
 - **2.3.0-de.1** - 3 neue Muster (PR #39: Persuasive Floskeln, Signposting, Fragmentierte Überschriften); Severity-Ranking und Modus-System (PR #51); Quick-Reference-Tabelle (PR #52); Trennlinien entfernt (PR #57)
