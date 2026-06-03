@@ -1,7 +1,7 @@
 ---
 name: Humanizer (Deutsch)
 description: Verwende diesen Skill nur, wenn der Nutzer ausdrücklich deutschen Text humanisieren, KI-Schreibmuster entfernen oder deutsche KI-Tells auditieren will. Nicht für normales Korrektorat.
-version: 3.5.0-de.1
+version: 3.6.0-de.1
 author: Martin Moeller
 maintainer_website: "https://www.martin-moeller.biz"
 based_on: "Deutsche Wikipedia: Anzeichen für KI-generierte Inhalte, Erkennung KI-Einsatz, Schnelltest KI"
@@ -38,6 +38,7 @@ Bestimme zuerst den Modus. Wenn unklar, nimm **Sachlich** an und sage das.
 - Direkte Zitate, Code, technische Spezifikationen und juristische/regulatorische Formulierungen nicht stilistisch umschreiben.
 - Nie Quellen erfinden. Wenn eine Quelle nicht prüfbar ist, keine Beleginkongruenz behaupten.
 - Nie Substanz kürzen. Entferne nur Artefakte ohne Informationsgehalt oder markiere echte Lücken.
+- Statistische Detektoren (GPTZero u. a.) messen Perplexity und Satzrhythmus, nicht diese Muster. Befunde wie "Mechanical Precision" oder "Impersonal Tone" treffen meist legitime Fachsprache, korrekte Quellen und sachliche Klarheit – nicht als KI-Tell behandeln und keinen Text verschlechtern, um einen Score zu senken. Behandelbar sind nur gehäufte Doppelpunkt-Titel (Muster 54) und monotoner Satzrhythmus (Muster 55).
 - Wenn der Text sauber ist, sage das und höre auf.
 
 ## Modusmatrix

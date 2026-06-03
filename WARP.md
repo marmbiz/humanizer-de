@@ -1,4 +1,4 @@
-# WARP - Humanizer (Deutsch) Entwicklerleitfaden (v3.5.0-de.1)
+# WARP - Humanizer (Deutsch) Entwicklerleitfaden (v3.6.0-de.1)
 
 WARP = Workflow, Architecture, References, Principles.
 
@@ -42,7 +42,7 @@ Wenn ein Muster geändert oder ergänzt wird:
 4. `tests/test_patterns_catalog.py` erweitern, wenn IDs oder Pflichtmarker betroffen sind.
 5. README-Version und Changelog-Abschnitt nur bei Release-relevanter Änderung nachziehen.
 
-Keine neuen Muster in Patch-Releases verstecken. Wenn aus 53 Mustern 54 werden, ist das eine sichtbare Versionierungs- und Dokumentationsänderung.
+Keine neuen Muster in Patch-Releases verstecken. Wenn aus 55 Mustern 56 werden, ist das eine sichtbare Versionierungs- und Dokumentationsänderung.
 
 ## Unicode und Quotes
 

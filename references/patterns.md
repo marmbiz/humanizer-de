@@ -1,6 +1,6 @@
 # Humanizer-de Pattern Catalog
 
-Vollstaendiger Musterkatalog fuer Humanizer (Deutsch) v3.5.0-de.1. Nur bei konkreter Musterdiagnose, Audit oder Grenzfaellen laden.
+Vollstaendiger Musterkatalog fuer Humanizer (Deutsch) v3.6.0-de.1. Nur bei konkreter Musterdiagnose, Audit oder Grenzfaellen laden.
 
 ## Kurzreferenz
 
@@ -59,8 +59,29 @@ Vollstaendiger Musterkatalog fuer Humanizer (Deutsch) v3.5.0-de.1. Nur bei konkr
 | 51 | Obsessive Parataxe | MEDIUM | Zu viele gleichförmige Hauptsätze ohne Subordination |
 | 52 | Diff-verankertes Schreiben | MEDIUM | "wurde jetzt ergänzt", "neu hinzugefügt", "ersetzt die alte Lösung" |
 | 53 | Lückenfüllende Spekulation | HIGH | "hält sich bedeckt", "macht keine Angaben", "vermutlich", obwohl Quelle fehlt |
+| 54 | Doppelpunkt-Titel-Schema | MEDIUM | "Phrase: Was/Warum/Wie ..." gehäuft in Titel/H1/H2 |
+| 55 | Gleichförmiger Satzrhythmus | MEDIUM | Sätze fast gleich lang, Subjekt zuerst, niedrige Burstiness |
 
-## Die 53 Muster
+## Statistische Detektoren (GPTZero u. a.)
+
+Statistische Detektoren prüfen nicht die Muster aus diesem Katalog. Sie schätzen zwei Größen:
+
+- **Perplexity** – wie vorhersagbar das nächste Wort ist. Glatte, fachlich präzise Prosa hat niedrige Perplexity.
+- **Burstiness** – wie stark Satzlänge und -bau variieren. Gleichmäßige Kadenz hat niedrige Burstiness.
+
+Die menschenlesbaren Labels dieser Tools ("Robotic Formality", "Mechanical Precision", "Impersonal Tone" ...) sind nur Übersetzungen dieser zwei Größen. Sie verteilen sich über fast den ganzen Text statt auf einzelne Floskeln. Entscheidend: **Diese Detektoren bestrafen oft genau das, was einen guten Fachtext ausmacht** – Fachbegriffe, korrekte Quellenattribution, sachliche Klarheit. Solche Befunde sind kein KI-Tell und werden nicht "behoben".
+
+| Detektor-Label | Misst real | Handlung |
+|---|---|---|
+| Mechanical Precision | niedrige Perplexity durch Fachbegriffe | nicht behandeln – Fachsprache bewahren |
+| Impersonal Tone | Passiv, Quellenattribution | nicht behandeln, außer Muster 39 liegt vor |
+| Robotic Formality | klare Struktur, Doppelpunkt-Titel | nur bei Muster 54 (gehäufte Doppelpunkt-Titel) |
+| Lacks Creativity / Lacks Creative Grammar | niedrige Burstiness | nur bei Muster 55/51, mit Carve-out |
+| Mechanical Writing | gleichförmige Kadenz | nur bei Muster 55, mit Carve-out |
+
+Der einzige substanzwahrende Hebel gegen niedrige Burstiness ist Muster 55 (Satzrhythmus spreizen). Niedrige Perplexity bei korrekter Fachsprache ist nicht "reparierbar", ohne den Text zu verschlechtern – und das ist nicht Aufgabe dieses Skills. Siehe SKILL.md-Leitplanke zu statistischen Detektoren.
+
+## Die 55 Muster
 
 ### Sprache und Tonfall (12 Muster)
 
@@ -926,15 +947,20 @@ Korrekte deutsche Paare:
 - Guillemets DE/AT: »Text« (U+00BB ... U+00AB)
 - Guillemets CH: «Text» (U+00AB ... U+00BB)
 
-Häufige Fehler:
-- „Text” (schließendes Zeichen U+201D statt U+201C)
-- “Text” (englische Anführungszeichen statt deutscher)
-- "Text" (gerade ASCII-Anführungszeichen)
-- Gemischte Stile innerhalb eines Dokuments
+**Beweiskraft – nur Asymmetrie ist ein KI-Tell:**
+
+- **Harter KI-Tell (Asymmetrie):** deutsches öffnendes „ (U+201E) mit falschem Schlusszeichen.
+  - „Text” – deutsches Öffnen, dann U+201D statt U+201C als Schluss
+  - „Text" – deutsches Öffnen, dann gerades ASCII (U+0022) als Schluss
+  Diese Mischung kommt aus der Zeichenwahl des Modells, nicht aus einem CMS. Als Einzelbefund behandelbar.
+- **Kein KI-Tell (CMS/Editor):** durchgängig gerade ASCII-Anführungszeichen ("Text") im ganzen Dokument. Das erzeugen WordPress, Markdown-Export oder Editoren ohne Smart Quotes. Nicht als KI-Signal werten; nur auf Wunsch typografisch glätten.
+- **Mehrdeutig:** durchgängig englische Curly Quotes (“Text”). Können Copy-Paste, Tool-Default oder Modell sein. Nur schwaches Indiz im Cluster, nie als Einzelbefund.
+
+Gemischte Stile zählen nur, wenn die Mischung die Asymmetrie oben enthält; bloßes Pendeln zwischen geraden und typografischen Quotes ist Editor-Artefakt, kein Tell.
 
 **Warum LLMs das tun:** Vermutlich Tokenisierung, Post-Processing oder UI-Rendering. Englische Trainingsmaterial dominiert die Zeichenwahl. Per Prompt nicht zuverlässig lösbar.
 
-**Lösung:** Post-Processor/Linter einsetzen. Prüflogik: jedes öffnende „ (U+201E) muss ein schließendes “ (U+201C) haben; jedes öffnende ‚ (U+201A) muss ein schließendes ‘ (U+2018) haben. Gerade Quotes ("...") als "nicht typografisch" markieren. Englische Curly Quotes (“...”) flaggen. Gültige Verschachtelung wie „Er sagte: ‚Hallo‘“ nicht als gemischten Stil werten.
+**Lösung:** Post-Processor/Linter einsetzen. Prüflogik: jedes öffnende „ (U+201E) muss ein schließendes “ (U+201C) haben; jedes öffnende ‚ (U+201A) muss ein schließendes ‘ (U+2018) haben. Gerade Quotes ("...") als "nicht typografisch" markieren. Englische Curly Quotes (“...”) als mehrdeutig flaggen, nicht automatisch als KI-Tell. Gültige Verschachtelung wie „Er sagte: ‚Hallo‘“ nicht als gemischten Stil werten.
 
 #### 47. Englische Titel-Großschreibung [MEDIUM]
 
@@ -1030,3 +1056,59 @@ Häufige Indikatoren:
 ❌ Schlecht: "Das Team analysierte die Daten. Die Ergebnisse waren eindeutig. Die Conversion stieg um 25 Prozent. Das Projekt wurde im Budget abgeschlossen."
 
 ✓ Besser: "Das Team analysierte die Daten und kam zu einem eindeutigen Ergebnis: Die Conversion stieg um 25 Prozent, obwohl das Projekt im Budget blieb."
+
+### Titel- und Satzbau (2 Muster)
+
+#### 54. Doppelpunkt-Titel-Schema [MEDIUM]
+
+**Problem:** LLMs bauen Titel und Überschriften bevorzugt nach dem Schema "griffige Phrase: erklärender Nachsatz" – links ein Schlagwort oder eine Bedingung, rechts eine "Was/Warum/Wie"-Auflösung (englisch das berüchtigte "X: How Y Changes Z"). Ein einzelner solcher Titel ist unauffällig und oft legitim. Verdächtig wird die Häufung: Wenn H1, Bildunterschrift und mehrere H2 im selben Dokument demselben Doppelpunkt-Schema folgen, entsteht ein mechanischer Rhythmus, den auch statistische Detektoren als "Robotic Formality" markieren.
+
+**Häufige Indikatoren:**
+- Doppelpunkt in Titel/H1/H2: links Schlagwort/Bedingung, rechts "Was/Warum/Wie ..."-Erklärung
+- 2+ Überschriften im selben Dokument nach demselben Schema
+- Der Nachsatz wiederholt teils nur die linke Seite in Langform
+
+**Warum LLMs das tun:** Doppelpunkt-Titel maximieren Klarheit und Klick-Anmutung und sind in SEO- und Blog-Trainingsdaten stark überrepräsentiert.
+
+**Kein Problem, wenn:** Es bei einem einzelnen Doppelpunkt-Titel bleibt; bei etablierter Konvention (wissenschaftlicher Paper-Titel "Hauptthema: Untertitel"); wenn der Nachsatz echte, nicht-redundante Information trägt.
+
+**Abgrenzung:** Muster 34 = generischer Einzeiler *nach* einer Überschrift. Muster 47 = englische Titel-Großschreibung. Muster 54 = die gehäufte Doppelpunkt-*Konstruktion* selbst.
+
+**Beispiel:**
+
+❌ Schlecht (drei Überschriften desselben Texts, alle gleich gebaut):
+- "Wenn KI mitliest: Warum regulierte Branchen umdenken müssen"
+- "Die zweite Zeitbombe: veraltete Archive als Weltwissen"
+- "Interpretationsstabilität: Was KI-Kompression aus Fachtexten macht"
+
+✓ Besser (Schema aufbrechen, Varianz zulassen – ein Doppelpunkt unter dreien ist unkritisch):
+- "Warum regulierte Branchen ihre Inhalte für KI umdenken müssen"
+- "Veraltete Archive: die zweite Zeitbombe"
+- "Wie KI-Kompression Warnhinweise aus Fachtexten entfernt"
+
+#### 55. Gleichförmiger Satzrhythmus [MEDIUM]
+
+**Kategorie:** Stil
+
+**Problem:** Die Sätze schwanken kaum in Länge und Bau. Die meisten liegen im selben Wortfenster (oft 10–18 Wörter), beginnen mit dem Subjekt und folgen Subjekt-Verb-Objekt. Es fehlt der Wechsel zwischen einem sehr kurzen Satz und einem langen, gegliederten. Der Text ist dadurch korrekt und gut lesbar, aber metrisch monoton. Statistische Detektoren (GPTZero u. a.) messen diese fehlende Varianz als niedrige "Burstiness" und werten sie als KI-Signal – gemeldet als "Lacks Creative Grammar" oder "Mechanical Writing".
+
+**Abgrenzung zu Muster 51 (Obsessive Parataxe):** Muster 51 trifft Texte aus ausschließlich kurzen Hauptsätzen ohne Subordination. Muster 55 ist breiter und greift auch bei syntaktisch komplexen Texten: Die Sätze sind unterschiedlich gebaut, aber alle ungefähr gleich lang und gleich eingeleitet. Ein Text kann Muster 55 zeigen, ohne Muster 51 zu zeigen.
+
+**Häufige Indikatoren:**
+- Mehrere aufeinanderfolgende Sätze im engen Längenfenster (Differenz selten > 5 Wörter)
+- Überwiegend gleicher Satzanfang (Subjekt zuerst)
+- Kein bewusst kurzer Pointe-Satz neben einem langen Schachtelsatz
+
+**Warum LLMs das tun:** Das Sampling tendiert zur mittleren Satzlänge; das Modell reguliert sich auf eine gleichmäßige Kadenz, weil mittellange Sätze die statistisch sichere Wahl sind.
+
+**Lösung:** Satzlänge bewusst spreizen – gelegentlich ein sehr kurzer Satz (3–5 Wörter) neben einem langen, gegliederten. Satzanfänge variieren (Adverbiale, vorangestellter Nebensatz, Subjekt). Es geht um Varianz, nicht um Fehler: keine Grammatik brechen, keine Substanz ändern, nur die Kadenz auflockern.
+
+**Wichtig – nicht übersteuern:** Sachliche Gleichförmigkeit ist in Fachtexten oft korrekt und gewollt. Behandle dieses Muster nur, wenn (a) der Nutzer ausdrücklich Detektor-Resilienz wünscht oder (b) die Monotonie die Lesbarkeit spürbar beeinträchtigt. Im Formal-Modus überspringen, wenn die Gleichförmigkeit fachkonventionell ist. Nie Substanz, Register oder Präzision opfern, nur um einen Detektor-Score zu senken.
+
+**Beispiel:**
+
+❌ Schlecht (vier Sätze, alle 8–12 Wörter, Subjekt zuerst):
+"Viele Fachtexte sind korrekt, solange man sie vollständig liest. Ein Nebensatz schränkt die Aussage ein. Eine Fußnote ordnet den Befund ein. Der Kontext trennt Prävention von Therapie."
+
+✓ Besser (Längen gespreizt, Anfänge variiert):
+"Viele Fachtexte sind korrekt – solange man sie ganz liest. Ein Nebensatz hier, eine Fußnote dort, und plötzlich trennt der Kontext Prävention von Therapie. Lässt man ihn weg, kippt die Aussage."

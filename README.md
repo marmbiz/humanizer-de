@@ -2,7 +2,7 @@
 
 KI-Schreibmuster erkennen und entfernen. Für deutschsprachige Texte.
 
-**Version:** 3.5.0-de.1
+**Version:** 3.6.0-de.1
 
 **Autor:** Martin Moeller | [www.martin-moeller.biz](https://www.martin-moeller.biz)
 
@@ -78,7 +78,14 @@ Das Skill analysiert **53 verschiedene KI-Schreibmuster** in 9 Kategorien, prior
 
 ## Was ist neu?
 
-### 3.5.0-de.1 (aktuell)
+### 3.6.0-de.1 (aktuell)
+- 2 neue Muster: Doppelpunkt-Titel-Schema (#54), Gleichförmiger Satzrhythmus (#55)
+- Neue Sektion zu statistischen Detektoren (GPTZero u. a.): Perplexity/Burstiness vs. Musterkatalog, mit Handlungstabelle
+- Leitplanke ergänzt: Detektor-Labels wie "Mechanical Precision" treffen meist legitime Fachsprache – kein KI-Tell, Text nicht für einen Score verschlechtern
+- Muster 46 mit Beweiskraft-Staffelung: nur die Asymmetrie (deutsches Öffnen + falsches Schlusszeichen) ist ein harter Tell; gerade ASCII-Quotes sind CMS-Artefakt, englische Curly Quotes mehrdeutig
+- 55 Muster insgesamt in 10 Kategorien
+
+### 3.5.0-de.1
 - Architektur-Upgrade: `SKILL.md` ist jetzt ein schlanker SOP-Router statt monolithischer Musterkatalog
 - Vollständiger 53er-Musterkatalog ausgelagert nach `references/patterns.md`
 - Overlap-Entscheidungen für 11/26/42/53 und 5/6/34/44 in `references/decision-tables.md`
@@ -132,7 +139,7 @@ Das Skill analysiert **53 verschiedene KI-Schreibmuster** in 9 Kategorien, prior
 - DACH-Schreibfokus und deutsche Stilkonventionen beibehalten
 - Deutsche Wikipedia als primäre Referenz plus englische Wikipedia als Ergänzung
 
-## 53 Muster in 9 Kategorien
+## 55 Muster in 10 Kategorien
 
 ### Sprache und Tonfall (12 Muster)
 
@@ -231,6 +238,13 @@ Das Skill analysiert **53 verschiedene KI-Schreibmuster** in 9 Kategorien, prior
 | 49 | Apostroph-Fehler | MEDIUM |
 | 50 | Interpunktion bei Stichpunkt-Aufzählungen | LOW |
 | 51 | Obsessive Parataxe | MEDIUM |
+
+### Titel- und Satzbau (2 Muster)
+
+| # | Muster | Schwere |
+|---|--------|---------|
+| 54 | Doppelpunkt-Titel-Schema | MEDIUM |
+| 55 | Gleichförmiger Satzrhythmus | MEDIUM |
 
 ---
 
@@ -412,6 +426,7 @@ Haben Sie ein Problem gefunden oder eine Verbesserung?
 
 ## Versionshistorie
 
+- **3.6.0-de.1** - 2 neue Muster (#54–#55): Doppelpunkt-Titel-Schema, Gleichförmiger Satzrhythmus; Sektion zu statistischen Detektoren (Perplexity/Burstiness); Muster 46 mit Beweiskraft-Staffelung für Quote-Asymmetrie; 55 Muster
 - **3.5.0-de.1** - Architektur-Upgrade: schlanker SOP-Router, Musterkatalog in `references/patterns.md`, Decision Tables, Unicode-/Quote-Linter und Tests; keine neuen Muster
 - **3.4.0-de.1** - False-Positive-Guardrails; 2 neue Muster (#52–#53): Diff-verankertes Schreiben, Lückenfüllende Spekulation; Upstream PR #113 sowie v2.7.0-Ideen aus #81/#111; 53 Muster
 - **3.3.0-de.1** - 6 neue Muster (#46–#51) für Typografie und Format; Unicode-Scanner erweitert; 51 Muster
