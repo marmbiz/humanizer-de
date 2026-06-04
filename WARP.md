@@ -10,7 +10,7 @@ WARP = Workflow, Architecture, References, Principles.
 humanizer-de/
 ├── SKILL.md                         # SOP, Trigger, Ablauf, Toolroutine
 ├── references/
-│   ├── patterns.md                  # vollständiger 53-Musterkatalog
+│   ├── patterns.md                  # vollständiger 55-Musterkatalog
 │   └── decision-tables.md           # Overlap- und Moduslogik
 ├── scripts/
 │   └── unicode_lint.py              # Muster 43/46, JSON-Report, optional --fix
@@ -72,7 +72,7 @@ git diff --check
 Zusätzlich manuell prüfen:
 
 - `SKILL.md`, `README.md` und `WARP.md` nennen dieselbe Version.
-- `references/patterns.md` enthält exakt die Muster 1-53 ohne Lücken.
+- `references/patterns.md` enthält exakt die Muster 1-55 ohne Lücken.
 - `SKILL.md` verlinkt `references/patterns.md`, `references/decision-tables.md` und `scripts/unicode_lint.py`.
 - Die installierte Kopie unter `~/.codex/skills/humanizer-de` wird erst nach grünen Tests synchronisiert.
 

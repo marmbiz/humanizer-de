@@ -74,7 +74,7 @@ Humanisiere diesen Text. Entferne nur sprachliche Muster, nicht die Formatierung
 
 ## Was das Skill erkennt
 
-Das Skill analysiert **53 verschiedene KI-Schreibmuster** in 9 Kategorien, priorisiert nach Schweregrad (HIGH / MEDIUM / LOW):
+Das Skill analysiert **55 verschiedene KI-Schreibmuster** in 10 Kategorien, priorisiert nach Schweregrad (HIGH / MEDIUM / LOW):
 
 ## Was ist neu?
 
