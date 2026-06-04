@@ -1,0 +1,24 @@
+{
+  "name": "humanizer-de",
+  "description": "Deutsche KI-Schreibmuster erkennen und entfernen. 57 Muster für deutschsprachige Texte, basiert auf der Wikipedia-Seite \"Anzeichen für KI-generierte Inhalte\".",
+  "version": "3.7.0-de.1",
+  "author": {
+    "name": "Martin Moeller",
+    "url": "https://www.martin-moeller.biz"
+  },
+  "homepage": "https://github.com/marmbiz/humanizer-de",
+  "repository": "https://github.com/marmbiz/humanizer-de",
+  "license": "MIT",
+  "keywords": [
+    "writing",
+    "editing",
+    "ai-detection",
+    "humanizer",
+    "german",
+    "deutsch",
+    "skill"
+  ],
+  "skills": [
+    "./"
+  ]
+}

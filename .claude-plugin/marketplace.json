@@ -1,0 +1,15 @@
+{
+  "name": "humanizer-de",
+  "owner": {
+    "name": "Martin Moeller",
+    "url": "https://github.com/marmbiz"
+  },
+  "description": "Marketplace für den Humanizer-de-Skill – erkennt und entfernt deutsche KI-Schreibmuster.",
+  "plugins": [
+    {
+      "name": "humanizer-de",
+      "source": "./",
+      "description": "Deutsche KI-Schreibmuster erkennen und entfernen. 57 Muster für deutschsprachige Texte, basiert auf der Wikipedia-Seite \"Anzeichen für KI-generierte Inhalte\"."
+    }
+  ]
+}

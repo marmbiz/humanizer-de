@@ -7,20 +7,22 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class PatternCatalogTests(unittest.TestCase):
-    def test_catalog_contains_exactly_55_pattern_ids(self):
+    def test_catalog_contains_exactly_57_pattern_ids(self):
         text = (ROOT / "references" / "patterns.md").read_text()
         ids = [int(match) for match in re.findall(r"^####\s+(\d+)\.", text, re.MULTILINE)]
-        self.assertEqual(sorted(ids), list(range(1, 56)))
-        self.assertEqual(len(ids), 55)
+        self.assertEqual(sorted(ids), list(range(1, 58)))
+        self.assertEqual(len(ids), 57)
 
     def test_catalog_keeps_required_sections(self):
         text = (ROOT / "references" / "patterns.md").read_text()
         self.assertIn("## Kurzreferenz", text)
-        self.assertIn("## Die 55 Muster", text)
+        self.assertIn("## Die 57 Muster", text)
         self.assertIn("#### 52. Diff-verankertes Schreiben [MEDIUM]", text)
         self.assertIn("#### 53. Lückenfüllende Spekulation [HIGH]", text)
         self.assertIn("#### 54. Doppelpunkt-Titel-Schema [MEDIUM]", text)
         self.assertIn("#### 55. Gleichförmiger Satzrhythmus [MEDIUM]", text)
+        self.assertIn("#### 56. Aphorismus-Formeln [MEDIUM]", text)
+        self.assertIn("#### 57. Markdown-Struktur-Artefakte [MEDIUM]", text)
 
     def test_pattern_46_examples_use_real_codepoints(self):
         text = (ROOT / "references" / "patterns.md").read_text()

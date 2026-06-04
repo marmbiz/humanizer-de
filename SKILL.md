@@ -1,7 +1,7 @@
 ---
 name: Humanizer (Deutsch)
 description: Verwende diesen Skill nur, wenn der Nutzer ausdrücklich deutschen Text humanisieren, KI-Schreibmuster entfernen oder deutsche KI-Tells auditieren will. Nicht für normales Korrektorat.
-version: 3.6.0-de.1
+version: 3.7.0-de.1
 author: Martin Moeller
 maintainer_website: "https://www.martin-moeller.biz"
 based_on: "Deutsche Wikipedia: Anzeichen für KI-generierte Inhalte, Erkennung KI-Einsatz, Schnelltest KI"

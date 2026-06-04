@@ -2,7 +2,7 @@
 
 KI-Schreibmuster erkennen und entfernen. Für deutschsprachige Texte.
 
-**Version:** 3.6.0-de.1
+**Version:** 3.7.0-de.1
 
 **Autor:** Martin Moeller | [www.martin-moeller.biz](https://www.martin-moeller.biz)
 
@@ -23,12 +23,21 @@ Das Skill folgt deutschen Schreibkonventionen und den Prinzipien von EEAT (Exper
 
 ## Installation
 
-### Option 1: Verzeichnis kopieren
+### Option 1: Claude-Code-Plugin (empfohlen)
 
-1. Kopieren Sie alle Dateien aus diesem Ordner nach `~/.codex/skills/humanizer-de/`
+```bash
+/plugin marketplace add marmbiz/humanizer-de
+/plugin install humanizer-de@humanizer-de
+```
+
+Claude Code übernimmt damit Aktivierung, Deaktivierung und Updates. Einmal hinzugefügt, lässt sich der Skill über `/plugin` verwalten.
+
+### Option 2: Verzeichnis kopieren
+
+1. Kopieren Sie alle Dateien aus diesem Ordner nach `~/.codex/skills/humanizer-de/` (Claude Code: `~/.claude/skills/humanizer-de/`)
 2. Starten Sie Codex/Claude Code neu oder laden Sie die Skills neu
 
-### Option 2: Symbolic Link (Linux/Mac)
+### Option 3: Symbolic Link (Linux/Mac)
 
 ```bash
 ln -s /Users/mm/Local\ Sites/humanizer ~/.codex/skills/humanizer-de
@@ -74,11 +83,17 @@ Humanisiere diesen Text. Entferne nur sprachliche Muster, nicht die Formatierung
 
 ## Was das Skill erkennt
 
-Das Skill analysiert **55 verschiedene KI-Schreibmuster** in 10 Kategorien, priorisiert nach Schweregrad (HIGH / MEDIUM / LOW):
+Das Skill analysiert **57 verschiedene KI-Schreibmuster** in 10 Kategorien, priorisiert nach Schweregrad (HIGH / MEDIUM / LOW):
 
 ## Was ist neu?
 
-### 3.6.0-de.1 (aktuell)
+### 3.7.0-de.1 (aktuell)
+- 2 neue Muster: Aphorismus-Formeln (#56) und Markdown-Struktur-Artefakte (#57: Ein-Zeilen-Tabellen, übersprungene Heading-Ebenen, `---` vor Überschrift)
+- Claude-Code-Plugin und Marketplace: Installation per `/plugin marketplace add marmbiz/humanizer-de` und `/plugin install`, inklusive automatischer Updates
+- Übernahme der hochwertigen Upstream-Ideen aus blader/humanizer #136 (Aphorismus-Formeln) und #140 (Format-Struktur-Tells)
+- 57 Muster insgesamt in 10 Kategorien
+
+### 3.6.0-de.1
 - 2 neue Muster: Doppelpunkt-Titel-Schema (#54), Gleichförmiger Satzrhythmus (#55)
 - Neue Sektion zu statistischen Detektoren (GPTZero u. a.): Perplexity/Burstiness vs. Musterkatalog, mit Handlungstabelle
 - Leitplanke ergänzt: Detektor-Labels wie "Mechanical Precision" treffen meist legitime Fachsprache – kein KI-Tell, Text nicht für einen Score verschlechtern
@@ -139,7 +154,7 @@ Das Skill analysiert **55 verschiedene KI-Schreibmuster** in 10 Kategorien, prio
 - DACH-Schreibfokus und deutsche Stilkonventionen beibehalten
 - Deutsche Wikipedia als primäre Referenz plus englische Wikipedia als Ergänzung
 
-## 55 Muster in 10 Kategorien
+## 57 Muster in 10 Kategorien
 
 ### Sprache und Tonfall (12 Muster)
 
@@ -197,7 +212,7 @@ Das Skill analysiert **55 verschiedene KI-Schreibmuster** in 10 Kategorien, prio
 | 30 | Wechsel im Schreibstil | MEDIUM |
 | 31 | Bearbeitungszusammenfassungen in Ich-Form | LOW |
 
-### Rhetorik und Struktur (8 Muster)
+### Rhetorik und Struktur (9 Muster)
 
 | # | Muster | Schwere |
 |---|--------|---------|
@@ -209,6 +224,7 @@ Das Skill analysiert **55 verschiedene KI-Schreibmuster** in 10 Kategorien, prio
 | 37 | "In der heutigen X-Welt" Framing ("In der heutigen digitalen Welt") | MEDIUM |
 | 38 | Aspirativer Unternehmensschluss ("bestens aufgestellt") | MEDIUM |
 | 52 | Diff-verankertes Schreiben ("wurde jetzt ergänzt") | MEDIUM |
+| 56 | Aphorismus-Formeln ("X ist die Sprache des Y", "X wird zur Falle") | MEDIUM |
 
 ### Argumentation und Evidenz (4 Muster)
 
@@ -228,7 +244,7 @@ Das Skill analysiert **55 verschiedene KI-Schreibmuster** in 10 Kategorien, prio
 | 44 | Standard-Kapitel ohne Substanz | MEDIUM |
 | 45 | Anglizismus-Strukturen | MEDIUM |
 
-### Typografie und Format (6 Muster)
+### Typografie und Format (7 Muster)
 
 | # | Muster | Schwere |
 |---|--------|---------|
@@ -238,6 +254,7 @@ Das Skill analysiert **55 verschiedene KI-Schreibmuster** in 10 Kategorien, prio
 | 49 | Apostroph-Fehler | MEDIUM |
 | 50 | Interpunktion bei Stichpunkt-Aufzählungen | LOW |
 | 51 | Obsessive Parataxe | MEDIUM |
+| 57 | Markdown-Struktur-Artefakte (Ein-Zeilen-Tabellen, übersprungene Heading-Ebenen, `---` vor Überschrift) | MEDIUM |
 
 ### Titel- und Satzbau (2 Muster)
 
@@ -426,6 +443,7 @@ Haben Sie ein Problem gefunden oder eine Verbesserung?
 
 ## Versionshistorie
 
+- **3.7.0-de.1** - 2 neue Muster (#56–#57): Aphorismus-Formeln, Markdown-Struktur-Artefakte; Claude-Code-Plugin und Marketplace (`/plugin install`); Upstream-Ideen aus #136/#140; 57 Muster
 - **3.6.0-de.1** - 2 neue Muster (#54–#55): Doppelpunkt-Titel-Schema, Gleichförmiger Satzrhythmus; Sektion zu statistischen Detektoren (Perplexity/Burstiness); Muster 46 mit Beweiskraft-Staffelung für Quote-Asymmetrie; 55 Muster
 - **3.5.0-de.1** - Architektur-Upgrade: schlanker SOP-Router, Musterkatalog in `references/patterns.md`, Decision Tables, Unicode-/Quote-Linter und Tests; keine neuen Muster
 - **3.4.0-de.1** - False-Positive-Guardrails; 2 neue Muster (#52–#53): Diff-verankertes Schreiben, Lückenfüllende Spekulation; Upstream PR #113 sowie v2.7.0-Ideen aus #81/#111; 53 Muster

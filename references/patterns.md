@@ -1,6 +1,6 @@
 # Humanizer-de Pattern Catalog
 
-Vollstaendiger Musterkatalog fuer Humanizer (Deutsch) v3.6.0-de.1. Nur bei konkreter Musterdiagnose, Audit oder Grenzfaellen laden.
+Vollstaendiger Musterkatalog fuer Humanizer (Deutsch) v3.7.0-de.1. Nur bei konkreter Musterdiagnose, Audit oder Grenzfaellen laden.
 
 ## Kurzreferenz
 
@@ -61,6 +61,8 @@ Vollstaendiger Musterkatalog fuer Humanizer (Deutsch) v3.6.0-de.1. Nur bei konkr
 | 53 | Lückenfüllende Spekulation | HIGH | "hält sich bedeckt", "macht keine Angaben", "vermutlich", obwohl Quelle fehlt |
 | 54 | Doppelpunkt-Titel-Schema | MEDIUM | "Phrase: Was/Warum/Wie ..." gehäuft in Titel/H1/H2 |
 | 55 | Gleichförmiger Satzrhythmus | MEDIUM | Sätze fast gleich lang, Subjekt zuerst, niedrige Burstiness |
+| 56 | Aphorismus-Formeln | MEDIUM | "X ist die Sprache des Y", "X wird zur Falle", "die Währung von" |
+| 57 | Markdown-Struktur-Artefakte | MEDIUM | Ein-Zeilen-Tabellen, übersprungene Heading-Ebenen (H2→H4), `---` vor Überschrift |
 
 ## Statistische Detektoren (GPTZero u. a.)
 
@@ -81,7 +83,7 @@ Die menschenlesbaren Labels dieser Tools ("Robotic Formality", "Mechanical Preci
 
 Der einzige substanzwahrende Hebel gegen niedrige Burstiness ist Muster 55 (Satzrhythmus spreizen). Niedrige Perplexity bei korrekter Fachsprache ist nicht "reparierbar", ohne den Text zu verschlechtern – und das ist nicht Aufgabe dieses Skills. Siehe SKILL.md-Leitplanke zu statistischen Detektoren.
 
-## Die 55 Muster
+## Die 57 Muster
 
 ### Sprache und Tonfall (12 Muster)
 
@@ -576,7 +578,7 @@ Häufige Indikatoren:
 
 **Lösung:** Entfernen oder in neutrale Form umwandeln ("Absatz über X hinzugefügt").
 
-### Rhetorik und Struktur (8 Muster)
+### Rhetorik und Struktur (9 Muster)
 
 #### 32. Persuasive Autoritäts-Floskeln [MEDIUM]
 
@@ -709,6 +711,28 @@ Häufige Indikatoren:
 ❌ Schlecht: "Die Plattform wurde jetzt um KI-gestützte Empfehlungen erweitert, die die alte manuelle Auswahl ersetzen."
 
 ✓ Besser: "Die Plattform empfiehlt passende Inhalte automatisch auf Basis des Nutzerverhaltens."
+
+#### 56. Aphorismus-Formeln [MEDIUM]
+
+**Kategorie:** Rhetorik und Struktur
+
+**Wendungen, auf die Sie achten sollten:** "X ist die Sprache des Y", "X ist die Währung des Y", "X ist die Architektur des Y", "X wird zur Falle", "X ist kein Werkzeug, sondern ein Spiegel", "im Kern von X steht Y".
+
+**Problem:** LLMs verwandeln eine gewöhnliche Aussage in einen wiederverwendbaren, tiefgründig klingenden Aphorismus. Die Schablone "X ist das Y des Z" suggeriert Bedeutung, fügt aber keine Präzision hinzu – sie ersetzt eine konkrete, prüfbare Behauptung durch eine griffige Leerformel. Solche Sätze lassen sich auf fast jedes Thema anwenden, gerade weil sie nichts Konkretes sagen.
+
+**Warum LLMs das tun:** Aphoristische Formeln sind in zitierfreudigen Trainingsdaten (LinkedIn, Essays, Werbung) überrepräsentiert und gelten als "wertige" Schlusspointe. Das Modell greift sie ab, wenn es eine Aussage gewichtig wirken lassen will.
+
+**Abgrenzung:** Muster 1 = Symbolik-Betonung ("steht als Zeugnis", "symbolisiert"). Muster 2 = Werbesprache/Superlative. Muster 32 = persuasive Autoritäts-Floskeln ("Im Kern", "In Wirklichkeit") als Einschub. Muster 56 = die aphoristische *Schablone* selbst, die eine konkrete Aussage durch eine wohlklingende Formel ersetzt.
+
+**Kein Problem, wenn:** Ein etabliertes Sprichwort oder ein gekennzeichnetes Zitat bewusst eingesetzt wird; die Formulierung eine real belegte, konkrete Aussage trägt und nicht nur den Wohlklang.
+
+**Lösung:** Die Formel durch die konkrete Behauptung ersetzen, auf die sie zielt. Fragen: Was genau wird hier behauptet, und stimmt es?
+
+**Beispiel:**
+
+❌ Schlecht: "Symmetrie ist die Sprache des Vertrauens. Effizienz wird zur Falle, sobald Teams die menschliche Ebene vergessen."
+
+✓ Besser: "Symmetrische Layouts wirken auf Nutzer oft vorhersehbarer. Teams können Abläufe so weit optimieren, dass sie übersehen, wie Menschen sie tatsächlich verwenden."
 
 ### Argumentation und Evidenz (4 Muster)
 
@@ -933,7 +957,7 @@ Harte Indikatoren (klare Tells):
 
 ✓ Besser: „Schließlich erkannte das Team, dass die Strategie tatsächlich nicht trug."
 
-### Typografie und Format (6 Muster)
+### Typografie und Format (7 Muster)
 
 #### 46. Falsche deutsche Anführungszeichen [HIGH]
 
@@ -1056,6 +1080,37 @@ Häufige Indikatoren:
 ❌ Schlecht: "Das Team analysierte die Daten. Die Ergebnisse waren eindeutig. Die Conversion stieg um 25 Prozent. Das Projekt wurde im Budget abgeschlossen."
 
 ✓ Besser: "Das Team analysierte die Daten und kam zu einem eindeutigen Ergebnis: Die Conversion stieg um 25 Prozent, obwohl das Projekt im Budget blieb."
+
+#### 57. Markdown-Struktur-Artefakte [MEDIUM]
+
+**Problem:** KI-Chatbots setzen Markdown-Strukturelemente dekorativ statt semantisch ein. Drei wiederkehrende Fälle:
+
+- **Fall A – Tabelle, wo Prosa hingehört:** Eine Tabelle mit nur einer Datenzeile, eine Spalte, die einen Wert wiederholt, oder "Aspekt/Beschreibung"-Paare, die in Wahrheit ein Satz sind.
+- **Fall B – Übersprungene Überschriften-Ebenen:** Eine H2 folgt direkt eine H4 (`##` dann `####`). Die Überschriftengröße wird als optisches Gewicht missbraucht, nicht als Hierarchie. Überschriften sollten eine Ebene nach der anderen absteigen.
+- **Fall C – Thematische Trennlinie vor Überschrift:** Eine dekorative horizontale Linie (`---`) steht direkt über einer Überschrift. Die Überschrift beginnt bereits einen neuen Abschnitt; die Linie ist redundantes Rauschen.
+
+**Warum LLMs das tun:** Modelle optimieren auf optisch "aufgeräumte" Ausgaben und greifen zu Tabellen, Größensprüngen und Trennlinien als visuellen Markern, ohne die zugrunde liegende Dokumentstruktur zu prüfen.
+
+**Kein Problem, wenn:** Eine Tabelle echte mehrdimensionale Daten zeigt; eine `---`-Linie bewusst als Szenen- oder Themenwechsel *zwischen* gleichrangigen Abschnitten steht (nicht direkt vor einer Überschrift); ein CMS, Theme oder Markdown-Template die Struktur erzeugt. Konsistente, korrekte Formatierung allein ist kein KI-Tell.
+
+**Abgrenzung:** Muster 16 = Gedankenstriche (— / –) im Fließtext, nicht die horizontale Linie `---`. Muster 13 = übermäßige Fettschrift, Muster 14 = falsche Listenzeichen. Muster 23 = Markdown statt Wikitext (Syntax-Wahl im Wiki-Kontext). Muster 57 = dekorativer Struktur-Missbrauch in Markdown selbst.
+
+**Beispiel:**
+
+❌ Schlecht (Fall A – Tabelle statt Satz):
+> | Funktion | Beschreibung |
+> | --- | --- |
+> | Geschwindigkeit | Der Dienst antwortet unter normaler Last schnell. |
+
+✓ Besser: "Unter normaler Last antwortet der Dienst schnell."
+
+❌ Schlecht (Fall B – Ebene übersprungen): `## Installation` direkt gefolgt von `#### Voraussetzungen`
+
+✓ Besser: `## Installation` gefolgt von `### Voraussetzungen`
+
+❌ Schlecht (Fall C – Linie vor Überschrift): ein Absatz, dann `---`, dann `## Nächster Abschnitt`
+
+✓ Besser: der Absatz, dann direkt `## Nächster Abschnitt`
 
 ### Titel- und Satzbau (2 Muster)
 

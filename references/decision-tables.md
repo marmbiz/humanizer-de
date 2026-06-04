@@ -1,6 +1,6 @@
 # Humanizer-de Decision Tables
 
-Nutze diese Tabellen vor `references/patterns.md`, wenn Befunde ueberlappen. Sie sind die verbindliche Kurzlogik fuer v3.6.0-de.1.
+Nutze diese Tabellen vor `references/patterns.md`, wenn Befunde ueberlappen. Sie sind die verbindliche Kurzlogik fuer v3.7.0-de.1.
 
 ## Evidenz: 11 / 26 / 42 / 53
 
@@ -22,6 +22,26 @@ Nutze diese Tabellen vor `references/patterns.md`, wenn Befunde ueberlappen. Sie
 | Ganzer Standardabschnitt mit Allgemeinplaetzen ohne konkrete Substanz | 44 | Konkretisieren, integrieren, umwidmen oder `[SUBSTANZ PRUEFEN]` |
 | Kurzer Einstieg enthaelt konkrete Zahl, Datum oder These | nicht 34 | Stehen lassen |
 | Standard-Ueberschrift mit belegtem, konkretem Inhalt | nicht 44 | Stehen lassen oder nur Ueberschrift praezisieren |
+
+## Floskeln und Schablonen: 1 / 2 / 32 / 56
+
+| Situation | Muster | Aktion |
+|---|---:|---|
+| Symbolisierende Aufladung ("steht als Zeugnis", "symbolisiert") | 1 | Umformulieren auf die konkrete Aussage |
+| Werbesprache oder Superlative ("atemberaubend", "einzigartig") | 2 | Entfernen oder sachlich ersetzen |
+| Persuasive Einschub-Floskel ("Im Kern", "In Wirklichkeit") | 32 | Floskel streichen, Aussage direkt stellen |
+| Aphoristische Schablone ersetzt eine konkrete Behauptung ("X ist die Sprache des Y", "X wird zur Falle") | 56 | Durch die gemeinte konkrete Behauptung ersetzen |
+| Gekennzeichnetes Zitat oder belegte konkrete Aussage | nicht 56 | Stehen lassen |
+
+## Format und Markdown: 13 / 14 / 16 / 23 / 57
+
+| Situation | Muster | Aktion |
+|---|---:|---|
+| Gedankenstriche (— / –) im Fließtext | 16 | Reduzieren, gepaarte Einschübe aufloesen |
+| Übermäßige Fettschrift / falsche Listenzeichen | 13 / 14 | Fett sparsam; korrekte Listensyntax |
+| Markdown-Syntax statt Wikitext im Wiki-Kontext | 23 | In Wikitext umsetzen |
+| Dekorative Tabelle, übersprungene Heading-Ebene oder `---` direkt vor Überschrift | 57 | In Prosa/korrekte Hierarchie aufloesen; Linie vor Überschrift entfernen |
+| Echte mehrdimensionale Daten, bewusster `---`-Szenenwechsel, CMS/Theme-Struktur | nicht 57 | Stehen lassen |
 
 ## Modusmatrix
 

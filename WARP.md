@@ -1,4 +1,4 @@
-# WARP - Humanizer (Deutsch) Entwicklerleitfaden (v3.6.0-de.1)
+# WARP - Humanizer (Deutsch) Entwicklerleitfaden (v3.7.0-de.1)
 
 WARP = Workflow, Architecture, References, Principles.
 
@@ -10,7 +10,7 @@ WARP = Workflow, Architecture, References, Principles.
 humanizer-de/
 ├── SKILL.md                         # SOP, Trigger, Ablauf, Toolroutine
 ├── references/
-│   ├── patterns.md                  # vollständiger 55-Musterkatalog
+│   ├── patterns.md                  # vollständiger 57-Musterkatalog
 │   └── decision-tables.md           # Overlap- und Moduslogik
 ├── scripts/
 │   └── unicode_lint.py              # Muster 43/46, JSON-Report, optional --fix
@@ -42,7 +42,7 @@ Wenn ein Muster geändert oder ergänzt wird:
 4. `tests/test_patterns_catalog.py` erweitern, wenn IDs oder Pflichtmarker betroffen sind.
 5. README-Version und Changelog-Abschnitt nur bei Release-relevanter Änderung nachziehen.
 
-Keine neuen Muster in Patch-Releases verstecken. Wenn aus 55 Mustern 56 werden, ist das eine sichtbare Versionierungs- und Dokumentationsänderung.
+Keine neuen Muster in Patch-Releases verstecken. Wenn aus 57 Mustern 58 werden, ist das eine sichtbare Versionierungs- und Dokumentationsänderung.
 
 ## Unicode und Quotes
 
@@ -72,7 +72,7 @@ git diff --check
 Zusätzlich manuell prüfen:
 
 - `SKILL.md`, `README.md` und `WARP.md` nennen dieselbe Version.
-- `references/patterns.md` enthält exakt die Muster 1-55 ohne Lücken.
+- `references/patterns.md` enthält exakt die Muster 1-57 ohne Lücken.
 - `SKILL.md` verlinkt `references/patterns.md`, `references/decision-tables.md` und `scripts/unicode_lint.py`.
 - Die installierte Kopie unter `~/.codex/skills/humanizer-de` wird erst nach grünen Tests synchronisiert.
 
