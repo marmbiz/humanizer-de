@@ -1,4 +1,4 @@
-# WARP - Humanizer (Deutsch) Entwicklerleitfaden (v3.8.0-de.1)
+# WARP - Humanizer (Deutsch) Entwicklerleitfaden (v4.0.0)
 
 WARP = Workflow, Architecture, References, Principles.
 
@@ -10,7 +10,7 @@ WARP = Workflow, Architecture, References, Principles.
 humanizer-de/
 ├── SKILL.md                         # SOP, Trigger, Ablauf, Toolroutine
 ├── references/
-│   ├── patterns.md                  # vollständiger 63-Musterkatalog
+│   ├── patterns.md                  # vollständiger 65-Musterkatalog
 │   └── decision-tables.md           # Overlap- und Moduslogik
 ├── scripts/
 │   ├── unicode_lint.py              # Muster 43/46, JSON-Report, optional --fix
@@ -46,7 +46,7 @@ Wenn ein Muster geändert oder ergänzt wird:
 4. `tests/test_patterns_catalog.py` erweitern, wenn IDs oder Pflichtmarker betroffen sind.
 5. README-Version und Changelog-Abschnitt nur bei Release-relevanter Änderung nachziehen.
 
-Keine neuen Muster in Patch-Releases verstecken. Wenn sich die Musterzahl ändert, ist das eine sichtbare Versionierungs- und Dokumentationsänderung.
+Keine neuen Muster in Patch-Releases verstecken. Ab v4.0.0 nutzt das Projekt eigenes SemVer ohne Fork-Suffix und trackt keine Upstream-Versionen mehr: neue Muster sind Minor-Bumps, Breaking-Änderungen an Ablauf oder Output-Format sind Major-Bumps. Eine Muster-Erweiterung von 65 auf 66 wäre also 4.1.0.
 
 ## Unicode und Quotes
 
@@ -87,8 +87,8 @@ git diff --check
 
 Zusätzlich manuell prüfen:
 
-- `SKILL.md`, `README.md`, `WARP.md` und `.claude-plugin/plugin.json` nennen dieselbe Version.
-- `references/patterns.md` enthält exakt die Muster 1-63 ohne Lücken.
+- `SKILL.md`, `README.md`, `WARP.md`, `references/patterns.md`, `references/decision-tables.md`, `.claude-plugin/plugin.json` und `.claude-plugin/marketplace.json` nennen dieselbe Version.
+- `references/patterns.md` enthält exakt die Muster 1-65 ohne Lücken.
 - `SKILL.md` verlinkt `references/patterns.md`, `references/decision-tables.md`, `scripts/unicode_lint.py` und `scripts/rhythm_lint.py`.
 - Die installierte Kopie unter `~/.codex/skills/humanizer-de` wird erst nach grünen Tests synchronisiert.
 

@@ -1,7 +1,7 @@
 ---
 name: Humanizer (Deutsch)
 description: Verwende diesen Skill nur, wenn der Nutzer ausdrücklich deutschen Text humanisieren, KI-Schreibmuster entfernen oder deutsche KI-Tells auditieren will. Nicht für normales Korrektorat.
-version: 3.8.0-de.1
+version: 4.0.0
 author: Martin Moeller
 maintainer_website: "https://www.martin-moeller.biz"
 based_on: "Deutsche Wikipedia: Anzeichen für KI-generierte Inhalte, Erkennung KI-Einsatz, Schnelltest KI"
@@ -67,7 +67,7 @@ Spätere Pässe dürfen frühere nicht invalidieren. Rhythmus immer zuletzt.
 
 **Pass 1 – Artefakte und Evidenz (immer, Einzelbefund genügt).** Chatbot-Floskeln, Platzhalter, Quellenprobleme (Decision Table Evidenz), Unicode, falsche Typografie. Bei Overlaps zuerst [references/decision-tables.md](references/decision-tables.md); [references/patterns.md](references/patterns.md) nur für konkrete Musterdiagnose, Audit oder Grenzfälle laden. Keine Stilarbeit in diesem Pass. Für sichere Datei-Korrekturen: `unicode_lint.py --fix --write`.
 
-**Pass 2 – Lexik (Cluster-Regel).** Floskel-Muster, Vokabel-Fallen, Abstrakta-Stapel (Muster 58): Hypernyme und Nominalstil nur dort auflösen, wo der konkrete Sachverhalt im Text oder Kontext steht. Nichts erfinden, um konkret zu wirken – Konkretisierung ohne Beleg ist Muster 53.
+**Pass 2 – Lexik (Cluster-Regel).** Floskel-Muster, KI-Marker-Vokabular (Muster 64), Kopula-Vermeidung (Muster 65), Abstrakta-Stapel (Muster 58): Hypernyme und Nominalstil nur dort auflösen, wo der konkrete Sachverhalt im Text oder Kontext steht. Nichts erfinden, um konkret zu wirken – Konkretisierung ohne Beleg ist Muster 53.
 
 **Pass 3 – Struktur (Cluster-Regel).** Überschriften-Schemata, isometrische Absätze (Muster 61), substanzlose Sektionen, Listen-Parallelismus, Schließzwang (Muster 62). Erst nach diesem Pass steht die endgültige Absatzstruktur.
 

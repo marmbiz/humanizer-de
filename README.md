@@ -2,7 +2,7 @@
 
 KI-Schreibmuster erkennen und entfernen. Für deutschsprachige Texte.
 
-**Version:** 3.8.0-de.1
+**Version:** 4.0.0
 
 **Autor:** Martin Moeller | [www.martin-moeller.biz](https://www.martin-moeller.biz)
 
@@ -12,6 +12,8 @@ KI-Schreibmuster erkennen und entfernen. Für deutschsprachige Texte.
 ---
 
 ## Was ist das?
+
+Humanizer (Deutsch) ist ein eigenständiges Projekt für deutschsprachige Texte. Es ist Anfang 2026 als Fork von blader/humanizer entstanden und hat sich seitdem zu einem eigenen System entwickelt: 65 Muster in 10 Kategorien, rund die Hälfte ohne Upstream-Pendant, darunter die komplette Evidenz-Familie und die deutsche Typografie, deterministische Linter, Testsuite mit Golden Corpus und ein 5-Pass-Workflow. Ab v4.0.0 folgt das Projekt einem eigenen Versionsschema ohne Fork-Suffix.
 
 Dieses Skill erkennt Schreibmuster, die typisch für KI-Sprachmodelle sind – und hilft Ihnen, sie zu entfernen.
 
@@ -83,16 +85,22 @@ Humanisiere diesen Text. Entferne nur sprachliche Muster, nicht die Formatierung
 
 ## Was das Skill erkennt
 
-Das Skill analysiert **63 verschiedene KI-Schreibmuster** in 10 Kategorien, priorisiert nach Schweregrad (HIGH / MEDIUM / LOW):
+Das Skill analysiert **65 verschiedene KI-Schreibmuster** in 10 Kategorien, priorisiert nach Schweregrad (HIGH / MEDIUM / LOW):
 
 ## Was ist neu?
 
-### 3.8.0-de.1 (aktuell)
+### 4.0.0 (aktuell)
+- Eigenständigkeits-Release: eigenes Versionsschema ohne `-de.FORK`-Suffix; Projekt trackt keine Upstream-Versionen mehr, Upstream bleibt Ideenquelle und Credit
+- 2 neue Muster (#64–#65), adaptiert aus blader/humanizer #7/#8 für das Deutsche: KI-Marker-Vokabular, Kopula-Vermeidung
+- Muster 58 geschärft: Vokabel-Fallen-Liste in Muster 64 ausgelagert, 58 fokussiert auf Hypernyme/Nominalstil
+- 65 Muster insgesamt in 10 Kategorien
+
+### 3.8.0-de.1
 - 6 neue Muster (#58–#63): Abstrakta-Stapel, erfundene Ich-Erfahrung, Synonym-Rotation, isometrisches Dokument, markerloser Schließzwang, Modalpartikel-Anomalie
 - Neuer 5-Pass-Ablauf: Artefakte → Lexik → Struktur → Rhythmus → Selbst-Audit
 - Neues Mess-Script `scripts/rhythm_lint.py` mit deterministischen Burstiness-/Rhythmus-Kennzahlen für Muster 4/51/54/55/61
 - Golden Corpus in `tests/corpus/` für deterministische Unicode- und Rhythmus-Erwartungen
-- 63 Muster insgesamt in 10 Kategorien
+- Katalog bis #63 in 10 Kategorien
 
 ### 3.7.0-de.1
 - 2 neue Muster: Aphorismus-Formeln (#56) und Markdown-Struktur-Artefakte (#57: Ein-Zeilen-Tabellen, übersprungene Heading-Ebenen, `---` vor Überschrift)
@@ -161,9 +169,9 @@ Das Skill analysiert **63 verschiedene KI-Schreibmuster** in 10 Kategorien, prio
 - DACH-Schreibfokus und deutsche Stilkonventionen beibehalten
 - Deutsche Wikipedia als primäre Referenz plus englische Wikipedia als Ergänzung
 
-## 63 Muster in 10 Kategorien
+## 65 Muster in 10 Kategorien
 
-### Sprache und Tonfall (15 Muster)
+### Sprache und Tonfall (17 Muster)
 
 | # | Muster | Schwere |
 |---|--------|---------|
@@ -182,6 +190,8 @@ Das Skill analysiert **63 verschiedene KI-Schreibmuster** in 10 Kategorien, prio
 | 58 | Abstrakta-Stapel und Hypernym-Präferenz | MEDIUM |
 | 60 | Synonym-Rotation für dieselbe Entität | MEDIUM |
 | 63 | Modalpartikel-Anomalie | LOW |
+| 64 | KI-Marker-Vokabular | MEDIUM |
+| 65 | Kopula-Vermeidung | MEDIUM |
 
 ### Stil (4 Muster)
 
@@ -456,7 +466,8 @@ Haben Sie ein Problem gefunden oder eine Verbesserung?
 
 ## Versionshistorie
 
-- **3.8.0-de.1** - 6 neue Muster (#58–#63): Abstrakta-Stapel, erfundene Ich-Erfahrung, Synonym-Rotation, isometrisches Dokument, markerloser Schließzwang, Modalpartikel-Anomalie; neuer 5-Pass-Ablauf (Artefakte → Lexik → Struktur → Rhythmus → Selbst-Audit); neues Mess-Script `scripts/rhythm_lint.py` für deterministische Burstiness-/Rhythmus-Kennzahlen (Muster 4/51/54/55/61); Golden Corpus in `tests/corpus/`; 63 Muster
+- **4.0.0** - Eigenständigkeits-Release mit eigenem SemVer ohne Fork-Suffix; 2 neue Muster (#64–#65): KI-Marker-Vokabular und Kopula-Vermeidung; Muster 58 auf Hypernyme/Nominalstil geschärft; 65 Muster
+- **3.8.0-de.1** - 6 neue Muster (#58–#63): Abstrakta-Stapel, erfundene Ich-Erfahrung, Synonym-Rotation, isometrisches Dokument, markerloser Schließzwang, Modalpartikel-Anomalie; neuer 5-Pass-Ablauf (Artefakte → Lexik → Struktur → Rhythmus → Selbst-Audit); neues Mess-Script `scripts/rhythm_lint.py` für deterministische Burstiness-/Rhythmus-Kennzahlen (Muster 4/51/54/55/61); Golden Corpus in `tests/corpus/`; Katalog bis #63
 - **3.7.0-de.1** - 2 neue Muster (#56–#57): Aphorismus-Formeln, Markdown-Struktur-Artefakte; Claude-Code-Plugin und Marketplace (`/plugin install`); Upstream-Ideen aus #136/#140; Katalog bis #57
 - **3.6.0-de.1** - 2 neue Muster (#54–#55): Doppelpunkt-Titel-Schema, Gleichförmiger Satzrhythmus; Sektion zu statistischen Detektoren (Perplexity/Burstiness); Muster 46 mit Beweiskraft-Staffelung für Quote-Asymmetrie; 55 Muster
 - **3.5.0-de.1** - Architektur-Upgrade: schlanker SOP-Router, Musterkatalog in `references/patterns.md`, Decision Tables, Unicode-/Quote-Linter und Tests; keine neuen Muster

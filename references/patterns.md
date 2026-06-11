@@ -1,6 +1,6 @@
 # Humanizer-de Pattern Catalog
 
-Vollstaendiger Musterkatalog fuer Humanizer (Deutsch) v3.8.0-de.1. Nur bei konkreter Musterdiagnose, Audit oder Grenzfaellen laden.
+Vollstaendiger Musterkatalog fuer Humanizer (Deutsch) v4.0.0. Nur bei konkreter Musterdiagnose, Audit oder Grenzfaellen laden.
 
 ## Kurzreferenz
 
@@ -69,6 +69,8 @@ Vollstaendiger Musterkatalog fuer Humanizer (Deutsch) v3.8.0-de.1. Nur bei konkr
 | 61 | Isometrisches Dokument | MEDIUM | alle Absätze/Sektionen/Listen-Items gleich lang, symmetrische Abdeckung |
 | 62 | Markerloser Schließzwang | MEDIUM | bewertender Abschlusssatz ohne neue Information am Absatzende |
 | 63 | Modalpartikel-Anomalie | LOW | Partikelarmut im Nähe-Register oder Partikel-Überdosis (nur Locker) |
+| 64 | KI-Marker-Vokabular | MEDIUM | "beleuchten", "eintauchen", "spannend", "nahtlos", "die digitale Landschaft" in Häufung |
+| 65 | Kopula-Vermeidung | MEDIUM | "fungiert als", "stellt dar", "verfügt über", "zeichnet sich aus durch" statt "ist"/"hat" |
 
 ## Statistische Detektoren (GPTZero u. a.)
 
@@ -89,9 +91,9 @@ Die menschenlesbaren Labels dieser Tools ("Robotic Formality", "Mechanical Preci
 
 Der einzige substanzwahrende Hebel gegen niedrige Burstiness ist Muster 55 (Satzrhythmus spreizen). Niedrige Perplexity bei korrekter Fachsprache ist nicht "reparierbar", ohne den Text zu verschlechtern – und das ist nicht Aufgabe dieses Skills. Siehe SKILL.md-Leitplanke zu statistischen Detektoren.
 
-## Die 63 Muster
+## Die 65 Muster
 
-### Sprache und Tonfall (15 Muster)
+### Sprache und Tonfall (17 Muster)
 
 #### 1. Übermäßige Betonung von Symbolik [HIGH]
 **Problem:** Bestimmte Wendungen erzeugen symbolische, zu perfekte Bedeutungen.
@@ -315,7 +317,7 @@ Häufige Indikatoren:
 Häufige Indikatoren:
 - "verschiedene Maßnahmen", "zahlreiche Aspekte", "innovative Lösungen", "zentrale Faktoren"
 - Nominalstil-Ketten: "die Nutzung", "die Bereitstellung", "die Umsetzung", "die Optimierung"
-- Vokabel-Fallen: "entscheidend", "maßgeblich", "vielfältig", "umfassend", "ganzheitlich", "nahtlos", "beleuchten", "eintauchen", "im Spannungsfeld"
+- Einzelne Marker-Vokabeln gehören zu Muster 64; Muster 58 greift, wenn der Oberbegriff eine im Text belegte Konkretion ersetzt
 **Warum LLMs das tun:** Hypernyme sind die statistisch sichere Wahl; sie passen auf jeden Kontext und sind in zusammenfassenden Trainingsdaten überrepräsentiert.
 **Kein Problem, wenn:** der Oberbegriff echte Mengen bündelt ("drei Maßnahmen: A, B, C") oder die Konkretion im übergebenen Kontext schlicht fehlt.
 **Lösung:** Durch den konkreten Sachverhalt ersetzen, der im Text oder Kontext belegt ist. Fehlt er: stehen lassen oder `[KONKRETION NÖTIG]` markieren. Nie Details erfinden, um konkret zu wirken – das wäre Muster 53.
@@ -346,6 +348,36 @@ Häufige Indikatoren:
 **Lösung:** In Locker sparsam dosieren: höchstens eine Partikel pro Absatz, nur wo sie eine tatsächliche Haltung des Texts trägt. Nie mechanisch nachrüsten.
 ❌ Schlecht (Nähe-Register, partikelfrei): "Du kennst das Problem. Die Lösung ist einfach. Du brauchst nur drei Schritte."
 ✓ Besser: "Du kennst das Problem ja. Die Lösung ist simpel – drei Schritte reichen schon."
+
+#### 64. KI-Marker-Vokabular [MEDIUM]
+**Kategorie:** Sprache und Tonfall
+**Problem:** Bestimmte Wörter kommen in deutschem Post-2023-KI-Text deutlich häufiger vor als in menschlichem Gebrauchstext — unabhängig davon, ob die Aussage stimmt. Einzeln sind sie unauffällig; ihr gemeinsames Auftreten ist das Signal. Adaptiert aus blader/humanizer Muster #7 ("Overused AI Vocabulary").
+Häufige Indikatoren (Ko-Okkurrenz zählt):
+- Verben: "beleuchten", "eintauchen", "unterstreichen", "aufzeigen", "entfesseln", "revolutionieren", "prägen" (figurativ)
+- Adjektive: "spannend", "entscheidend", "maßgeblich", "nahtlos", "robust" (außerhalb der Technik), "vielschichtig", "facettenreich", "dynamisch", "ganzheitlich", "maßgeschneidert", "essenziell", "lebendig" (für Abstrakta)
+- Abstrakta: "die (digitale/mediale/...) Landschaft" (figurativ), "das Zusammenspiel", "die Reise" (figurativ), "der Meilenstein", "das Spannungsfeld"
+**Warum LLMs das tun:** Diese Wörter sind die deutschen Gegenstücke zu "delve", "tapestry", "showcase", "landscape" — RLHF-geprägte Vorzugsvokabeln, die Gewicht signalisieren sollen und in KI-Trainingszyklen selbstverstärkend häufiger werden.
+**Abgrenzung:** Muster 2 = Werbesprache/Superlative ("atemberaubend"). Muster 58 = Hypernym ersetzt eine belegte Konkretion. Muster 64 = die Frequenz-Marker selbst, auch wenn der Satz informativ ist.
+**Kein Problem, wenn:** das Wort fachlich gebunden ist ("robuste Statistik", "dynamisches Routing", "Meilenstein" im Projektplan) oder einzeln steht. Erst ab 3+ Markern im selben Text als Cluster behandeln.
+**Lösung:** Durch das gewöhnliche Wort ersetzen ("beleuchten" → "untersuchen"/"beschreiben", "spannend" → streichen oder konkret begründen, "die digitale Landschaft" → das gemeinte konkrete Feld benennen).
+❌ Schlecht: "Der Artikel beleuchtet das vielschichtige Zusammenspiel der Akteure in der digitalen Landschaft und zeigt spannende Entwicklungen auf."
+✓ Besser: "Der Artikel beschreibt, wie die drei großen Anbieter aufeinander reagieren — und wo sich der Markt gerade dreht."
+
+#### 65. Kopula-Vermeidung [MEDIUM]
+**Kategorie:** Sprache und Tonfall
+**Problem:** LLMs ersetzen das schlichte "ist"/"hat" durch gespreizte Ersatzkonstruktionen: "fungiert als", "dient als", "stellt ... dar", "repräsentiert", "bildet", "erweist sich als", "präsentiert sich als", "zeichnet sich durch ... aus", "verfügt über", "bietet", "beherbergt", "wartet mit ... auf". Der Satz klingt gehobener, sagt aber exakt dasselbe. Adaptiert aus blader/humanizer Muster #8 ("Copula Avoidance").
+Häufige Indikatoren:
+- "fungiert als" / "dient als" statt "ist"
+- "verfügt über" / "bietet" / "beherbergt" statt "hat"
+- "stellt einen wichtigen Bestandteil dar" statt "ist Teil von"
+- "zeichnet sich durch hohe Qualität aus" statt "ist gut verarbeitet"
+- Mehrere solcher Konstruktionen im selben Absatz
+**Warum LLMs das tun:** Ersatzverben wirken im Training "wertiger" als die Kopula; Stilratgeber gegen Wortwiederholung verstärken die Vermeidung von "ist"/"hat".
+**Abgrenzung:** Muster 1 = symbolische Aufladung ("steht als Zeugnis für"). Muster 65 = die nüchterne Ersatzkonstruktion ohne Symbolik. Muster 39 = Passiv/subjektlose Fragmente.
+**Kein Problem, wenn:** die Konstruktion echte Zusatzinformation trägt ("dient als Notausgang" beschreibt eine Funktion, die vom Wesen abweicht) oder eine einzelne Wiederholung von "ist" vermeidet. Erst bei Häufung behandeln.
+**Lösung:** Auf "ist"/"hat" zurückführen, wo keine Information verloren geht.
+❌ Schlecht: "Die Galerie fungiert als Ausstellungsraum des Vereins und verfügt über vier Räume mit insgesamt 280 Quadratmetern."
+✓ Besser: "Die Galerie ist der Ausstellungsraum des Vereins und hat vier Räume mit insgesamt 280 Quadratmetern."
 
 ### Stil (4 Muster)
 

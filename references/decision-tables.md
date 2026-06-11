@@ -1,6 +1,6 @@
 # Humanizer-de Decision Tables
 
-Nutze diese Tabellen vor `references/patterns.md`, wenn Befunde ueberlappen. Sie sind die verbindliche Kurzlogik fuer v3.8.0-de.1.
+Nutze diese Tabellen vor `references/patterns.md`, wenn Befunde ueberlappen. Sie sind die verbindliche Kurzlogik fuer v4.0.0.
 
 ## Evidenz: 11 / 26 / 42 / 53
 
@@ -26,7 +26,7 @@ Nutze diese Tabellen vor `references/patterns.md`, wenn Befunde ueberlappen. Sie
 | Kurzer Einstieg enthaelt konkrete Zahl, Datum oder These | nicht 34 | Stehen lassen |
 | Standard-Ueberschrift mit belegtem, konkretem Inhalt | nicht 44 | Stehen lassen oder nur Ueberschrift praezisieren |
 
-## Floskeln und Schablonen: 1 / 2 / 32 / 56 / 58 / 60
+## Floskeln und Schablonen: 1 / 2 / 32 / 56 / 58 / 60 / 64 / 65
 
 | Situation | Muster | Aktion |
 |---|---:|---|
@@ -36,6 +36,9 @@ Nutze diese Tabellen vor `references/patterns.md`, wenn Befunde ueberlappen. Sie
 | Aphoristische Schablone ersetzt eine konkrete Behauptung ("X ist die Sprache des Y", "X wird zur Falle") | 56 | Durch die gemeinte konkrete Behauptung ersetzen |
 | Hypernym/Nominalstil ersetzt eine im Text belegte Konkretion | 58 | Konkretisieren aus Text/Kontext oder `[KONKRETION NOETIG]`; nichts erfinden |
 | Rotierende Bezeichnungen fuer denselben Referenten | 60 | Grundwort + Pronomen; max. eine Beiname-Variante mit Mehrwert |
+| Frequenz-Marker-Vokabeln in Haeufung ("beleuchten", "spannend", "nahtlos", "Landschaft" figurativ) | 64 | Durch gewoehnliches Wort ersetzen; fachgebundene Verwendung stehen lassen |
+| Ersatzkonstruktion statt "ist"/"hat" ("fungiert als", "verfuegt ueber") in Haeufung | 65 | Auf Kopula zurueckfuehren, wenn keine Information verloren geht |
+| Symbolische Aufladung statt nuechterner Ersatzkonstruktion | 1, nicht 65 | Siehe Muster 1 |
 | Gekennzeichnetes Zitat oder belegte konkrete Aussage | nicht 56 | Stehen lassen |
 
 ## Evidenz zweiter Ordnung: 59
