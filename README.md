@@ -8,7 +8,7 @@
 
 [![Version](https://img.shields.io/github/v/tag/marmbiz/humanizer-de?label=Version&color=c4501f)](https://github.com/marmbiz/humanizer-de/tags)
 [![Tests](https://github.com/marmbiz/humanizer-de/actions/workflows/tests.yml/badge.svg)](https://github.com/marmbiz/humanizer-de/actions/workflows/tests.yml)
-[![Lizenz](https://img.shields.io/github/license/marmbiz/humanizer-de?color=1f6feb)](LICENSE)
+[![Lizenz](https://img.shields.io/badge/Lizenz-MIT-1f6feb)](LICENSE)
 [![Muster](https://img.shields.io/badge/Muster-65_in_10_Kategorien-2da44e)](#65-muster-in-10-kategorien)
 [![Claude Code](https://img.shields.io/badge/Claude_Code-Plugin-d97757)](#installation)
 
