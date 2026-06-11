@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 190" role="img" aria-label="Humanizer (Deutsch) – KI-Schreibmuster erkennen und entfernen">
+  <style>
+    .quote { font-family: Georgia, 'Times New Roman', serif; font-size: 120px; fill: #c4501f; opacity: 0.9; }
+    .title { font-family: system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 52px; font-weight: 700; fill: #1f2328; }
+    .accent { fill: #c4501f; }
+    .tagline { font-family: system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 21px; fill: #57606a; }
+    .strike { stroke: #c4501f; stroke-width: 3; stroke-linecap: round; }
+    .tell { font-family: Georgia, 'Times New Roman', serif; font-style: italic; font-size: 19px; fill: #8b949e; }
+  </style>
+  <text class="quote" x="28" y="148">„</text>
+  <text class="title" x="120" y="92">Humanizer <tspan class="accent">(Deutsch)</tspan></text>
+  <text class="tagline" x="122" y="132">65 KI-Schreibmuster erkennen und entfernen – mit echter deutscher Stimme.</text>
+  <text class="tell" x="122" y="166">Darüber hinaus ist es wichtig zu bemerken …</text>
+  <line class="strike" x1="118" y1="160" x2="478" y2="160" />
+  <text class="quote" x="790" y="100">“</text>
+</svg>

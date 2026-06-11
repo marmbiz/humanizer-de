@@ -1,13 +1,22 @@
-# Humanizer (Deutsch)
+<div align="center">
 
-KI-Schreibmuster erkennen und entfernen. Für deutschsprachige Texte.
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/banner-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="assets/banner-light.svg">
+  <img src="assets/banner-light.svg" alt="Humanizer (Deutsch) – KI-Schreibmuster erkennen und entfernen" width="100%">
+</picture>
 
-**Version:** 4.0.0
+[![Version](https://img.shields.io/github/v/tag/marmbiz/humanizer-de?label=Version&color=c4501f)](https://github.com/marmbiz/humanizer-de/tags)
+[![Tests](https://github.com/marmbiz/humanizer-de/actions/workflows/tests.yml/badge.svg)](https://github.com/marmbiz/humanizer-de/actions/workflows/tests.yml)
+[![Lizenz](https://img.shields.io/github/license/marmbiz/humanizer-de?color=1f6feb)](LICENSE)
+[![Muster](https://img.shields.io/badge/Muster-65_in_10_Kategorien-2da44e)](#65-muster-in-10-kategorien)
+[![Claude Code](https://img.shields.io/badge/Claude_Code-Plugin-d97757)](#installation)
 
-**Autor:** Martin Moeller | [www.martin-moeller.biz](https://www.martin-moeller.biz)
+**[Installation](#installation)** · **[Benutzung](#benutzung)** · **[Die 65 Muster](#65-muster-in-10-kategorien)** · **[Was ist neu?](#was-ist-neu)**
 
-**Basiert auf:** [Anzeichen für KI-generierte Inhalte](https://de.wikipedia.org/wiki/Wikipedia:Anzeichen_f%C3%BCr_KI-generierte_Inhalte) der Deutschen Wikipedia + [Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing) der englischen Wikipedia
-**Original Skill:** [Humanizer](https://github.com/blader/humanizer) von [blader](https://github.com/blader)
+<sub>Von [Martin Moeller](https://www.martin-moeller.biz) · basiert auf den Wikipedia-Leitlinien [Anzeichen für KI-generierte Inhalte](https://de.wikipedia.org/wiki/Wikipedia:Anzeichen_f%C3%BCr_KI-generierte_Inhalte) (de) und [Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing) (en) · hervorgegangen aus dem [Humanizer](https://github.com/blader/humanizer) von [blader](https://github.com/blader)</sub>
+
+</div>
 
 ---
 
