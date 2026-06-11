@@ -1,6 +1,6 @@
 # Humanizer-de Pattern Catalog
 
-Vollstaendiger Musterkatalog fuer Humanizer (Deutsch) v3.7.0-de.1. Nur bei konkreter Musterdiagnose, Audit oder Grenzfaellen laden.
+Vollstaendiger Musterkatalog fuer Humanizer (Deutsch) v3.8.0-de.1. Nur bei konkreter Musterdiagnose, Audit oder Grenzfaellen laden.
 
 ## Kurzreferenz
 
@@ -63,6 +63,12 @@ Vollstaendiger Musterkatalog fuer Humanizer (Deutsch) v3.7.0-de.1. Nur bei konkr
 | 55 | Gleichförmiger Satzrhythmus | MEDIUM | Sätze fast gleich lang, Subjekt zuerst, niedrige Burstiness |
 | 56 | Aphorismus-Formeln | MEDIUM | "X ist die Sprache des Y", "X wird zur Falle", "die Währung von" |
 | 57 | Markdown-Struktur-Artefakte | MEDIUM | Ein-Zeilen-Tabellen, übersprungene Heading-Ebenen (H2→H4), `---` vor Überschrift |
+| 58 | Abstrakta-Stapel und Hypernym-Präferenz | MEDIUM | "Maßnahmen", "Aspekte", "Lösungen", Nominalstil statt belegter Konkretion |
+| 59 | Erfundene Ich-Erfahrung und forcierte Lockerheit | HIGH | gestellte Anekdoten, "Ehrlich gesagt", "Spoiler:", behauptete Praxiserfahrung ohne Träger |
+| 60 | Synonym-Rotation für dieselbe Entität | MEDIUM | "die Hansestadt", "die Elbmetropole" für denselben Referenten |
+| 61 | Isometrisches Dokument | MEDIUM | alle Absätze/Sektionen/Listen-Items gleich lang, symmetrische Abdeckung |
+| 62 | Markerloser Schließzwang | MEDIUM | bewertender Abschlusssatz ohne neue Information am Absatzende |
+| 63 | Modalpartikel-Anomalie | LOW | Partikelarmut im Nähe-Register oder Partikel-Überdosis (nur Locker) |
 
 ## Statistische Detektoren (GPTZero u. a.)
 
@@ -83,9 +89,9 @@ Die menschenlesbaren Labels dieser Tools ("Robotic Formality", "Mechanical Preci
 
 Der einzige substanzwahrende Hebel gegen niedrige Burstiness ist Muster 55 (Satzrhythmus spreizen). Niedrige Perplexity bei korrekter Fachsprache ist nicht "reparierbar", ohne den Text zu verschlechtern – und das ist nicht Aufgabe dieses Skills. Siehe SKILL.md-Leitplanke zu statistischen Detektoren.
 
-## Die 57 Muster
+## Die 63 Muster
 
-### Sprache und Tonfall (12 Muster)
+### Sprache und Tonfall (15 Muster)
 
 #### 1. Übermäßige Betonung von Symbolik [HIGH]
 **Problem:** Bestimmte Wendungen erzeugen symbolische, zu perfekte Bedeutungen.
@@ -302,6 +308,44 @@ Häufige Indikatoren:
 ❌ Schlecht: "Die Stadt zieht Menschen von verschiedensten bis progressivsten Überzeugungen an."
 
 ✓ Besser: "Die Stadt zieht Menschen mit sehr unterschiedlichen Überzeugungen an."
+
+#### 58. Abstrakta-Stapel und Hypernym-Präferenz [MEDIUM]
+**Kategorie:** Sprache und Tonfall
+**Problem:** Das Modell wählt systematisch den Oberbegriff statt der Sache: "Maßnahmen", "Aspekte", "Lösungen", "Herausforderungen", "Faktoren", "Prozesse" – oft kombiniert mit Nominalstil ("die Umsetzung der Optimierung der Abläufe"). Der Text bleibt korrekt, sagt aber nichts Prüfbares. Das ist die behandelbare Hälfte niedriger Perplexity: Konkretisierung erhöht Informationsgehalt und Wortvarianz zugleich, ohne Fachsprache anzutasten.
+Häufige Indikatoren:
+- "verschiedene Maßnahmen", "zahlreiche Aspekte", "innovative Lösungen", "zentrale Faktoren"
+- Nominalstil-Ketten: "die Nutzung", "die Bereitstellung", "die Umsetzung", "die Optimierung"
+- Vokabel-Fallen: "entscheidend", "maßgeblich", "vielfältig", "umfassend", "ganzheitlich", "nahtlos", "beleuchten", "eintauchen", "im Spannungsfeld"
+**Warum LLMs das tun:** Hypernyme sind die statistisch sichere Wahl; sie passen auf jeden Kontext und sind in zusammenfassenden Trainingsdaten überrepräsentiert.
+**Kein Problem, wenn:** der Oberbegriff echte Mengen bündelt ("drei Maßnahmen: A, B, C") oder die Konkretion im übergebenen Kontext schlicht fehlt.
+**Lösung:** Durch den konkreten Sachverhalt ersetzen, der im Text oder Kontext belegt ist. Fehlt er: stehen lassen oder `[KONKRETION NÖTIG]` markieren. Nie Details erfinden, um konkret zu wirken – das wäre Muster 53.
+❌ Schlecht: "Die Stadt ergriff verschiedene Maßnahmen zur Verbesserung der Verkehrssituation."
+✓ Besser: "Die Stadt sperrte zwei Durchgangsstraßen und senkte das Tempolimit auf 30 km/h."
+
+#### 60. Synonym-Rotation für dieselbe Entität [MEDIUM]
+**Kategorie:** Sprache und Tonfall
+**Problem:** Zwanghafte Wiederholungsvermeidung: "die Hansestadt", "die Elbmetropole", "die Stadt an der Alster" für denselben Referenten. Menschen wiederholen das Wort oder pronominalisieren; die Rotation wirkt enzyklopädisch-bemüht und macht Texte schwerer lesbar, weil der Leser Referenzen neu auflösen muss.
+Häufige Indikatoren:
+- 3+ verschiedene Bezeichnungen für dieselbe Person/Stadt/Firma in einem Abschnitt
+- Beinamen ohne Informationswert ("der Streaming-Riese", "das Münchner Unternehmen")
+- Pronomen fast vollständig abwesend, obwohl Referenz eindeutig wäre
+**Warum LLMs das tun:** Stilratgeber-Trainingsdaten bestrafen Wortwiederholung; das Modell übergeneralisiert die Regel.
+**Kein Problem, wenn:** die Variante echte Information trägt (offizieller Beiname im relevanten Kontext) oder die Wiederholung im selben Satz tatsächlich hässlich klingt.
+**Lösung:** Auf Grundwort + Pronomen zurückführen. Maximal eine Beiname-Variante pro Text, und nur mit Mehrwert.
+❌ Schlecht: "Hamburg wächst. Die Hansestadt investiert in den Hafen. Die Elbmetropole gilt als Logistikzentrum."
+✓ Besser: "Hamburg wächst. Die Stadt investiert in den Hafen und gilt als Logistikzentrum."
+
+#### 63. Modalpartikel-Anomalie [LOW]
+**Kategorie:** Sprache und Tonfall
+**Problem:** Nur im Modus Locker behandeln, in Sachlich höchstens diagnostisch. Beide Extreme sind Tells: (a) Vollständige Abwesenheit von Modalpartikeln (ja, doch, eben, halt, wohl, mal, schon, ohnehin) in einem Text, der sonst Nähe-Register fährt – LLM-Deutsch ist partikelarm, weil Partikeln keine propositionale Funktion haben. (b) Partikel-Überdosis als Über-Humanisierung (vgl. Muster 59).
+Häufige Indikatoren:
+- Blog/Newsletter im Du-Ton ohne eine einzige Modalpartikel über mehrere Absätze
+- Umgekehrt: mehrere Partikeln pro Satz ("Das ist ja eben halt schon wichtig")
+**Warum LLMs das tun:** Modalpartikeln tragen Haltung statt Information; das Training optimiert auf Information. Bei "schreib locker"-Anweisungen kippt es ins Gegenteil.
+**Kein Problem, wenn:** Sachlich/Formal – dort ist Partikelarmut korrekt und erwünscht.
+**Lösung:** In Locker sparsam dosieren: höchstens eine Partikel pro Absatz, nur wo sie eine tatsächliche Haltung des Texts trägt. Nie mechanisch nachrüsten.
+❌ Schlecht (Nähe-Register, partikelfrei): "Du kennst das Problem. Die Lösung ist einfach. Du brauchst nur drei Schritte."
+✓ Besser: "Du kennst das Problem ja. Die Lösung ist simpel – drei Schritte reichen schon."
 
 ### Stil (4 Muster)
 
@@ -578,7 +622,7 @@ Häufige Indikatoren:
 
 **Lösung:** Entfernen oder in neutrale Form umwandeln ("Absatz über X hinzugefügt").
 
-### Rhetorik und Struktur (9 Muster)
+### Rhetorik und Struktur (11 Muster)
 
 #### 32. Persuasive Autoritäts-Floskeln [MEDIUM]
 
@@ -734,7 +778,32 @@ Häufige Indikatoren:
 
 ✓ Besser: "Symmetrische Layouts wirken auf Nutzer oft vorhersehbarer. Teams können Abläufe so weit optimieren, dass sie übersehen, wie Menschen sie tatsächlich verwenden."
 
-### Argumentation und Evidenz (4 Muster)
+#### 61. Isometrisches Dokument [MEDIUM]
+**Kategorie:** Rhetorik und Struktur
+**Problem:** Alle Absätze 3–5 Sätze, alle H2-Sektionen gleich lang, alle Listen-Items in derselben grammatischen Form und Länge, jeder Aspekt bekommt gleich viel Raum. Die Symmetrie überlebt Satz-Edits und ist deshalb ein stärkerer Tell als monotoner Satzbau. Menschliche Texte gewichten ungleich: ausführlich, wo der Autor etwas weiß; knapp, wo nicht.
+Häufige Indikatoren:
+- Absatzlängen fast konstant (Differenz selten mehr als ein Satz)
+- Jede H2-Sektion ähnlich lang, jedes Pro bekommt ein Contra
+- Listen, deren Items alle dieselbe Syntax haben ("Verb + Objekt + Nutzen")
+**Warum LLMs das tun:** Ausgewogenheit wird im Training belohnt; das Modell verteilt Aufmerksamkeit gleichmäßig statt nach Substanz.
+**Kein Problem, wenn:** Format-Konventionen die Gleichform erzwingen (Glossar, Datenblatt, FAQ, juristische Gliederung).
+**Lösung:** Gewichtung an Substanz koppeln: die stärkste Sektion ausbauen lassen, die schwächste zusammenziehen oder integrieren (vgl. Muster 44). Listen-Items dürfen unterschiedlich lang sein. Keine Substanz erfinden, nur umverteilen.
+
+#### 62. Markerloser Schließzwang [MEDIUM]
+**Kategorie:** Rhetorik und Struktur
+**Problem:** Jeder Absatz endet mit einem bewertenden Abschlusssatz, der nichts Neues sagt ("Damit ist die Grundlage gelegt.", "Das zahlt sich langfristig aus.", "So bleibt das System zukunftsfähig.") – Muster 5 ohne dessen Markerphrasen. Die strukturelle Funktion (Absatz "zumachen") ist der Tell, nicht die Wortwahl.
+Häufige Indikatoren:
+- Letzter Satz des Absatzes wiederholt oder bewertet das bereits Gesagte
+- Kein Absatz endet mit einem Fakt, einer offenen Frage oder einem Detail
+- Häufung von Zukunfts- oder Nutzen-Floskeln in Schlusssätzen
+**Warum LLMs das tun:** Absatz-Kohärenz-Training belohnt explizite Abschlüsse; jeder Absatz wird als Miniatur-Aufsatz behandelt.
+**Abgrenzung:** Muster 5 = Markerphrasen ("zusammenfassend", "insgesamt"). Muster 38 = aspirativer Unternehmensschluss am Textende. Muster 62 = der markerlose Bewertungssatz am Absatzende.
+**Kein Problem, wenn:** der Schlusssatz eine neue Folgerung zieht oder echte Information ergänzt.
+**Lösung:** Streichen. Ein Absatz darf offen enden; der nächste knüpft inhaltlich an (Thema-Rhema statt Schleife).
+❌ Schlecht: "Die Migration dauerte sechs Wochen und kostete 40.000 Euro. Damit war ein wichtiger Meilenstein erreicht."
+✓ Besser: "Die Migration dauerte sechs Wochen und kostete 40.000 Euro."
+
+### Argumentation und Evidenz (5 Muster)
 
 #### 39. Passivkonstruktionen und subjektlose Fragmente [MEDIUM]
 
@@ -831,6 +900,20 @@ Häufige Indikatoren:
 ❌ Schlecht: "Über ihre frühen Jahre ist wenig bekannt, was darauf hindeutet, dass sie ihr Privatleben bewusst aus der Öffentlichkeit heraushält. Vermutlich wuchs sie in einem bildungsnahen Umfeld auf, das ihr späteres Engagement prägte."
 
 ✓ Besser: "Zu ihren frühen Jahren liegen im vorliegenden Material keine belastbaren Angaben vor."
+
+#### 59. Erfundene Ich-Erfahrung und forcierte Lockerheit [HIGH]
+**Kategorie:** Argumentation und Evidenz
+**Problem:** Auf "menschlich" getrimmter KI-Text simuliert Persönlichkeit: gestellte Anekdoten ("Als ich letzte Woche mit einem Kunden sprach..."), Pseudo-Nähe ("Ehrlich gesagt", "Keine Sorge", "Spoiler:"), behauptete Praxiserfahrung ohne Träger. Erfundene Erfahrung ist Fabrikation, kein Stilmittel – die Evidenz-Logik von Muster 26/53 gilt analog. Dies ist der Tell zweiter Ordnung: Er entsteht oft erst durch Humanisierungs-Versuche.
+Häufige Indikatoren:
+- Anekdoten ohne nachprüfbaren Träger ("Ein Kunde erzählte mir neulich...")
+- Forcierte Mündlichkeit in Häufung: "Ehrlich gesagt", "Keine Sorge", "Spoiler:", "Na, erkannt?"
+- Behauptete Erfahrungsjahre oder Projekthistorie, die nicht aus dem Autorenkontext stammt
+**Warum LLMs das tun:** Anweisungen wie "schreib menschlich/persönlich" werden mit erfundener Ich-Evidenz beantwortet, weil persönliche Texte im Training Anekdoten enthalten.
+**Abgrenzung:** Muster 18 = Chatbot-Höflichkeit. Muster 53 = Spekulation über Dritte. Muster 59 = erfundene Erfahrung des angeblichen Autors selbst.
+**Kein Problem, wenn:** der Autor real existiert und die Erfahrung plausibel seine eigene ist (Schreibprobe, Autorenkontext, explizite Nutzerangabe) – dann nicht anfassen.
+**Lösung:** Anekdote entfernen oder durch belegbare Beobachtung ersetzen. Beim eigenen Rewriting im Locker-Modus: Stimme nur aus der Schreibprobe oder explizit gelieferten Fakten speisen, nie generieren.
+❌ Schlecht: "Ehrlich gesagt: Als ich letzte Woche ein Kundenprojekt migrierte, ist mir genau das passiert. Keine Sorge, die Lösung ist einfach."
+✓ Besser: "Der Fehler tritt typischerweise bei Migrationen auf. Die Lösung: ..."
 
 ### Ergänzungen (4 Muster)
 

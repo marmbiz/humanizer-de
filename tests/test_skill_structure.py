@@ -7,14 +7,15 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class SkillStructureTests(unittest.TestCase):
-    def test_skill_is_v37_sop_router(self):
+    def test_skill_is_v38_sop_router(self):
         text = (ROOT / "SKILL.md").read_text()
-        self.assertIn("version: 3.7.0-de.1", text)
+        self.assertIn("version: 3.8.0-de.1", text)
         self.assertIn("<!-- SLOW_UPDATE_START -->", text)
         self.assertIn("<!-- FAST_UPDATE_START -->", text)
         self.assertIn("references/patterns.md", text)
         self.assertIn("references/decision-tables.md", text)
         self.assertIn("scripts/unicode_lint.py", text)
+        self.assertIn("scripts/rhythm_lint.py", text)
 
         body = text.split("---", 2)[-1]
         self.assertLessEqual(len(re.findall(r"\S+", body)), 2000)

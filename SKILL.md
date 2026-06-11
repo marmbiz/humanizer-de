@@ -1,7 +1,7 @@
 ---
 name: Humanizer (Deutsch)
 description: Verwende diesen Skill nur, wenn der Nutzer ausdrücklich deutschen Text humanisieren, KI-Schreibmuster entfernen oder deutsche KI-Tells auditieren will. Nicht für normales Korrektorat.
-version: 3.7.0-de.1
+version: 3.8.0-de.1
 author: Martin Moeller
 maintainer_website: "https://www.martin-moeller.biz"
 based_on: "Deutsche Wikipedia: Anzeichen für KI-generierte Inhalte, Erkennung KI-Einsatz, Schnelltest KI"
@@ -37,6 +37,7 @@ Bestimme zuerst den Modus. Wenn unklar, nimm **Sachlich** an und sage das.
 - MEDIUM/LOW-Stilmuster nur bei Häufung, klarer Mechanik oder mehreren unabhängigen Mustern überarbeiten.
 - Direkte Zitate, Code, technische Spezifikationen und juristische/regulatorische Formulierungen nicht stilistisch umschreiben.
 - Nie Quellen erfinden. Wenn eine Quelle nicht prüfbar ist, keine Beleginkongruenz behaupten.
+- Nie Ich-Erfahrung, Anekdoten oder Meinungen erfinden, um Text menschlicher wirken zu lassen. Erfundene Erfahrung ist Fabrikation (Muster 59).
 - Nie Substanz kürzen. Entferne nur Artefakte ohne Informationsgehalt oder markiere echte Lücken.
 - Statistische Detektoren (GPTZero u. a.) messen Perplexity und Satzrhythmus, nicht diese Muster. Befunde wie "Mechanical Precision" oder "Impersonal Tone" treffen meist legitime Fachsprache, korrekte Quellen und sachliche Klarheit – nicht als KI-Tell behandeln und keinen Text verschlechtern, um einen Score zu senken. Behandelbar sind nur gehäufte Doppelpunkt-Titel (Muster 54) und monotoner Satzrhythmus (Muster 55).
 - Wenn der Text sauber ist, sage das und höre auf.
@@ -58,17 +59,26 @@ False Friends aus Muster 45 immer korrigieren. Calques und syntaktische Transfer
 
 <!-- FAST_UPDATE_START -->
 
-## Ablauf
+## Ablauf: Fünf Pässe in fester Reihenfolge
 
-1. Bestimme Modus, Texttyp und Ziel des Nutzers.
-2. Wenn eine Schreibprobe mitgeliefert wird, übernimm Satzrhythmus, Wortniveau, Absatzanfänge, Zeichensetzung und wiederkehrende Eigenheiten; im Formal-Modus nur KI-Tells entfernen.
-3. Wende die Leitplanken an, bevor du Muster suchst.
-4. Prüfe zuerst harte Artefakte: Chatbot-Floskeln, Platzhalter, Quellenprobleme, Unicode, falsche Typografie.
-5. Nutze bei Overlaps zuerst [references/decision-tables.md](references/decision-tables.md).
-6. Lade [references/patterns.md](references/patterns.md) nur für konkrete Musterdiagnose, Audit, Grenzfälle oder wenn du unsicher bist.
-7. Bei Datei-Input oder Verdacht auf versteckte Zeichen/falsche deutsche Quotes nutze `python3 scripts/unicode_lint.py --file <path>`. Bei Inline-Text: Rohtext zuerst in eine temporäre UTF-8-Datei schreiben und dann `--file <tempfile>` nutzen; nie Nutzereingaben direkt in einen Shell-Befehl interpolieren. Für sichere Datei-Korrekturen nutze `--fix --write`.
-8. Wenn ein Script nicht läuft, melde die fehlende Toolprüfung und korrigiere Unicode/Quotes nicht blind per Hand.
-9. Prüfe vor der Ausgabe: keine erfundene Quelle, keine Substanzkürzung, keine Volltextausgabe.
+Spätere Pässe dürfen frühere nicht invalidieren. Rhythmus immer zuletzt.
+
+**Pass 0 – Triage.** Modus, Texttyp und Ziel bestimmen. Schreibprobe vorhanden? Dann Satzrhythmus, Wortniveau, Absatzanfänge und Lieblingszeichen daraus extrahieren und als Zielprofil festhalten (im Formal-Modus nur KI-Tells entfernen). Bei Datei-Input: `python3 scripts/unicode_lint.py --file <path>` und `python3 scripts/rhythm_lint.py --file <path>` ausführen, Kennzahlen notieren. Bei Inline-Text: Rohtext zuerst in eine temporäre UTF-8-Datei schreiben, dann `--file <tempfile>`; nie Nutzereingaben in einen Shell-Befehl interpolieren. Läuft ein Script nicht, das melden und nicht blind per Hand korrigieren.
+
+**Pass 1 – Artefakte und Evidenz (immer, Einzelbefund genügt).** Chatbot-Floskeln, Platzhalter, Quellenprobleme (Decision Table Evidenz), Unicode, falsche Typografie. Bei Overlaps zuerst [references/decision-tables.md](references/decision-tables.md); [references/patterns.md](references/patterns.md) nur für konkrete Musterdiagnose, Audit oder Grenzfälle laden. Keine Stilarbeit in diesem Pass. Für sichere Datei-Korrekturen: `unicode_lint.py --fix --write`.
+
+**Pass 2 – Lexik (Cluster-Regel).** Floskel-Muster, Vokabel-Fallen, Abstrakta-Stapel (Muster 58): Hypernyme und Nominalstil nur dort auflösen, wo der konkrete Sachverhalt im Text oder Kontext steht. Nichts erfinden, um konkret zu wirken – Konkretisierung ohne Beleg ist Muster 53.
+
+**Pass 3 – Struktur (Cluster-Regel).** Überschriften-Schemata, isometrische Absätze (Muster 61), substanzlose Sektionen, Listen-Parallelismus, Schließzwang (Muster 62). Erst nach diesem Pass steht die endgültige Absatzstruktur.
+
+**Pass 4 – Rhythmus (Locker/Sachlich: standardmäßig an; Formal: nur auf Wunsch).** Konkrete Stellschrauben:
+- Vorfeld rotieren: höchstens ~2 von 3 Sätzen subjektinitial. Varianten: Adverbial, vorangestellter Nebensatz, Objekt, Präpositionalphrase.
+- Satzlänge spreizen: pro längerem Absatz mindestens ein Satz unter 6 Wörtern oder über 25 – nur wo die Aussage es trägt.
+- Absatzlängen entzerren: nicht jeder Absatz 3–5 Sätze.
+- Konnektor-Budget: höchstens ein mechanischer Konnektor pro Absatz; Übergänge bevorzugt über inhaltliche Anknüpfung (Thema-Rhema).
+- Nur Modus Locker: sparsame Modalpartikeln (Muster 63), maximal eine pro Absatz, nie in Sachlich/Formal nachrüsten.
+
+**Pass 5 – Selbst-Audit (immer).** Eigene Änderungen gegen den Katalog prüfen: Hat eine Ersetzungsregel eine neue Monotonie erzeugt (gleiche Ersatzkonstruktion 3+ Mal → Strategie rotieren, vgl. Muster 16 vs. 51)? Keine erfundene Quelle, keine erfundene Erfahrung (Muster 59), keine Substanzkürzung, keine Volltextausgabe? Danach Kurzaudit ausgeben.
 
 ## Entscheidungstabellen
 
@@ -102,6 +112,7 @@ Wenn der Nutzer eine Datei übergibt und Änderungen verlangt, editiere die Date
 - Vollständiger Musterkatalog: [references/patterns.md](references/patterns.md)
 - Overlap- und Moduslogik: [references/decision-tables.md](references/decision-tables.md)
 - Unicode-/Quote-Linter: `scripts/unicode_lint.py`
-- Optionale Stilreferenz: [tone-of-voice.txt](tone-of-voice.txt)
+- Rhythmus-/Burstiness-Messung: `scripts/rhythm_lint.py`
+- Stilreferenz für Pass 2 und 4: [tone-of-voice.txt](tone-of-voice.txt)
 
 <!-- FAST_UPDATE_END -->

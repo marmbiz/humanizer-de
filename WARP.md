@@ -1,4 +1,4 @@
-# WARP - Humanizer (Deutsch) Entwicklerleitfaden (v3.7.0-de.1)
+# WARP - Humanizer (Deutsch) Entwicklerleitfaden (v3.8.0-de.1)
 
 WARP = Workflow, Architecture, References, Principles.
 
@@ -10,15 +10,19 @@ WARP = Workflow, Architecture, References, Principles.
 humanizer-de/
 ├── SKILL.md                         # SOP, Trigger, Ablauf, Toolroutine
 ├── references/
-│   ├── patterns.md                  # vollständiger 57-Musterkatalog
+│   ├── patterns.md                  # vollständiger 63-Musterkatalog
 │   └── decision-tables.md           # Overlap- und Moduslogik
 ├── scripts/
-│   └── unicode_lint.py              # Muster 43/46, JSON-Report, optional --fix
+│   ├── unicode_lint.py              # Muster 43/46, JSON-Report, optional --fix
+│   └── rhythm_lint.py               # Muster 4/51/54/55/61, JSON-Report
 ├── tests/
 │   ├── test_skill_structure.py
 │   ├── test_patterns_catalog.py
 │   ├── test_decision_tables.py
-│   └── test_unicode_lint.py
+│   ├── test_unicode_lint.py
+│   ├── test_rhythm_lint.py
+│   ├── test_corpus.py
+│   └── corpus/
 ├── README.md                        # Nutzer-Dokumentation
 └── tone-of-voice.txt                # optionale Stilreferenz
 ```
@@ -42,7 +46,7 @@ Wenn ein Muster geändert oder ergänzt wird:
 4. `tests/test_patterns_catalog.py` erweitern, wenn IDs oder Pflichtmarker betroffen sind.
 5. README-Version und Changelog-Abschnitt nur bei Release-relevanter Änderung nachziehen.
 
-Keine neuen Muster in Patch-Releases verstecken. Wenn aus 57 Mustern 58 werden, ist das eine sichtbare Versionierungs- und Dokumentationsänderung.
+Keine neuen Muster in Patch-Releases verstecken. Wenn sich die Musterzahl ändert, ist das eine sichtbare Versionierungs- und Dokumentationsänderung.
 
 ## Unicode und Quotes
 
@@ -59,6 +63,17 @@ Der Linter darf versteckte Unicode-Zeichen entfernen und sichere `U+201E ... U+2
 
 Tests müssen echte Codepoints mit `chr()`/`ord()` prüfen. Optisch ähnliche Glyphen reichen nicht.
 
+## Rhythmus und Burstiness
+
+Muster 4, 51, 54, 55 und 61 sind messbar unterstützt:
+
+```bash
+python3 scripts/rhythm_lint.py --file path/to/text.md
+python3 scripts/rhythm_lint.py --text "Kurzer Test. Noch ein Satz."
+```
+
+Der Rhythmus-Linter ist ein reines Mess-Tool. Er schreibt nichts, korrigiert nichts und meldet nur Verdachtsmomente. Bei Nutzertexten `--file` verwenden; `--text` bleibt Smoke-Tests vorbehalten.
+
 ## Verification
 
 Vor Release:
@@ -66,14 +81,15 @@ Vor Release:
 ```bash
 python3 -m unittest discover -s tests
 python3 scripts/unicode_lint.py --text "AB"
+python3 scripts/rhythm_lint.py --text "Kurzer Test. Noch ein Satz."
 git diff --check
 ```
 
 Zusätzlich manuell prüfen:
 
-- `SKILL.md`, `README.md` und `WARP.md` nennen dieselbe Version.
-- `references/patterns.md` enthält exakt die Muster 1-57 ohne Lücken.
-- `SKILL.md` verlinkt `references/patterns.md`, `references/decision-tables.md` und `scripts/unicode_lint.py`.
+- `SKILL.md`, `README.md`, `WARP.md` und `.claude-plugin/plugin.json` nennen dieselbe Version.
+- `references/patterns.md` enthält exakt die Muster 1-63 ohne Lücken.
+- `SKILL.md` verlinkt `references/patterns.md`, `references/decision-tables.md`, `scripts/unicode_lint.py` und `scripts/rhythm_lint.py`.
 - Die installierte Kopie unter `~/.codex/skills/humanizer-de` wird erst nach grünen Tests synchronisiert.
 
 ## Optimierung
