@@ -22,6 +22,7 @@ humanizer-de/
 │   ├── test_unicode_lint.py
 │   ├── test_rhythm_lint.py
 │   ├── test_corpus.py
+│   ├── SCENARIOS.md                 # Urteils-Regressionsszenarien (LLM-im-Loop)
 │   └── corpus/
 ├── README.md                        # Nutzer-Dokumentation
 └── tone-of-voice.txt                # optionale Stilreferenz
@@ -44,7 +45,8 @@ Wenn ein Muster geändert oder ergänzt wird:
 2. Kurzreferenz und Musterkörper synchron halten.
 3. Bei Overlap mit bestehenden Mustern `references/decision-tables.md` aktualisieren.
 4. `tests/test_patterns_catalog.py` erweitern, wenn IDs oder Pflichtmarker betroffen sind.
-5. README-Version und Changelog-Abschnitt nur bei Release-relevanter Änderung nachziehen.
+5. Bei neuem False-Positive-Risiko, Carve-out oder Failure-Mode ein Szenario in `tests/SCENARIOS.md` ergänzen (LLM-im-Loop, nicht per Python prüfbar).
+6. README-Version und Changelog-Abschnitt nur bei Release-relevanter Änderung nachziehen.
 
 Keine neuen Muster in Patch-Releases verstecken. Ab v4.0.0 nutzt das Projekt eigenes SemVer ohne Fork-Suffix und trackt keine Upstream-Versionen mehr: neue Muster sind Minor-Bumps, Breaking-Änderungen an Ablauf oder Output-Format sind Major-Bumps. Eine Muster-Erweiterung von 65 auf 66 wäre also 4.1.0.
 
