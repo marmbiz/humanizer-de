@@ -98,7 +98,10 @@ Das Skill analysiert **65 verschiedene KI-Schreibmuster** in 10 Kategorien, prio
 
 ## Was ist neu?
 
-### 4.0.0 (aktuell)
+### 4.0.1 (aktuell)
+- 13 LLM-im-Loop-Regressionsszenarien in `tests/SCENARIOS.md`; schließt die Testlücke zwischen deterministischem Golden Corpus und Skill-Urteilsverhalten (false positives, Modus-Disziplin, Anti-Fabrikation, Output-Disziplin)
+
+### 4.0.0
 - Eigenständigkeits-Release: eigenes Versionsschema ohne `-de.FORK`-Suffix; Projekt trackt keine Upstream-Versionen mehr, Upstream bleibt Ideenquelle und Credit
 - 2 neue Muster (#64–#65), adaptiert aus blader/humanizer #7/#8 für das Deutsche: KI-Marker-Vokabular, Kopula-Vermeidung
 - Muster 58 geschärft: Vokabel-Fallen-Liste in Muster 64 ausgelagert, 58 fokussiert auf Hypernyme/Nominalstil
@@ -475,6 +478,7 @@ Haben Sie ein Problem gefunden oder eine Verbesserung?
 
 ## Versionshistorie
 
+- **4.0.1** - 13 LLM-im-Loop-Regressionsszenarien in `tests/SCENARIOS.md`; schließt Testlücke zwischen deterministischem Golden Corpus und Skill-Urteilsverhalten
 - **4.0.0** - Eigenständigkeits-Release mit eigenem SemVer ohne Fork-Suffix; 2 neue Muster (#64–#65): KI-Marker-Vokabular und Kopula-Vermeidung; Muster 58 auf Hypernyme/Nominalstil geschärft; 65 Muster
 - **3.8.0-de.1** - 6 neue Muster (#58–#63): Abstrakta-Stapel, erfundene Ich-Erfahrung, Synonym-Rotation, isometrisches Dokument, markerloser Schließzwang, Modalpartikel-Anomalie; neuer 5-Pass-Ablauf (Artefakte → Lexik → Struktur → Rhythmus → Selbst-Audit); neues Mess-Script `scripts/rhythm_lint.py` für deterministische Burstiness-/Rhythmus-Kennzahlen (Muster 4/51/54/55/61); Golden Corpus in `tests/corpus/`; Katalog bis #63
 - **3.7.0-de.1** - 2 neue Muster (#56–#57): Aphorismus-Formeln, Markdown-Struktur-Artefakte; Claude-Code-Plugin und Marketplace (`/plugin install`); Upstream-Ideen aus #136/#140; Katalog bis #57
