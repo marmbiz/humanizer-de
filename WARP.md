@@ -33,8 +33,7 @@ humanizer-de/
 │   ├── SCENARIOS.md                 # Urteils-Regressionsszenarien (LLM-im-Loop)
 │   ├── scenarios/                   # maschinenlesbare Contract- und QGIR-Fixtures
 │   └── corpus/
-├── README.md                        # Nutzer-Dokumentation
-└── tone-of-voice.txt                # optionale Stilreferenz
+└── README.md                        # Nutzer-Dokumentation
 ```
 
 ## Wartungsregeln
