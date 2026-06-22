@@ -1244,6 +1244,8 @@ Häufige Indikatoren:
 
 **Abgrenzung:** Muster 34 = generischer Einzeiler *nach* einer Überschrift. Muster 47 = englische Titel-Großschreibung. Muster 54 = die gehäufte Doppelpunkt-*Konstruktion* selbst.
 
+**Fix-Aktion (Minimalintervention):** Doppelpunkt → Gedankenstrich. Den Subtitel/Nachsatz *nicht* entfernen, solange er echte, nicht-redundante Information trägt. Entfernen nur, wenn der Nachsatz die linke Seite nur in Langform wiederholt (z. B. „Datenschutz: Datenschutz richtig gemacht") oder eine leere Formel ohne Mehrwert ist (z. B. „Alles, was du wissen musst"). Umstrukturierung der gesamten Überschrift ist möglich, aber keine Pflicht.
+
 **Beispiel:**
 
 ❌ Schlecht (drei Überschriften desselben Texts, alle gleich gebaut):
