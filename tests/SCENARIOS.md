@@ -1,12 +1,18 @@
 # Humanizer-de Regressionsszenarien
 
-Diese Datei sammelt Regressionsszenarien für das URTEILSVERHALTEN des Skills `Humanizer (Deutsch)` (LLM-im-Loop). Sie ergänzt den deterministischen Golden Corpus in `tests/corpus/`, der nur die Linter `unicode_lint.py` und `rhythm_lint.py` prüft.
+Diese Datei sammelt Regressionsszenarien für das URTEILSVERHALTEN des Skills `Humanizer (Deutsch)` (LLM-im-Loop). Sie ergänzt den deterministischen Golden Corpus in `tests/corpus/` und die maschinenlesbaren Contract-Fixtures in `tests/scenarios/`.
 
 ## Ausführung
 
 Starte für ein Szenario einen Subagenten mit geladenem Skill `SKILL.md`. Übergib den jeweiligen Nutzer-Prompt und den Input unverändert. Gleiche die Antwort anschließend manuell gegen die Pass/Fail-Kriterien ab.
 
-Die Methodik entspricht dem Golden Corpus: Der Input ist der Testfall, die erwarteten Befunde stehen explizit daneben. Anders als `tests/test_corpus.py` laufen diese Fälle aber nicht per Python, sondern per Agent, weil sie Pass-Reihenfolge, Carve-outs, Output-Disziplin und Modellurteil prüfen.
+Die Methodik entspricht dem Golden Corpus: Der Input ist der Testfall, die erwarteten Befunde stehen explizit daneben. Anders als `tests/test_corpus.py` laufen diese Fließtext-Fälle nicht per Python, sondern per Agent, weil sie Pass-Reihenfolge, Carve-outs, Output-Disziplin und Modellurteil prüfen.
+
+Maschinenlesbare Invarianten liegen zusätzlich in `tests/scenarios/` und laufen über:
+
+```bash
+python3 scripts/run_review_eval.py tests/scenarios --check-invariants
+```
 
 ## Coverage-Matrix
 
@@ -312,4 +318,4 @@ Darüber hinaus ist davon auszugehen, dass die Maßnahme aus einer besonderen Be
 
 Neue Szenarien sollten einen klaren Failure-Mode isolieren und die betroffenen Muster-IDs nennen. Der Input sollte klein genug bleiben, dass ein Mensch die Antwort gegen die Pass/Fail-Kriterien prüfen kann, aber groß genug, um echte Cluster oder Carve-outs sichtbar zu machen.
 
-Füge neue Fälle fortlaufend nummeriert hinzu und ergänze die Coverage-Matrix. Wenn ein Szenario deterministisch durch `unicode_lint.py` oder `rhythm_lint.py` prüfbar ist, gehört der reine Linter-Anteil zusätzlich in `tests/corpus/`; `SCENARIOS.md` bleibt für Urteil, Pass-Reihenfolge und Output-Verhalten.
+Füge neue Fälle fortlaufend nummeriert hinzu und ergänze die Coverage-Matrix. Wenn ein Szenario deterministisch durch `unicode_lint.py`, `rhythm_lint.py`, `evidence_lint.py`, `register_lint.py` oder `german_pattern_lint.py` prüfbar ist, gehört der reine Linter-Anteil zusätzlich in `tests/corpus/`. Wenn Output-Invarianten maschinenlesbar sind, lege zusätzlich ein Contract-File in `tests/scenarios/` an. `SCENARIOS.md` bleibt für Urteil, Pass-Reihenfolge und Output-Verhalten.

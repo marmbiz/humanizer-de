@@ -1,6 +1,6 @@
 # Humanizer-de Decision Tables
 
-Nutze diese Tabellen vor `references/patterns.md`, wenn Befunde ueberlappen. Sie sind die verbindliche Kurzlogik fuer v4.0.1.
+Nutze diese Tabellen vor `references/patterns.md`, wenn Befunde ueberlappen. Sie sind die verbindliche Kurzlogik fuer v4.0.2.
 
 ## Evidenz: 11 / 26 / 42 / 53
 
@@ -11,6 +11,16 @@ Nutze diese Tabellen vor `references/patterns.md`, wenn Befunde ueberlappen. Sie
 | Quelle existiert und wurde geprueft, belegt die konkrete Aussage aber nicht | 42 | Aussage an Quelle anpassen, Quelle ersetzen oder `[BELEG PRUEFEN]` |
 | Quelle fehlt oder schweigt, Text ergaenzt Motive, Herkunft, Privatleben oder Plausibilitaet | 53 | Spekulation entfernen oder "keine Angaben im Material" schreiben |
 | Quelle ist nicht pruefbar | nicht 42 | Keine Beleginkongruenz behaupten; 26/53 nur bei eigenen Indikatoren |
+
+## Claim-Delta: Faktenanker
+
+| Situation | Aktion |
+|---|---|
+| Zahl, Datum, URL, DOI, Paragraph, Code oder direktes Zitat verschwindet oder aendert sich | Blocken oder explizit mit Quelle/Input begruenden |
+| Neuer konkreter Name, Ort, Zeitraum, Betrag, Prozentwert oder Erfahrungsanker entsteht | Blocken, wenn nicht im Input/Kontext belegt |
+| Satz wird geteilt oder zusammengezogen, alle Faktenanker bleiben erhalten | Erlaubt |
+| Floskel wird gestrichen, Aussage und Autoritaetsgrad bleiben gleich | Erlaubt |
+| "vermutlich/kann/laut" wird zu "zeigt/beweist/muss" | Blocken: Autoritaetsgrad nicht staerken |
 
 ## Struktur: 5 / 6 / 34 / 44 / 61 / 62
 
@@ -71,3 +81,13 @@ Nutze diese Tabellen vor `references/patterns.md`, wenn Befunde ueberlappen. Sie
 | Stimme einbringen | voll | dezent | nie |
 
 Muster 45: False Friends immer korrigieren. Calques und syntaktische Transfers im Formal-Modus korrigieren; in Sachlich/Locker nur bei Haeufung oder auffaelliger Woertlichkeit.
+
+## Profil-Konflikte
+
+| Konflikt | Vorrang |
+|---|---|
+| Quelle vs. schoener Stil | Quelle |
+| Recht/Technik vs. Rhythmus | Recht/Technik |
+| Formal-Modus vs. Schreibprobe | Formal-Modus |
+| Zielprofil vs. generische Lockerheit | Zielprofil |
+| Terminologiekonsistenz vs. Synonymvariation | Terminologiekonsistenz |

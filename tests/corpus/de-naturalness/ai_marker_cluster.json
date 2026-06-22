@@ -1,0 +1,5 @@
+{
+  "mode": "sachlich",
+  "text": "Der Text beleuchtet das vielschichtige Zusammenspiel in einer dynamischen Landschaft.",
+  "expect_kinds": ["ai_marker_cluster"]
+}

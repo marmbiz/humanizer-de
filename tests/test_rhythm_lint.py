@@ -79,6 +79,27 @@ class RhythmLintTests(unittest.TestCase):
         text = "Darüber hinaus prüft das Team die Werte. Darüber hinaus speichert es die Notizen."
         self.assertIn(4, pattern_ids(rhythm_lint.analyze(text)))
 
+    def test_skill_doc_scope_suppresses_instruction_rhythm(self):
+        text = (
+            "Prüfe den Modus. Lies die Quelle. Markiere die Lücke. "
+            "Bewahre den Satz. Entferne den Platzhalter. Melde den Befund. "
+            "Teste die Ausgabe. Stoppe bei Fehlern."
+        )
+        report = rhythm_lint.analyze(text, scope="skill_doc")
+        self.assertNotIn(51, pattern_ids(report))
+        self.assertTrue(any(item["pattern"] == 51 for item in report["suppressed"]))
+
+    def test_formal_mode_suppresses_rhythm_style_suspicion(self):
+        text = (
+            "Die Datenerhebung wurde abgeschlossen. "
+            "Die Auswertung wurde dokumentiert. "
+            "Die Ergebnisse wurden geprüft. "
+            "Die Methode wurde beschrieben."
+        )
+        report = rhythm_lint.analyze(text, mode="formal")
+        self.assertNotIn(51, pattern_ids(report))
+        self.assertTrue(report["suppressed"])
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,0 +1,15 @@
+{
+  "id": 12,
+  "mode": "Locker",
+  "input": "Schreibprobe: Der alte Export nervt. Nicht dramatisch. Text: In der heutigen Datenarbeit stellt ein sauberer Export einen Erfolgsfaktor dar.",
+  "expected_behavior": ["Zielprofil extrahieren", "nur Zieltext ändern"],
+  "forbidden_changes": ["Schreibprobe korrigieren", "generische Lockerheit"],
+  "output_contract": ["Profil kurz nennen, nur geänderte Zielstellen"],
+  "sample_outputs": [
+    {
+      "name": "invented coffee story",
+      "text": "Als ich letzte Woche erst Kaffee holen musste, war der Export wieder ein Chaos.",
+      "expect_violations": ["invented_experience"]
+    }
+  ]
+}

@@ -12,7 +12,7 @@
 [![Muster](https://img.shields.io/badge/Muster-65_in_10_Kategorien-2da44e)](#65-muster-in-10-kategorien)
 [![Claude Code](https://img.shields.io/badge/Claude_Code-Plugin-d97757)](#installation)
 
-**[Installation](#installation)** · **[Benutzung](#benutzung)** · **[Die 65 Muster](#65-muster-in-10-kategorien)** · **[Was ist neu?](#was-ist-neu)**
+**[Installation](#installation)** · **[Benutzung](#benutzung)** · **[Die 65 Muster](#65-muster-in-10-kategorien)** · **[Verifikation](#entwicklung-und-verifikation)** · **[Was ist neu?](#was-ist-neu)**
 
 <sub>Von [Martin Moeller](https://www.martin-moeller.biz) · basiert auf den Wikipedia-Leitlinien [Anzeichen für KI-generierte Inhalte](https://de.wikipedia.org/wiki/Wikipedia:Anzeichen_f%C3%BCr_KI-generierte_Inhalte) (de) und [Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing) (en) · hervorgegangen aus dem [Humanizer](https://github.com/blader/humanizer) von [blader](https://github.com/blader)</sub>
 
@@ -98,7 +98,14 @@ Das Skill analysiert **65 verschiedene KI-Schreibmuster** in 10 Kategorien, prio
 
 ## Was ist neu?
 
-### 4.0.1 (aktuell)
+### 4.0.2 (aktuell)
+- Claim-/Faktenanker-Schutz: `references/evidence-ledger.md` und `scripts/evidence_lint.py` blocken neue oder veränderte Zahlen, Quellen, Zitate, Namen, Codefragmente und Autoritätsgrade ohne Input-Anker
+- Register- und Zielprofil-Schutz: `references/register-profiles.md` und `scripts/register_lint.py` prüfen Anrede, Formal-/Locker-Modus, Schreibprobenprofil und künstliche Nähe
+- Deutsche Naturalness-Checks: `references/de-naturalness.md` und `scripts/german_pattern_lint.py` erkennen Cluster bei KI-Marker-Vokabular, Kopula-Vermeidung, Abstrakta-Stapeln und Modalpartikel-Anomalien
+- `scripts/rhythm_lint.py` ist jetzt scope- und modusbewusst (`--scope`, `--mode`), damit Skill-Dokumentation, Formaltexte und Nutzerprosa unterschiedlich bewertet werden
+- Ausführbare Scenario-Contracts in `tests/scenarios/` plus `scripts/run_review_eval.py`; `make verify` bündelt Unit-Tests, Linter, Contract-Gates und Whitespace-Prüfung
+
+### 4.0.1
 - 13 LLM-im-Loop-Regressionsszenarien in `tests/SCENARIOS.md`; schließt die Testlücke zwischen deterministischem Golden Corpus und Skill-Urteilsverhalten (false positives, Modus-Disziplin, Anti-Fabrikation, Output-Disziplin)
 
 ### 4.0.0
@@ -433,6 +440,31 @@ Das beste Ergebnis kommt, wenn Sie:
 
 ---
 
+## Entwicklung und Verifikation
+
+Für lokale Release-Prüfung:
+
+```bash
+make verify
+```
+
+Das führt die Unit-Tests, Unicode-/Rhythmus-Smoke-Tests, Evidence-, Register- und Naturalness-Fixtures, die maschinenlesbaren Scenario-Contracts sowie `git diff --check` aus.
+
+Einzelchecks:
+
+```bash
+python3 scripts/unicode_lint.py --file SKILL.md
+python3 scripts/rhythm_lint.py --file <text.md> --scope user_text --mode sachlich
+python3 scripts/evidence_lint.py --before-file before.md --after-file after.md
+python3 scripts/register_lint.py --file <text.md> --mode formal
+python3 scripts/german_pattern_lint.py --file <text.md> --mode locker
+python3 scripts/run_review_eval.py tests/scenarios --check-invariants
+```
+
+Die YAML-Szenarien in `tests/scenarios/` sind bewusst maschinenlesbare Contracts. Die ausführlichere Datei `tests/SCENARIOS.md` bleibt die manuelle LLM-im-Loop-Referenz.
+
+---
+
 ## Limitationen
 
 Das Skill funktioniert am besten bei:
@@ -478,6 +510,7 @@ Haben Sie ein Problem gefunden oder eine Verbesserung?
 
 ## Versionshistorie
 
+- **4.0.2** - Claim-/Faktenanker-, Register- und Naturalness-Checks; scope- und modusbewusster Rhythmus-Linter; ausführbare Scenario-Contracts; `make verify` als Release-Gate
 - **4.0.1** - 13 LLM-im-Loop-Regressionsszenarien in `tests/SCENARIOS.md`; schließt Testlücke zwischen deterministischem Golden Corpus und Skill-Urteilsverhalten
 - **4.0.0** - Eigenständigkeits-Release mit eigenem SemVer ohne Fork-Suffix; 2 neue Muster (#64–#65): KI-Marker-Vokabular und Kopula-Vermeidung; Muster 58 auf Hypernyme/Nominalstil geschärft; 65 Muster
 - **3.8.0-de.1** - 6 neue Muster (#58–#63): Abstrakta-Stapel, erfundene Ich-Erfahrung, Synonym-Rotation, isometrisches Dokument, markerloser Schließzwang, Modalpartikel-Anomalie; neuer 5-Pass-Ablauf (Artefakte → Lexik → Struktur → Rhythmus → Selbst-Audit); neues Mess-Script `scripts/rhythm_lint.py` für deterministische Burstiness-/Rhythmus-Kennzahlen (Muster 4/51/54/55/61); Golden Corpus in `tests/corpus/`; Katalog bis #63

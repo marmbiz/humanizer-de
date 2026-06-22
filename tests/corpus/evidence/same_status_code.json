@@ -1,0 +1,5 @@
+{
+  "before": "Die API liefert Status 200 und ein leeres Array.",
+  "after": "Die API liefert Status 200. Sie gibt ein leeres Array zurück.",
+  "expect_kinds": []
+}

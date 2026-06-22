@@ -9,7 +9,7 @@
     {
       "name": "humanizer-de",
       "source": "./",
-      "version": "4.0.1",
+      "version": "4.0.2",
       "description": "Deutsche KI-Schreibmuster erkennen und entfernen. 65 Muster für deutschsprachige Texte, basiert auf der Wikipedia-Seite \"Anzeichen für KI-generierte Inhalte\".",
       "author": {
         "name": "Martin Moeller",

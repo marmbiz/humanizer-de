@@ -1,0 +1,15 @@
+{
+  "id": 11,
+  "mode": "Sachlich",
+  "input": "Am Dienstag stand ich mit Lisa im Besprechungsraum. In der heutigen Arbeitswelt stellt Abstimmung einen Erfolgsfaktor dar.",
+  "expected_behavior": ["nur KI-polierten Absatz ändern", "menschlichen Absatz schützen"],
+  "forbidden_changes": ["globale Politur", "neue Projektdetails"],
+  "output_contract": ["lokale Vorher/Nachher-Paare"],
+  "sample_outputs": [
+    {
+      "name": "new person",
+      "text": "Am Dienstag stand ich mit Lisa und Jan im Besprechungsraum.",
+      "expect_violations": ["new_factual_anchor"]
+    }
+  ]
+}

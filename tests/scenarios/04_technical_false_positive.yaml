@@ -1,0 +1,15 @@
+{
+  "id": 4,
+  "mode": "Sachlich",
+  "input": "Die API liefert bei leeren Ergebnislisten Status 200 und ein leeres Array.",
+  "expected_behavior": ["sauberen Fachtext stehen lassen"],
+  "forbidden_changes": ["Statuscode ändern", "Code/Spec glätten"],
+  "output_contract": ["keine Änderung, wenn sauber"],
+  "sample_outputs": [
+    {
+      "name": "status changed",
+      "text": "Die API liefert bei leeren Ergebnislisten Status 204 und ein leeres Array.",
+      "expect_violations": ["new_factual_anchor"]
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+{
+  "mode": "sachlich",
+  "text": "Die Plattform fungiert als Werkzeug und verfügt über mehrere Module.",
+  "expect_kinds": ["copula_avoidance_cluster"]
+}

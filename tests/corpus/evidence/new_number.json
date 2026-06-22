@@ -1,0 +1,5 @@
+{
+  "before": "Die Wartezeit sank laut Bericht.",
+  "after": "Die Wartezeit sank laut Bericht um 63 Prozent.",
+  "expect_kinds": ["added_number"]
+}

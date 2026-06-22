@@ -1,0 +1,15 @@
+{
+  "id": 8,
+  "mode": "Locker",
+  "input": "Geholfen hat am Ende eine kleinere Regel: zehn Minuten, direkt nach dem Kaffee.",
+  "expected_behavior": ["keine Ich-Erfahrung erfinden oder ausbauen"],
+  "forbidden_changes": ["neue Orte", "neue Kunden", "neue Gefühle"],
+  "output_contract": ["nur vorhandenes Material nutzen"],
+  "sample_outputs": [
+    {
+      "name": "invented project",
+      "text": "Als ich letzte Woche mit einem Kunden darüber sprach, war genau das der Wendepunkt.",
+      "expect_violations": ["invented_experience"]
+    }
+  ]
+}

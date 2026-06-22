@@ -1,4 +1,4 @@
-# WARP - Humanizer (Deutsch) Entwicklerleitfaden (v4.0.1)
+# WARP - Humanizer (Deutsch) Entwicklerleitfaden (v4.0.2)
 
 WARP = Workflow, Architecture, References, Principles.
 
@@ -11,10 +11,17 @@ humanizer-de/
 ├── SKILL.md                         # SOP, Trigger, Ablauf, Toolroutine
 ├── references/
 │   ├── patterns.md                  # vollständiger 65-Musterkatalog
-│   └── decision-tables.md           # Overlap- und Moduslogik
+│   ├── decision-tables.md           # Overlap- und Moduslogik
+│   ├── evidence-ledger.md           # Claim-Delta und Faktenanker
+│   ├── register-profiles.md         # Zielprofil und Registerlogik
+│   └── de-naturalness.md            # deutsche Rule Cards fuer spaete Muster
 ├── scripts/
 │   ├── unicode_lint.py              # Muster 43/46, JSON-Report, optional --fix
-│   └── rhythm_lint.py               # Muster 4/51/54/55/61, JSON-Report
+│   ├── rhythm_lint.py               # Muster 4/51/54/55/61, JSON-Report
+│   ├── evidence_lint.py             # Faktenanker vor/nach Rewrite
+│   ├── register_lint.py             # Register-/Profil-Drift
+│   ├── german_pattern_lint.py       # deutsche Marker-Cluster
+│   └── run_review_eval.py           # Scenario-Contract-Invarianten
 ├── tests/
 │   ├── test_skill_structure.py
 │   ├── test_patterns_catalog.py
@@ -23,6 +30,7 @@ humanizer-de/
 │   ├── test_rhythm_lint.py
 │   ├── test_corpus.py
 │   ├── SCENARIOS.md                 # Urteils-Regressionsszenarien (LLM-im-Loop)
+│   ├── scenarios/                   # maschinenlesbare Contract-Fixtures
 │   └── corpus/
 ├── README.md                        # Nutzer-Dokumentation
 └── tone-of-voice.txt                # optionale Stilreferenz
@@ -45,7 +53,7 @@ Wenn ein Muster geändert oder ergänzt wird:
 2. Kurzreferenz und Musterkörper synchron halten.
 3. Bei Overlap mit bestehenden Mustern `references/decision-tables.md` aktualisieren.
 4. `tests/test_patterns_catalog.py` erweitern, wenn IDs oder Pflichtmarker betroffen sind.
-5. Bei neuem False-Positive-Risiko, Carve-out oder Failure-Mode ein Szenario in `tests/SCENARIOS.md` ergänzen (LLM-im-Loop, nicht per Python prüfbar).
+5. Bei neuem False-Positive-Risiko, Carve-out oder Failure-Mode ein Szenario in `tests/SCENARIOS.md` ergänzen; maschinenlesbare Invarianten zusätzlich in `tests/scenarios/` ablegen.
 6. README-Version und Changelog-Abschnitt nur bei Release-relevanter Änderung nachziehen.
 
 Keine neuen Muster in Patch-Releases verstecken. Ab v4.0.0 nutzt das Projekt eigenes SemVer ohne Fork-Suffix und trackt keine Upstream-Versionen mehr: neue Muster sind Minor-Bumps, Breaking-Änderungen an Ablauf oder Output-Format sind Major-Bumps. Eine Muster-Erweiterung von 65 auf 66 wäre also 4.1.0.
@@ -71,10 +79,22 @@ Muster 4, 51, 54, 55 und 61 sind messbar unterstützt:
 
 ```bash
 python3 scripts/rhythm_lint.py --file path/to/text.md
+python3 scripts/rhythm_lint.py --file path/to/text.md --scope user_text --mode sachlich
 python3 scripts/rhythm_lint.py --text "Kurzer Test. Noch ein Satz."
 ```
 
-Der Rhythmus-Linter ist ein reines Mess-Tool. Er schreibt nichts, korrigiert nichts und meldet nur Verdachtsmomente. Bei Nutzertexten `--file` verwenden; `--text` bleibt Smoke-Tests vorbehalten.
+Der Rhythmus-Linter ist ein reines Mess-Tool. Er schreibt nichts, korrigiert nichts und meldet nur Verdachtsmomente. `--scope skill_doc` und `--mode formal` unterdruecken Stilverdachte, die fuer SOP-, Rechts-, Technik- oder Wissenschaftstexte nicht handlungsleitend sind. Bei Nutzertexten `--file` verwenden; `--text` bleibt Smoke-Tests vorbehalten.
+
+## Claim-, Register- und Naturalness-Checks
+
+```bash
+python3 scripts/evidence_lint.py --before-file before.md --after-file after.md
+python3 scripts/register_lint.py --file text.md --mode sachlich
+python3 scripts/german_pattern_lint.py --file text.md --mode locker
+python3 scripts/run_review_eval.py tests/scenarios --check-invariants
+```
+
+Diese Checks sind konservative Reviewer-Hilfen. Sie sollen Faktenanker, Registerbrueche und Cluster melden, aber keine Rewrite-Automatik ersetzen.
 
 ## Verification
 
@@ -83,7 +103,12 @@ Vor Release:
 ```bash
 python3 -m unittest discover -s tests
 python3 scripts/unicode_lint.py --text "AB"
-python3 scripts/rhythm_lint.py --text "Kurzer Test. Noch ein Satz."
+python3 scripts/unicode_lint.py --file SKILL.md
+python3 scripts/rhythm_lint.py --text "Kurzer Test. Noch ein Satz." --scope user_text --mode sachlich
+python3 scripts/evidence_lint.py --fixture tests/corpus/evidence
+python3 scripts/register_lint.py --fixture tests/corpus/register
+python3 scripts/german_pattern_lint.py --fixture tests/corpus/de-naturalness
+python3 scripts/run_review_eval.py tests/scenarios --check-invariants
 git diff --check
 ```
 
@@ -91,7 +116,7 @@ Zusätzlich manuell prüfen:
 
 - `SKILL.md`, `README.md`, `WARP.md`, `references/patterns.md`, `references/decision-tables.md`, `.claude-plugin/plugin.json` und `.claude-plugin/marketplace.json` nennen dieselbe Version.
 - `references/patterns.md` enthält exakt die Muster 1-65 ohne Lücken.
-- `SKILL.md` verlinkt `references/patterns.md`, `references/decision-tables.md`, `scripts/unicode_lint.py` und `scripts/rhythm_lint.py`.
+- `SKILL.md` verlinkt `references/patterns.md`, `references/decision-tables.md`, `references/evidence-ledger.md`, `references/register-profiles.md`, `references/de-naturalness.md`, `scripts/unicode_lint.py` und `scripts/rhythm_lint.py`.
 - Die installierte Kopie unter `~/.codex/skills/humanizer-de` wird erst nach grünen Tests synchronisiert.
 
 ## Optimierung

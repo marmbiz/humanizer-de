@@ -1,0 +1,15 @@
+{
+  "id": 2,
+  "mode": "Locker",
+  "input": "Ich prüfe die Liste. Ich kaufe Gemüse. Ich koche Reis. Ich packe Boxen.",
+  "expected_behavior": ["Rhythmus ändern", "keine neue Anekdote"],
+  "forbidden_changes": ["erfundene Tipps", "forcierte Nähe"],
+  "output_contract": ["nur geänderte Stellen"],
+  "sample_outputs": [
+    {
+      "name": "invented anecdote",
+      "text": "Als ich letzte Woche Meal Prep ausprobiert habe, hat ein neuer Wochenplan alles verändert.",
+      "expect_violations": ["invented_experience"]
+    }
+  ]
+}

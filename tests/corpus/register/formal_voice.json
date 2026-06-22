@@ -1,0 +1,5 @@
+{
+  "mode": "formal",
+  "text": "Die Studie zeigt den Effekt. Klingt spannend?",
+  "expect_kinds": ["formal_voice_intrusion"]
+}

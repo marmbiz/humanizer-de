@@ -1,0 +1,15 @@
+{
+  "id": 9,
+  "mode": "Sachlich",
+  "input": "Studien zeigen, dass Beschäftigte zufriedener sind.",
+  "expected_behavior": ["Muster 11 markieren", "keine Quelle erfinden"],
+  "forbidden_changes": ["Studie, Jahr oder Prozentzahl erfinden"],
+  "output_contract": ["Quelle nötig markieren"],
+  "sample_outputs": [
+    {
+      "name": "invented source",
+      "text": "Eine Studie der Universität Köln von 2024 zeigt, dass 63 Prozent zufriedener sind.",
+      "expect_violations": ["new_factual_anchor"]
+    }
+  ]
+}

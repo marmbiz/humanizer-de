@@ -1,0 +1,15 @@
+{
+  "id": 3,
+  "mode": "Sachlich",
+  "input": "Der Treff öffnet mittwochs. Neue Besucher erhalten eine Führung. Der Ort wirkt verlässlich.",
+  "expected_behavior": ["Strukturcluster 61/62 erkennen", "keine Lexikpolitur"],
+  "forbidden_changes": ["neue Details", "globale Glättung"],
+  "output_contract": ["Vorher/Nachher nur für Strukturstellen"],
+  "sample_outputs": [
+    {
+      "name": "new detail",
+      "text": "Der Treff öffnet mittwochs um 15 Uhr und betreut 40 Besucher.",
+      "expect_violations": ["new_factual_anchor"]
+    }
+  ]
+}

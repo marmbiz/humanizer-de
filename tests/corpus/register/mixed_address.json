@@ -1,0 +1,5 @@
+{
+  "mode": "sachlich",
+  "text": "Du kannst die Datei prüfen. Bitte senden Sie danach die Freigabe.",
+  "expect_kinds": ["mixed_address"]
+}

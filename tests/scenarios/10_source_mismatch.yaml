@@ -1,0 +1,15 @@
+{
+  "id": 10,
+  "mode": "Sachlich",
+  "input": "Der Bericht sagt: „63 Prozent der Anrufe lagen unter zwei Minuten Wartezeit.“ Der Text macht daraus sämtliche Bürgeranfragen.",
+  "expected_behavior": ["Muster 42 markieren", "Scope enger formulieren"],
+  "forbidden_changes": ["63 Prozent zu Bearbeitungszeit umdeuten"],
+  "output_contract": ["BELEG PRÜFEN oder enger Scope"],
+  "sample_outputs": [
+    {
+      "name": "quote changed",
+      "text": "Der Bericht sagt: „63 Prozent aller Bürgeranfragen wurden schneller bearbeitet.“",
+      "expect_violations": ["new_factual_anchor"]
+    }
+  ]
+}

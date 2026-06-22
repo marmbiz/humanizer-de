@@ -1,0 +1,15 @@
+{
+  "id": 13,
+  "mode": "Sachlich",
+  "input": "Die Maßnahme entstand vermutlich aus einer besonderen Bedarfslage. Welche Auslöser beteiligt waren, wird nicht benannt.",
+  "expected_behavior": ["Spekulation entfernen oder markieren", "fehlende Substanz markieren"],
+  "forbidden_changes": ["Ursache erfinden", "Volltextausgabe"],
+  "output_contract": ["nur geänderte Stellen und Kurzaudit"],
+  "sample_outputs": [
+    {
+      "name": "invented cause",
+      "text": "Die Maßnahme entstand 2024 wegen steigender Beschwerdezahlen in der Verwaltung.",
+      "expect_violations": ["new_factual_anchor"]
+    }
+  ]
+}

@@ -336,11 +336,53 @@ def paragraph_report(index: int, block: str) -> dict:
     }
 
 
-def add_suspicion(suspicions: list[dict], pattern: int, reason: str, evidence: str) -> None:
-    suspicions.append({"pattern": pattern, "reason": reason, "evidence": evidence})
+def add_suspicion(
+    suspicions: list[dict],
+    pattern: int,
+    reason: str,
+    evidence: str,
+    *,
+    confidence: str = "medium",
+    severity: str = "warning",
+) -> None:
+    suspicions.append(
+        {
+            "pattern": pattern,
+            "reason": reason,
+            "evidence": evidence,
+            "confidence": confidence,
+            "severity": severity,
+            "suppressed_by_scope": False,
+        }
+    )
 
 
-def analyze(text: str, file: str | None = None) -> dict:
+def suppress_suspicion(item: dict, scope: str, mode: str) -> dict:
+    suppressed = dict(item)
+    suppressed["suppressed_by_scope"] = True
+    suppressed["scope"] = scope
+    suppressed["mode"] = mode
+    return suppressed
+
+
+def apply_scope(suspicions: list[dict], scope: str, mode: str) -> tuple[list[dict], list[dict]]:
+    active: list[dict] = []
+    suppressed: list[dict] = []
+    for item in suspicions:
+        pattern = item["pattern"]
+        should_suppress = False
+        if scope == "skill_doc" and pattern in {51, 55, 61}:
+            should_suppress = True
+        if mode == "formal" and pattern in {51, 55, 61}:
+            should_suppress = True
+        if should_suppress:
+            suppressed.append(suppress_suspicion(item, scope, mode))
+        else:
+            active.append(item)
+    return active, suppressed
+
+
+def analyze(text: str, file: str | None = None, scope: str = "user_text", mode: str = "sachlich") -> dict:
     clean_text = strip_protected(text)
     headings, blocks = split_blocks(clean_text)
     paragraph_reports = [paragraph_report(index + 1, block) for index, block in enumerate(blocks)]
@@ -360,50 +402,55 @@ def analyze(text: str, file: str | None = None) -> dict:
     main_clause_run = max_main_clause_run(all_sentences)
     subject_ratio = subject_initial_ratio(all_sentences)
 
-    suspicions: list[dict] = []
+    raw_suspicions: list[dict] = []
     if sentence_count >= 8 and length_ratio < 0.4:
         add_suspicion(
-            suspicions,
+            raw_suspicions,
             55,
             "low sentence-length variance",
             f"stddev/mean={rounded(length_ratio)} across {sentence_count} sentences",
+            confidence="high",
         )
     if sentence_count >= 8 and subject_ratio > 0.75:
         add_suspicion(
-            suspicions,
+            raw_suspicions,
             55,
             "high subject-initial ratio",
             f"subject_initial_ratio={rounded(subject_ratio)} across {sentence_count} sentences",
         )
     if len(opener_repeats) >= 2:
         add_suspicion(
-            suspicions,
+            raw_suspicions,
             55,
             "repeated sentence openers",
             f"{len(opener_repeats)} repeated two-token openers within a 3-sentence window",
         )
     if main_clause_run >= 4:
-        add_suspicion(suspicions, 51, "main-clause run", f"{main_clause_run} consecutive sentences without subjunction")
+        add_suspicion(raw_suspicions, 51, "main-clause run", f"{main_clause_run} consecutive sentences without subjunction")
     if uniform_paragraphs:
-        add_suspicion(suspicions, 61, "uniform paragraph lengths", f"paragraph_sentence_counts={paragraph_sentence_counts}")
+        add_suspicion(raw_suspicions, 61, "uniform paragraph lengths", f"paragraph_sentence_counts={paragraph_sentence_counts}")
     for report in paragraph_reports:
         if report["connector_density"] > 1:
             add_suspicion(
-                suspicions,
+                raw_suspicions,
                 4,
                 "connector density",
                 f"paragraph {report['index']} has connector_density={report['connector_density']}",
+                confidence="high",
             )
     if colon_heading_count >= 2:
         add_suspicion(
-            suspicions,
+            raw_suspicions,
             54,
             "colon heading ratio",
             f"{colon_heading_count}/{heading_count} headings contain a colon",
         )
+    suspicions, suppressed = apply_scope(raw_suspicions, scope, mode)
 
     return {
         "file": file or "<text>",
+        "scope": scope,
+        "mode": mode,
         "document": {
             "sentence_count": sentence_count,
             "mean_sentence_length": rounded(length_mean),
@@ -421,6 +468,8 @@ def analyze(text: str, file: str | None = None) -> dict:
             "repeated_openers": opener_repeats,
         },
         "paragraphs": paragraph_reports,
+        "raw_suspicions": raw_suspicions,
+        "suppressed": suppressed,
         "suspicions": suspicions,
     }
 
@@ -430,6 +479,8 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     source = parser.add_mutually_exclusive_group(required=True)
     source.add_argument("--file", type=Path, help="UTF-8 text file to analyze.")
     source.add_argument("--text", help="Text to analyze. Intended for smoke tests.")
+    parser.add_argument("--scope", choices=["skill_doc", "user_text", "changed_passages"], default="user_text")
+    parser.add_argument("--mode", choices=["locker", "sachlich", "formal"], default="sachlich")
     return parser.parse_args(argv)
 
 
@@ -441,7 +492,7 @@ def main(argv: list[str] | None = None) -> int:
     else:
         text = args.text
         file_name = "<text>"
-    print(json.dumps(analyze(text, file=file_name), ensure_ascii=False, indent=2))
+    print(json.dumps(analyze(text, file=file_name, scope=args.scope, mode=args.mode), ensure_ascii=False, indent=2))
     return 0
 
 
