@@ -1244,7 +1244,11 @@ Häufige Indikatoren:
 
 **Abgrenzung:** Muster 34 = generischer Einzeiler *nach* einer Überschrift. Muster 47 = englische Titel-Großschreibung. Muster 54 = die gehäufte Doppelpunkt-*Konstruktion* selbst.
 
-**Fix-Aktion (Minimalintervention):** Doppelpunkt → Gedankenstrich. Den Subtitel/Nachsatz *nicht* entfernen, solange er echte, nicht-redundante Information trägt. Entfernen nur, wenn der Nachsatz die linke Seite nur in Langform wiederholt (z. B. „Datenschutz: Datenschutz richtig gemacht") oder eine leere Formel ohne Mehrwert ist (z. B. „Alles, was du wissen musst"). Umstrukturierung der gesamten Überschrift ist möglich, aber keine Pflicht.
+**Fix-Aktion (Minimalintervention, nur im Cluster):** Nur bei gehäuftem Vorkommen eingreifen – ein einzelner Doppelpunkt-Titel bleibt unangetastet. Strategie: im Cluster *variieren*, nicht alle gleich umbauen. Optionen: Doppelpunkt durch Gedankenstrich ` – ` (mit Leerzeichen, nicht Bindestrich) ersetzen; Überschrift umstrukturieren; einen Titel komplett kürzen. Nie alle Doppelpunkte mechanisch gegen Gedankenstriche tauschen – das erzeugt nur ein neues, monotones Schema.
+
+Den Subtitel/Nachsatz *nicht* entfernen, solange er echte, nicht-redundante Information trägt. Entfernen nur, wenn der Nachsatz die linke Seite nur in Langform wiederholt (z. B. „Datenschutz: Datenschutz richtig gemacht") oder eine leere Formel ist (z. B. „Alles, was du wissen musst" ohne konkreten Bezug).
+
+**Nicht anfassen:** wissenschaftliche Haupttitel mit Untertitel, Serien-/Rubriktitel, FAQ-/Glossar-/Definitionstitel, juristische oder technische Labels, echte Zitattitel.
 
 **Beispiel:**
 
