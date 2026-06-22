@@ -3,7 +3,7 @@
   "mode": "Sachlich",
   "input": "Der Treff öffnet mittwochs. Neue Besucher erhalten eine Führung. Der Ort wirkt verlässlich.",
   "expected_behavior": ["Strukturcluster 61/62 erkennen", "keine Lexikpolitur"],
-  "forbidden_changes": ["neue Details", "globale Glättung"],
+  "quality_risks": ["neue Details", "globale Glättung"],
   "output_contract": ["Vorher/Nachher nur für Strukturstellen"],
   "sample_outputs": [
     {

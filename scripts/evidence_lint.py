@@ -27,6 +27,31 @@ AUTHORITY_MARKERS = {
     "strong": {"belegt", "beweist", "zeigt", "nachweislich", "muss", "immer"},
     "weak": {"kann", "koennte", "könnte", "vermutlich", "moeglicherweise", "möglicherweise", "laut", "scheint"},
 }
+DIRECTION_MARKERS = {
+    "increase": {
+        "erhoeht",
+        "erhoehte",
+        "erhöht",
+        "erhöhte",
+        "gestiegen",
+        "stieg",
+        "steigt",
+        "verbessert",
+        "verbesserte",
+        "zunahm",
+    },
+    "decrease": {
+        "gesunken",
+        "nahm ab",
+        "reduziert",
+        "reduzierte",
+        "sank",
+        "senkt",
+        "senkte",
+        "verringert",
+        "verringerte",
+    },
+}
 
 CAPITALIZED_RE = re.compile(r"\b(?:[A-ZÄÖÜ][\wÄÖÜäöüß-]+(?:\s+[A-ZÄÖÜ][\wÄÖÜäöüß-]+){0,3})\b")
 COMMON_SENTENCE_STARTS = {
@@ -85,6 +110,15 @@ def authority_profile(text: str) -> dict[str, set[str]]:
     }
 
 
+def direction_profile(text: str) -> set[str]:
+    lowered = text.lower()
+    result: set[str] = set()
+    for direction, markers in DIRECTION_MARKERS.items():
+        if any(re.search(rf"\b{re.escape(marker)}\b", lowered) for marker in markers):
+            result.add(direction)
+    return result
+
+
 def add_finding(findings: list[dict], severity: str, kind: str, message: str, values: list[str]) -> None:
     findings.append({"severity": severity, "kind": kind, "message": message, "values": sorted(values)})
 
@@ -112,6 +146,20 @@ def lint(before: str, after: str) -> list[dict]:
         add_finding(findings, "blocker", "authority_strengthened", "Authority marker was strengthened.", list(stronger))
     if weaker_removed and after_auth["strong"]:
         add_finding(findings, "warning", "hedge_removed", "Hedging may have been removed.", list(weaker_removed))
+
+    before_direction = direction_profile(before)
+    after_direction = direction_profile(after)
+    if (
+        ("increase" in before_direction and "decrease" in after_direction)
+        or ("decrease" in before_direction and "increase" in after_direction)
+    ):
+        add_finding(
+            findings,
+            "blocker",
+            "claim_direction_changed",
+            "Claim direction changed between increase and decrease.",
+            sorted(before_direction | after_direction),
+        )
 
     return findings
 

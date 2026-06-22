@@ -37,3 +37,13 @@ Jede geaenderte Passage muss intern diese Frage bestehen:
 5. Wurde eine Luecke markiert statt gefuellt?
 
 Wenn eine Antwort unklar ist, nicht glatter schreiben. Markieren oder Rueckfrage stellen.
+
+## QGIR-Invarianten
+
+Bei iterativer Revision gilt die Claim-Delta-Regel nach jedem Pass, nicht nur am Ende.
+
+- Jeder Pass muss die vorher geschuetzten Anker erneut erhalten.
+- Neue Faktenanker, Beispiele, Ursachen, Personen, Orte oder Erfahrungsdetails blocken den Loop.
+- "kann", "laut", "vermutlich" und andere Qualifier duerfen nicht zu "zeigt", "beweist" oder "muss" werden.
+- Eine spaetere Runde darf keine Luecke fuellen, die eine fruehere Runde korrekt markiert hat.
+- Wenn Claim-Erhalt und Stilgewinn kollidieren, stoppt QGIR.

@@ -7,13 +7,14 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class SkillStructureTests(unittest.TestCase):
-    def test_skill_is_v40_sop_router(self):
+    def test_skill_is_v41_sop_router(self):
         text = (ROOT / "SKILL.md").read_text()
         self.assertRegex(text, r"version: 4\.\d+\.\d+")
         self.assertIn("<!-- SLOW_UPDATE_START -->", text)
         self.assertIn("<!-- FAST_UPDATE_START -->", text)
         self.assertIn("references/patterns.md", text)
         self.assertIn("references/decision-tables.md", text)
+        self.assertIn("references/qgir.md", text)
         self.assertIn("scripts/unicode_lint.py", text)
         self.assertIn("scripts/rhythm_lint.py", text)
 

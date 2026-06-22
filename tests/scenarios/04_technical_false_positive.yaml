@@ -3,7 +3,7 @@
   "mode": "Sachlich",
   "input": "Die API liefert bei leeren Ergebnislisten Status 200 und ein leeres Array.",
   "expected_behavior": ["sauberen Fachtext stehen lassen"],
-  "forbidden_changes": ["Statuscode ändern", "Code/Spec glätten"],
+  "quality_risks": ["Statuscode ändern", "Code/Spec glätten"],
   "output_contract": ["keine Änderung, wenn sauber"],
   "sample_outputs": [
     {

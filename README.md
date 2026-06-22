@@ -98,7 +98,15 @@ Das Skill analysiert **65 verschiedene KI-Schreibmuster** in 10 Kategorien, prio
 
 ## Was ist neu?
 
-### 4.0.2 (aktuell)
+### 4.1.0 (aktuell)
+- Quality-Guided Iterative Revision (QGIR): begrenzter zweiter Revisionsmodus für Fälle, in denen nach einer Minimal-Revision noch echte HIGH/MEDIUM-Cluster bleiben
+- QGIR-Stop: Der Skill beendet die Revision, sobald weitere Änderungen keinen echten Qualitätsgewinn mehr bringen oder Fakten, Ton und Proportion gefährden würden
+- Neue QGIR-Spezifikation in `references/qgir.md`: Pass-Limit, Edit-Budget, Review-ready-Ziel und proportionale Qualitätsverbesserung
+- `scripts/run_review_eval.py` prüft jetzt QGIR-Contracts: maximale Passzahl, Edit-Budget, geschützte Anker, Registerdrift und Claim-Richtungsdrift
+- 5 neue QGIR-Szenarien in `tests/scenarios/` für Minimaländerung, Evidenzerhalt, Registererhalt, Early Stop und Konfliktauflösung bei Formal-/Fachtext
+- `SKILL.md` routet QGIR als Quality-Gate für gute Texte: Detector-Bezug bleibt Kontext und ist kein automatischer Contract-Verstoß
+
+### 4.0.2
 - Claim-/Faktenanker-Schutz: `references/evidence-ledger.md` und `scripts/evidence_lint.py` blocken neue oder veränderte Zahlen, Quellen, Zitate, Namen, Codefragmente und Autoritätsgrade ohne Input-Anker
 - Register- und Zielprofil-Schutz: `references/register-profiles.md` und `scripts/register_lint.py` prüfen Anrede, Formal-/Locker-Modus, Schreibprobenprofil und künstliche Nähe
 - Deutsche Naturalness-Checks: `references/de-naturalness.md` und `scripts/german_pattern_lint.py` erkennen Cluster bei KI-Marker-Vokabular, Kopula-Vermeidung, Abstrakta-Stapeln und Modalpartikel-Anomalien
@@ -165,7 +173,7 @@ Das Skill analysiert **65 verschiedene KI-Schreibmuster** in 10 Kategorien, prio
 - Muster 24 erweitert: KI-Tool-Artefakte (oaicite, contentReference, turn0search0)
 - Muster 26 erweitert: vollständige Zitatfabrikation (halluzinierte Quellen)
 - Neue Quick Checklist (Vor-Ausgabe-Audit)
-- Neue "Nie kürzen"-Regel im Ablauf und in den Leitplanken
+- Neue Leitplanke "Substanz erhalten" im Ablauf und in den Leitplanken
 - Neuer Gedankenstrich-Scan-Schritt im Ablauf
 - 41 Muster insgesamt in 7 Kategorien
 - Upstream-Integration: PRs #79, #80, #84, #85, #94, #96
@@ -461,7 +469,7 @@ python3 scripts/german_pattern_lint.py --file <text.md> --mode locker
 python3 scripts/run_review_eval.py tests/scenarios --check-invariants
 ```
 
-Die YAML-Szenarien in `tests/scenarios/` sind bewusst maschinenlesbare Contracts. Die ausführlichere Datei `tests/SCENARIOS.md` bleibt die manuelle LLM-im-Loop-Referenz.
+Die YAML-Szenarien in `tests/scenarios/` sind bewusst maschinenlesbare Contracts. QGIR-Szenarien prüfen zusätzlich Pass-Limits, Edit-Budget, geschützte Anker, Registerdrift und Claim-Richtungsdrift. Detector-Bezug bleibt außerhalb der Contract-Checks. Die ausführlichere Datei `tests/SCENARIOS.md` bleibt die manuelle LLM-im-Loop-Referenz.
 
 ---
 
@@ -510,6 +518,7 @@ Haben Sie ein Problem gefunden oder eine Verbesserung?
 
 ## Versionshistorie
 
+- **4.1.0** - Quality-Guided Iterative Revision (QGIR) mit Stop-Regel, `references/qgir.md`, QGIR-Routing in `SKILL.md`, Contract-Erweiterungen in `run_review_eval.py` und 5 neuen QGIR-Szenarien
 - **4.0.2** - Claim-/Faktenanker-, Register- und Naturalness-Checks; scope- und modusbewusster Rhythmus-Linter; ausführbare Scenario-Contracts; `make verify` als Release-Gate
 - **4.0.1** - 13 LLM-im-Loop-Regressionsszenarien in `tests/SCENARIOS.md`; schließt Testlücke zwischen deterministischem Golden Corpus und Skill-Urteilsverhalten
 - **4.0.0** - Eigenständigkeits-Release mit eigenem SemVer ohne Fork-Suffix; 2 neue Muster (#64–#65): KI-Marker-Vokabular und Kopula-Vermeidung; Muster 58 auf Hypernyme/Nominalstil geschärft; 65 Muster

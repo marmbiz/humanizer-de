@@ -3,7 +3,7 @@
   "mode": "Sachlich",
   "input": "Am Dienstag stand ich mit Lisa im Besprechungsraum. In der heutigen Arbeitswelt stellt Abstimmung einen Erfolgsfaktor dar.",
   "expected_behavior": ["nur KI-polierten Absatz ändern", "menschlichen Absatz schützen"],
-  "forbidden_changes": ["globale Politur", "neue Projektdetails"],
+  "quality_risks": ["globale Politur", "neue Projektdetails"],
   "output_contract": ["lokale Vorher/Nachher-Paare"],
   "sample_outputs": [
     {

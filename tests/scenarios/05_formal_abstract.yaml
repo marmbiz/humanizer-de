@@ -3,7 +3,7 @@
   "mode": "Formal",
   "input": "Nach Einführung des Protokolls stieg die Vollständigkeit von 71,4 Prozent auf 84,9 Prozent.",
   "expected_behavior": ["Formalregister schützen", "keine Stimme einbringen"],
-  "forbidden_changes": ["lockere Partikeln", "Du-Anrede"],
+  "quality_risks": ["lockere Partikeln", "Du-Anrede"],
   "output_contract": ["höchstens markierte echte Artefakte"],
   "sample_outputs": [
     {

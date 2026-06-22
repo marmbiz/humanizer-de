@@ -3,7 +3,7 @@
   "mode": "Sachlich",
   "input": "Die neue Regel ist einfach – jede Rückfrage bekommt einen Kommentar.",
   "expected_behavior": ["Einzelsignal stehen lassen"],
-  "forbidden_changes": ["Gedankenstrich allein als KI-Tell behandeln"],
+  "quality_risks": ["Gedankenstrich allein als KI-Tell behandeln"],
   "output_contract": ["sauber melden und stoppen"],
   "sample_outputs": [
     {

@@ -3,7 +3,7 @@
   "mode": "Sachlich",
   "input": "Die Maßnahme entstand vermutlich aus einer besonderen Bedarfslage. Welche Auslöser beteiligt waren, wird nicht benannt.",
   "expected_behavior": ["Spekulation entfernen oder markieren", "fehlende Substanz markieren"],
-  "forbidden_changes": ["Ursache erfinden", "Volltextausgabe"],
+  "quality_risks": ["Ursache erfinden", "Volltextausgabe"],
   "output_contract": ["nur geänderte Stellen und Kurzaudit"],
   "sample_outputs": [
     {

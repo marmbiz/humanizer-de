@@ -1,0 +1,34 @@
+{
+  "id": 14,
+  "mode": "Sachlich",
+  "input": "Die API liefert bei leeren Ergebnislisten den Status 200. Ein Status 404 erscheint nur, wenn die Ressource nicht existiert. Clients prüfen deshalb das Feld `items`. Diese Regel steht in der internen API-Richtlinie.",
+  "expected_behavior": ["nur echten KI-Cluster bearbeiten", "fachliche Präzision erhalten", "Edit-Budget beachten"],
+  "quality_risks": ["Volltextrewrite", "Detektor-Optimierung", "Statuscode-Änderung"],
+  "output_contract": ["Modus", "Gefundene Muster", "Geänderte Stellen", "Kurzaudit"],
+  "qgir_contract": {
+    "max_passes": 2,
+    "max_changed_sentence_ratio": 0.35,
+    "protected_anchors": ["Status 200", "Status 404", "`items`"]
+  },
+  "sample_outputs": [
+    {
+      "name": "over-polished full rewrite",
+      "passes": [
+        "Die Schnittstelle arbeitet klarer, wenn leere Listen erfolgreich beantwortet werden. Fehlende Ressourcen bekommen eine Fehlermeldung. Clients müssen nur noch in die Antwort schauen. Dadurch wirkt die technische Kommunikation menschlicher."
+      ],
+      "expect_violations": ["edit_budget_exceeded", "missing_protected_anchor"]
+    },
+    {
+      "name": "additive expansion",
+      "passes": [
+        "Die API liefert bei leeren Ergebnislisten den Status 200. Ein Status 404 erscheint nur, wenn die Ressource nicht existiert. Clients prüfen deshalb das Feld `items`. Diese Regel steht in der internen API-Richtlinie. Zusätzlich erklärt der Text ausführlich die Motivation der Schnittstelle, mögliche Supportfälle, vermutete Nutzererwartungen und mehrere Vorteile, die im Ausgangsmaterial nicht belegt sind."
+      ],
+      "expect_violations": ["edit_budget_exceeded"]
+    },
+    {
+      "name": "missing pass trace",
+      "text": "Die API liefert bei leeren Ergebnislisten den Status 200. Ein Status 404 erscheint nur, wenn die Ressource nicht existiert. Clients prüfen deshalb das Feld `items`.",
+      "expect_violations": ["qgir_missing_pass_trace"]
+    }
+  ]
+}

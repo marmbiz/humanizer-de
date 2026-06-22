@@ -30,7 +30,7 @@ python3 scripts/run_review_eval.py tests/scenarios --check-invariants
 | 10 | Sachlich | Eine konkrete Quelle mit Scope-Mismatch wird als tragender Beleg behandelt. |
 | 11 | Sachlich | Ein lokaler KI-polierter Absatz führt zu globaler Politur menschlicher Absätze. |
 | 12 | Locker | Eine Schreibprobe wird ignoriert oder in generische Lockerheit übersetzt. |
-| 13 | Sachlich | Output-Disziplin und Fabrikationsverbot werden bei ankerlosem Text verletzt. |
+| 13 | Sachlich | Output-Disziplin und Fabrikationsschutz werden bei ankerlosem Text verletzt. |
 
 ## Szenario 1: Flagranter KI-Cluster (Sachlich)
 
@@ -312,10 +312,10 @@ Darüber hinaus ist davon auszugehen, dass die Maßnahme aus einer besonderen Be
 
 **Relevante Muster:** 53 feuert bei unbelegter Lückenfüllung; 5, 32, 37, 58, 64 und 65 feuern als ankerlose Floskel-Cluster. 42 feuert nicht, weil keine konkrete Quelle geprüft werden kann.
 
-**Warum dieses Szenario zählt:** Es prüft gleichzeitig die Output-Regel und das Fabrikationsverbot. Der Failure-Mode wäre, den ganzen Text neu auszugeben oder fehlende Konkretion mit plausibel klingenden Details zu füllen.
+**Warum dieses Szenario zählt:** Es prüft gleichzeitig die Output-Regel und den Fabrikationsschutz. Der Failure-Mode wäre, den ganzen Text neu auszugeben oder fehlende Konkretion mit plausibel klingenden Details zu füllen.
 
 ## Neue Szenarien hinzufügen
 
 Neue Szenarien sollten einen klaren Failure-Mode isolieren und die betroffenen Muster-IDs nennen. Der Input sollte klein genug bleiben, dass ein Mensch die Antwort gegen die Pass/Fail-Kriterien prüfen kann, aber groß genug, um echte Cluster oder Carve-outs sichtbar zu machen.
 
-Füge neue Fälle fortlaufend nummeriert hinzu und ergänze die Coverage-Matrix. Wenn ein Szenario deterministisch durch `unicode_lint.py`, `rhythm_lint.py`, `evidence_lint.py`, `register_lint.py` oder `german_pattern_lint.py` prüfbar ist, gehört der reine Linter-Anteil zusätzlich in `tests/corpus/`. Wenn Output-Invarianten maschinenlesbar sind, lege zusätzlich ein Contract-File in `tests/scenarios/` an. `SCENARIOS.md` bleibt für Urteil, Pass-Reihenfolge und Output-Verhalten.
+Füge neue Fälle fortlaufend nummeriert hinzu und ergänze die Coverage-Matrix. Wenn ein Szenario deterministisch durch `unicode_lint.py`, `rhythm_lint.py`, `evidence_lint.py`, `register_lint.py` oder `german_pattern_lint.py` prüfbar ist, gehört der reine Linter-Anteil zusätzlich in `tests/corpus/`. Wenn Output-Invarianten maschinenlesbar sind, lege zusätzlich ein Contract-File in `tests/scenarios/` an. QGIR-Fälle müssen dort `qgir_contract` mit Pass-Limit, Edit-Budget und belegtreuen Ankern enthalten; Detector-Bezug bleibt außerhalb der Contract-Checks. Sample-Outputs mit Pass-Limit brauchen eine `passes`-Liste, sonst gilt die Pass-Spur als fehlend. `SCENARIOS.md` bleibt für Urteil, Pass-Reihenfolge und Output-Verhalten.

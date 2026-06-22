@@ -3,7 +3,7 @@
   "mode": "Formal",
   "input": "Für die Sondernutzung öffentlicher Verkehrsflächen wird gemäß § 12 Abs. 3 eine Gebühr erhoben.",
   "expected_behavior": ["Rechtssprache nicht stilistisch umschreiben"],
-  "forbidden_changes": ["Paragraph entfernen", "Pflichten abschwächen"],
+  "quality_risks": ["Paragraph entfernen", "Pflichten abschwächen"],
   "output_contract": ["keine Stilglättung"],
   "sample_outputs": [
     {

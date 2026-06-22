@@ -1,4 +1,4 @@
-# WARP - Humanizer (Deutsch) Entwicklerleitfaden (v4.0.2)
+# WARP - Humanizer (Deutsch) Entwicklerleitfaden (v4.1.0)
 
 WARP = Workflow, Architecture, References, Principles.
 
@@ -12,6 +12,7 @@ humanizer-de/
 ├── references/
 │   ├── patterns.md                  # vollständiger 65-Musterkatalog
 │   ├── decision-tables.md           # Overlap- und Moduslogik
+│   ├── qgir.md                      # Quality-Guided Iterative Revision
 │   ├── evidence-ledger.md           # Claim-Delta und Faktenanker
 │   ├── register-profiles.md         # Zielprofil und Registerlogik
 │   └── de-naturalness.md            # deutsche Rule Cards fuer spaete Muster
@@ -30,7 +31,7 @@ humanizer-de/
 │   ├── test_rhythm_lint.py
 │   ├── test_corpus.py
 │   ├── SCENARIOS.md                 # Urteils-Regressionsszenarien (LLM-im-Loop)
-│   ├── scenarios/                   # maschinenlesbare Contract-Fixtures
+│   ├── scenarios/                   # maschinenlesbare Contract- und QGIR-Fixtures
 │   └── corpus/
 ├── README.md                        # Nutzer-Dokumentation
 └── tone-of-voice.txt                # optionale Stilreferenz
@@ -56,7 +57,7 @@ Wenn ein Muster geändert oder ergänzt wird:
 5. Bei neuem False-Positive-Risiko, Carve-out oder Failure-Mode ein Szenario in `tests/SCENARIOS.md` ergänzen; maschinenlesbare Invarianten zusätzlich in `tests/scenarios/` ablegen.
 6. README-Version und Changelog-Abschnitt nur bei Release-relevanter Änderung nachziehen.
 
-Keine neuen Muster in Patch-Releases verstecken. Ab v4.0.0 nutzt das Projekt eigenes SemVer ohne Fork-Suffix und trackt keine Upstream-Versionen mehr: neue Muster sind Minor-Bumps, Breaking-Änderungen an Ablauf oder Output-Format sind Major-Bumps. Eine Muster-Erweiterung von 65 auf 66 wäre also 4.1.0.
+Keine neuen Muster in Patch-Releases verstecken. Ab v4.0.0 nutzt das Projekt eigenes SemVer ohne Fork-Suffix und trackt keine Upstream-Versionen mehr: neue Muster und neue optionale Workflow-Modi sind Minor-Bumps, Breaking-Änderungen an Ablauf oder Output-Format sind Major-Bumps.
 
 ## Unicode und Quotes
 
@@ -96,6 +97,16 @@ python3 scripts/run_review_eval.py tests/scenarios --check-invariants
 
 Diese Checks sind konservative Reviewer-Hilfen. Sie sollen Faktenanker, Registerbrueche und Cluster melden, aber keine Rewrite-Automatik ersetzen.
 
+## QGIR
+
+QGIR steht fuer Quality-Guided Iterative Revision. Es ist ein begrenzter zweiter Revisionsmodus fuer proportionale, belegtreue Qualitaetsverbesserung:
+
+```bash
+python3 scripts/run_review_eval.py tests/scenarios --check-invariants
+```
+
+QGIR-Contracts liegen in `tests/scenarios/*qgir*.yaml`. Neue QGIR-Regeln zuerst in `references/qgir.md` beschreiben und nur dann in `SKILL.md` aufnehmen, wenn sie fuer die Runtime zwingend sind.
+
 ## Verification
 
 Vor Release:
@@ -116,7 +127,7 @@ Zusätzlich manuell prüfen:
 
 - `SKILL.md`, `README.md`, `WARP.md`, `references/patterns.md`, `references/decision-tables.md`, `.claude-plugin/plugin.json` und `.claude-plugin/marketplace.json` nennen dieselbe Version.
 - `references/patterns.md` enthält exakt die Muster 1-65 ohne Lücken.
-- `SKILL.md` verlinkt `references/patterns.md`, `references/decision-tables.md`, `references/evidence-ledger.md`, `references/register-profiles.md`, `references/de-naturalness.md`, `scripts/unicode_lint.py` und `scripts/rhythm_lint.py`.
+- `SKILL.md` verlinkt `references/patterns.md`, `references/decision-tables.md`, `references/qgir.md`, `references/evidence-ledger.md`, `references/register-profiles.md`, `references/de-naturalness.md`, `scripts/unicode_lint.py` und `scripts/rhythm_lint.py`.
 - Die installierte Kopie unter `~/.codex/skills/humanizer-de` wird erst nach grünen Tests synchronisiert.
 
 ## Optimierung

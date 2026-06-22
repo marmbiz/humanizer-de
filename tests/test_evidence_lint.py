@@ -38,6 +38,11 @@ class EvidenceLintTests(unittest.TestCase):
         after = "Die Stadt Köln veröffentlichte den Bericht."
         self.assertIn("added_proper_name", kinds(evidence_lint.lint(before, after)))
 
+    def test_blocks_direction_reversal_with_same_anchor(self):
+        before = "Die Fehlerquote sank um 12 Prozent."
+        after = "Die Fehlerquote stieg um 12 Prozent."
+        self.assertIn("claim_direction_changed", kinds(evidence_lint.lint(before, after)))
+
 
 if __name__ == "__main__":
     unittest.main()

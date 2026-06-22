@@ -50,3 +50,18 @@ Diese Karten operationalisieren die spaeten Muster 54, 55, 58, 60, 63, 64 und 65
 - Schlechter Reflex: "ist" und "hat" vermeiden.
 - Sicherer Eingriff: auf "ist" oder "hat" zurueckfuehren, wenn keine Information verloren geht.
 - Nicht anfassen: echte Funktionsbeschreibung, etwa "dient als Notausgang".
+
+## DACH-Regionalstil
+
+- Signal: Text weicht von Standarddeutsch ab durch regionale Lexik, Syntax oder Registerebene.
+- Schlechter Reflex: Österreichisches oder Schweizer Deutsch auf bundesdeutschen Standard korrigieren.
+- Sicherer Eingriff: nur wenn der regionale Ausdruck im gewählten Zielkontext eindeutig fehl am Platz ist (z. B. österreichisches Amtsdeutsch in einem bundesdeutschen SEO-Text).
+- Nicht anfassen: regionale Lexik mit Informationswert (Greißler, Einkaufszentrum statt Handelszentrum), typisches Register (CH: formal-präzise; AT: historisch-elaboriert; DE: direkt-knapp), Helvetismen in Schweizer Kontexten.
+- Merkhilfe: CH = formal und messgenau; AT = historisch und etwas ausladender; DE = direkt und kurz. Alle drei sind authentisch – keines ist KI-Tell.
+
+## QGIR-Stop: akzeptable Textur
+
+- Signal: Nach einem Pass bleiben nur kleine Ecken, Registerspuren oder fachliche Gleichmaessigkeit.
+- Schlechter Reflex: noch eine Runde Politur, damit der Text "menschlicher" klingt.
+- Sicherer Eingriff: stoppen und Restbefund als toleriert notieren.
+- Nicht anfassen: menschlich-holprige, aber belegtreue Saetze; formale Dichte; autorentypische Satzzeichen.

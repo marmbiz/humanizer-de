@@ -1,0 +1,23 @@
+{
+  "id": 18,
+  "mode": "Formal",
+  "input": "Für die Sondernutzung öffentlicher Verkehrsflächen wird gemäß § 12 Abs. 3 der Sondernutzungssatzung eine Gebühr erhoben. Die Gebühr entsteht mit Erteilung der Erlaubnis und wird mit Bekanntgabe dieses Bescheids fällig.",
+  "expected_behavior": ["juristische Formulierungen schützen", "Formalregister erhalten", "QGIR stoppen, wenn Stilgewinn Präzision gefährdet"],
+  "quality_risks": ["lockere Ansprache", "gelöschter Normverweis", "rechtliche Vereinfachung ohne Auftrag"],
+  "output_contract": ["Modus", "Gefundene Muster", "Geänderte Stellen", "Kurzaudit"],
+  "qgir_contract": {
+    "max_passes": 2,
+    "max_changed_sentence_ratio": 0.25,
+    "protected_anchors": ["§ 12 Abs. 3", "Sondernutzungssatzung", "Bekanntgabe dieses Bescheids"],
+    "register_drift_markers": ["einfach", "locker", "du"]
+  },
+  "sample_outputs": [
+    {
+      "name": "legal simplification",
+      "passes": [
+        "Du zahlst für die Nutzung öffentlicher Flächen eine Gebühr. Sie wird fällig, sobald die Erlaubnis erteilt ist."
+      ],
+      "expect_violations": ["formal_register_break", "missing_protected_anchor", "edit_budget_exceeded"]
+    }
+  ]
+}

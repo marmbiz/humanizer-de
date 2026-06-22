@@ -7,6 +7,7 @@ Scenario files use a JSON subset of YAML so the runner has no third-party depend
 from __future__ import annotations
 
 import argparse
+from difflib import SequenceMatcher
 import importlib.util
 import json
 import re
@@ -20,11 +21,14 @@ spec = importlib.util.spec_from_file_location("evidence_lint", EVIDENCE_SCRIPT)
 evidence_lint = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(evidence_lint)
 
-REQUIRED_KEYS = {"id", "mode", "input", "expected_behavior", "forbidden_changes", "output_contract"}
+REQUIRED_KEYS = {"id", "mode", "input", "expected_behavior", "quality_risks", "output_contract"}
 PERSONAL_EXPERIENCE_RE = re.compile(
     r"\b(?:Als ich|ich habe erlebt|ein Kunde erzählte|aus meiner Praxis|letzte Woche)\b",
     re.IGNORECASE,
 )
+DU_RE = re.compile(r"\b(?:du|dir|dich|dein|deine|deinem|deinen|deiner)\b", re.IGNORECASE)
+SIE_RE = re.compile(r"\b(?:Sie|Ihnen|Ihr|Ihre|Ihrem|Ihren|Ihrer)\b")
+SENTENCE_SIMILARITY_THRESHOLD = 0.72
 
 
 def words(text: str) -> list[str]:
@@ -33,6 +37,61 @@ def words(text: str) -> list[str]:
 
 def normalize(text: str) -> str:
     return re.sub(r"\s+", " ", text.strip())
+
+
+def sentences(text: str) -> list[str]:
+    return [normalize(item) for item in re.findall(r"[^.!?\n]+[.!?]?", text) if normalize(item)]
+
+
+def changed_sentence_ratio(before: str, after: str) -> float:
+    before_sentences = sentences(before)
+    after_sentences = sentences(after)
+    if not before_sentences:
+        return 0.0 if not after_sentences else 1.0
+    if not after_sentences:
+        return 1.0
+
+    changed = 0
+    for before_sentence in before_sentences:
+        best = max(
+            SequenceMatcher(None, before_sentence.lower(), after_sentence.lower()).ratio()
+            for after_sentence in after_sentences
+        )
+        if best < SENTENCE_SIMILARITY_THRESHOLD:
+            changed += 1
+
+    added = 0
+    for after_sentence in after_sentences:
+        best = max(
+            SequenceMatcher(None, after_sentence.lower(), before_sentence.lower()).ratio()
+            for before_sentence in before_sentences
+        )
+        if best < SENTENCE_SIMILARITY_THRESHOLD:
+            added += 1
+
+    before_count = len(before_sentences)
+    sentence_count_delta = abs(len(after_sentences) - before_count) / before_count
+    before_chars = len(normalize(before))
+    after_chars = len(normalize(after))
+    char_expansion = max(0, after_chars - before_chars) / max(1, before_chars)
+    return max(changed / before_count, added / before_count, sentence_count_delta, char_expansion)
+
+
+def qgir_pass_trace(sample: dict) -> tuple[list[str], bool]:
+    if "passes" not in sample:
+        return [], False
+    passes = sample["passes"]
+    if not isinstance(passes, list) or not all(isinstance(item, str) for item in passes):
+        return [], False
+    return passes, True
+
+
+def sample_output(sample: dict) -> str:
+    text = sample.get("text")
+    if isinstance(text, str):
+        return text
+    passes, valid_pass_trace = qgir_pass_trace(sample)
+    return passes[-1] if valid_pass_trace and passes else ""
 
 
 def load_scenario(path: Path) -> dict:
@@ -62,6 +121,8 @@ def invariant_violations(scenario: dict, output: str) -> list[str]:
         violations.append("new_factual_anchor")
     if any(item["kind"] == "authority_strengthened" for item in evidence_findings):
         violations.append("authority_strengthened")
+    if any(item["kind"] == "claim_direction_changed" for item in evidence_findings):
+        violations.append("claim_direction_changed")
 
     if PERSONAL_EXPERIENCE_RE.search(output) and not PERSONAL_EXPERIENCE_RE.search(input_text):
         violations.append("invented_experience")
@@ -69,9 +130,49 @@ def invariant_violations(scenario: dict, output: str) -> list[str]:
     if scenario["mode"] == "Formal" and re.search(r"\b(?:du|dir|dich|ja|doch|halt|spannend\?)\b", output, re.IGNORECASE):
         violations.append("formal_register_break")
 
-    for forbidden in scenario.get("forbidden_phrases", []):
-        if forbidden.lower() in output.lower():
-            violations.append("forbidden_phrase")
+    for risky_phrase in scenario.get("risk_phrases", []):
+        if risky_phrase.lower() in output.lower():
+            violations.append("risky_phrase")
+            break
+
+    return sorted(set(violations))
+
+
+def qgir_violations(scenario: dict, sample: dict) -> list[str]:
+    contract = scenario.get("qgir_contract")
+    if not contract:
+        return []
+
+    violations: list[str] = []
+    passes, valid_pass_trace = qgir_pass_trace(sample)
+    output = sample_output(sample)
+    input_text = scenario["input"]
+
+    max_passes = contract.get("max_passes")
+    if max_passes is not None:
+        if not valid_pass_trace:
+            violations.append("qgir_missing_pass_trace")
+        elif len(passes) > max_passes:
+            violations.append("qgir_too_many_passes")
+
+    max_changed_ratio = contract.get("max_changed_sentence_ratio")
+    if max_changed_ratio is not None and changed_sentence_ratio(input_text, output) > float(max_changed_ratio):
+        violations.append("edit_budget_exceeded")
+
+    for anchor in contract.get("protected_anchors", []):
+        if anchor not in output:
+            violations.append("missing_protected_anchor")
+            break
+
+    required_address = contract.get("required_address")
+    if required_address == "Sie" and (DU_RE.search(output) or (SIE_RE.search(input_text) and not SIE_RE.search(output))):
+        violations.append("register_shift")
+    elif required_address == "du" and (SIE_RE.search(output) or (DU_RE.search(input_text) and not DU_RE.search(output))):
+        violations.append("register_shift")
+
+    for marker in contract.get("register_drift_markers", []):
+        if re.search(rf"\b{re.escape(marker)}\b", output, re.IGNORECASE):
+            violations.append("register_shift")
             break
 
     return sorted(set(violations))
@@ -82,7 +183,8 @@ def check_scenario(path: Path) -> dict:
     sample_results = []
     ok = True
     for sample in scenario.get("sample_outputs", []):
-        actual = set(invariant_violations(scenario, sample["text"]))
+        output = sample_output(sample)
+        actual = set(invariant_violations(scenario, output)) | set(qgir_violations(scenario, sample))
         expected = set(sample.get("expect_violations", []))
         sample_ok = expected.issubset(actual)
         ok = ok and sample_ok

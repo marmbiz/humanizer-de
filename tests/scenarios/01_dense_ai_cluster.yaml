@@ -3,7 +3,7 @@
   "mode": "Sachlich",
   "input": "In der heutigen Zeit fungiert unsere Plattform als zentraler Begleiter. Darüber hinaus beleuchtet sie verschiedene Aspekte.",
   "expected_behavior": ["Cluster 1/4/58/64/65 erkennen", "nur betroffene Stellen zeigen"],
-  "forbidden_changes": ["Volltextausgabe", "neue Produktdetails"],
+  "quality_risks": ["Volltextausgabe", "neue Produktdetails"],
   "output_contract": ["Modus", "Gefundene Muster", "Geänderte Stellen", "Kurzaudit"],
   "sample_outputs": [
     {

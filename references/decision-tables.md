@@ -1,6 +1,17 @@
 # Humanizer-de Decision Tables
 
-Nutze diese Tabellen vor `references/patterns.md`, wenn Befunde ueberlappen. Sie sind die verbindliche Kurzlogik fuer v4.0.2.
+Nutze diese Tabellen vor `references/patterns.md`, wenn Befunde ueberlappen. Sie sind die verbindliche Kurzlogik fuer v4.1.0.
+
+## QGIR: Moduswahl
+
+| Situation | Aktion |
+|---|---|
+| Text ist sauber oder hat nur Einzelsignale | Audit-only; nicht umschreiben |
+| Echte HIGH/MEDIUM-Cluster, geringe Drift-Gefahr | Minimal revise; ein lokaler Pass |
+| Nach Minimal-Revision bleiben echte HIGH/MEDIUM-Cluster | QGIR mit max. 2 Paessen |
+| Dritter Pass waere noetig | Nur bei dokumentiertem schweren Restcluster |
+| Quelle, Recht, Technik, Formalregister oder Zielprofil waere gefaehrdet | Stop; Befund markieren |
+| Ziel waere nur Detektorwirkung, Score oder maximale Glattheit ohne Qualitaetsgewinn | Stop; nicht optimieren |
 
 ## Evidenz: 11 / 26 / 42 / 53
 

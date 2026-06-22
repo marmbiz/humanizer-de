@@ -3,7 +3,7 @@
   "mode": "Sachlich",
   "input": "Studien zeigen, dass Beschäftigte zufriedener sind.",
   "expected_behavior": ["Muster 11 markieren", "keine Quelle erfinden"],
-  "forbidden_changes": ["Studie, Jahr oder Prozentzahl erfinden"],
+  "quality_risks": ["Studie, Jahr oder Prozentzahl erfinden"],
   "output_contract": ["Quelle nötig markieren"],
   "sample_outputs": [
     {

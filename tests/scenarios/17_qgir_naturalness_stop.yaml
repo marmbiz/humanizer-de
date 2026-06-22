@@ -1,0 +1,24 @@
+{
+  "id": 17,
+  "mode": "Locker",
+  "input": "Ich koche sonntags Reis und Linsen vor. Das ist nicht besonders kreativ, rettet mir aber volle Arbeitstage. Mehr muss der Plan nicht leisten.",
+  "expected_behavior": ["Alltagston erhalten", "nicht weiter polieren, wenn Text schon tragfähig ist", "keine neue Anekdote"],
+  "quality_risks": ["dritte Politur-Runde", "neue persönliche Details", "generische Ratgeberstimme"],
+  "output_contract": ["Modus", "Gefundene Muster", "Geänderte Stellen", "Kurzaudit"],
+  "qgir_contract": {
+    "max_passes": 2,
+    "max_changed_sentence_ratio": 0.35,
+    "protected_anchors": ["Reis", "Linsen", "volle Arbeitstage"]
+  },
+  "sample_outputs": [
+    {
+      "name": "no early stop",
+      "passes": [
+        "Sonntags koche ich Reis und Linsen vor. Kreativ ist das nicht, aber es rettet mir volle Arbeitstage.",
+        "Am Sonntag bereite ich Reis und Linsen vor. Es klingt schlicht, hilft mir aber durch volle Arbeitstage.",
+        "Meine Sonntagsroutine mit Reis und Linsen ist der kleine Hebel, der stressige Arbeitstage leichter macht."
+      ],
+      "expect_violations": ["qgir_too_many_passes", "edit_budget_exceeded"]
+    }
+  ]
+}

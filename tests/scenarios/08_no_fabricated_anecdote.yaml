@@ -3,7 +3,7 @@
   "mode": "Locker",
   "input": "Geholfen hat am Ende eine kleinere Regel: zehn Minuten, direkt nach dem Kaffee.",
   "expected_behavior": ["keine Ich-Erfahrung erfinden oder ausbauen"],
-  "forbidden_changes": ["neue Orte", "neue Kunden", "neue Gefühle"],
+  "quality_risks": ["neue Orte", "neue Kunden", "neue Gefühle"],
   "output_contract": ["nur vorhandenes Material nutzen"],
   "sample_outputs": [
     {

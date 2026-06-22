@@ -1,0 +1,29 @@
+{
+  "id": 15,
+  "mode": "Formal",
+  "input": "Nach Einführung des Protokolls stieg die Vollständigkeit der Übergaben von 71,4 Prozent auf 84,9 Prozent. Der adjustierte Unterschied betrug 13,1 Prozentpunkte bei einem 95-Prozent-Konfidenzintervall von 8,2 bis 18,0 Prozentpunkten.",
+  "expected_behavior": ["Zahlenanker wortgleich erhalten", "Autoritätsgrad nicht stärken", "Formalregister erhalten"],
+  "quality_risks": ["neue Zahlen", "gelöschtes Konfidenzintervall", "stärkere Kausalität"],
+  "output_contract": ["Modus", "Gefundene Muster", "Geänderte Stellen", "Kurzaudit"],
+  "qgir_contract": {
+    "max_passes": 2,
+    "max_changed_sentence_ratio": 0.35,
+    "protected_anchors": ["71,4 Prozent", "84,9 Prozent", "13,1 Prozentpunkte", "95-Prozent-Konfidenzintervall"]
+  },
+  "sample_outputs": [
+    {
+      "name": "evidence drift",
+      "passes": [
+        "Nach Einführung des Protokolls verbesserte sich die Übergabequalität deutlich von 71 Prozent auf fast 85 Prozent. Das belegt den Nutzen des Protokolls eindeutig."
+      ],
+      "expect_violations": ["missing_protected_anchor", "new_factual_anchor", "authority_strengthened"]
+    },
+    {
+      "name": "anchor-preserving claim direction drift",
+      "passes": [
+        "Nach Einführung des Protokolls sank die Vollständigkeit der Übergaben von 71,4 Prozent auf 84,9 Prozent. Der adjustierte Unterschied betrug 13,1 Prozentpunkte bei einem 95-Prozent-Konfidenzintervall von 8,2 bis 18,0 Prozentpunkten."
+      ],
+      "expect_violations": ["claim_direction_changed"]
+    }
+  ]
+}

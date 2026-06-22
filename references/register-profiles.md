@@ -27,3 +27,13 @@ Im Formal-Modus wird keine Stimme eingebracht. Passiv, Nominalstil und gleichmae
 ## Locker-Modus
 
 Locker bedeutet nicht erfunden persoenlich. Stimme darf nur aus Schreibprobe, Nutzerangabe oder vorhandenem Textmaterial kommen. Modalpartikeln sind erlaubt, aber nur sparsam und nicht mechanisch.
+
+## QGIR-Profilschutz
+
+Iterative Revision darf das Profil nicht in generisches, glattes Standarddeutsch ziehen.
+
+- Anrede bleibt stabil: du, Sie, wir, man oder neutral.
+- Fachbegriffe, Produktnamen und lokale Lieblingszeichen bleiben erhalten, wenn sie nicht selbst Artefakt sind.
+- Schreibproben liefern Richtung, aber keine Pflicht zur maximalen Imitation.
+- Formal-Modus schlaegt Schreibprobe, Rhythmus und Naturalness.
+- Wenn ein weiterer Pass nur Stimme verstaerken wuerde, stoppt QGIR.

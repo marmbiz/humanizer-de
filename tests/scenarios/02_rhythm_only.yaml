@@ -3,7 +3,7 @@
   "mode": "Locker",
   "input": "Ich prüfe die Liste. Ich kaufe Gemüse. Ich koche Reis. Ich packe Boxen.",
   "expected_behavior": ["Rhythmus ändern", "keine neue Anekdote"],
-  "forbidden_changes": ["erfundene Tipps", "forcierte Nähe"],
+  "quality_risks": ["erfundene Tipps", "forcierte Nähe"],
   "output_contract": ["nur geänderte Stellen"],
   "sample_outputs": [
     {
