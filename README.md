@@ -12,7 +12,7 @@
 [![Muster](https://img.shields.io/badge/Muster-65_in_10_Kategorien-2da44e)](#65-muster-in-10-kategorien)
 [![Claude Code](https://img.shields.io/badge/Claude_Code-Plugin-d97757)](#installation)
 
-**[Installation](#installation)** · **[Benutzung](#benutzung)** · **[Die 65 Muster](#65-muster-in-10-kategorien)** · **[Verifikation](#entwicklung-und-verifikation)** · **[Was ist neu?](#was-ist-neu)**
+**[Warum nutzen?](#warum-nutzen)** · **[Installation](#installation)** · **[Benutzung](#benutzung)** · **[Die 65 Muster](#65-muster-in-10-kategorien)** · **[Verifikation](#entwicklung-und-verifikation)** · **[Was ist neu?](#was-ist-neu)**
 
 <sub>Von [Martin Moeller](https://www.martin-moeller.biz) · basiert auf den Wikipedia-Leitlinien [Anzeichen für KI-generierte Inhalte](https://de.wikipedia.org/wiki/Wikipedia:Anzeichen_f%C3%BCr_KI-generierte_Inhalte) (de) und [Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing) (en) · hervorgegangen aus dem [Humanizer](https://github.com/blader/humanizer) von [blader](https://github.com/blader)</sub>
 
@@ -29,6 +29,21 @@ Dieses Skill erkennt Schreibmuster, die typisch für KI-Sprachmodelle sind – u
 Das Ergebnis ist nicht sterile Korrektur. Es ist Überarbeitung, die Ihrem Text echte deutsche Stimme gibt. Gutes Schreiben darf Ecken haben – es sollte sogar welche haben.
 
 Das Skill folgt deutschen Schreibkonventionen und den Prinzipien von EEAT (Expertise, Erfahrung, Autorität, Vertrauenswürdigkeit).
+
+---
+
+## Warum nutzen?
+
+Humanizer (Deutsch) macht aus glatten KI-Texten bessere deutsche Texte: klarer, natürlicher, belegtreuer und näher an der gewünschten Stimme.
+
+Der Skill poliert nicht blind. Er erkennt echte KI-Muster, schützt Fakten und stoppt, bevor ein Text überarbeitet wirkt.
+
+Besonders nützlich ist er für:
+
+- Website-, Blog- und Newsletter-Texte, die weniger generisch klingen sollen
+- Fachtexte, bei denen Zahlen, Quellen und Begriffe erhalten bleiben müssen
+- B2B-, Behörden- und Doku-Texte, die sachlich, aber nicht maschinell wirken sollen
+- eigene KI-Entwürfe, die final lesbar, glaubwürdig und menschlich werden sollen
 
 ---
 
