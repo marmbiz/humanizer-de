@@ -411,12 +411,16 @@ def analyze(text: str, file: str | None = None, scope: str = "user_text", mode: 
             f"stddev/mean={rounded(length_ratio)} across {sentence_count} sentences",
             confidence="high",
         )
-    if sentence_count >= 8 and subject_ratio > 0.75:
+    # SIR fires only as part of a cluster: high ratio AND (low variance OR repeated openers).
+    # Standalone SIR > 0.75 fires on ~95% of human German blog posts (empirically validated
+    # against 21 posts, median 0.887) — not a valid KI discriminator on its own.
+    sir_cluster = subject_ratio > 0.85 and (length_ratio < 0.6 or len(opener_repeats) >= 2)
+    if sentence_count >= 8 and sir_cluster:
         add_suspicion(
             raw_suspicions,
             55,
             "high subject-initial ratio",
-            f"subject_initial_ratio={rounded(subject_ratio)} across {sentence_count} sentences",
+            f"subject_initial_ratio={rounded(subject_ratio)} (cluster: stddev/mean={rounded(length_ratio)}, repeated_openers={len(opener_repeats)})",
         )
     if len(opener_repeats) >= 2:
         add_suspicion(
@@ -425,8 +429,10 @@ def analyze(text: str, file: str | None = None, scope: str = "user_text", mode: 
             "repeated sentence openers",
             f"{len(opener_repeats)} repeated two-token openers within a 3-sentence window",
         )
-    if main_clause_run >= 4:
-        add_suspicion(raw_suspicions, 51, "main-clause run", f"{main_clause_run} consecutive sentences without subjunction")
+    # Muster 51 removed from suspicion output: has_subjunction() only checks a fixed list of
+    # subordinating conjunctions and misses relative clauses, infinitive groups, coordination
+    # and ellipses. Fires on 100% of human German blog posts — validity problem, not a threshold
+    # issue. main_clause_run is still measured and reported in the document block for transparency.
     if uniform_paragraphs:
         add_suspicion(raw_suspicions, 61, "uniform paragraph lengths", f"paragraph_sentence_counts={paragraph_sentence_counts}")
     for report in paragraph_reports:

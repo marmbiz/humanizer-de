@@ -16,18 +16,39 @@ def pattern_ids(report):
 
 
 class RhythmLintTests(unittest.TestCase):
-    def test_monotonous_subject_initial_text_flags_pattern_55(self):
+    def test_sir_cluster_flags_pattern_55(self):
+        # SIR fires only when high ratio AND (low variance OR repeated openers).
+        # All 8 sentences subjektinitial + identical 2-token opener = cluster condition met.
         text = (
-            "Das Team plant jeden Morgen die Aufgaben für den Sprint genau. "
-            "Die Gruppe prüft danach die offenen Punkte im Board sorgfältig. "
-            "Der Entwickler schreibt am Nachmittag die Tests für das Modul. "
-            "Die Designerin sammelt am Abend Rückmeldungen aus dem Workshop. "
-            "Das Team dokumentiert alle Entscheidungen in einem kurzen Protokoll. "
-            "Die Gruppe verteilt danach die Aufgaben an die Beteiligten. "
-            "Der Entwickler aktualisiert anschließend die Notizen im gemeinsamen Wiki. "
-            "Die Designerin prüft zuletzt die Darstellung auf mobilen Geräten."
+            "Das Team plant jeden Morgen die Aufgaben für den Sprint. "
+            "Das Team prüft danach die offenen Punkte im Board. "
+            "Das Team schreibt am Nachmittag die Tests für das Modul. "
+            "Das Team sammelt am Abend Rückmeldungen aus dem Workshop. "
+            "Das Team dokumentiert alle Entscheidungen im Protokoll. "
+            "Das Team verteilt danach die Aufgaben an die Beteiligten. "
+            "Das Team aktualisiert anschließend die Notizen im Wiki. "
+            "Das Team prüft zuletzt die Darstellung auf mobilen Geräten."
         )
         self.assertIn(55, pattern_ids(rhythm_lint.analyze(text)))
+
+    def test_sir_alone_does_not_flag_pattern_55(self):
+        # High SIR without low variance or repeated openers must not fire alone —
+        # empirically 95% of human German blog posts exceed SIR 0.75.
+        # Sentence lengths deliberately spread (3–30 words) to keep stddev/mean >= 0.6.
+        text = (
+            "Gut. "
+            "Der Entwickler schreibt Tests. "
+            "Die Designerin prüft am frühen Abend die vollständige Darstellung auf allen mobilen Geräten, "
+            "weil die Nutzerzahlen dort seit Monaten steigen. "
+            "Das Team plant. "
+            "Die Gruppe dokumentiert alle wichtigen Entscheidungen aus dem langen Workshop in einem sehr ausführlichen Protokoll, "
+            "das später auch als Grundlage für den nächsten Sprint dienen soll. "
+            "Der Dienst startet neu. "
+            "Die Leitung verteilt die Aufgaben."
+        )
+        report = rhythm_lint.analyze(text)
+        sir_hits = [s for s in report["suspicions"] if s["pattern"] == 55 and "subject-initial" in s["reason"]]
+        self.assertEqual(sir_hits, [])
 
     def test_varied_text_does_not_flag_pattern_55(self):
         text = (
@@ -42,23 +63,19 @@ class RhythmLintTests(unittest.TestCase):
         )
         self.assertNotIn(55, pattern_ids(rhythm_lint.analyze(text)))
 
-    def test_four_main_clauses_flag_pattern_51(self):
+    def test_main_clause_run_not_flagged_as_suspicion(self):
+        # Muster 51 removed from suspicion output: has_subjunction() misses relative clauses,
+        # infinitive groups and coordination — fires on 100% of human German blog posts.
+        # main_clause_run is still measured in the document block.
         text = (
             "Das Team plant die Migration. "
             "Die Gruppe prüft die Daten. "
             "Der Dienst speichert die Werte. "
             "Die Leitung startet den Rollout."
         )
-        self.assertIn(51, pattern_ids(rhythm_lint.analyze(text)))
-
-    def test_embedded_subclauses_do_not_flag_pattern_51(self):
-        text = (
-            "Das Team plant die Migration, weil der Termin steht. "
-            "Die Gruppe prüft die Daten, während der Dienst wartet. "
-            "Der Dienst speichert die Werte, nachdem der Import endet. "
-            "Die Leitung startet den Rollout, wenn die Tests laufen."
-        )
-        self.assertNotIn(51, pattern_ids(rhythm_lint.analyze(text)))
+        report = rhythm_lint.analyze(text)
+        self.assertNotIn(51, pattern_ids(report))
+        self.assertGreaterEqual(report["document"]["max_main_clause_run"], 4)
 
     def test_code_block_content_is_ignored(self):
         text = (
@@ -79,7 +96,7 @@ class RhythmLintTests(unittest.TestCase):
         text = "Darüber hinaus prüft das Team die Werte. Darüber hinaus speichert es die Notizen."
         self.assertIn(4, pattern_ids(rhythm_lint.analyze(text)))
 
-    def test_skill_doc_scope_suppresses_instruction_rhythm(self):
+    def test_skill_doc_scope_does_not_surface_pattern_51(self):
         text = (
             "Prüfe den Modus. Lies die Quelle. Markiere die Lücke. "
             "Bewahre den Satz. Entferne den Platzhalter. Melde den Befund. "
@@ -87,9 +104,8 @@ class RhythmLintTests(unittest.TestCase):
         )
         report = rhythm_lint.analyze(text, scope="skill_doc")
         self.assertNotIn(51, pattern_ids(report))
-        self.assertTrue(any(item["pattern"] == 51 for item in report["suppressed"]))
 
-    def test_formal_mode_suppresses_rhythm_style_suspicion(self):
+    def test_formal_mode_does_not_surface_pattern_51(self):
         text = (
             "Die Datenerhebung wurde abgeschlossen. "
             "Die Auswertung wurde dokumentiert. "
@@ -98,7 +114,6 @@ class RhythmLintTests(unittest.TestCase):
         )
         report = rhythm_lint.analyze(text, mode="formal")
         self.assertNotIn(51, pattern_ids(report))
-        self.assertTrue(report["suppressed"])
 
 
 if __name__ == "__main__":
