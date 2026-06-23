@@ -60,6 +60,8 @@ Nutze diese Tabellen vor `references/patterns.md`, wenn Befunde ueberlappen. Sie
 | Frequenz-Marker-Vokabeln in Haeufung ("beleuchten", "spannend", "nahtlos", "Landschaft" figurativ) | 64 | Durch gewoehnliches Wort ersetzen; fachgebundene Verwendung stehen lassen |
 | Ersatzkonstruktion statt "ist"/"hat" ("fungiert als", "verfuegt ueber") in Haeufung | 65 | Auf Kopula zurueckfuehren, wenn keine Information verloren geht |
 | Symbolische Aufladung statt nuechterner Ersatzkonstruktion | 1, nicht 65 | Siehe Muster 1 |
+| Relativsatz/Anschlusskonstruktion ohne neue Information ("was X unterstreicht/verdeutlicht") | 66 | Loeschtest: Faellt der Anhang weg ohne Informationsverlust? Dann streichen |
+| Relativsatz traegt echte, im Hauptsatz nicht enthaltene Information | nicht 66 | Stehen lassen oder als eigenstaendigen Satz formulieren |
 | Gekennzeichnetes Zitat oder belegte konkrete Aussage | nicht 56 | Stehen lassen |
 
 ## Evidenz zweiter Ordnung: 59

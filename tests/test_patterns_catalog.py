@@ -7,16 +7,16 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class PatternCatalogTests(unittest.TestCase):
-    def test_catalog_contains_exactly_65_pattern_ids(self):
+    def test_catalog_contains_exactly_66_pattern_ids(self):
         text = (ROOT / "references" / "patterns.md").read_text()
         ids = [int(match) for match in re.findall(r"^####\s+(\d+)\.", text, re.MULTILINE)]
-        self.assertEqual(sorted(ids), list(range(1, 66)))
-        self.assertEqual(len(ids), 65)
+        self.assertEqual(sorted(ids), list(range(1, 67)))
+        self.assertEqual(len(ids), 66)
 
     def test_catalog_keeps_required_sections(self):
         text = (ROOT / "references" / "patterns.md").read_text()
         self.assertIn("## Kurzreferenz", text)
-        self.assertIn("## Die 65 Muster", text)
+        self.assertIn("## Die 66 Muster", text)
         self.assertIn("#### 52. Diff-verankertes Schreiben [MEDIUM]", text)
         self.assertIn("#### 53. Lückenfüllende Spekulation [HIGH]", text)
         self.assertIn("#### 54. Doppelpunkt-Titel-Schema [MEDIUM]", text)
@@ -31,6 +31,7 @@ class PatternCatalogTests(unittest.TestCase):
         self.assertIn("#### 63. Modalpartikel-Anomalie [LOW]", text)
         self.assertIn("#### 64. KI-Marker-Vokabular [MEDIUM]", text)
         self.assertIn("#### 65. Kopula-Vermeidung [MEDIUM]", text)
+        self.assertIn("#### 66. Fake-Analyse-Anhang [MEDIUM]", text)
 
     def test_pattern_46_examples_use_real_codepoints(self):
         text = (ROOT / "references" / "patterns.md").read_text()

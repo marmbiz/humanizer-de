@@ -71,6 +71,7 @@ Vollstaendiger Musterkatalog fuer Humanizer (Deutsch) v4.1.0. Nur bei konkreter 
 | 63 | Modalpartikel-Anomalie | LOW | Partikelarmut im Nähe-Register oder Partikel-Überdosis (nur Locker) |
 | 64 | KI-Marker-Vokabular | MEDIUM | "beleuchten", "eintauchen", "spannend", "nahtlos", "die digitale Landschaft" in Häufung |
 | 65 | Kopula-Vermeidung | MEDIUM | "fungiert als", "stellt dar", "verfügt über", "zeichnet sich aus durch" statt "ist"/"hat" |
+| 66 | Fake-Analyse-Anhang | MEDIUM | "...was X unterstreicht/verdeutlicht/belegt", "...und zeigt damit, dass" – Relativsatz ohne neue Information |
 
 ## Statistische Detektoren (GPTZero u. a.)
 
@@ -91,7 +92,7 @@ Die menschenlesbaren Labels dieser Tools ("Robotic Formality", "Mechanical Preci
 
 Der einzige substanzwahrende Hebel gegen niedrige Burstiness ist Muster 55 (Satzrhythmus spreizen). Niedrige Perplexity bei korrekter Fachsprache ist nicht "reparierbar", ohne den Text zu verschlechtern – und das ist nicht Aufgabe dieses Skills. Siehe SKILL.md-Leitplanke zu statistischen Detektoren.
 
-## Die 65 Muster
+## Die 66 Muster
 
 ### Sprache und Tonfall (17 Muster)
 
@@ -378,6 +379,22 @@ Häufige Indikatoren:
 **Lösung:** Auf "ist"/"hat" zurückführen, wo keine Information verloren geht.
 ❌ Schlecht: "Die Galerie fungiert als Ausstellungsraum des Vereins und verfügt über vier Räume mit insgesamt 280 Quadratmetern."
 ✓ Besser: "Die Galerie ist der Ausstellungsraum des Vereins und hat vier Räume mit insgesamt 280 Quadratmetern."
+
+#### 66. Fake-Analyse-Anhang [MEDIUM]
+**Kategorie:** Sprache und Tonfall
+**Problem:** LLMs hängen an normale Informationssätze scheinanalytische Relativsätze oder Anschlusskonstruktionen, die eine Schlussfolgerung vortäuschen, aber keine neue Information liefern. Erkennbar am Löschtest: Fällt „was X unterstreicht/zeigt/verdeutlicht" weg, geht keine Information verloren – der Hauptsatz steht vollständig. Die Konstruktion ist grammatikalisch korrekt; ihr Tell ist die funktionale Leere des Anhangs.
+Häufige Indikatoren:
+- „...was X unterstreicht / belegt / verdeutlicht / bestätigt / beweist"
+- „...und zeigt / verdeutlicht damit, dass..."
+- „...und unterstreicht die Bedeutung von..."
+- „...und macht deutlich, wie wichtig..."
+- „...was zeigt, dass hier Handlungsbedarf besteht"
+**Warum LLMs das tun:** Training auf akademischen Texten, die Schlussfolgerungen explizit signalisieren; das Modell lernt, Gewicht durch Relativkonstruktionen auszudrücken, auch wenn kein neuer Gedanke folgt.
+**Abgrenzung:** Muster 3 = eigenständige Sätze mit Meta-Kommentar ("es ist wichtig zu bemerken"). Muster 10 = Partizip-I beschreibt gleichzeitige Aktion ("ermöglichend"). Muster 62 = eigenständiger Schlusssatz am Absatzende. Muster 64 = einzelne Frequenz-Marker-Vokabeln; Muster 66 = die syntaktische Anhang-Konstruktion selbst.
+**Kein Problem, wenn:** Der Relativsatz echte, aus dem Hauptsatz nicht ableitbare Information hinzufügt (z. B. "Die Studie wurde dreimal wiederholt, was die Replizierbarkeit nachweist" – wenn die Dreifachwiederholung tatsächlich das erste Replizierbarkeits-Signal im Text ist).
+**Lösung:** Relativsatz streichen. Falls die Schlussfolgerung echte Information trägt: als eigenständigen Satz mit konkretem Beleg formulieren statt als Anhang.
+❌ Schlecht: "Das Team lieferte die Migration in drei Wochen ab, was die hohe Effizienz des Vorgehens unterstreicht."
+✓ Besser: "Das Team lieferte die Migration in drei Wochen ab." (oder: "...ab – geplant waren sechs.")
 
 ### Stil (4 Muster)
 
@@ -710,9 +727,9 @@ Häufige Indikatoren:
 
 **Wendungen, auf die Sie achten sollten:** "Aber was bedeutet das für...?", "Haben Sie sich jemals gefragt, warum...?", "Doch was steckt dahinter?", "Was heißt das konkret?", "Wer profitiert davon?", "Warum ist das wichtig?"
 
-**Problem:** LLMs streuen rhetorische Fragen ein, um Engagement vorzutäuschen. Die Frage wird sofort im nächsten Satz beantwortet – der Leser hatte nie eine echte Wahl, mitzudenken. Anders als Muster 33 (Signposting, das Inhalt ankündigt), simuliert dieses Muster einen Dialog, der keiner ist. Die Frage fügt nichts hinzu; sie verzögert nur die eigentliche Aussage.
+**Problem:** LLMs streuen rhetorische Fragen ein, um Engagement vorzutäuschen. Die Frage wird sofort im nächsten Satz beantwortet – der Leser hatte nie eine echte Wahl, mitzudenken. Anders als Muster 33 (Signposting, das Inhalt ankündigt), simuliert dieses Muster einen Dialog, der keiner ist. Die Frage fügt nichts hinzu; sie verzögert nur die eigentliche Aussage. Verstärkte Form: zwei oder mehr rhetorische Fragen direkt hintereinander ("Funktioniert das? Macht es einen Unterschied? Wer profitiert davon?") – das erzeugt Pseudo-Spannung ohne Informationsgewinn.
 
-**Kein Problem, wenn:** Der Text ein FAQ-Format hat, eine tatsächliche Frage-Antwort-Struktur verfolgt oder der Autor eine provokante These aufstellt, die er dann widerlegt.
+**Kein Problem, wenn:** Der Text ein FAQ-Format hat, eine tatsächliche Frage-Antwort-Struktur verfolgt oder der Autor eine provokante These aufstellt, die er dann widerlegt. Eine einzelne, punktuell eingesetzte rhetorische Frage im Blog-/Essay-Stil ist unkritisch.
 
 **Beispiel:**
 
@@ -851,6 +868,8 @@ Häufige Indikatoren:
 **Warum LLMs das tun:** Passiv erzeugt einen objektiven, formellen Ton, der auf den ersten Blick akademisch wirkt. Subjektlose Fragmente imitieren knappen Dokumentationsstil.
 
 **Formal-Modus-Ausnahme:** In wissenschaftlichen Texten sind Passivkonstruktionen Konvention ("wurde analysiert", "es konnte gezeigt werden"). In diesem Modus nur bei klarer Übernutzung eingreifen.
+
+**Abgrenzung – Unpersönlicher Akteur:** Abstrakte Subjekte mit Aktionsverb ("Die Analyse zeigt", "Das Ergebnis belegt", "Die Studie bestätigt") sind kein Passiv und kein subjektloses Fragment – der Akteur ist das abstrakte Nomen. Muster 39 gilt nur bei echtem Passiv oder fehlendem Subjekt; abstrakte Akteure sind unkritisch, solange sie nicht mit Muster 66 (Fake-Analyse-Anhang) kombiniert werden.
 
 **Beispiel:**
 
