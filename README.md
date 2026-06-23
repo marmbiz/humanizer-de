@@ -9,10 +9,10 @@
 [![Version](https://img.shields.io/github/v/tag/marmbiz/humanizer-de?label=Version&color=c4501f)](https://github.com/marmbiz/humanizer-de/tags)
 [![Tests](https://github.com/marmbiz/humanizer-de/actions/workflows/tests.yml/badge.svg)](https://github.com/marmbiz/humanizer-de/actions/workflows/tests.yml)
 [![Lizenz](https://img.shields.io/badge/Lizenz-MIT-1f6feb)](LICENSE)
-[![Muster](https://img.shields.io/badge/Muster-65_in_10_Kategorien-2da44e)](#65-muster-in-10-kategorien)
+[![Muster](https://img.shields.io/badge/Muster-66_in_10_Kategorien-2da44e)](#66-muster-in-10-kategorien)
 [![Claude Code](https://img.shields.io/badge/Claude_Code-Plugin-d97757)](#installation)
 
-**[Warum nutzen?](#warum-nutzen)** · **[Installation](#installation)** · **[Benutzung](#benutzung)** · **[Die 65 Muster](#65-muster-in-10-kategorien)** · **[Verifikation](#entwicklung-und-verifikation)** · **[Was ist neu?](#was-ist-neu)**
+**[Warum nutzen?](#warum-nutzen)** · **[Installation](#installation)** · **[Benutzung](#benutzung)** · **[Die 66 Muster](#66-muster-in-10-kategorien)** · **[Verifikation](#entwicklung-und-verifikation)** · **[Was ist neu?](#was-ist-neu)**
 
 <sub>Von [Martin Moeller](https://www.martin-moeller.biz) · basiert auf den Wikipedia-Leitlinien [Anzeichen für KI-generierte Inhalte](https://de.wikipedia.org/wiki/Wikipedia:Anzeichen_f%C3%BCr_KI-generierte_Inhalte) (de) und [Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing) (en) · hervorgegangen aus dem [Humanizer](https://github.com/blader/humanizer) von [blader](https://github.com/blader)</sub>
 
@@ -22,7 +22,7 @@
 
 ## Was ist das?
 
-Humanizer (Deutsch) ist ein eigenständiges Projekt für deutschsprachige Texte. Es ist Anfang 2026 als Fork von blader/humanizer entstanden und hat sich seitdem zu einem eigenen System entwickelt: 65 Muster in 10 Kategorien, rund die Hälfte ohne Upstream-Pendant, darunter die komplette Evidenz-Familie und die deutsche Typografie, deterministische Linter, Testsuite mit Golden Corpus und ein 5-Pass-Workflow. Ab v4.0.0 folgt das Projekt einem eigenen Versionsschema ohne Fork-Suffix.
+Humanizer (Deutsch) ist ein eigenständiges Projekt für deutschsprachige Texte. Es ist Anfang 2026 als Fork von blader/humanizer entstanden und hat sich seitdem zu einem eigenen System entwickelt: 66 Muster in 10 Kategorien, rund die Hälfte ohne Upstream-Pendant, darunter die komplette Evidenz-Familie und die deutsche Typografie, deterministische Linter, Testsuite mit Golden Corpus und ein 5-Pass-Workflow. Ab v4.0.0 folgt das Projekt einem eigenen Versionsschema ohne Fork-Suffix.
 
 Dieses Skill erkennt Schreibmuster, die typisch für KI-Sprachmodelle sind – und hilft Ihnen, sie zu entfernen.
 
@@ -109,11 +109,18 @@ Humanisiere diesen Text. Entferne nur sprachliche Muster, nicht die Formatierung
 
 ## Was das Skill erkennt
 
-Das Skill analysiert **65 verschiedene KI-Schreibmuster** in 10 Kategorien, priorisiert nach Schweregrad (HIGH / MEDIUM / LOW):
+Das Skill analysiert **66 verschiedene KI-Schreibmuster** in 10 Kategorien, priorisiert nach Schweregrad (HIGH / MEDIUM / LOW):
 
 ## Was ist neu?
 
-### 4.1.0 (aktuell)
+### 4.2.0 (aktuell)
+- Muster 66 (Fake-Analyse-Anhang): Relativsatz oder Anschlusskonstruktion nach einem vollständigen Informationssatz, der eine Schlussfolgerung vortäuscht ohne neue Information zu liefern – erkennbar am Löschtest ("was X unterstreicht/verdeutlicht/belegt")
+- Muster 35 (Rhetorische Fragen) um Fragenstapel erweitert: verstärkte Form mit 2+ aufeinanderfolgenden rhetorischen Fragen als Sub-Indikator
+- Muster 39 (Passivkonstruktionen) mit Abgrenzungshinweis für Unpersönlichen Akteur: abstrakte Nomen mit Aktionsverb ("Die Analyse zeigt") sind kein Passiv und fallen nicht unter Muster 39
+- `references/decision-tables.md` um zwei Muster-66-Zeilen ergänzt (auslösen / Carve-out)
+- 66 Muster insgesamt in 10 Kategorien
+
+### 4.1.0
 - Quality-Guided Iterative Revision (QGIR): begrenzter zweiter Revisionsmodus für Fälle, in denen nach einer Minimal-Revision noch echte HIGH/MEDIUM-Cluster bleiben
 - QGIR-Stop: Der Skill beendet die Revision, sobald weitere Änderungen keinen echten Qualitätsgewinn mehr bringen oder Fakten, Ton und Proportion gefährden würden
 - Neue QGIR-Spezifikation in `references/qgir.md`: Pass-Limit, Edit-Budget, Review-ready-Ziel und proportionale Qualitätsverbesserung
@@ -211,9 +218,9 @@ Das Skill analysiert **65 verschiedene KI-Schreibmuster** in 10 Kategorien, prio
 - DACH-Schreibfokus und deutsche Stilkonventionen beibehalten
 - Deutsche Wikipedia als primäre Referenz plus englische Wikipedia als Ergänzung
 
-## 65 Muster in 10 Kategorien
+## 66 Muster in 10 Kategorien
 
-### Sprache und Tonfall (17 Muster)
+### Sprache und Tonfall (18 Muster)
 
 | # | Muster | Schwere |
 |---|--------|---------|
@@ -234,6 +241,7 @@ Das Skill analysiert **65 verschiedene KI-Schreibmuster** in 10 Kategorien, prio
 | 63 | Modalpartikel-Anomalie | LOW |
 | 64 | KI-Marker-Vokabular | MEDIUM |
 | 65 | Kopula-Vermeidung | MEDIUM |
+| 66 | Fake-Analyse-Anhang | MEDIUM |
 
 ### Stil (4 Muster)
 
@@ -533,10 +541,11 @@ Haben Sie ein Problem gefunden oder eine Verbesserung?
 
 ## Versionshistorie
 
+- **4.2.0** - Muster 66 (Fake-Analyse-Anhang): syntaktische Anhang-Konstruktion ohne Informationsgehalt; Muster 35/39 erweitert (Fragenstapel / Unpersönlicher Akteur); 66 Muster
 - **4.1.0** - Quality-Guided Iterative Revision (QGIR) mit Stop-Regel, `references/qgir.md`, QGIR-Routing in `SKILL.md`, Contract-Erweiterungen in `run_review_eval.py` und 5 neuen QGIR-Szenarien
 - **4.0.2** - Claim-/Faktenanker-, Register- und Naturalness-Checks; scope- und modusbewusster Rhythmus-Linter; ausführbare Scenario-Contracts; `make verify` als Release-Gate
 - **4.0.1** - 13 LLM-im-Loop-Regressionsszenarien in `tests/SCENARIOS.md`; schließt Testlücke zwischen deterministischem Golden Corpus und Skill-Urteilsverhalten
-- **4.0.0** - Eigenständigkeits-Release mit eigenem SemVer ohne Fork-Suffix; 2 neue Muster (#64–#65): KI-Marker-Vokabular und Kopula-Vermeidung; Muster 58 auf Hypernyme/Nominalstil geschärft; 65 Muster
+- **4.0.0** - Eigenständigkeits-Release mit eigenem SemVer ohne Fork-Suffix; 2 neue Muster (#64–#65): KI-Marker-Vokabular und Kopula-Vermeidung; Muster 58 auf Hypernyme/Nominalstil geschärft; 65 Muster insgesamt
 - **3.8.0-de.1** - 6 neue Muster (#58–#63): Abstrakta-Stapel, erfundene Ich-Erfahrung, Synonym-Rotation, isometrisches Dokument, markerloser Schließzwang, Modalpartikel-Anomalie; neuer 5-Pass-Ablauf (Artefakte → Lexik → Struktur → Rhythmus → Selbst-Audit); neues Mess-Script `scripts/rhythm_lint.py` für deterministische Burstiness-/Rhythmus-Kennzahlen (Muster 4/51/54/55/61); Golden Corpus in `tests/corpus/`; Katalog bis #63
 - **3.7.0-de.1** - 2 neue Muster (#56–#57): Aphorismus-Formeln, Markdown-Struktur-Artefakte; Claude-Code-Plugin und Marketplace (`/plugin install`); Upstream-Ideen aus #136/#140; Katalog bis #57
 - **3.6.0-de.1** - 2 neue Muster (#54–#55): Doppelpunkt-Titel-Schema, Gleichförmiger Satzrhythmus; Sektion zu statistischen Detektoren (Perplexity/Burstiness); Muster 46 mit Beweiskraft-Staffelung für Quote-Asymmetrie; 55 Muster
