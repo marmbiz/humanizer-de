@@ -113,7 +113,11 @@ Das Skill analysiert **66 verschiedene KI-Schreibmuster** in 10 Kategorien, prio
 
 ## Was ist neu?
 
-### 4.2.0 (aktuell)
+### 4.2.1 (aktuell)
+- `scripts/rhythm_lint.py`: Muster 51 (Parataxe) aus Suspicion-Output entfernt – `has_subjunction()` ignoriert Relativsätze, Infinitivgruppen und Koordination; feuerte auf 100 % menschlicher Blog-Posts (Validitätsproblem, kein Schwellenwertfehler); `max_main_clause_run` wird weiterhin im `document`-Block gemessen
+- Muster 55 SIR-Trigger auf Cluster-Logik umgestellt: `subject_initial_ratio` feuert nur noch wenn > 0.85 **und** gleichzeitig niedrige Satzlängenvarianz (< 0.6) oder wiederholte Opener (≥ 2) – empirisch validiert gegen 21 menschliche Blog-Posts (Median SIR 0.887)
+
+### 4.2.0
 - Muster 66 (Fake-Analyse-Anhang): Relativsatz oder Anschlusskonstruktion nach einem vollständigen Informationssatz, der eine Schlussfolgerung vortäuscht ohne neue Information zu liefern – erkennbar am Löschtest ("was X unterstreicht/verdeutlicht/belegt")
 - Muster 35 (Rhetorische Fragen) um Fragenstapel erweitert: verstärkte Form mit 2+ aufeinanderfolgenden rhetorischen Fragen als Sub-Indikator
 - Muster 39 (Passivkonstruktionen) mit Abgrenzungshinweis für Unpersönlichen Akteur: abstrakte Nomen mit Aktionsverb ("Die Analyse zeigt") sind kein Passiv und fallen nicht unter Muster 39
@@ -541,6 +545,7 @@ Haben Sie ein Problem gefunden oder eine Verbesserung?
 
 ## Versionshistorie
 
+- **4.2.1** - `rhythm_lint.py`: Muster 51 aus Suspicion-Output entfernt (Validitätsproblem); Muster 55 SIR auf empirisch validierte Cluster-Logik umgestellt
 - **4.2.0** - Muster 66 (Fake-Analyse-Anhang): syntaktische Anhang-Konstruktion ohne Informationsgehalt; Muster 35/39 erweitert (Fragenstapel / Unpersönlicher Akteur); 66 Muster
 - **4.1.0** - Quality-Guided Iterative Revision (QGIR) mit Stop-Regel, `references/qgir.md`, QGIR-Routing in `SKILL.md`, Contract-Erweiterungen in `run_review_eval.py` und 5 neuen QGIR-Szenarien
 - **4.0.2** - Claim-/Faktenanker-, Register- und Naturalness-Checks; scope- und modusbewusster Rhythmus-Linter; ausführbare Scenario-Contracts; `make verify` als Release-Gate
