@@ -1,6 +1,7 @@
 ---
 name: Humanizer (Deutsch)
-description: Fokus: deutschen Text humanisieren, KI-Schreibmuster entfernen und deutsche KI-Tells auditieren.
+description: >-
+  Fokus: deutschen Text humanisieren, KI-Schreibmuster entfernen und deutsche KI-Tells auditieren.
 version: 4.1.0
 author: Martin Moeller
 maintainer_website: 'https://www.martin-moeller.biz'
