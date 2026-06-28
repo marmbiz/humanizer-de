@@ -1,6 +1,6 @@
 # Humanizer-de Pattern Catalog
 
-Vollstaendiger Musterkatalog fuer Humanizer (Deutsch) v4.1.0. Nur bei konkreter Musterdiagnose, Audit oder Grenzfaellen laden.
+Vollstaendiger Musterkatalog fuer Humanizer (Deutsch) v4.3.0. Nur bei konkreter Musterdiagnose, Audit oder Grenzfaellen laden.
 
 ## Kurzreferenz
 
@@ -21,7 +21,7 @@ Vollstaendiger Musterkatalog fuer Humanizer (Deutsch) v4.1.0. Nur bei konkreter 
 | 13 | Übermäßige Fettschrift | MEDIUM | **wichtige Wörter** in Absätzen fett |
 | 14 | Falsche Listen | LOW | `•` statt `-`, Markdown-Syntax statt Wikitext |
 | 15 | Emojis vor Überschriften | LOW | "🎓 Bildung", "📊 Statistiken" |
-| 16 | Gedankenstriche Überbenutzung | MEDIUM | Mehrere pro Absatz, gepaarte Einschübe, --/—/– Varianten |
+| 16 | Dash-Satzzeichen und Gedankenstrich-Cluster | MEDIUM | Mehrere pro Absatz, gepaarte Einschübe, ` - ` / ` -- ` / `—` / `–` als Satzzeichen |
 | 17 | Briefartiges Schreiben | HIGH | "Betreff:", "Liebe Wikipedia-Editoren", "Mit freundlichen Grüßen" |
 | 18 | Kollaborative Kommunikation | HIGH | "Ich hoffe, das hilft", "Natürlich!", "Lassen Sie mich wissen" |
 | 19 | Hinweise auf Wissensgrenzen | HIGH | "Stand [Datum]", "Bis zu meinem letzten Update" |
@@ -31,7 +31,7 @@ Vollstaendiger Musterkatalog fuer Humanizer (Deutsch) v4.1.0. Nur bei konkreter 
 | 23 | Markdown statt Wikitext | MEDIUM | `# Überschrift` statt `== Überschrift ==` |
 | 24 | Fehlerhafter Wikitext und KI-Tool-Artefakte | MEDIUM | Unvollständige Template-Tags, oaicite, contentReference |
 | 25 | Defekte Links | MEDIUM | 404-Fehler, Links zu nicht-existenten Artikeln |
-| 26 | Zitatfabrikation und ungültige Referenzen | MEDIUM | Erfundene Quellen, ungültige DOIs/ISBNs, halluzinierte Publikationen |
+| 26 | Zitatfabrikation und unverifizierbare Referenzen | HIGH | Erfundene Quellen, ungültige DOIs/ISBNs, halluzinierte Publikationen, echte Quelle belegt nichts |
 | 27 | Inkorrekte Referenzen-Format | MEDIUM | Englisches Datumsformat, falsche Reihenfolge |
 | 28 | Falsche Kategorien | MEDIUM | `[[Category:...]]` statt `[[Kategorie:...]]` |
 | 29 | Abrupte Abbrüche | LOW | Text bricht mitten im Satz ab |
@@ -434,26 +434,28 @@ Häufige Indikatoren:
 
 **Lösung:** Entfernen.
 
-#### 16. Gedankenstriche Überbenutzung [MEDIUM]
-**Problem:** Gedankenstriche (–, —, --) werden von LLMs als Stilmittel übermäßig eingesetzt. Ein einzelner Gedankenstrich pro Absatz kann legitim sein; mehrere pro Absatz sind ein starker KI-Tell.
+#### 16. Dash-Satzzeichen und Gedankenstrich-Cluster [MEDIUM]
+**Problem:** Gedankenstriche und Dash-Ersatzzeichen (`–`, `—`, ` -- `, ` - `) werden von LLMs als rhetorische Kurzform übermäßig eingesetzt. Ein einzelner Gedankenstrich pro Absatz kann legitim sein; mehrere pro Absatz, gepaarte Einschübe oder ein mechanisches "nicht X – sondern Y"-Schema sind starke KI-Tells. Der Tell verschwindet nicht, wenn nur das Glyph gewechselt wird.
 
 Häufige Indikatoren:
-- "Das Projekt – durchgeführt von..." (statt Komma)
+- "Das Projekt – durchgeführt von..." (statt Komma oder Klammer)
 - Mehrere Gedankenstriche pro Absatz
 - Als Satzzeichen statt Klammer verwendet
 - Gepaarte Einschübe: "Der Bericht – der drei Kontinente abdeckte – kam zum Schluss..."
 - Spaced Em-Dashes: "Die Politik — ohne Vorwarnung angekündigt — betrifft..."
 - Doppelstriche als Ersatz: "Die Änderungen -- laut Kritikern überfällig -- treten sofort in Kraft."
+- Spaced Hyphen als Dash-Ersatz: "Danke für die Einführung - ich setze dich auf bcc."
+- Rhetorische Punchline: "Es geht nicht um Geschwindigkeit – es geht um Vertrauen."
 
-**Warum LLMs das tun:** Englische Schreibweise wird imitiert. Gepaarte Einschübe sehen eingeschoben aus, nicht geschrieben.
+**Warum LLMs das tun:** Englische Schreibweise, Marketingrhythmus und Chat-Oberflächen werden imitiert. Gepaarte Einschübe sehen eingeschoben aus, nicht geschrieben.
 
 **Ersetzungshierarchie** (in Prioritätsreihenfolge):
-1. **Punkt** (80% der Fälle – zwei Sätze statt eines mit Strich)
-2. **Komma**
-3. **Doppelpunkt**
-4. **Semikolon**
-5. **Klammer**
-6. **Satz umschreiben**
+1. **Punkt**: zwei vollständige Gedanken als zwei Sätze führen.
+2. **Komma**: kurzer Einschub oder enge Apposition.
+3. **Doppelpunkt**: Erklärung, Folge oder Liste.
+4. **Semikolon**: zwei selbstständige, locker verbundene Hauptsätze.
+5. **Klammer**: echter Nebengedanke.
+6. **Streichen oder umbauen**: wenn der Einschub nur Schlagseite oder Pointe erzeugt.
 
 **Beispiel:**
 
@@ -461,7 +463,11 @@ Häufige Indikatoren:
 
 ✓ Besser: "Die neue Regelung wurde ohne Vorwarnung angekündigt und betrifft Tausende. Die Änderungen treten sofort in Kraft, was Kritiker für überfällig halten."
 
-**Kein Problem, wenn:** Ein einzelner Gedankenstrich pro Absatz als bewusstes Stilmittel dient und sich nicht wiederholt.
+❌ Schlecht: "Danke für die Einführung - ich setze dich auf bcc. Kein Stress - ich brauche nur ein klares Bild."
+
+✓ Besser: "Danke für die Einführung. Ich setze dich auf bcc. Kein Stress, ich brauche nur ein klares Bild."
+
+**Kein Problem, wenn:** Ein einzelner Gedankenstrich pro Absatz als bewusstes Stilmittel dient und sich nicht wiederholt; ein Bindestrich in Komposita, Namen, URLs, IDs oder Produktbezeichnungen steht (`E-Mail`, `Jean-Paul`, `user-id`); ein Bis-Strich echte Bereiche markiert (`2020–2024`).
 
 ### Kommunikation (6 Muster)
 
@@ -594,20 +600,26 @@ Häufige Indikatoren:
 
 **Lösung:** Mit den verfügbaren Mitteln prüfen (Syntax, Plausibilität, interne Konsistenz, offensichtliche Tippfehler im übergebenen Kontext). Bei nachweisbarem Defekt: korrigieren oder entfernen. Externe Online-Verifikation eines Links liegt außerhalb des Skill-Umfangs – in diesem Fall mit [LINK NICHT VERIFIZIERT] markieren statt blind zu entfernen.
 
-#### 26. Zitatfabrikation und ungültige Referenzen [MEDIUM]
-**Problem:** LLMs erfinden Quellen, die echt aussehen, aber nicht existieren. Das reicht von ungültigen DOI-Prüfziffern bis zu komplett halluzinierten Publikationen.
+#### 26. Zitatfabrikation und unverifizierbare Referenzen [HIGH]
+**Problem:** LLMs erfinden Quellen, die echt aussehen, aber nicht existieren, oder ordnen reale Quellen einer Aussage zu, die sie nicht tragen. Das reicht von ungültigen DOI-/ISBN-Angaben bis zu komplett halluzinierten Publikationen, Aktenzeichen, Gerichtsentscheidungen, URLs oder Studien. Factual Reliability ist hier wichtiger als Stil: Eine polierte Passage mit falscher Quelle ist schlechter als eine sichtbare Lücke.
 
 Häufige Indikatoren:
 - DOI mit ungültiger Prüfziffer
 - ISBN mit Tippfehler
 - Erfundene akademische Quellen (Journal existiert nicht, Ausgabe existiert nicht)
 - Autoren existieren, aber die genannte Publikation nicht
+- Reale Quelle existiert, enthält aber die behauptete Zahl, Aussage oder das Zitat nicht
+- Plausibles Aktenzeichen, Urteil, Gesetz, Studie oder Interview ohne auffindbaren Träger im übergebenen Material
 - Defekte externe Links mit `utm_source=`-Parametern – besonders verdächtig: `utm_source=chatgpt.com`, `utm_source=claude.ai`, `utm_source=gemini.google.com`, `utm_source=perplexity.ai` (direkter KI-Fingerabdruck)
 - Unbenutzte benannte Referenzen (`<ref name="..."/>` ohne zugehörige Definition)
 
 **Warum LLMs das tun:** Kann keine echten Quellen recherchieren und erzeugt plausibel aussehende Referenzen aus dem Training.
 
-**Lösung:** Formale Plausibilität jeder Quelle mit den verfügbaren Mitteln prüfen (Format, interne Konsistenz, DOI-/ISBN-Prüfziffer, `utm_source`-Fingerabdrücke, existierende Autoren-Publikation-Kombinationen im übergebenen Kontext). Externe Online-Verifikation liegt außerhalb des Skill-Umfangs – in diesem Fall mit [QUELLE NICHT VERIFIZIERT] markieren. Bei nachweisbarer Fabrikation: entfernen. Nie eine Quelle erfinden oder stehen lassen, die als erfunden erkannt wurde.
+**Lösung:** Jede konkrete Referenz zuerst als ungeprüft behandeln. Mit den verfügbaren Mitteln prüfen: Format, interne Konsistenz, DOI-/ISBN-Prüfziffer, `utm_source`-Fingerabdrücke, Autor-Publikation-Kombinationen, Seiten-/Datumslogik und ob die Quelle im übergebenen Material die konkrete Aussage trägt. Externe Online-Verifikation liegt außerhalb des Skill-Umfangs – in diesem Fall mit [QUELLE NICHT VERIFIZIERT] markieren. Bei nachweisbarer Fabrikation: entfernen. Nie eine Ersatzquelle erfinden oder eine erkannte Falschquelle stilistisch kaschieren.
+
+❌ Schlecht: "Eine Studie von Hartmann und Doyle (2021) zeigt, dass KI-Texte in 87 Prozent der Fälle erkannt werden."
+
+✓ Besser: "Für diese Zahl fehlt im Material eine prüfbare Quelle. [QUELLE NICHT VERIFIZIERT]"
 
 #### 27. Inkorrekte Referenzen-Format [MEDIUM]
 **Problem:** Zitierformat entspricht nicht deutschen Wikipedia-Standards.
@@ -1227,7 +1239,7 @@ Häufige Indikatoren:
 
 **Kein Problem, wenn:** Eine Tabelle echte mehrdimensionale Daten zeigt; eine `---`-Linie bewusst als Szenen- oder Themenwechsel *zwischen* gleichrangigen Abschnitten steht (nicht direkt vor einer Überschrift); ein CMS, Theme oder Markdown-Template die Struktur erzeugt. Konsistente, korrekte Formatierung allein ist kein KI-Tell.
 
-**Abgrenzung:** Muster 16 = Gedankenstriche (— / –) im Fließtext, nicht die horizontale Linie `---`. Muster 13 = übermäßige Fettschrift, Muster 14 = falsche Listenzeichen. Muster 23 = Markdown statt Wikitext (Syntax-Wahl im Wiki-Kontext). Muster 57 = dekorativer Struktur-Missbrauch in Markdown selbst.
+**Abgrenzung:** Muster 16 = Dash-Satzzeichen und Gedankenstrich-Cluster im Fließtext, nicht die horizontale Linie `---`. Muster 13 = übermäßige Fettschrift, Muster 14 = falsche Listenzeichen. Muster 23 = Markdown statt Wikitext (Syntax-Wahl im Wiki-Kontext). Muster 57 = dekorativer Struktur-Missbrauch in Markdown selbst.
 
 **Beispiel:**
 
@@ -1263,7 +1275,7 @@ Häufige Indikatoren:
 
 **Abgrenzung:** Muster 34 = generischer Einzeiler *nach* einer Überschrift. Muster 47 = englische Titel-Großschreibung. Muster 54 = die gehäufte Doppelpunkt-*Konstruktion* selbst.
 
-**Fix-Aktion (Minimalintervention, ab 2+ Doppelpunkt-Titeln im Dokument):** Erst ab dem zweiten gleichartig gebauten Titel eingreifen – ein einzelner Doppelpunkt-Titel bleibt unangetastet. Strategie: im Cluster *variieren*, nicht alle gleich umbauen. Optionen: Doppelpunkt durch Gedankenstrich ` – ` (mit Leerzeichen, nicht Bindestrich) ersetzen; Überschrift umstrukturieren; Titel auf die Kernaussage kürzen, sofern dabei keine Information verloren geht. Nie alle Doppelpunkte mechanisch gegen Gedankenstriche tauschen – das erzeugt nur ein neues, monotones Schema.
+**Fix-Aktion (Minimalintervention, ab 2+ Doppelpunkt-Titeln im Dokument):** Erst ab dem zweiten gleichartig gebauten Titel eingreifen – ein einzelner Doppelpunkt-Titel bleibt unangetastet. Strategie: im Cluster *variieren*, nicht alle gleich umbauen. Optionen: Überschrift als Aussage formulieren, auf die Kernaussage kürzen, Untertitel in Klammern setzen oder Titel ohne zweiteilige Schablone neu bauen, sofern dabei keine Information verloren geht. Nie alle Doppelpunkte mechanisch gegen Gedankenstriche tauschen – das erzeugt nur ein neues, monotones Schema.
 
 Den Subtitel/Nachsatz *nicht* entfernen, solange er echte, nicht-redundante Information trägt. Entfernen nur, wenn der Nachsatz die linke Seite nur in Langform wiederholt (z. B. „Datenschutz: Datenschutz richtig gemacht") oder eine leere Formel ist (z. B. „Alles, was du wissen musst" ohne konkreten Bezug).
 

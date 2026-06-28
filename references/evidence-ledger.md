@@ -24,7 +24,22 @@ Diese Elemente duerfen durch Humanisierung nicht verschwinden, wandern oder ihre
 | `CLARIFY_WITH_EXISTING_EVIDENCE` | ja | Konkretion steht bereits im Input oder Kontext |
 | `MARK_GAP` | ja | Fehlende Quelle/Substanz sichtbar markieren |
 | `BLOCK_SOURCE_MISMATCH` | nein | Quelle belegt die neue oder alte Aussage nicht |
+| `BLOCK_FAKE_REFERENCE` | nein | Quelle, DOI, ISBN, Aktenzeichen, Urteil, Link oder Zitat wirkt fabriziert oder traegt die Aussage nicht |
 | `BLOCK_UNGROUNDED_DETAIL` | nein | Neues Detail, Beispiel, Motiv, Zahl oder Ich-Erlebnis ohne Anker |
+
+## Factual-Reliability-Gate
+
+Konkrete Quellen sind nicht Dekoration. Eine Referenz muss existieren, formal plausibel sein und die konkrete Aussage tragen. Wenn das im aktuellen Material nicht pruefbar ist, markiere den Pruefstatus statt den Text glatter zu schreiben.
+
+Pruefe besonders:
+
+- DOI, ISBN, ISSN, URL, Aktenzeichen, Paragraph und Gerichtsentscheidung
+- Autor-Jahr-Kombinationen und Publikationstitel
+- direkte Zitate, Seitenzahlen und Zahlenangaben
+- Quellen, die nur thematisch passen, aber nicht die konkrete Aussage belegen
+- Tracking- oder KI-Artefakte in Links
+
+Kein Ersatzbeleg ohne Input- oder Quellenanker. Wenn die Quelle falsch wirkt, ist die richtige Operation Markierung, Kuerzung oder Rueckfrage.
 
 ## Claim-Delta-Regel
 

@@ -19,6 +19,8 @@ class PatternCatalogTests(unittest.TestCase):
         self.assertIn("## Die 66 Muster", text)
         self.assertIn("#### 52. Diff-verankertes Schreiben [MEDIUM]", text)
         self.assertIn("#### 53. Lückenfüllende Spekulation [HIGH]", text)
+        self.assertIn("#### 16. Dash-Satzzeichen und Gedankenstrich-Cluster [MEDIUM]", text)
+        self.assertIn("#### 26. Zitatfabrikation und unverifizierbare Referenzen [HIGH]", text)
         self.assertIn("#### 54. Doppelpunkt-Titel-Schema [MEDIUM]", text)
         self.assertIn("#### 55. Gleichförmiger Satzrhythmus [MEDIUM]", text)
         self.assertIn("#### 56. Aphorismus-Formeln [MEDIUM]", text)
@@ -32,6 +34,26 @@ class PatternCatalogTests(unittest.TestCase):
         self.assertIn("#### 64. KI-Marker-Vokabular [MEDIUM]", text)
         self.assertIn("#### 65. Kopula-Vermeidung [MEDIUM]", text)
         self.assertIn("#### 66. Fake-Analyse-Anhang [MEDIUM]", text)
+
+    def test_pattern_16_broadens_dash_rule_without_banning_word_hyphens(self):
+        text = (ROOT / "references" / "patterns.md").read_text()
+        section = text.split("#### 16. Dash-Satzzeichen und Gedankenstrich-Cluster [MEDIUM]", 1)[1]
+        section = section.split("### Kommunikation", 1)[0]
+
+        self.assertIn("` - `", section)
+        self.assertIn("` -- `", section)
+        self.assertIn("Der Tell verschwindet nicht, wenn nur das Glyph gewechselt wird", section)
+        self.assertIn("Bindestrich in Komposita, Namen, URLs, IDs", section)
+
+    def test_pattern_26_is_factual_reliability_gate(self):
+        text = (ROOT / "references" / "patterns.md").read_text()
+        section = text.split("#### 26. Zitatfabrikation und unverifizierbare Referenzen [HIGH]", 1)[1]
+        section = section.split("#### 27. Inkorrekte Referenzen-Format [MEDIUM]", 1)[0]
+
+        self.assertIn("Factual Reliability", section)
+        self.assertIn("Jede konkrete Referenz zuerst als ungeprüft behandeln", section)
+        self.assertIn("[QUELLE NICHT VERIFIZIERT]", section)
+        self.assertIn("Nie eine Ersatzquelle erfinden", section)
 
     def test_pattern_46_examples_use_real_codepoints(self):
         text = (ROOT / "references" / "patterns.md").read_text()

@@ -1,6 +1,6 @@
 # Humanizer-de Decision Tables
 
-Nutze diese Tabellen vor `references/patterns.md`, wenn Befunde ueberlappen. Sie sind die verbindliche Kurzlogik fuer v4.1.0.
+Nutze diese Tabellen vor `references/patterns.md`, wenn Befunde ueberlappen. Sie sind die verbindliche Kurzlogik fuer v4.3.0.
 
 ## QGIR: Moduswahl
 
@@ -13,12 +13,13 @@ Nutze diese Tabellen vor `references/patterns.md`, wenn Befunde ueberlappen. Sie
 | Quelle, Recht, Technik, Formalregister oder Zielprofil waere gefaehrdet | Stop; Befund markieren |
 | Ziel waere nur Detektorwirkung, Score oder maximale Glattheit ohne Qualitaetsgewinn | Stop; nicht optimieren |
 
-## Evidenz: 11 / 26 / 42 / 53
+## Evidenz: 11 / 25 / 26 / 42 / 53
 
 | Situation | Muster | Aktion |
 |---|---:|---|
 | Keine konkrete Quelle, nur "Studien zeigen", "Beobachter sagen", "Experten meinen" | 11 | Zuschreibung entfernen oder `[ECHTE QUELLE NOETIG]` markieren |
-| Quelle sieht konkret aus, ist aber formal ungueltig, erfunden oder mit KI-Tracking-Artefakt versehen | 26 | Entfernen oder `[QUELLE NICHT VERIFIZIERT]`; keine Ersatzquelle erfinden |
+| Link sieht konkret aus, ist aber defekt oder im Material nicht pruefbar | 25 | `[LINK NICHT VERIFIZIERT]` markieren; nicht blind loeschen, wenn externe Pruefung fehlt |
+| Quelle sieht konkret aus, ist aber formal ungueltig, erfunden, unverifizierbar oder mit KI-Tracking-Artefakt versehen | 26 | Entfernen oder `[QUELLE NICHT VERIFIZIERT]`; keine Ersatzquelle erfinden |
 | Quelle existiert und wurde geprueft, belegt die konkrete Aussage aber nicht | 42 | Aussage an Quelle anpassen, Quelle ersetzen oder `[BELEG PRUEFEN]` |
 | Quelle fehlt oder schweigt, Text ergaenzt Motive, Herkunft, Privatleben oder Plausibilitaet | 53 | Spekulation entfernen oder "keine Angaben im Material" schreiben |
 | Quelle ist nicht pruefbar | nicht 42 | Keine Beleginkongruenz behaupten; 26/53 nur bei eigenen Indikatoren |
@@ -75,7 +76,9 @@ Nutze diese Tabellen vor `references/patterns.md`, wenn Befunde ueberlappen. Sie
 
 | Situation | Muster | Aktion |
 |---|---:|---|
-| Gedankenstriche (— / –) im Fließtext | 16 | Reduzieren, gepaarte Einschübe aufloesen |
+| Gedankenstriche oder Dash-Ersatz als Satzzeichen (`—`, `–`, ` -- `, ` - `) im Cluster | 16 | Nicht Glyph tauschen; Satzbau mit Punkt, Komma, Doppelpunkt, Semikolon, Klammer oder Streichung loesen |
+| Einzelner bewusst gesetzter Gedankenstrich ohne weitere Muster | nicht 16 | Stehen lassen |
+| Bindestrich in Komposita, Namen, URLs, IDs oder echter Bereichsstrich | nicht 16 | Stehen lassen |
 | Übermäßige Fettschrift / falsche Listenzeichen | 13 / 14 | Fett sparsam; korrekte Listensyntax |
 | Markdown-Syntax statt Wikitext im Wiki-Kontext | 23 | In Wikitext umsetzen |
 | Dekorative Tabelle, übersprungene Heading-Ebene oder `---` direkt vor Überschrift | 57 | In Prosa/korrekte Hierarchie aufloesen; Linie vor Überschrift entfernen |

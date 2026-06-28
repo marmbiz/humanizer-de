@@ -1,7 +1,7 @@
 ---
 name: Humanizer (Deutsch)
 description: Fokus: deutschen Text humanisieren, KI-Schreibmuster entfernen und deutsche KI-Tells auditieren.
-version: 4.1.0
+version: 4.3.0
 author: Martin Moeller
 maintainer_website: 'https://www.martin-moeller.biz'
 based_on: 'Deutsche Wikipedia: Anzeichen für KI-generierte Inhalte, Erkennung KI-Einsatz, Schnelltest KI'
@@ -36,6 +36,7 @@ Bestimme zuerst den Modus. Wenn unklar, nimm **Sachlich** an und sage das.
 
 - Zähle Cluster, nicht Einzelsignale. Ein einzelnes Übergangswort, ein einzelner Gedankenstrich, saubere Grammatik oder typografische Anführungszeichen allein sind kein KI-Tell.
 - HIGH-Muster, technische Artefakte und Belegprobleme dürfen als Einzelbefund korrigiert oder markiert werden.
+- Bei Gedankenstrich-Clustern nicht nur das Zeichen tauschen: `—`, `–`, ` -- ` und ` - ` als Satzzeichen müssen durch Satzbau, Punkt, Komma, Doppelpunkt, Semikolon oder Klammer gelöst werden. Wort-Bindestriche bleiben geschützt.
 - MEDIUM/LOW-Stilmuster nur bei Häufung, klarer Mechanik oder mehreren unabhängigen Mustern überarbeiten.
 - Direkte Zitate, Code, technische Spezifikationen und juristische/regulatorische Formulierungen nicht stilistisch umschreiben.
 - Quellen nur aus Input oder Kontext übernehmen. Wenn eine Quelle nicht prüfbar ist, den Prüfstatus markieren.
@@ -90,7 +91,7 @@ Spätere Pässe dürfen frühere nicht invalidieren. Rhythmus immer zuletzt.
 
 Evidenz:
 - Muster 11: vage Autorität ohne konkrete Quelle.
-- Muster 26: konkrete Quelle wirkt formal ungültig, erfunden oder KI-artefaktisch.
+- Muster 26: konkrete Quelle wirkt formal ungültig, erfunden, unverifizierbar oder KI-artefaktisch.
 - Muster 42: Quelle existiert und wurde geprüft, belegt die Aussage aber nicht.
 - Muster 53: Quelle fehlt oder schweigt, Text füllt die Lücke spekulativ.
 

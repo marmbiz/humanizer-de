@@ -113,7 +113,12 @@ Das Skill analysiert **66 verschiedene KI-Schreibmuster** in 10 Kategorien, prio
 
 ## Was ist neu?
 
-### 4.2.1 (aktuell)
+### 4.3.0 (aktuell)
+- Factual-Reliability-Gate geschärft: Muster 26 ist jetzt HIGH und behandelt fabrizierte, unverifizierbare oder formal echte, aber nicht tragende Referenzen als Belegproblem statt als Stilfrage
+- Muster 16 auf Dash-Satzzeichen erweitert: `—`, `–`, ` -- ` und ` - ` als mechanische Satzzeichen werden nicht durch Glyph-Tausch "repariert", sondern per Satzbau, Punkt, Komma, Doppelpunkt, Semikolon, Klammer oder Streichung gelöst; Wort-Bindestriche, Namen, IDs, URLs und echte Bereichsstriche bleiben geschützt
+- `references/evidence-ledger.md` ergänzt ein Factual-Reliability-Gate; `docs/naturalness-research-brief.md` dokumentiert erste Quellenanker für Citation-Fabrication und Excess-Vocabulary als Research-Hintergrund
+
+### 4.2.1
 - `scripts/rhythm_lint.py`: Muster 51 (Parataxe) aus Suspicion-Output entfernt – `has_subjunction()` ignoriert Relativsätze, Infinitivgruppen und Koordination; feuerte auf 100 % menschlicher Blog-Posts (Validitätsproblem, kein Schwellenwertfehler); `max_main_clause_run` wird weiterhin im `document`-Block gemessen
 - Muster 55 SIR-Trigger auf Cluster-Logik umgestellt: `subject_initial_ratio` feuert nur noch wenn > 0.85 **und** gleichzeitig niedrige Satzlängenvarianz (< 0.6) oder wiederholte Opener (≥ 2) – empirisch validiert gegen 21 menschliche Blog-Posts (Median SIR 0.887)
 
@@ -254,7 +259,7 @@ Das Skill analysiert **66 verschiedene KI-Schreibmuster** in 10 Kategorien, prio
 | 13 | Übermäßige Fettschrift | MEDIUM |
 | 14 | Falsche Listen-Formatierung | LOW |
 | 15 | Emojis vor Überschriften | LOW |
-| 16 | Gedankenstriche-Überbenutzung (Varianten, Einschübe) | MEDIUM |
+| 16 | Dash-Satzzeichen und Gedankenstrich-Cluster | MEDIUM |
 
 ### Kommunikation (6 Muster)
 
@@ -274,7 +279,7 @@ Das Skill analysiert **66 verschiedene KI-Schreibmuster** in 10 Kategorien, prio
 | 23 | Markdown statt Wikitext | MEDIUM |
 | 24 | Fehlerhafter Wikitext und KI-Tool-Artefakte | MEDIUM |
 | 25 | Defekte Links | MEDIUM |
-| 26 | Zitatfabrikation und ungültige Referenzen | MEDIUM |
+| 26 | Zitatfabrikation und unverifizierbare Referenzen | HIGH |
 | 27 | Inkorrekte Referenzen-Formate | MEDIUM |
 | 28 | Falsche Kategorien | MEDIUM |
 
@@ -545,6 +550,7 @@ Haben Sie ein Problem gefunden oder eine Verbesserung?
 
 ## Versionshistorie
 
+- **4.3.0** - Factual-Reliability-Gate geschärft; Muster 26 auf HIGH gesetzt; Muster 16 auf Dash-Satzzeichen inklusive ` - ` / ` -- ` erweitert; Research- und Coverage-Grundlagen in `docs/` ergänzt
 - **4.2.1** - `rhythm_lint.py`: Muster 51 aus Suspicion-Output entfernt (Validitätsproblem); Muster 55 SIR auf empirisch validierte Cluster-Logik umgestellt
 - **4.2.0** - Muster 66 (Fake-Analyse-Anhang): syntaktische Anhang-Konstruktion ohne Informationsgehalt; Muster 35/39 erweitert (Fragenstapel / Unpersönlicher Akteur); 66 Muster
 - **4.1.0** - Quality-Guided Iterative Revision (QGIR) mit Stop-Regel, `references/qgir.md`, QGIR-Routing in `SKILL.md`, Contract-Erweiterungen in `run_review_eval.py` und 5 neuen QGIR-Szenarien
