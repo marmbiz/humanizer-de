@@ -1,13 +1,15 @@
 ---
-name: Humanizer (Deutsch)
-description: Fokus: deutschen Text humanisieren, KI-Schreibmuster entfernen und deutsche KI-Tells auditieren.
-version: 5.0.0
-author: Martin Moeller
-maintainer_website: 'https://www.martin-moeller.biz'
-based_on: 'Deutsche Wikipedia: Anzeichen für KI-generierte Inhalte, Erkennung KI-Einsatz, Schnelltest KI'
-original_skill: 'https://github.com/blader/humanizer'
-tags: [writing, ai-detection, german, wikipedia, text-improvement]
-allowed_tools: [Read, Write, Edit, Grep, Glob, Bash]
+name: humanizer-de
+description: deutschen Text humanisieren, KI-Schreibmuster entfernen und deutsche KI-Tells auditieren; use for German AI-writing pattern checks, evidence-safe rewrites, register/naturalness audits.
+allowed-tools: [Read, Write, Edit, Grep, Glob, Bash]
+metadata:
+  display_name: Humanizer (Deutsch)
+  version: 5.0.0
+  author: Martin Moeller
+  maintainer_website: https://www.martin-moeller.biz
+  based_on: 'Deutsche Wikipedia: Anzeichen für KI-generierte Inhalte, Erkennung KI-Einsatz, Schnelltest KI'
+  original_skill: https://github.com/blader/humanizer
+  tags: [writing, ai-detection, german, wikipedia, text-improvement]
 ---
 
 # Humanizer (Deutsch)

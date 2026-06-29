@@ -1,0 +1,20 @@
+{
+  "name": "humanizer-de",
+  "interface": {
+    "displayName": "Humanizer DE"
+  },
+  "plugins": [
+    {
+      "name": "humanizer-de",
+      "source": {
+        "source": "local",
+        "path": "./"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

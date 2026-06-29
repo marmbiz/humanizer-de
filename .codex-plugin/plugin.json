@@ -1,0 +1,41 @@
+{
+  "name": "humanizer-de",
+  "version": "5.0.0",
+  "description": "Deutsche KI-Schreibmuster erkennen und entfernen. Supports Claude Code and Codex. 66 Muster für deutschsprachige Texte.",
+  "skills": "./skills/",
+  "author": {
+    "name": "Martin Moeller",
+    "url": "https://www.martin-moeller.biz"
+  },
+  "homepage": "https://github.com/marmbiz/humanizer-de",
+  "repository": "https://github.com/marmbiz/humanizer-de",
+  "license": "MIT",
+  "keywords": [
+    "writing",
+    "editing",
+    "ai-detection",
+    "humanizer",
+    "german",
+    "deutsch",
+    "skill"
+  ],
+  "interface": {
+    "displayName": "Humanizer (Deutsch)",
+    "shortDescription": "German humanizer for Claude/Codex",
+    "longDescription": "Humanizer (Deutsch) prüft deutschsprachige Texte auf typische KI-Schreibmuster und hilft, sie belegtreu, registerstabil und natürlicher zu überarbeiten. Supports Claude Code and Codex.",
+    "developerName": "Martin Moeller",
+    "category": "Productivity",
+    "capabilities": [
+      "Review",
+      "Write"
+    ],
+    "brandColor": "#C4501F",
+    "logo": "./assets/banner-light.svg",
+    "logoDark": "./assets/banner-dark.svg",
+    "defaultPrompt": [
+      "Humanisiere diesen deutschen Text.",
+      "Prüfe diesen Text auf KI-Schreibmuster.",
+      "Entferne KI-Tells, ohne Fakten zu ändern."
+    ]
+  }
+}

@@ -12,7 +12,7 @@ EXPECTED_PATTERN_COUNT = 66
 class SkillStructureTests(unittest.TestCase):
     def test_skill_is_sop_router(self):
         text = (ROOT / "SKILL.md").read_text()
-        self.assertIn(f"version: {EXPECTED_VERSION}", text)
+        self.assertRegex(text, rf"version:\s+['\"]?{re.escape(EXPECTED_VERSION)}['\"]?")
         self.assertIn("<!-- SLOW_UPDATE_START -->", text)
         self.assertIn("<!-- FAST_UPDATE_START -->", text)
         self.assertIn("references/patterns.md", text)
@@ -23,6 +23,26 @@ class SkillStructureTests(unittest.TestCase):
 
         body = text.split("---", 2)[-1]
         self.assertLessEqual(len(re.findall(r"\S+", body)), 2000)
+
+    def test_skill_frontmatter_is_hybrid_safe(self):
+        text = (ROOT / "SKILL.md").read_text()
+        frontmatter = text.split("---", 2)[1]
+
+        self.assertIn("name: humanizer-de", frontmatter)
+        self.assertIn("allowed-tools:", frontmatter)
+        self.assertIn("metadata:", frontmatter)
+        self.assertNotIn("allowed_tools:", frontmatter)
+        self.assertNotRegex(frontmatter, r"(?m)^name:\s+Humanizer \(Deutsch\)$")
+
+        agent_yaml = (ROOT / "agents" / "openai.yaml").read_text()
+        self.assertIn('display_name: "Humanizer (Deutsch)"', agent_yaml)
+        self.assertIn("$humanizer-de", agent_yaml)
+        self.assertIn("allow_implicit_invocation: true", agent_yaml)
+
+        skill_wrapper = ROOT / "skills" / "humanizer-de"
+        self.assertTrue((skill_wrapper / "SKILL.md").is_symlink())
+        self.assertTrue((skill_wrapper / "references").is_symlink())
+        self.assertTrue((skill_wrapper / "scripts").is_symlink())
 
     def test_description_is_narrow(self):
         text = (ROOT / "SKILL.md").read_text()
@@ -35,23 +55,41 @@ class SkillStructureTests(unittest.TestCase):
     def test_release_metadata_stays_in_sync(self):
         skill_text = (ROOT / "SKILL.md").read_text()
         plugin = json.loads((ROOT / ".claude-plugin" / "plugin.json").read_text())
+        codex_plugin = json.loads((ROOT / ".codex-plugin" / "plugin.json").read_text())
+        codex_marketplace = json.loads(
+            (ROOT / ".agents" / "plugins" / "marketplace.json").read_text()
+        )
         marketplace = json.loads((ROOT / ".claude-plugin" / "marketplace.json").read_text())
         marketplace_plugin = marketplace["plugins"][0]
+        codex_marketplace_plugin = codex_marketplace["plugins"][0]
         readme_text = (ROOT / "README.md").read_text()
         patterns_text = (ROOT / "references" / "patterns.md").read_text()
         decision_text = (ROOT / "references" / "decision-tables.md").read_text()
 
-        self.assertIn(f"version: {EXPECTED_VERSION}", skill_text)
+        self.assertRegex(skill_text, rf"version:\s+['\"]?{re.escape(EXPECTED_VERSION)}['\"]?")
         self.assertEqual(plugin["version"], EXPECTED_VERSION)
+        self.assertEqual(codex_plugin["version"], EXPECTED_VERSION)
         self.assertEqual(marketplace_plugin["version"], EXPECTED_VERSION)
+        self.assertEqual(codex_marketplace["name"], "humanizer-de")
+        self.assertEqual(codex_marketplace_plugin["name"], "humanizer-de")
+        self.assertEqual(codex_marketplace_plugin["source"]["path"], "./")
+        self.assertEqual(codex_marketplace_plugin["policy"]["installation"], "AVAILABLE")
+        self.assertIn("codex plugin marketplace add marmbiz/humanizer-de", readme_text)
         self.assertIn(f"### {EXPECTED_VERSION} (aktuell)", readme_text)
         self.assertIn(f"v{EXPECTED_VERSION}", patterns_text)
         self.assertIn(f"v{EXPECTED_VERSION}", decision_text)
 
         expected_pattern_label = f"{EXPECTED_PATTERN_COUNT} Muster"
         self.assertIn(expected_pattern_label, plugin["description"])
+        self.assertIn(expected_pattern_label, codex_plugin["description"])
         self.assertIn(expected_pattern_label, marketplace_plugin["description"])
+        self.assertIn("Supports Claude Code and Codex", readme_text)
+        self.assertIn("Supports Claude Code and Codex", plugin["description"])
+        self.assertIn("Supports Claude Code and Codex", codex_plugin["description"])
+        self.assertIn("Supports Claude Code and Codex", marketplace_plugin["description"])
+        self.assertIn("Claude/Codex", (ROOT / "agents" / "openai.yaml").read_text())
         self.assertNotIn("65 Muster", plugin["description"])
+        self.assertNotIn("65 Muster", codex_plugin["description"])
         self.assertNotIn("65 Muster", marketplace_plugin["description"])
 
     def test_p0_docs_define_research_and_coverage_boundaries(self):

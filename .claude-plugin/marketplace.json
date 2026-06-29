@@ -4,13 +4,13 @@
     "name": "Martin Moeller",
     "url": "https://github.com/marmbiz"
   },
-  "description": "Marketplace für den Humanizer-de-Skill – erkennt und entfernt deutsche KI-Schreibmuster.",
+  "description": "Marketplace für den Humanizer-de-Skill – erkennt und entfernt deutsche KI-Schreibmuster. Supports Claude Code and Codex.",
   "plugins": [
     {
       "name": "humanizer-de",
       "source": "./",
       "version": "5.0.0",
-      "description": "Deutsche KI-Schreibmuster erkennen und entfernen. 66 Muster für deutschsprachige Texte, basiert auf der Wikipedia-Seite \"Anzeichen für KI-generierte Inhalte\".",
+      "description": "Deutsche KI-Schreibmuster erkennen und entfernen. Supports Claude Code and Codex. 66 Muster für deutschsprachige Texte.",
       "author": {
         "name": "Martin Moeller",
         "url": "https://www.martin-moeller.biz"

@@ -11,10 +11,11 @@
 [![Lizenz](https://img.shields.io/badge/Lizenz-MIT-1f6feb)](LICENSE)
 [![Muster](https://img.shields.io/badge/Muster-66_in_10_Kategorien-2da44e)](#66-muster-in-10-kategorien)
 [![Claude Code](https://img.shields.io/badge/Claude_Code-Plugin-d97757)](#installation)
+[![Codex](https://img.shields.io/badge/Codex-Supported-10a37f)](#installation)
 
 **[Warum nutzen?](#warum-nutzen)** · **[Installation](#installation)** · **[Benutzung](#benutzung)** · **[Die 66 Muster](#66-muster-in-10-kategorien)** · **[Verifikation](#entwicklung-und-verifikation)** · **[Was ist neu?](#was-ist-neu)**
 
-<sub>Von [Martin Moeller](https://www.martin-moeller.biz) · basiert auf den Wikipedia-Leitlinien [Anzeichen für KI-generierte Inhalte](https://de.wikipedia.org/wiki/Wikipedia:Anzeichen_f%C3%BCr_KI-generierte_Inhalte) (de) und [Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing) (en) · hervorgegangen aus dem [Humanizer](https://github.com/blader/humanizer) von [blader](https://github.com/blader)</sub>
+<sub>Supports Claude Code and Codex · Von [Martin Moeller](https://www.martin-moeller.biz) · basiert auf den Wikipedia-Leitlinien [Anzeichen für KI-generierte Inhalte](https://de.wikipedia.org/wiki/Wikipedia:Anzeichen_f%C3%BCr_KI-generierte_Inhalte) (de) und [Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing) (en) · hervorgegangen aus dem [Humanizer](https://github.com/blader/humanizer) von [blader](https://github.com/blader)</sub>
 
 </div>
 
@@ -49,7 +50,7 @@ Besonders nützlich ist er für:
 
 ## Installation
 
-### Option 1: Claude-Code-Plugin (empfohlen)
+### Option 1: Claude-Code-Plugin
 
 ```bash
 /plugin marketplace add marmbiz/humanizer-de
@@ -58,18 +59,40 @@ Besonders nützlich ist er für:
 
 Claude Code übernimmt damit Aktivierung, Deaktivierung und Updates. Einmal hinzugefügt, lässt sich der Skill über `/plugin` verwalten.
 
-### Option 2: Verzeichnis kopieren
-
-1. Kopieren Sie alle Dateien aus diesem Ordner nach `~/.codex/skills/humanizer-de/` (Claude Code: `~/.claude/skills/humanizer-de/`)
-2. Starten Sie Codex/Claude Code neu oder laden Sie die Skills neu
-
-### Option 3: Symbolic Link (Linux/Mac)
+### Option 2: Codex-Plugin
 
 ```bash
-ln -s /Users/mm/Local\ Sites/humanizer ~/.codex/skills/humanizer-de
+codex plugin marketplace add marmbiz/humanizer-de
 ```
 
-Dann Codex/Claude Code neu starten.
+Danach in Codex `/plugins` öffnen, den Marketplace **Humanizer DE** auswählen und `humanizer-de` installieren.
+
+### Option 3: Codex-Skill ohne Plugin
+
+Codex kann das gleiche `SKILL.md` auch direkt nutzen. Nach aktueller Codex-Doku liegt die persönliche Skill-Kopie unter `~/.agents/skills/humanizer-de/`; bestehende lokale Setups können auch noch `~/.codex/skills/humanizer-de/` verwenden.
+
+```bash
+mkdir -p ~/.agents/skills
+cp -R /pfad/zu/humanizer ~/.agents/skills/humanizer-de
+```
+
+Alternativ als Symlink:
+
+```bash
+mkdir -p ~/.agents/skills
+ln -s /pfad/zu/humanizer ~/.agents/skills/humanizer-de
+```
+
+Danach Codex neu starten, falls der Skill nicht sofort erscheint.
+
+### Option 4: Claude-Code-Skill ohne Plugin
+
+```bash
+mkdir -p ~/.claude/skills
+cp -R /pfad/zu/humanizer ~/.claude/skills/humanizer-de
+```
+
+Supports Claude Code and Codex: Das Repository enthält zusätzlich `.claude-plugin/` für Claude Code und `.codex-plugin/` plus `agents/openai.yaml` für Codex.
 
 ---
 
