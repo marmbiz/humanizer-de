@@ -97,7 +97,7 @@ Jetzt humanisiere diesen Text:
 [KI-Text einfügen]
 ```
 
-Das Skill analysiert Satzrhythmus, Wortwahl und Eigenheiten und wendet sie auf das Rewrite an.
+Das Skill analysiert Satzrhythmus, Wortwahl und Eigenheiten und berücksichtigt sie als Zielprofil.
 
 ### Spezifische Muster adressieren
 
@@ -395,7 +395,7 @@ Umsatz von 50 Millionen Euro.
 **Nachher:**
 ```
 Das Unternehmen wurde 1980 gegründet. Es beschäftigt heute 200 Mitarbeiter
-in 8 Ländern mit einem Umsatz von 50 Millionen Euro.
+in 8 Ländern und hat einen Umsatz von 50 Millionen Euro.
 ```
 
 ### Beispiel 4: Kollaborative Kommunikation
@@ -409,8 +409,7 @@ Informationen benötigen!
 
 **Nachher:**
 ```
-Die Produktivität war bemerkenswert. Der Umsatz verdreifachte sich in
-diesem Zeitraum.
+Die Produktivität fiel positiv auf. Der Umsatz verdreifachte sich.
 ```
 
 ---

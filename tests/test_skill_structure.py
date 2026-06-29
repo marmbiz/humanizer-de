@@ -106,6 +106,16 @@ class SkillStructureTests(unittest.TestCase):
         self.assertIn("labeled German benchmark", research)
         self.assertIn("not authorship proof or uncalibrated percentages", research)
 
+    def test_readme_examples_preserve_claim_boundaries(self):
+        readme = (ROOT / "README.md").read_text()
+
+        self.assertIn("berücksichtigt sie als Zielprofil", readme)
+        self.assertNotIn("wendet sie auf das Rewrite an", readme)
+        self.assertIn("in 8 Ländern und hat einen Umsatz von 50 Millionen Euro", readme)
+        self.assertNotIn("in 8 Ländern mit einem Umsatz von 50 Millionen Euro", readme)
+        self.assertIn("Die Produktivität fiel positiv auf. Der Umsatz verdreifachte sich.", readme)
+        self.assertNotIn("in\ndiesem Zeitraum", readme)
+
 
 if __name__ == "__main__":
     unittest.main()
