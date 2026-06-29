@@ -7,6 +7,7 @@ Pass 0 erzeugt eine kleine Stilkarte. Sie ist kein Schreibauftrag, sondern ein S
 | Feld | Beispiele | Zweck |
 |---|---|---|
 | `mode` | locker, sachlich, formal | Aggressivitaet der Eingriffe |
+| `deictic_center` | ich, wir, man, neutral, institutionell | Sprecherposition stabil halten; keine neue Ich-/Wir-Perspektive erfinden |
 | `address` | du, Sie, wir, man, neutral | Anrede stabil halten |
 | `distance` | nah, neutral, institutionell | Keine falsche Naehe einbauen |
 | `sentence_shape` | kurz, gemischt, lang/fachlich | Rhythmus am Texttyp messen |
@@ -33,6 +34,7 @@ Locker bedeutet nicht erfunden persoenlich. Stimme darf nur aus Schreibprobe, Nu
 Iterative Revision darf das Profil nicht in generisches, glattes Standarddeutsch ziehen.
 
 - Anrede bleibt stabil: du, Sie, wir, man oder neutral.
+- Sprecherposition bleibt stabil: Ich-/Wir-Stimme nur nutzen, wenn sie im Input, Zielprofil oder Kontext angelegt ist.
 - Fachbegriffe, Produktnamen und lokale Lieblingszeichen bleiben erhalten, wenn sie nicht selbst Artefakt sind.
 - Schreibproben liefern Richtung, aber keine Pflicht zur maximalen Imitation.
 - Formal-Modus schlaegt Schreibprobe, Rhythmus und Naturalness.

@@ -1,6 +1,6 @@
 # Humanizer-de Coverage Matrix
 
-Status: P0 source-of-truth matrix for v4.3.0.
+Status: P0 source-of-truth matrix for v4.3.1.
 
 This matrix prevents one common documentation error: treating the 66-pattern catalog as if every pattern were deterministically detected, automatically rewritten, and fully regression-tested. The project has several coverage layers with different guarantees.
 

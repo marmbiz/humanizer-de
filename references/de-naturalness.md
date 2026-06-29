@@ -1,6 +1,27 @@
 # Deutsch-spezifische Naturalness Rule Cards
 
-Diese Karten operationalisieren die spaeten Muster 54, 55, 58, 60, 63, 64 und 65. Sie ersetzen keine Cluster-Regel.
+Diese Karten operationalisieren die spaeten Muster 54, 55, 58, 60, 63, 64 und 65 sowie registerbezogene Naturalness-Gates. Sie ersetzen keine Cluster-Regel.
+
+## Deixis und Sprecherposition
+
+- Signal: Der Text wechselt zwischen `ich`, `wir`, `man`, neutraler Darstellung und direkter Anrede oder versteckt jede Verantwortlichkeit in Passiv/`man`, obwohl der Texttyp eine klare Sprecherposition braucht.
+- Schlechter Reflex: Ich-, Wir- oder Du-Stimme einbauen, weil das "menschlicher" klingt.
+- Sicherer Eingriff: vorhandene Sprecherposition stabilisieren; unklare `man`-Sätze nur dann konkretisieren, wenn Akteur und Register im Input erkennbar sind.
+- Nicht anfassen: Formal-, Rechts-, Wissenschafts- und Behördentexte, in denen neutrale oder institutionelle Sprecherposition textsortentypisch ist.
+
+## Diskursmarker und pragmatische Haltung
+
+- Signal: Jeder Absatz wird mit logischen Markern wie "daher", "somit", "darüber hinaus" oder "hingegen" verkettet, obwohl der Zusammenhang aus Inhalt und Reihenfolge schon klar ist.
+- Schlechter Reflex: Marker durch "ehrlich gesagt", "na ja", "eigentlich" oder andere Haltungssignale ersetzen.
+- Sicherer Eingriff: redundante Marker streichen oder Übergang über Thema-Rhema-Anschluss führen; im Locker-Modus höchstens ein passendes Haltungssignal, wenn Ton und Zielprofil es tragen.
+- Nicht anfassen: argumentative, wissenschaftliche oder juristische Texte, in denen explizite logische Marker die Leserführung verbessern.
+
+## Verbalstil statt Nominalstil
+
+- Signal: Nominalketten wie "Durchführung der Analyse", "Nutzung von Daten", "Umsetzung der Maßnahmen" verdecken einen vorhandenen Akteur oder Prozess.
+- Schlechter Reflex: jedes abstrakte Substantiv in Umgangssprache übersetzen.
+- Sicherer Eingriff: nominalisierte Vorgänge in Verben zurückführen, wenn Akteur und Handlung im Text stehen: "die Analyse durchführen" -> "analysieren"; "die Nutzung von" -> "nutzen".
+- Nicht anfassen: feste Fachbegriffe, Rechtsbegriffe, wissenschaftliche Terminologie oder bewusst verdichtete Überschriften.
 
 ## 54 Doppelpunkt-Titel
 
@@ -33,9 +54,16 @@ Diese Karten operationalisieren die spaeten Muster 54, 55, 58, 60, 63, 64 und 65
 ## 63 Modalpartikeln
 
 - Signal: partikelarmes Naehe-Register oder Partikel-Ueberdosis.
-- Schlechter Reflex: "ja", "doch", "eben", "halt" ueber den Text streuen.
+- Schlechter Reflex: "ja", "doch", "eben", "halt" ueber den Text streuen, um Menschlichkeit zu simulieren.
 - Sicherer Eingriff: maximal eine passende Partikel pro Absatz im Locker-Modus.
 - Nicht anfassen: Sachlich/Formal.
+
+## Anti-Entropy-Reflex
+
+- Signal: Ein Text wirkt gleichförmig, aber inhaltlich korrekt.
+- Schlechter Reflex: Satzfragmente, Regelbrüche, Füllwörter, Fehler oder willkürliche seltene Wörter einsetzen, um Vorhersagbarkeit zu senken.
+- Sicherer Eingriff: Satzlängen aus vorhandener Aussage spreizen, Vorfeld rotieren, Absätze nach Substanz gewichten und Wiederholungen reduzieren.
+- Nicht anfassen: fachliche Präzision, verständliche Wiederholung, Terminologiekonsistenz oder formale Gleichmäßigkeit ohne Lesbarkeitsproblem.
 
 ## 64 KI-Marker-Vokabular
 

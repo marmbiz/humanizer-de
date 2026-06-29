@@ -5,7 +5,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-EXPECTED_VERSION = "4.3.0"
+EXPECTED_VERSION = "4.3.1"
 EXPECTED_PATTERN_COUNT = 66
 
 
@@ -70,6 +70,41 @@ class SkillStructureTests(unittest.TestCase):
         self.assertIn("Scenario contracts", coverage)
         self.assertIn("Disallowed Coverage Claims", coverage)
         self.assertIn("All 66 patterns are deterministically detected", coverage)
+        self.assertIn("Unsourced Idea Intake", research)
+        self.assertIn("Maximize entropy", research)
+
+    def test_naturalness_guidance_blocks_unsafe_persona_and_entropy_moves(self):
+        skill = (ROOT / "SKILL.md").read_text()
+        naturalness = (ROOT / "references" / "de-naturalness.md").read_text()
+        profiles = (ROOT / "references" / "register-profiles.md").read_text()
+        research = (ROOT / "docs" / "naturalness-research-brief.md").read_text()
+
+        self.assertIn("Deixis nur stabilisieren, nicht erfinden", skill)
+        self.assertIn("Keine künstlichen Fragmente, Regelbrüche oder Partikel einsetzen", skill)
+
+        self.assertIn("Deixis und Sprecherposition", naturalness)
+        self.assertIn("Diskursmarker und pragmatische Haltung", naturalness)
+        self.assertIn("Verbalstil statt Nominalstil", naturalness)
+        self.assertIn("Anti-Entropy-Reflex", naturalness)
+
+        self.assertIn("deictic_center", profiles)
+        self.assertIn("Sprecherposition bleibt stabil", profiles)
+
+        self.assertIn("Accepted as internal heuristics only", research)
+        self.assertIn("Rejected as unsafe defaults", research)
+
+    def test_ai_involvement_audit_stays_roadmap_not_active_skill(self):
+        skill = (ROOT / "SKILL.md").read_text()
+        research = (ROOT / "docs" / "naturalness-research-brief.md").read_text()
+
+        self.assertNotIn("references/ai-involvement-audit.md", skill)
+        self.assertNotIn("Hinweisdichte", skill)
+        self.assertFalse((ROOT / "references" / "ai-involvement-audit.md").exists())
+
+        self.assertIn("Roadmap Ideas", research)
+        self.assertIn("Calibrated AI-involvement audit", research)
+        self.assertIn("labeled German benchmark", research)
+        self.assertIn("not authorship proof or uncalibrated percentages", research)
 
 
 if __name__ == "__main__":

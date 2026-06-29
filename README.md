@@ -113,7 +113,11 @@ Das Skill analysiert **66 verschiedene KI-Schreibmuster** in 10 Kategorien, prio
 
 ## Was ist neu?
 
-### 4.3.0 (aktuell)
+### 4.3.1 (aktuell)
+- Naturalness-Guidance geschärft: Sprecherposition (`ich`/`wir`/`man`/neutral), pragmatische Übergänge und Verbalstil werden nur aus Input, Zielprofil und Register abgeleitet
+- Anti-Entropy-Leitplanke ergänzt: keine künstlichen Fragmente, Regelbrüche, Partikeln, Anekdoten oder seltenen Wörter einsetzen, nur um weniger vorhersagbar zu klingen
+
+### 4.3.0
 - Factual-Reliability-Gate geschärft: Muster 26 ist jetzt HIGH und behandelt fabrizierte, unverifizierbare oder formal echte, aber nicht tragende Referenzen als Belegproblem statt als Stilfrage
 - Muster 16 auf Dash-Satzzeichen erweitert: `—`, `–`, ` -- ` und ` - ` als mechanische Satzzeichen werden nicht durch Glyph-Tausch "repariert", sondern per Satzbau, Punkt, Komma, Doppelpunkt, Semikolon, Klammer oder Streichung gelöst; Wort-Bindestriche, Namen, IDs, URLs und echte Bereichsstriche bleiben geschützt
 - `references/evidence-ledger.md` ergänzt ein Factual-Reliability-Gate; `docs/naturalness-research-brief.md` dokumentiert erste Quellenanker für Citation-Fabrication und Excess-Vocabulary als Research-Hintergrund
@@ -550,6 +554,7 @@ Haben Sie ein Problem gefunden oder eine Verbesserung?
 
 ## Versionshistorie
 
+- **4.3.1** - Naturalness-Guidance für Sprecherposition, pragmatische Übergänge und Verbalstil geschärft; Anti-Entropy-Leitplanke ergänzt
 - **4.3.0** - Factual-Reliability-Gate geschärft; Muster 26 auf HIGH gesetzt; Muster 16 auf Dash-Satzzeichen inklusive ` - ` / ` -- ` erweitert; Research- und Coverage-Grundlagen in `docs/` ergänzt
 - **4.2.1** - `rhythm_lint.py`: Muster 51 aus Suspicion-Output entfernt (Validitätsproblem); Muster 55 SIR auf empirisch validierte Cluster-Logik umgestellt
 - **4.2.0** - Muster 66 (Fake-Analyse-Anhang): syntaktische Anhang-Konstruktion ohne Informationsgehalt; Muster 35/39 erweitert (Fragenstapel / Unpersönlicher Akteur); 66 Muster

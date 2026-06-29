@@ -1,7 +1,7 @@
 ---
 name: Humanizer (Deutsch)
 description: Fokus: deutschen Text humanisieren, KI-Schreibmuster entfernen und deutsche KI-Tells auditieren.
-version: 4.3.0
+version: 4.3.1
 author: Martin Moeller
 maintainer_website: 'https://www.martin-moeller.biz'
 based_on: 'Deutsche Wikipedia: Anzeichen für KI-generierte Inhalte, Erkennung KI-Einsatz, Schnelltest KI'
@@ -41,6 +41,7 @@ Bestimme zuerst den Modus. Wenn unklar, nimm **Sachlich** an und sage das.
 - Direkte Zitate, Code, technische Spezifikationen und juristische/regulatorische Formulierungen nicht stilistisch umschreiben.
 - Quellen nur aus Input oder Kontext übernehmen. Wenn eine Quelle nicht prüfbar ist, den Prüfstatus markieren.
 - Ich-Erfahrung, Anekdoten und Meinungen nur übernehmen, wenn sie im Input oder Kontext stehen. Erfundene Erfahrung ist Fabrikation (Muster 59).
+- Deixis nur stabilisieren, nicht erfinden: `ich`, `wir`, `du`, `Sie`, `man` und neutrale Sprecherposition bleiben am Texttyp, Input und Zielprofil ausgerichtet.
 - Zahlen, Namen, Daten, Quellenanker, Zitate, Code und Normverweise vor/nach jeder Änderung abgleichen. Neue konkrete Anker nur übernehmen, wenn sie im Input oder Kontext stehen.
 - Substanz erhalten. Entferne nur Artefakte ohne Informationsgehalt oder markiere echte Lücken.
 - Statistische Detektoren (GPTZero u. a.) messen Perplexity und Satzrhythmus, nicht diese Muster. Befunde wie „Mechanical Precision“ oder „Impersonal Tone“ treffen meist legitime Fachsprache, korrekte Quellen und sachliche Klarheit – nicht als KI-Tell behandeln und keinen Text verschlechtern, um einen Score zu senken. Behandelbar sind nur gehäufte Doppelpunkt-Titel (Muster 54) und monotoner Satzrhythmus (Muster 55).
@@ -68,7 +69,7 @@ False Friends aus Muster 45 immer korrigieren. Calques und syntaktische Transfer
 
 Spätere Pässe dürfen frühere nicht invalidieren. Rhythmus immer zuletzt.
 
-**Pass 0 – Triage.** Modus, Texttyp, Scope und Ziel bestimmen. Schreibprobe vorhanden? Dann Satzrhythmus, Wortniveau, Absatzanfänge, Anrede, Distanz, Terminologie und Lieblingszeichen als Zielprofil festhalten (im Formal-Modus nur KI-Tells entfernen). Bei Datei-Input: `python3 scripts/unicode_lint.py --file <path>` und `python3 scripts/rhythm_lint.py --file <path> --scope user_text --mode <modus>` ausführen, Kennzahlen notieren. Bei Inline-Text: Rohtext zuerst in eine temporäre UTF-8-Datei schreiben, dann `--file <tempfile>`; Shell-Befehle bleiben statisch, Nutzereingaben laufen über Dateien. Läuft ein Script nicht, das melden und nicht blind per Hand korrigieren.
+**Pass 0 – Triage.** Modus, Texttyp, Scope und Ziel bestimmen. Schreibprobe vorhanden? Dann Satzrhythmus, Wortniveau, Absatzanfänge, Sprecherposition (`ich`/`wir`/`man`/neutral), Anrede, Distanz, Terminologie und Lieblingszeichen als Zielprofil festhalten (im Formal-Modus nur KI-Tells entfernen). Bei Datei-Input: `python3 scripts/unicode_lint.py --file <path>` und `python3 scripts/rhythm_lint.py --file <path> --scope user_text --mode <modus>` ausführen, Kennzahlen notieren. Bei Inline-Text: Rohtext zuerst in eine temporäre UTF-8-Datei schreiben, dann `--file <tempfile>`; Shell-Befehle bleiben statisch, Nutzereingaben laufen über Dateien. Läuft ein Script nicht, das melden und nicht blind per Hand korrigieren.
 
 **Pass 1 – Artefakte und Evidenz (immer, Einzelbefund genügt).** Chatbot-Floskeln, Platzhalter, Quellenprobleme (Decision Table Evidenz), Unicode, falsche Typografie und Claim-Delta prüfen. Bei Overlaps zuerst [references/decision-tables.md](references/decision-tables.md); [references/evidence-ledger.md](references/evidence-ledger.md) bei Faktenankern; [references/patterns.md](references/patterns.md) nur für konkrete Musterdiagnose, Audit oder Grenzfälle laden. Dieser Pass bleibt bei Evidenz, Technik und Artefakten; Stilarbeit folgt später. Für sichere Datei-Korrekturen: `unicode_lint.py --fix --write`.
 
@@ -82,6 +83,7 @@ Spätere Pässe dürfen frühere nicht invalidieren. Rhythmus immer zuletzt.
 - Absatzlängen entzerren: nicht jeder Absatz 3–5 Sätze.
 - Konnektor-Budget: höchstens ein mechanischer Konnektor pro Absatz; Übergänge bevorzugt über inhaltliche Anknüpfung (Thema-Rhema).
 - Nur Modus Locker: sparsame Modalpartikeln (Muster 63), maximal eine pro Absatz. Sachlich/Formal bleiben ohne künstlich nachgerüstete Partikeln.
+- Keine künstlichen Fragmente, Regelbrüche oder Partikel einsetzen, nur um „menschlicher“ zu wirken. Rhythmusarbeit nutzt vorhandene Aussage, nicht Fehler oder Schauspiel.
 
 **Pass 5 – Selbst-Audit (immer).** Eigene Änderungen gegen Katalog, Zielprofil und Claim-Lock prüfen: Hat eine Ersetzungsregel neue Monotonie erzeugt (gleiche Ersatzkonstruktion 3+ Mal → Strategie rotieren, vgl. Muster 16 vs. 51)? Quellen, Erfahrung (Muster 59), Faktenanker, Substanz und Output-Länge bleiben durch Input oder Kontext gedeckt. Danach Kurzaudit ausgeben.
 

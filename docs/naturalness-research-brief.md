@@ -51,6 +51,28 @@ The following are internal Humanizer-de heuristics unless separately sourced:
 
 These are valid audit inputs, but they must be labeled as project rules or quality gates, not as independent research findings.
 
+## Unsourced Idea Intake
+
+Ideas submitted as planning notes, examples, or "scientific mechanisms" are not external evidence until they are sourced. They may still be useful as internal heuristics after filtering through the project safeguards.
+
+Accepted as internal heuristics only:
+
+- Stabilize speaker position and address form when the input or target profile supports it.
+- Prefer verbs over nominalized process nouns when the actor and action are present.
+- Replace mechanical logical connectors with content-led transitions where the relation is already clear.
+- Use modal particles only in Locker mode and only when the target voice carries them.
+
+Rejected as unsafe defaults:
+
+- "Maximize entropy" as a goal.
+- Add sentence fragments, grammar breaks, slang, or rare words to lower predictability.
+- Add `ich`, `wir`, `du`, anecdotes, emotion, or opinion without input/context anchors.
+- Treat passive voice, `man`, formal register, or Nominalstil as AI evidence in Formal, legal, technical, academic, or institutional text.
+
+## Roadmap Ideas
+
+- Calibrated AI-involvement audit: possible future mode for asking whether AI was likely involved. Keep it out of the active skill until there is a labeled German benchmark, a documented calibration method, and known false-positive/false-negative rates. If built later, it should report evidence-density bands with uncertainty, not authorship proof or uncalibrated percentages.
+
 ## Required Framing For Future Audit Docs
 
 Every artifact created from this research brief should include the same boundary:
