@@ -487,7 +487,18 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     source.add_argument("--text", help="Text to analyze. Intended for smoke tests.")
     parser.add_argument("--scope", choices=["skill_doc", "user_text", "changed_passages"], default="user_text")
     parser.add_argument("--mode", choices=["locker", "sachlich", "formal"], default="sachlich")
+    parser.add_argument("--include-paragraphs", action="store_true", help="Print full paragraph-level diagnostics.")
     return parser.parse_args(argv)
+
+
+def compact_cli_report(report: dict) -> dict:
+    compact = dict(report)
+    document = dict(compact["document"])
+    document.pop("paragraph_sentence_counts", None)
+    document.pop("connector_density_by_paragraph", None)
+    compact["document"] = document
+    compact.pop("paragraphs", None)
+    return compact
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -498,7 +509,10 @@ def main(argv: list[str] | None = None) -> int:
     else:
         text = args.text
         file_name = "<text>"
-    print(json.dumps(analyze(text, file=file_name, scope=args.scope, mode=args.mode), ensure_ascii=False, indent=2))
+    report = analyze(text, file=file_name, scope=args.scope, mode=args.mode)
+    if not args.include_paragraphs:
+        report = compact_cli_report(report)
+    print(json.dumps(report, ensure_ascii=False, indent=2))
     return 0
 
 

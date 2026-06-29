@@ -5,12 +5,12 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-EXPECTED_VERSION = "4.3.1"
+EXPECTED_VERSION = "5.0.0"
 EXPECTED_PATTERN_COUNT = 66
 
 
 class SkillStructureTests(unittest.TestCase):
-    def test_skill_is_v43_sop_router(self):
+    def test_skill_is_sop_router(self):
         text = (ROOT / "SKILL.md").read_text()
         self.assertIn(f"version: {EXPECTED_VERSION}", text)
         self.assertIn("<!-- SLOW_UPDATE_START -->", text)

@@ -105,6 +105,22 @@ Das Skill analysiert Satzrhythmus, Wortwahl und Eigenheiten und berücksichtigt 
 Humanisiere diesen Text. Entferne nur sprachliche Muster, nicht die Formatierung.
 ```
 
+### Lokaler Schnellcheck
+
+Für Datei-Input ist der erste deterministische Schritt ein kompakter Sammelcheck:
+
+```bash
+python3 scripts/humanizer_audit.py --file <text.md> --mode sachlich
+```
+
+Für Arbeitsordner mit Markdown-Entwürfen kann der neueste Stand automatisch gewählt werden:
+
+```bash
+python3 scripts/humanizer_audit.py --latest <dir> --mode sachlich --format md
+```
+
+Der Sammelcheck ruft Unicode-, Rhythmus-, Naturalness- und Register-Prüfung in einem Prozess auf und gibt eine kurze gemeinsame Befundliste aus. Die Einzelskripte bleiben für gezielte Nachprüfung nutzbar; `scripts/rhythm_lint.py` druckt standardmäßig eine kompakte Dokumentansicht und zeigt volle Absatzdaten nur mit `--include-paragraphs`.
+
 ---
 
 ## Was das Skill erkennt
@@ -113,7 +129,12 @@ Das Skill analysiert **66 verschiedene KI-Schreibmuster** in 10 Kategorien, prio
 
 ## Was ist neu?
 
-### 4.3.1 (aktuell)
+### 5.0.0 (aktuell)
+- Performance-Release für den Audit-Workflow: neuer Orchestrator `scripts/humanizer_audit.py` führt Unicode-, Rhythmus-, German-Pattern- und Register-Lint in **einem** In-Process-Aufruf zusammen (`--file`/`--latest`, `--mode`, `--format json|md`) und liefert kompakte, zusammengeführte Findings inklusive Unicode-Kind-Collapse
+- `scripts/rhythm_lint.py` gibt im CLI standardmäßig kompakt aus; die Absatz-Arrays liegen jetzt hinter `--include-paragraphs`. **Breaking Change** des CLI-Default-Outputs; die programmatische `analyze()`-API bleibt unverändert
+- Wirkung: Audit-Ausgabe rund 99 % kleiner (49 KB → 0,6 KB pro Post), Analyse-Phase von etwa 10 Tool-Roundtrips auf einen
+
+### 4.3.1
 - Naturalness-Guidance geschärft: Sprecherposition (`ich`/`wir`/`man`/neutral), pragmatische Übergänge und Verbalstil werden nur aus Input, Zielprofil und Register abgeleitet
 - Anti-Entropy-Leitplanke ergänzt: keine künstlichen Fragmente, Regelbrüche, Partikeln, Anekdoten oder seltenen Wörter einsetzen, nur um weniger vorhersagbar zu klingen
 
@@ -496,8 +517,11 @@ Das führt die Unit-Tests, Unicode-/Rhythmus-Smoke-Tests, Evidence-, Register- u
 Einzelchecks:
 
 ```bash
-python3 scripts/unicode_lint.py --file SKILL.md
+python3 scripts/humanizer_audit.py --file <text.md> --mode sachlich
+python3 scripts/humanizer_audit.py --latest <dir> --mode sachlich --format md
+python3 scripts/unicode_lint.py --file <text.md>
 python3 scripts/rhythm_lint.py --file <text.md> --scope user_text --mode sachlich
+python3 scripts/rhythm_lint.py --file <text.md> --scope user_text --mode sachlich --include-paragraphs
 python3 scripts/evidence_lint.py --before-file before.md --after-file after.md
 python3 scripts/register_lint.py --file <text.md> --mode formal
 python3 scripts/german_pattern_lint.py --file <text.md> --mode locker
@@ -553,6 +577,7 @@ Haben Sie ein Problem gefunden oder eine Verbesserung?
 
 ## Versionshistorie
 
+- **5.0.0** - Performance-Release: neuer Orchestrator `scripts/humanizer_audit.py` bündelt Unicode-, Rhythmus-, German-Pattern- und Register-Lint in einem In-Process-Aufruf (`--file`/`--latest`, `--mode`, `--format json|md`) mit zusammengeführten, kompakten Findings und Unicode-Kind-Collapse; `rhythm_lint.py`-CLI standardmäßig kompakt (Absatz-Arrays nur noch via `--include-paragraphs`) — **Breaking Change des CLI-Defaults**, `analyze()`-API unverändert; Audit-Ausgabe rund 99 % kleiner (49 KB → 0,6 KB pro Post), Analyse-Phase von ~10 Tool-Roundtrips auf 1
 - **4.3.1** - Naturalness-Guidance für Sprecherposition, pragmatische Übergänge und Verbalstil geschärft; Anti-Entropy-Leitplanke ergänzt
 - **4.3.0** - Factual-Reliability-Gate geschärft; Muster 26 auf HIGH gesetzt; Muster 16 auf Dash-Satzzeichen inklusive ` - ` / ` -- ` erweitert; Research- und Coverage-Grundlagen in `docs/` ergänzt
 - **4.2.1** - `rhythm_lint.py`: Muster 51 aus Suspicion-Output entfernt (Validitätsproblem); Muster 55 SIR auf empirisch validierte Cluster-Logik umgestellt

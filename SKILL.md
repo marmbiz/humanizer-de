@@ -1,7 +1,7 @@
 ---
 name: Humanizer (Deutsch)
 description: Fokus: deutschen Text humanisieren, KI-Schreibmuster entfernen und deutsche KI-Tells auditieren.
-version: 4.3.1
+version: 5.0.0
 author: Martin Moeller
 maintainer_website: 'https://www.martin-moeller.biz'
 based_on: 'Deutsche Wikipedia: Anzeichen für KI-generierte Inhalte, Erkennung KI-Einsatz, Schnelltest KI'
@@ -69,7 +69,7 @@ False Friends aus Muster 45 immer korrigieren. Calques und syntaktische Transfer
 
 Spätere Pässe dürfen frühere nicht invalidieren. Rhythmus immer zuletzt.
 
-**Pass 0 – Triage.** Modus, Texttyp, Scope und Ziel bestimmen. Schreibprobe vorhanden? Dann Satzrhythmus, Wortniveau, Absatzanfänge, Sprecherposition (`ich`/`wir`/`man`/neutral), Anrede, Distanz, Terminologie und Lieblingszeichen als Zielprofil festhalten (im Formal-Modus nur KI-Tells entfernen). Bei Datei-Input: `python3 scripts/unicode_lint.py --file <path>` und `python3 scripts/rhythm_lint.py --file <path> --scope user_text --mode <modus>` ausführen, Kennzahlen notieren. Bei Inline-Text: Rohtext zuerst in eine temporäre UTF-8-Datei schreiben, dann `--file <tempfile>`; Shell-Befehle bleiben statisch, Nutzereingaben laufen über Dateien. Läuft ein Script nicht, das melden und nicht blind per Hand korrigieren.
+**Pass 0 – Triage.** Modus, Texttyp, Scope und Ziel bestimmen. Schreibprobe vorhanden? Dann Satzrhythmus, Wortniveau, Absatzanfänge, Sprecherposition (`ich`/`wir`/`man`/neutral), Anrede, Distanz, Terminologie und Lieblingszeichen als Zielprofil festhalten (im Formal-Modus nur KI-Tells entfernen). Bei Datei-Input zuerst den kompakten Sammelcheck ausführen: `python3 scripts/humanizer_audit.py --file <path> --mode <modus>`. Für den neuesten Markdown-Entwurf in einem Ordner: `python3 scripts/humanizer_audit.py --latest <dir> --mode <modus>`. Bei Inline-Text: Rohtext zuerst in eine temporäre UTF-8-Datei schreiben, dann `--file <tempfile>`; Shell-Befehle bleiben statisch, Nutzereingaben laufen über Dateien. Einzelchecks wie `unicode_lint.py`, `rhythm_lint.py`, `german_pattern_lint.py` und `register_lint.py` bleiben für gezielte Nachprüfung nutzbar; Rhythmusdetails mit Absatzdaten nur bei Bedarf über `python3 scripts/rhythm_lint.py --file <path> --scope user_text --mode <modus> --include-paragraphs` ausgeben. Läuft ein Script nicht, das melden und nicht blind per Hand korrigieren.
 
 **Pass 1 – Artefakte und Evidenz (immer, Einzelbefund genügt).** Chatbot-Floskeln, Platzhalter, Quellenprobleme (Decision Table Evidenz), Unicode, falsche Typografie und Claim-Delta prüfen. Bei Overlaps zuerst [references/decision-tables.md](references/decision-tables.md); [references/evidence-ledger.md](references/evidence-ledger.md) bei Faktenankern; [references/patterns.md](references/patterns.md) nur für konkrete Musterdiagnose, Audit oder Grenzfälle laden. Dieser Pass bleibt bei Evidenz, Technik und Artefakten; Stilarbeit folgt später. Für sichere Datei-Korrekturen: `unicode_lint.py --fix --write`.
 
@@ -124,8 +124,9 @@ Wenn der Nutzer eine Datei übergibt und Änderungen verlangt, editiere die Date
 - Faktenanker/Claim-Delta: [references/evidence-ledger.md](references/evidence-ledger.md)
 - Registerprofile: [references/register-profiles.md](references/register-profiles.md)
 - Deutsche Naturalness-Karten: [references/de-naturalness.md](references/de-naturalness.md)
+- Kompakter Sammelcheck: `scripts/humanizer_audit.py`
 - Unicode-/Quote-Linter: `scripts/unicode_lint.py`
-- Rhythmus-/Burstiness-Messung: `scripts/rhythm_lint.py`
+- Rhythmus-/Burstiness-Messung: `scripts/rhythm_lint.py` (`--include-paragraphs` fuer volle Absatzdaten)
 - Evidence-/Register-/Naturalness-Checks: `scripts/evidence_lint.py`, `scripts/register_lint.py`, `scripts/german_pattern_lint.py`
 
 <!-- FAST_UPDATE_END -->

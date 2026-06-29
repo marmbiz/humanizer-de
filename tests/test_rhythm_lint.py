@@ -1,5 +1,8 @@
+import io
 import importlib.util
+import json
 import unittest
+from contextlib import redirect_stdout
 from pathlib import Path
 
 
@@ -13,6 +16,13 @@ spec.loader.exec_module(rhythm_lint)
 
 def pattern_ids(report):
     return {item["pattern"] for item in report["suspicions"]}
+
+
+def run_cli(argv):
+    stdout = io.StringIO()
+    with redirect_stdout(stdout):
+        exit_code = rhythm_lint.main(argv)
+    return exit_code, json.loads(stdout.getvalue())
 
 
 class RhythmLintTests(unittest.TestCase):
@@ -114,6 +124,24 @@ class RhythmLintTests(unittest.TestCase):
         )
         report = rhythm_lint.analyze(text, mode="formal")
         self.assertNotIn(51, pattern_ids(report))
+
+    def test_cli_default_omits_paragraph_details(self):
+        exit_code, report = run_cli(["--text", "Kurz. Noch ein Satz."])
+        self.assertEqual(exit_code, 0)
+        self.assertNotIn("paragraphs", report)
+        self.assertNotIn("paragraph_sentence_counts", report["document"])
+        self.assertNotIn("connector_density_by_paragraph", report["document"])
+        self.assertIn("paragraph_sentence_counts_uniform", report["document"])
+        self.assertIn("raw_suspicions", report)
+        self.assertIn("suppressed", report)
+        self.assertIn("suspicions", report)
+
+    def test_cli_include_paragraphs_restores_full_output(self):
+        exit_code, report = run_cli(["--text", "Kurz. Noch ein Satz.", "--include-paragraphs"])
+        self.assertEqual(exit_code, 0)
+        self.assertIn("paragraphs", report)
+        self.assertIn("paragraph_sentence_counts", report["document"])
+        self.assertIn("connector_density_by_paragraph", report["document"])
 
 
 if __name__ == "__main__":
