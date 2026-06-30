@@ -1,9 +1,9 @@
 interface:
   display_name: "Humanizer (Deutsch)"
-  short_description: "German humanizer for Claude/Codex"
+  short_description: "German AI text humanizer for Claude/Codex"
   icon_small: "./assets/banner-light.svg"
   icon_large: "./assets/banner-light.svg"
   brand_color: "#C4501F"
-  default_prompt: "Use $humanizer-de to humanize this German text without changing facts."
+  default_prompt: "Use $humanizer-de to audit and humanize this German text without changing facts."
 policy:
   allow_implicit_invocation: true

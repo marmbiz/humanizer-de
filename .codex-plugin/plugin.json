@@ -1,7 +1,7 @@
 {
   "name": "humanizer-de",
   "version": "5.0.0",
-  "description": "Deutsche KI-Schreibmuster erkennen und entfernen. Supports Claude Code and Codex. 66 Muster für deutschsprachige Texte.",
+  "description": "German AI Text Humanizer / deutscher Humanizer Skill: KI-Schreibmuster in deutschen Texten auditieren und belegtreu überarbeiten. Supports Claude Code and Codex. 66 Muster für deutschsprachige Texte.",
   "skills": "./skills/",
   "author": {
     "name": "Martin Moeller",
@@ -15,14 +15,22 @@
     "editing",
     "ai-detection",
     "humanizer",
+    "ai-humanizer",
+    "claude-skill",
+    "claude-code",
+    "codex-skill",
     "german",
     "deutsch",
+    "ki-text",
+    "ki-texte-humanisieren",
+    "germanizer",
+    "prompt-engineering",
     "skill"
   ],
   "interface": {
     "displayName": "Humanizer (Deutsch)",
-    "shortDescription": "German humanizer for Claude/Codex",
-    "longDescription": "Humanizer (Deutsch) prüft deutschsprachige Texte auf typische KI-Schreibmuster und hilft, sie belegtreu, registerstabil und natürlicher zu überarbeiten. Supports Claude Code and Codex.",
+    "shortDescription": "German AI text humanizer for Claude/Codex",
+    "longDescription": "Humanizer (Deutsch) ist ein German AI Text Humanizer und deutscher Humanizer Skill für Claude Code und Codex. Er prüft deutschsprachige Texte auf typische KI-Schreibmuster und hilft, sie belegtreu, registerstabil und natürlicher zu überarbeiten. Supports Claude Code and Codex.",
     "developerName": "Martin Moeller",
     "category": "Productivity",
     "capabilities": [

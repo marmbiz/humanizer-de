@@ -118,6 +118,7 @@ Die API liefert bei leeren Ergebnislisten den Status 200 und ein leeres Array. E
 **Erwartetes Verhalten (Pass/Fail):**
 - [ ] Der Skill meldet den Text als sauber oder gibt höchstens unkritische Hinweise aus; es werden keine Vorher/Nachher-Paare erzeugt.
 - [ ] Fachbegriffe, Codefragmente, Statuscodes und Quellenhinweise bleiben unverändert; „Mechanical Precision“ oder „Impersonal Tone“ werden nicht als KI-Tell behandelt.
+- [ ] Falls Lint-/Audit-Flags vorlagen, darf optional ein Block „Verworfene Kandidaten“ erscheinen, der jede erwogene Änderung an ein konkretes Flag oder eine Textstelle bindet und begründet, warum sie unterbleibt; ohne geprüfte Stelle erfundene Kandidaten sind ein Fail.
 
 **Relevante Muster:** Keine Eingriffe; bewusst nicht feuern: Muster 39 (legitime sachliche Passivnähe), Muster 55 (kein behandlungsbedürftiger monotoner Rhythmus), Muster 65 (keine gehäufte Kopula-Vermeidung).
 

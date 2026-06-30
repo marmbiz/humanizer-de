@@ -1,7 +1,8 @@
 {
   "name": "humanizer-de",
   "interface": {
-    "displayName": "Humanizer DE"
+    "displayName": "Humanizer DE",
+    "description": "German AI Text Humanizer / deutscher Humanizer Skill für Claude Code und Codex"
   },
   "plugins": [
     {

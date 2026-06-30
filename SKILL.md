@@ -1,6 +1,6 @@
 ---
 name: humanizer-de
-description: deutschen Text humanisieren, KI-Schreibmuster entfernen und deutsche KI-Tells auditieren; use for German AI-writing pattern checks, evidence-safe rewrites, register/naturalness audits.
+description: deutschen Text humanisieren, KI-Schreibmuster/KI-Tells auditieren; German AI Text Humanizer für Claude Code/Codex, evidence-safe rewrites, Register- und Naturalness-Checks.
 allowed-tools: [Read, Write, Edit, Grep, Glob, Bash]
 metadata:
   display_name: Humanizer (Deutsch)
@@ -9,7 +9,7 @@ metadata:
   maintainer_website: https://www.martin-moeller.biz
   based_on: 'Deutsche Wikipedia: Anzeichen für KI-generierte Inhalte, Erkennung KI-Einsatz, Schnelltest KI'
   original_skill: https://github.com/blader/humanizer
-  tags: [writing, ai-detection, german, wikipedia, text-improvement]
+  tags: [writing, ai-detection, humanizer, ai-humanizer, claude-skill, codex-skill, german, deutsch, ki-text, germanizer, prompt-engineering, wikipedia, text-improvement]
 ---
 
 # Humanizer (Deutsch)
@@ -115,6 +115,7 @@ Format:
 2. **Gefundene Muster:** maximal 6 konkrete Bullet Points mit kurzem Zitat.
 3. **Geänderte Stellen:** Vorher/Nachher-Paare nur für bearbeitete Passagen.
 4. **Kurzaudit:** maximal 3 verbleibende Tells oder „Keine gefunden.“
+5. **Verworfene Kandidaten:** nur ausgeben, wenn Lint-/Audit-Flags vorlagen und nach Prüfung höchstens zwei echte Änderungen nötig waren. Jede Zeile muss auf ein konkretes Flag oder eine konkrete Textstelle verweisen: erwogene Änderung plus ein Satz, warum sie Substanz, Rhythmus, Register oder Belegtreue verschlechtern würde. Ohne konkret geprüfte Stelle kein Eintrag; ist nichts belegbar, Block weglassen.
 
 Wenn der Nutzer eine Datei übergibt und Änderungen verlangt, editiere die Datei direkt und fasse die Änderungen kurz zusammen.
 

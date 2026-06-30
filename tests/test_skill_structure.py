@@ -154,6 +154,40 @@ class SkillStructureTests(unittest.TestCase):
         self.assertIn("Die Produktivität fiel positiv auf. Der Umsatz verdreifachte sich.", readme)
         self.assertNotIn("in\ndiesem Zeitraum", readme)
 
+    def test_discoverability_metadata_is_present(self):
+        readme = (ROOT / "README.md").read_text()
+        skill = (ROOT / "SKILL.md").read_text()
+        agent_yaml = (ROOT / "agents" / "openai.yaml").read_text()
+        plugin = json.loads((ROOT / ".claude-plugin" / "plugin.json").read_text())
+        codex_plugin = json.loads((ROOT / ".codex-plugin" / "plugin.json").read_text())
+
+        for phrase in [
+            "German AI Text Humanizer",
+            "Claude Humanizer Deutsch",
+            "KI-Texte humanisieren Deutsch",
+            "marmbiz/humanizer-de",
+            "deutschsprachiger Humanizer Skill für Claude Code und Codex",
+        ]:
+            self.assertIn(phrase, readme)
+
+        self.assertIn("German AI Text Humanizer", skill)
+        self.assertIn("German AI text humanizer for Claude/Codex", agent_yaml)
+        self.assertIn("Nicht als Detektor-Garantie", readme)
+        self.assertIn("es erfindet keine Erfahrung, Quellen, Zahlen oder Autorensignale", readme)
+
+        required_keywords = {
+            "ai-humanizer",
+            "claude-skill",
+            "claude-code",
+            "codex-skill",
+            "ki-text",
+            "ki-texte-humanisieren",
+            "germanizer",
+            "prompt-engineering",
+        }
+        self.assertTrue(required_keywords.issubset(set(plugin["keywords"])))
+        self.assertTrue(required_keywords.issubset(set(codex_plugin["keywords"])))
+
 
 if __name__ == "__main__":
     unittest.main()
