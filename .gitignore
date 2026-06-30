@@ -18,5 +18,6 @@ Thumbs.db
 __pycache__/
 *.pyc
 
-# Interner Blog-Entwurf, noch nicht zur Veroeffentlichung (wird spaeter genutzt)
+# Interne Arbeitsdateien, noch nicht zur Veroeffentlichung (wird spaeter genutzt)
 docs/ki-text-eisberg-heuristik-bis-llm.md
+docs/todo-naechste-schritte.md
