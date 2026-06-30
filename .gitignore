@@ -17,3 +17,6 @@ Thumbs.db
 *.bak
 __pycache__/
 *.pyc
+
+# Interner Blog-Entwurf, noch nicht zur Veroeffentlichung (wird spaeter genutzt)
+docs/ki-text-eisberg-heuristik-bis-llm.md
