@@ -5,7 +5,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-EXPECTED_VERSION = "5.1.0"
+EXPECTED_VERSION = "5.1.1"
 EXPECTED_PATTERN_COUNT = 66
 
 
@@ -15,6 +15,18 @@ class SkillStructureTests(unittest.TestCase):
         self.assertRegex(text, rf"version:\s+['\"]?{re.escape(EXPECTED_VERSION)}['\"]?")
         self.assertIn("<!-- SLOW_UPDATE_START -->", text)
         self.assertIn("<!-- FAST_UPDATE_START -->", text)
+        self.assertIn("## Arbeitszweig", text)
+        self.assertIn("Claim-Lock", text)
+        self.assertIn("Persona-Lock", text)
+        self.assertIn("Null-Edit", text)
+        self.assertIn("QGIR ist kein Pass-0-Zweig", text)
+        for pass_id in range(6):
+            segment = re.search(
+                rf"\*\*Pass {pass_id}\b[\s\S]*?(?=\n\n\*\*Pass {pass_id + 1}\b|\n\n\*\*QGIR\b)",
+                text,
+            )
+            self.assertIsNotNone(segment, f"Pass {pass_id} section missing")
+            self.assertIn("Fertig, wenn", segment.group(0), f"Pass {pass_id} missing done criterion")
         self.assertIn("references/patterns.md", text)
         self.assertIn("references/decision-tables.md", text)
         self.assertIn("references/qgir.md", text)
