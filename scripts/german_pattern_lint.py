@@ -68,6 +68,11 @@ def count_marker(text: str, marker: str) -> int:
     return len(re.findall(rf"\b{re.escape(stem)}\w*\b", lowered))
 
 
+def count_particle(text: str, marker: str) -> int:
+    lowered = text.lower()
+    return len(re.findall(rf"\b{re.escape(marker)}\b", lowered))
+
+
 def lint(text: str, mode: str = "sachlich") -> dict:
     lowered = text.lower()
     findings: list[dict] = []
@@ -84,7 +89,7 @@ def lint(text: str, mode: str = "sachlich") -> dict:
     if sum(abstract_hits.values()) >= 3:
         findings.append({"pattern": 58, "kind": "abstraction_cluster", "severity": "warning", "evidence": abstract_hits})
 
-    particle_count = sum(count_marker(lowered, marker) for marker in PARTICLES)
+    particle_count = sum(count_particle(lowered, marker) for marker in PARTICLES)
     if mode in {"sachlich", "formal"} and particle_count:
         findings.append({"pattern": 63, "kind": "particles_outside_locker", "severity": "warning", "evidence": {"count": particle_count}})
     if mode == "locker" and particle_count > 3:
