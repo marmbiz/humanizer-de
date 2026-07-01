@@ -183,7 +183,8 @@ Der Sammelcheck ruft Unicode-, Rhythmus-, Naturalness- und Register-Prüfung in 
 
 Der Skill arbeitet mit einem Katalog aus **66 KI-Schreibmustern** in 10 Kategorien, priorisiert nach Schweregrad (HIGH / MEDIUM / LOW). Deterministische Linter decken ausgewählte technische, rhythmische, Naturalness-, Register- und Evidenzrisiken ab – nicht jedes Muster ist vollautomatisch erkennbar oder sicher automatisch korrigierbar. Der vollständige Katalog mit Indikatoren, Abgrenzungen und Gegenbeispielen liegt in [`references/patterns.md`](references/patterns.md).
 
-### Sprache und Tonfall (18 Muster)
+<details>
+<summary><strong>Sprache und Tonfall (18 Muster)</strong></summary>
 
 | # | Muster | Schwere |
 |---|--------|---------|
@@ -206,7 +207,10 @@ Der Skill arbeitet mit einem Katalog aus **66 KI-Schreibmustern** in 10 Kategori
 | 65 | Kopula-Vermeidung | MEDIUM |
 | 66 | Fake-Analyse-Anhang | MEDIUM |
 
-### Stil (4 Muster)
+</details>
+
+<details>
+<summary><strong>Stil (4 Muster)</strong></summary>
 
 | # | Muster | Schwere |
 |---|--------|---------|
@@ -215,7 +219,10 @@ Der Skill arbeitet mit einem Katalog aus **66 KI-Schreibmustern** in 10 Kategori
 | 15 | Emojis vor Überschriften | LOW |
 | 16 | Dash-Satzzeichen und Gedankenstrich-Cluster | MEDIUM |
 
-### Kommunikation (6 Muster)
+</details>
+
+<details>
+<summary><strong>Kommunikation (6 Muster)</strong></summary>
 
 | # | Muster | Schwere |
 |---|--------|---------|
@@ -226,7 +233,10 @@ Der Skill arbeitet mit einem Katalog aus **66 KI-Schreibmustern** in 10 Kategori
 | 21 | Platzhaltertext ("[Name einfügen]") | HIGH |
 | 22 | Links zu Suchanfragen | HIGH |
 
-### Auszeichnungstext (6 Muster)
+</details>
+
+<details>
+<summary><strong>Auszeichnungstext (6 Muster)</strong></summary>
 
 | # | Muster | Schwere |
 |---|--------|---------|
@@ -237,7 +247,10 @@ Der Skill arbeitet mit einem Katalog aus **66 KI-Schreibmustern** in 10 Kategori
 | 27 | Inkorrekte Referenzen-Format | MEDIUM |
 | 28 | Falsche Kategorien | MEDIUM |
 
-### Verschiedenes (3 Muster)
+</details>
+
+<details>
+<summary><strong>Verschiedenes (3 Muster)</strong></summary>
 
 | # | Muster | Schwere |
 |---|--------|---------|
@@ -245,7 +258,10 @@ Der Skill arbeitet mit einem Katalog aus **66 KI-Schreibmustern** in 10 Kategori
 | 30 | Wechsel im Schreibstil | MEDIUM |
 | 31 | Bearbeitungszusammenfassungen in Ich-Form | LOW |
 
-### Rhetorik und Struktur (11 Muster)
+</details>
+
+<details>
+<summary><strong>Rhetorik und Struktur (11 Muster)</strong></summary>
 
 | # | Muster | Schwere |
 |---|--------|---------|
@@ -261,7 +277,10 @@ Der Skill arbeitet mit einem Katalog aus **66 KI-Schreibmustern** in 10 Kategori
 | 61 | Isometrisches Dokument | MEDIUM |
 | 62 | Markerloser Schließzwang | MEDIUM |
 
-### Argumentation und Evidenz (5 Muster)
+</details>
+
+<details>
+<summary><strong>Argumentation und Evidenz (5 Muster)</strong></summary>
 
 | # | Muster | Schwere |
 |---|--------|---------|
@@ -271,7 +290,10 @@ Der Skill arbeitet mit einem Katalog aus **66 KI-Schreibmustern** in 10 Kategori
 | 53 | Lückenfüllende Spekulation ("hält sich bedeckt") | HIGH |
 | 59 | Erfundene Ich-Erfahrung und forcierte Lockerheit | HIGH |
 
-### Ergänzungen (4 Muster)
+</details>
+
+<details>
+<summary><strong>Ergänzungen (4 Muster)</strong></summary>
 
 | # | Muster | Schwere |
 |---|--------|---------|
@@ -280,7 +302,10 @@ Der Skill arbeitet mit einem Katalog aus **66 KI-Schreibmustern** in 10 Kategori
 | 44 | Standard-Kapitel ohne Substanz | MEDIUM |
 | 45 | Anglizismus-Strukturen | MEDIUM |
 
-### Typografie und Format (7 Muster)
+</details>
+
+<details>
+<summary><strong>Typografie und Format (7 Muster)</strong></summary>
 
 | # | Muster | Schwere |
 |---|--------|---------|
@@ -292,12 +317,17 @@ Der Skill arbeitet mit einem Katalog aus **66 KI-Schreibmustern** in 10 Kategori
 | 51 | Obsessive Parataxe | MEDIUM |
 | 57 | Markdown-Struktur-Artefakte (Ein-Zeilen-Tabellen, übersprungene Heading-Ebenen, `---` vor Überschrift, gehäufte Inline-Header-Listen) | MEDIUM |
 
-### Titel- und Satzbau (2 Muster)
+</details>
+
+<details>
+<summary><strong>Titel- und Satzbau (2 Muster)</strong></summary>
 
 | # | Muster | Schwere |
 |---|--------|---------|
 | 54 | Doppelpunkt-Titel-Schema | MEDIUM |
 | 55 | Gleichförmiger Satzrhythmus | MEDIUM |
+
+</details>
 
 ---
 
