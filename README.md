@@ -493,6 +493,7 @@ Haben Sie ein Problem gefunden oder eine Verbesserung?
 
 ## Was ist neu?
 
+- **5.1.0** - Vier Muster aus einem Cross-Check der aktualisierten Wikipedia-Leitlinien (DE/EN) geschärft (keine neuen Muster-Nummern, weiterhin 66): Muster 7 um die 3-Takt-Dokumentschablone Lob→Herausforderungen→Ausblick, Muster 57 um gehäufte Inline-Header-Listen (`- **Titel:** …`), Muster 60 auf Synonym-Rotation beliebiger Sachbegriffe, Muster 65 um Plain-Verb-Vermeidung (schrieb→verfasste)
 - **5.0.0** - Performance-Release: neuer Orchestrator `scripts/humanizer_audit.py` bündelt Unicode-, Rhythmus-, German-Pattern- und Register-Lint in einem In-Process-Aufruf (`--file`/`--latest`, `--mode`, `--format json|md`) mit zusammengeführten, kompakten Findings und Unicode-Kind-Collapse; `rhythm_lint.py`-CLI standardmäßig kompakt (Absatz-Arrays nur noch via `--include-paragraphs`) — **Breaking Change des CLI-Defaults**, `analyze()`-API unverändert; Audit-Ausgabe rund 99 % kleiner (49 KB → 0,6 KB pro Post), Analyse-Phase von ~10 Tool-Roundtrips auf 1
 - **4.3.1** - Naturalness-Guidance für Sprecherposition, pragmatische Übergänge und Verbalstil geschärft; Anti-Entropy-Leitplanke ergänzt
 - **4.3.0** - Factual-Reliability-Gate geschärft; Muster 26 auf HIGH gesetzt; Muster 16 auf Dash-Satzzeichen inklusive ` - ` / ` -- ` erweitert; Research- und Coverage-Grundlagen in `docs/` ergänzt

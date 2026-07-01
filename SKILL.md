@@ -4,7 +4,7 @@ description: deutschen Text humanisieren, KI-Schreibmuster/KI-Tells auditieren; 
 allowed-tools: [Read, Write, Edit, Grep, Glob, Bash]
 metadata:
   display_name: Humanizer (Deutsch)
-  version: 5.0.0
+  version: 5.1.0
   author: Martin Moeller
   maintainer_website: https://www.martin-moeller.biz
   based_on: 'Deutsche Wikipedia: Anzeichen für KI-generierte Inhalte, Erkennung KI-Einsatz, Schnelltest KI'
