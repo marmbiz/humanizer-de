@@ -13,7 +13,7 @@
 [![Claude Code](https://img.shields.io/badge/Claude_Code-Plugin-d97757)](#installation)
 [![Codex](https://img.shields.io/badge/Codex-Supported-10a37f)](#installation)
 
-**[Warum nutzen?](#warum-nutzen)** · **[Installation](#installation)** · **[Benutzung](#benutzung)** · **[AI-Assistenten](#für-ai-assistenten)** · **[Die 66 Muster](#66-muster-in-10-kategorien)** · **[Verifikation](#entwicklung-und-verifikation)** · **[Was ist neu?](#was-ist-neu)**
+**[Warum nutzen?](#warum-nutzen)** · **[Wie es denkt](#wie-der-skill-denkt)** · **[Installation](#installation)** · **[Benutzung](#benutzung)** · **[AI-Assistenten](#für-ai-assistenten)** · **[Die 66 Muster](#66-muster-in-10-kategorien)** · **[Verifikation](#entwicklung-und-verifikation)** · **[Was ist neu?](#was-ist-neu)**
 
 <sub>German AI Text Humanizer · Claude Humanizer Deutsch · KI-Texte humanisieren Deutsch · Supports Claude Code and Codex · Von [Martin Moeller](https://www.martin-moeller.biz) · basiert auf den Wikipedia-Leitlinien [Anzeichen für KI-generierte Inhalte](https://de.wikipedia.org/wiki/Wikipedia:Anzeichen_f%C3%BCr_KI-generierte_Inhalte) (de) und [Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing) (en) · hervorgegangen aus dem [Humanizer](https://github.com/blader/humanizer) von [blader](https://github.com/blader)</sub>
 
@@ -51,6 +51,23 @@ Besonders nützlich ist er für:
 - eigene KI-Entwürfe, die final lesbar, glaubwürdig und menschlich werden sollen
 
 GitHub-Themen, die gut zum Repository passen: `claude-skill`, `codex-skill`, `claude-code`, `humanizer`, `ai-humanizer`, `german`, `deutsch`, `ki-text`, `ki-texte-humanisieren`, `germanizer`, `prompt-engineering`.
+
+---
+
+## Wie der Skill denkt
+
+Hinter dem Katalog steht ein einfaches Bild: KI-Textbewertung hat drei Schichten, und jede macht nur, wofür sie gebaut ist.
+
+- **Heuristik – das Harte, Sichtbare.** Regex, Unicode-Checks, Wortlisten, deterministische Linter. Ein gerades Anführungszeichen statt „…“, drei Doppelpunkt-Titel in Folge, das Füllwort „nahtlos“. Billig, sofort – und es altert nicht: Ein verdächtiges Muster bleibt verdächtig, egal welcher Modell-Jahrgang gerade schreibt.
+- **Messen – die objektiven Fakten.** Satzbau, Anker (Namen, Zahlen, Daten), Bedeutungstreue beim Umschreiben. Fragen mit *einer richtigen Antwort*, die sich berechnen lassen, statt sie zu erraten.
+- **Urteilen – Kontext und Geschmack.** „Ist das guter Text?“ braucht Weltwissen und Fingerspitzengefühl. Das leistet nur das große Modell (Claude, Codex) – deshalb sitzt das eigentliche Umschreiben dort, nicht in einer starren Regel.
+
+Daraus folgen die Leitlinien des Skills:
+
+- **Nur Zeitloses wird Regel.** Der Katalog nimmt bewusst nur stabile Tells auf. Ein Wort, das bloß zur Mode eines LLM-Jahrgangs gehört, bläht die Liste auf und veraltet – solche driftenden Signale bleiben dem Urteil überlassen. Kern und Rand werden getrennt gehalten.
+- **Messen statt richten.** Regeln und Messungen gehören dorthin, wo es eine richtige Antwort gibt. Wo es Geschmack braucht, entscheidet das Modell im Kontext – nicht ein Detektor-Score.
+- **Der Boden ist der Mensch.** Unter dem Modell sitzt der Autor. Der Skill schützt Substanz und Belege, aber er erfindet keine Erfahrung, keine Quelle, keine Zahl. Verantwortung bleibt beim Menschen.
+- **Proportional eingreifen.** So viel wie nötig, so wenig wie möglich. Ist der Text sauber, hört der Skill auf – statt mit dem stärksten Werkzeug über jeden Satz zu bügeln.
 
 ---
 
@@ -162,137 +179,9 @@ Der Sammelcheck ruft Unicode-, Rhythmus-, Naturalness- und Register-Prüfung in 
 
 ---
 
-## Was das Skill erkennt
-
-Das Skill arbeitet mit einem Katalog aus **66 verschiedenen KI-Schreibmustern** in 10 Kategorien, priorisiert nach Schweregrad (HIGH / MEDIUM / LOW). Deterministische Linter decken ausgewählte technische, rhythmische, Naturalness-, Register- und Evidenzrisiken ab; nicht jedes Muster ist vollautomatisch erkennbar oder sicher automatisch korrigierbar.
-
-## Was ist neu?
-
-### 5.0.0 (aktuell)
-- Performance-Release für den Audit-Workflow: neuer Orchestrator `scripts/humanizer_audit.py` führt Unicode-, Rhythmus-, German-Pattern- und Register-Lint in **einem** In-Process-Aufruf zusammen (`--file`/`--latest`, `--mode`, `--format json|md`) und liefert kompakte, zusammengeführte Findings inklusive Unicode-Kind-Collapse
-- `scripts/rhythm_lint.py` gibt im CLI standardmäßig kompakt aus; die Absatz-Arrays liegen jetzt hinter `--include-paragraphs`. **Breaking Change** des CLI-Default-Outputs; die programmatische `analyze()`-API bleibt unverändert
-- Wirkung: Audit-Ausgabe rund 99 % kleiner (49 KB → 0,6 KB pro Post), Analyse-Phase von etwa 10 Tool-Roundtrips auf einen
-- Output-Format um optionalen Block **Verworfene Kandidaten** ergänzt: im Clean-Text-Fall (Lint-/Audit-Flags lagen vor, aber höchstens zwei echte Änderungen waren nötig) macht der Skill erwogene und mit Begründung verworfene Eingriffe transparent, jeweils an ein konkretes Flag oder eine Textstelle gebunden; ohne geprüfte Stelle bleibt der Block weg
-
-### 4.3.1
-- Naturalness-Guidance geschärft: Sprecherposition (`ich`/`wir`/`man`/neutral), pragmatische Übergänge und Verbalstil werden nur aus Input, Zielprofil und Register abgeleitet
-- Anti-Entropy-Leitplanke ergänzt: keine künstlichen Fragmente, Regelbrüche, Partikeln, Anekdoten oder seltenen Wörter einsetzen, nur um weniger vorhersagbar zu klingen
-
-### 4.3.0
-- Factual-Reliability-Gate geschärft: Muster 26 ist jetzt HIGH und behandelt fabrizierte, unverifizierbare oder formal echte, aber nicht tragende Referenzen als Belegproblem statt als Stilfrage
-- Muster 16 auf Dash-Satzzeichen erweitert: `—`, `–`, ` -- ` und ` - ` als mechanische Satzzeichen werden nicht durch Glyph-Tausch "repariert", sondern per Satzbau, Punkt, Komma, Doppelpunkt, Semikolon, Klammer oder Streichung gelöst; Wort-Bindestriche, Namen, IDs, URLs und echte Bereichsstriche bleiben geschützt
-- `references/evidence-ledger.md` ergänzt ein Factual-Reliability-Gate; `docs/naturalness-research-brief.md` dokumentiert erste Quellenanker für Citation-Fabrication und Excess-Vocabulary als Research-Hintergrund
-
-### 4.2.1
-- `scripts/rhythm_lint.py`: Muster 51 (Parataxe) aus Suspicion-Output entfernt – `has_subjunction()` ignoriert Relativsätze, Infinitivgruppen und Koordination; feuerte auf 100 % menschlicher Blog-Posts (Validitätsproblem, kein Schwellenwertfehler); `max_main_clause_run` wird weiterhin im `document`-Block gemessen
-- Muster 55 SIR-Trigger auf Cluster-Logik umgestellt: `subject_initial_ratio` feuert nur noch wenn > 0.85 **und** gleichzeitig niedrige Satzlängenvarianz (< 0.6) oder wiederholte Opener (≥ 2) – empirisch validiert gegen 21 menschliche Blog-Posts (Median SIR 0.887)
-
-### 4.2.0
-- Muster 66 (Fake-Analyse-Anhang): Relativsatz oder Anschlusskonstruktion nach einem vollständigen Informationssatz, der eine Schlussfolgerung vortäuscht ohne neue Information zu liefern – erkennbar am Löschtest ("was X unterstreicht/verdeutlicht/belegt")
-- Muster 35 (Rhetorische Fragen) um Fragenstapel erweitert: verstärkte Form mit 2+ aufeinanderfolgenden rhetorischen Fragen als Sub-Indikator
-- Muster 39 (Passivkonstruktionen) mit Abgrenzungshinweis für Unpersönlichen Akteur: abstrakte Nomen mit Aktionsverb ("Die Analyse zeigt") sind kein Passiv und fallen nicht unter Muster 39
-- `references/decision-tables.md` um zwei Muster-66-Zeilen ergänzt (auslösen / Carve-out)
-- 66 Muster insgesamt in 10 Kategorien
-
-### 4.1.0
-- Quality-Guided Iterative Revision (QGIR): begrenzter zweiter Revisionsmodus für Fälle, in denen nach einer Minimal-Revision noch echte HIGH/MEDIUM-Cluster bleiben
-- QGIR-Stop: Der Skill beendet die Revision, sobald weitere Änderungen keinen echten Qualitätsgewinn mehr bringen oder Fakten, Ton und Proportion gefährden würden
-- Neue QGIR-Spezifikation in `references/qgir.md`: Pass-Limit, Edit-Budget, Review-ready-Ziel und proportionale Qualitätsverbesserung
-- `scripts/run_review_eval.py` prüft jetzt QGIR-Contracts: maximale Passzahl, Edit-Budget, geschützte Anker, Registerdrift und Claim-Richtungsdrift
-- 5 neue QGIR-Szenarien in `tests/scenarios/` für Minimaländerung, Evidenzerhalt, Registererhalt, Early Stop und Konfliktauflösung bei Formal-/Fachtext
-- `SKILL.md` routet QGIR als Quality-Gate für gute Texte: Detector-Bezug bleibt Kontext und ist kein automatischer Contract-Verstoß
-
-### 4.0.2
-- Claim-/Faktenanker-Schutz: `references/evidence-ledger.md` und `scripts/evidence_lint.py` blocken neue oder veränderte Zahlen, Quellen, Zitate, Namen, Codefragmente und Autoritätsgrade ohne Input-Anker
-- Register- und Zielprofil-Schutz: `references/register-profiles.md` und `scripts/register_lint.py` prüfen Anrede, Formal-/Locker-Modus, Schreibprobenprofil und künstliche Nähe
-- Deutsche Naturalness-Checks: `references/de-naturalness.md` und `scripts/german_pattern_lint.py` erkennen Cluster bei KI-Marker-Vokabular, Kopula-Vermeidung, Abstrakta-Stapeln und Modalpartikel-Anomalien
-- `scripts/rhythm_lint.py` ist jetzt scope- und modusbewusst (`--scope`, `--mode`), damit Skill-Dokumentation, Formaltexte und Nutzerprosa unterschiedlich bewertet werden
-- Ausführbare Scenario-Contracts in `tests/scenarios/` plus `scripts/run_review_eval.py`; `make verify` bündelt Unit-Tests, Linter, Contract-Gates und Whitespace-Prüfung
-
-### 4.0.1
-- 13 LLM-im-Loop-Regressionsszenarien in `tests/SCENARIOS.md`; schließt die Testlücke zwischen deterministischem Golden Corpus und Skill-Urteilsverhalten (false positives, Modus-Disziplin, Anti-Fabrikation, Output-Disziplin)
-
-### 4.0.0
-- Eigenständigkeits-Release: eigenes Versionsschema ohne `-de.FORK`-Suffix; Projekt trackt keine Upstream-Versionen mehr, Upstream bleibt Ideenquelle und Credit
-- 2 neue Muster (#64–#65), adaptiert aus blader/humanizer #7/#8 für das Deutsche: KI-Marker-Vokabular, Kopula-Vermeidung
-- Muster 58 geschärft: Vokabel-Fallen-Liste in Muster 64 ausgelagert, 58 fokussiert auf Hypernyme/Nominalstil
-- 65 Muster insgesamt in 10 Kategorien
-
-### 3.8.0-de.1
-- 6 neue Muster (#58–#63): Abstrakta-Stapel, erfundene Ich-Erfahrung, Synonym-Rotation, isometrisches Dokument, markerloser Schließzwang, Modalpartikel-Anomalie
-- Neuer 5-Pass-Ablauf: Artefakte → Lexik → Struktur → Rhythmus → Selbst-Audit
-- Neues Mess-Script `scripts/rhythm_lint.py` mit deterministischen Burstiness-/Rhythmus-Kennzahlen für Muster 4/51/54/55/61
-- Golden Corpus in `tests/corpus/` für deterministische Unicode- und Rhythmus-Erwartungen
-- Katalog bis #63 in 10 Kategorien
-
-### 3.7.0-de.1
-- 2 neue Muster: Aphorismus-Formeln (#56) und Markdown-Struktur-Artefakte (#57: Ein-Zeilen-Tabellen, übersprungene Heading-Ebenen, `---` vor Überschrift)
-- Claude-Code-Plugin und Marketplace: Installation per `/plugin marketplace add marmbiz/humanizer-de` und `/plugin install`, inklusive automatischer Updates
-- Übernahme der hochwertigen Upstream-Ideen aus blader/humanizer #136 (Aphorismus-Formeln) und #140 (Format-Struktur-Tells)
-- Musterkatalog bis #57 erweitert
-
-### 3.6.0-de.1
-- 2 neue Muster: Doppelpunkt-Titel-Schema (#54), Gleichförmiger Satzrhythmus (#55)
-- Neue Sektion zu statistischen Detektoren (GPTZero u. a.): Perplexity/Burstiness vs. Musterkatalog, mit Handlungstabelle
-- Leitplanke ergänzt: Detektor-Labels wie "Mechanical Precision" treffen meist legitime Fachsprache – kein KI-Tell, Text nicht für einen Score verschlechtern
-- Muster 46 mit Beweiskraft-Staffelung: nur die Asymmetrie (deutsches Öffnen + falsches Schlusszeichen) ist ein harter Tell; gerade ASCII-Quotes sind CMS-Artefakt, englische Curly Quotes mehrdeutig
-- 55 Muster insgesamt in 10 Kategorien
-
-### 3.5.0-de.1
-- Architektur-Upgrade: `SKILL.md` ist jetzt ein schlanker SOP-Router statt monolithischer Musterkatalog
-- Vollständiger 53er-Musterkatalog ausgelagert nach `references/patterns.md`
-- Overlap-Entscheidungen für 11/26/42/53 und 5/6/34/44 in `references/decision-tables.md`
-- Neuer Unicode-/Quote-Linter `scripts/unicode_lint.py` für Muster 43 und 46, inklusive konservativem `--fix`
-- Struktur-, Pattern-, Decision-Table- und Unicode-Tests ergänzt
-- Keine neuen Muster; v3.5 verbessert Ausführbarkeit, Kontextkosten und Verifikation
-
-### 3.4.0-de.1
-- Neue Erkennungsleitplanken: "Was NICHT zu flaggen ist" plus positive menschliche Signale
-- 2 neue Muster: Diff-verankertes Schreiben (#52), Lückenfüllende Spekulation (#53)
-- Beleg- und Substanzleitplanken für spekulative Fülltexte erweitert
-- 53 Muster insgesamt in 9 Kategorien
-- Upstream-Integration: PR #113 sowie v2.7.0-Ideen aus #81 und #111
-
-### 3.3.0-de.1
-- 6 neue Muster: Falsche deutsche Anführungszeichen (#46), englische Titel-Großschreibung (#47), englisches Dezimal-/Datumsformat (#48), Apostroph-Fehler (#49), Stichpunkt-Interpunktion (#50), obsessive Parataxe (#51)
-- Muster 43 erweitert: Unicode-Scanner deckt U+2061-U+2064 ab
-- 51 Muster insgesamt in 9 Kategorien
-
-### 3.2.4-de.1
-- 4 neue Muster: Beleginkongruenz (#42), versteckte Unicode-Zeichen (#43), Standard-Kapitel ohne Substanz (#44), Anglizismus-Strukturen (#45)
-- 45 Muster insgesamt in 8 Kategorien
-
-### 3.1.0-de.1
-- 3 neue Muster: Passivkonstruktionen (#39), Konditional-Stapel (#40), Fehlkalibriertes epistemisches Vertrauen (#41)
-- Muster 8 erweitert: abgehackte Verneinungsfragmente ("kein Raten.")
-- Muster 16 erweitert: Ersetzungshierarchie, gepaarte Einschübe, Spaced/Double-Hyphen-Varianten
-- Muster 24 erweitert: KI-Tool-Artefakte (oaicite, contentReference, turn0search0)
-- Muster 26 erweitert: vollständige Zitatfabrikation (halluzinierte Quellen)
-- Neue Quick Checklist (Vor-Ausgabe-Audit)
-- Neue Leitplanke "Substanz erhalten" im Ablauf und in den Leitplanken
-- Neuer Gedankenstrich-Scan-Schritt im Ablauf
-- 41 Muster insgesamt in 7 Kategorien
-- Upstream-Integration: PRs #79, #80, #84, #85, #94, #96
-
-### 3.0.0-de.1
-- Stimmkalibrierung: Schreibstil des Benutzers aus Proben übernehmen (adaptiert von Upstream-PR #64)
-- 4 neue Muster aus Upstream-PR #67 adaptiert: Rhetorische Fake-Fragen, Menschheits-Eröffnungen, "heutige Welt"-Framing, Aspirative Unternehmensschlüsse
-- 38 Muster insgesamt
-
-### 2.3.0-de.1
-- 3 neue Muster aus Upstream-PR #39 adaptiert: Persuasive Autoritäts-Floskeln, Signposting, Fragmentierte Überschriften
-- Severity-Ranking (HIGH / MEDIUM / LOW) für alle 34 Muster eingeführt (inspiriert von Upstream-PR #51)
-- Modus-System: Locker / Sachlich / Formal – steuert, wie aggressiv korrigiert wird
-- "Nicht anfassen"-Regeln und Leitplanken hinzugefügt
-- Kurzreferenz-Tabelle für schnelles Scannen
-- Unnötige Trennlinien (`---`) entfernt
-
-### Seit 1.0.0
-- Upstream v2.2.0 eingearbeitet, zweiter Anti-KI-Audit-Durchlauf
-- DACH-Schreibfokus und deutsche Stilkonventionen beibehalten
-- Deutsche Wikipedia als primäre Referenz plus englische Wikipedia als Ergänzung
-
 ## 66 Muster in 10 Kategorien
+
+Der Skill arbeitet mit einem Katalog aus **66 KI-Schreibmustern** in 10 Kategorien, priorisiert nach Schweregrad (HIGH / MEDIUM / LOW). Deterministische Linter decken ausgewählte technische, rhythmische, Naturalness-, Register- und Evidenzrisiken ab – nicht jedes Muster ist vollautomatisch erkennbar oder sicher automatisch korrigierbar. Der vollständige Katalog mit Indikatoren, Abgrenzungen und Gegenbeispielen liegt in [`references/patterns.md`](references/patterns.md).
 
 ### Sprache und Tonfall (18 Muster)
 
@@ -304,12 +193,12 @@ Das Skill arbeitet mit einem Katalog aus **66 verschiedenen KI-Schreibmustern** 
 | 4 | Mechanische Konjunktionen ("darüber hinaus", "außerdem") | HIGH |
 | 5 | Abschnitts-Zusammenfassungen ("insgesamt") | HIGH |
 | 6 | Unpassendes "Fazit" | MEDIUM |
-| 7 | Zu perfekte Schlussfolgerungen | MEDIUM |
+| 7 | Zu perfekte Dichotomie | MEDIUM |
 | 8 | Negative Parallelismen und abgehackte Verneinungen | MEDIUM |
-| 9 | Trikolon-Überbenutzung (Regel der Drei) | MEDIUM |
-| 10 | Oberflächliche Partizip-I-Konstruktionen | HIGH |
+| 9 | Trikolon (Regel der Drei) | MEDIUM |
+| 10 | Partizip-I-Konstruktionen | HIGH |
 | 11 | Vage Autoritäten ("Branchenberichte zeigen") | HIGH |
-| 12 | Falsche Erweiterungen ("von... bis") | MEDIUM |
+| 12 | Falsche Erweiterung ("von... bis") | MEDIUM |
 | 58 | Abstrakta-Stapel und Hypernym-Präferenz | MEDIUM |
 | 60 | Synonym-Rotation für dieselbe Entität | MEDIUM |
 | 63 | Modalpartikel-Anomalie | LOW |
@@ -322,7 +211,7 @@ Das Skill arbeitet mit einem Katalog aus **66 verschiedenen KI-Schreibmustern** 
 | # | Muster | Schwere |
 |---|--------|---------|
 | 13 | Übermäßige Fettschrift | MEDIUM |
-| 14 | Falsche Listen-Formatierung | LOW |
+| 14 | Falsche Listen | LOW |
 | 15 | Emojis vor Überschriften | LOW |
 | 16 | Dash-Satzzeichen und Gedankenstrich-Cluster | MEDIUM |
 
@@ -335,7 +224,7 @@ Das Skill arbeitet mit einem Katalog aus **66 verschiedenen KI-Schreibmustern** 
 | 19 | Hinweise auf Wissensgrenzen ("Stand Datum") | HIGH |
 | 20 | Prompt-Ablehnung ("Als KI kann ich nicht...") | HIGH |
 | 21 | Platzhaltertext ("[Name einfügen]") | HIGH |
-| 22 | Links zu Suchanfragen statt Referenzen | HIGH |
+| 22 | Links zu Suchanfragen | HIGH |
 
 ### Auszeichnungstext (6 Muster)
 
@@ -345,7 +234,7 @@ Das Skill arbeitet mit einem Katalog aus **66 verschiedenen KI-Schreibmustern** 
 | 24 | Fehlerhafter Wikitext und KI-Tool-Artefakte | MEDIUM |
 | 25 | Defekte Links | MEDIUM |
 | 26 | Zitatfabrikation und unverifizierbare Referenzen | HIGH |
-| 27 | Inkorrekte Referenzen-Formate | MEDIUM |
+| 27 | Inkorrekte Referenzen-Format | MEDIUM |
 | 28 | Falsche Kategorien | MEDIUM |
 
 ### Verschiedenes (3 Muster)
@@ -401,7 +290,7 @@ Das Skill arbeitet mit einem Katalog aus **66 verschiedenen KI-Schreibmustern** 
 | 49 | Apostroph-Fehler | MEDIUM |
 | 50 | Interpunktion bei Stichpunkt-Aufzählungen | LOW |
 | 51 | Obsessive Parataxe | MEDIUM |
-| 57 | Markdown-Struktur-Artefakte (Ein-Zeilen-Tabellen, übersprungene Heading-Ebenen, `---` vor Überschrift) | MEDIUM |
+| 57 | Markdown-Struktur-Artefakte (Ein-Zeilen-Tabellen, übersprungene Heading-Ebenen, `---` vor Überschrift, gehäufte Inline-Header-Listen) | MEDIUM |
 
 ### Titel- und Satzbau (2 Muster)
 
@@ -500,20 +389,22 @@ Gutes deutsches Schreiben hat Eigenschaften, die LLMs oft übersehen:
 
 ---
 
-## Wann ist das Skill hilfreich?
+## Wann hilfreich – und wann nicht
 
-✓ **Verwenden Sie es, wenn:**
-- Sie verdächtigen, dass Text von einem KI-Modell stammt
-- Sie Wikipedia-Artikel überarbeiten
-- Ihr Text zu "glatt" oder zu "perfekt" klingt
-- Sie eigene KI-generierte Outputs verfeinern möchten
-- Sie schnelle Erste-Sicht-Überprüfung brauchen
+**Stark, wenn:**
+- der Text erkennbar KI-generiert oder zu "glatt" wirkt
+- englische Trainingsmaterial-Effekte in deutschem Text durchschlagen
+- Zahlen, Quellen und Begriffe erhalten bleiben müssen
+- eigene KI-Entwürfe final lesbar und glaubwürdig werden sollen
+- eine schnelle Erste-Sicht-Prüfung gebraucht wird
 
-✗ **Nicht verwenden, wenn:**
-- Sie einen Text von einem erfahrenen menschlichen Autor überprüfen
-- Sie sehr subtile KI-Muster erwarten
-- Der Text bewusst literarisch oder rhetorisch sein soll
-- Sie nicht sicher sind, ob eine Änderung wirklich nötig ist
+**Schwächer, wenn:**
+- die KI-Muster sehr subtil sind
+- der Text von einem etablierten Autor mit konsistenter Stimme stammt
+- er bewusst literarisch, rhetorisch oder akademisch sein soll
+- echte menschliche Eigenheiten und Fehler nicht als Tell missverstanden werden dürfen
+
+Im Zweifel gilt die Grundregel des Skills: Ist der Text sauber, sagt er das und hört auf.
 
 ---
 
@@ -572,21 +463,6 @@ Die YAML-Szenarien in `tests/scenarios/` sind bewusst maschinenlesbare Contracts
 
 ---
 
-## Limitationen
-
-Das Skill funktioniert am besten bei:
-- Offensichtlich KI-generiertem Text
-- Englischem Training-Material-Effekten in deutschem Text
-- Wikipedia-artigen Artikeln
-
-Das Skill funktioniert weniger gut bei:
-- Sehr subtilen KI-Mustern
-- Etablierten Autoren mit konsistenter Stimme
-- Bewusst literarischem oder akademischem Schreiben
-- Handwritten Text mit echten Fehlern
-
----
-
 ## Datenschutz & Sicherheit
 
 Dieses Repository selbst sendet keine Texte an externe Dienste. Die Verarbeitung erfolgt aber in der jeweils genutzten Agent-Umgebung (z. B. Codex oder Claude Code) und unterliegt deren Modell-, Sitzungs- und Datenschutzregeln.
@@ -615,7 +491,7 @@ Haben Sie ein Problem gefunden oder eine Verbesserung?
 
 ---
 
-## Versionshistorie
+## Was ist neu?
 
 - **5.0.0** - Performance-Release: neuer Orchestrator `scripts/humanizer_audit.py` bündelt Unicode-, Rhythmus-, German-Pattern- und Register-Lint in einem In-Process-Aufruf (`--file`/`--latest`, `--mode`, `--format json|md`) mit zusammengeführten, kompakten Findings und Unicode-Kind-Collapse; `rhythm_lint.py`-CLI standardmäßig kompakt (Absatz-Arrays nur noch via `--include-paragraphs`) — **Breaking Change des CLI-Defaults**, `analyze()`-API unverändert; Audit-Ausgabe rund 99 % kleiner (49 KB → 0,6 KB pro Post), Analyse-Phase von ~10 Tool-Roundtrips auf 1
 - **4.3.1** - Naturalness-Guidance für Sprecherposition, pragmatische Übergänge und Verbalstil geschärft; Anti-Entropy-Leitplanke ergänzt
