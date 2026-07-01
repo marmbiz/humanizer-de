@@ -366,26 +366,23 @@ Die Produktivität fiel positiv auf. Der Umsatz verdreifachte sich.
 
 ## Philosophie
 
-### EEAT Principles
+### EEAT-nahe Prinzipien
 
-Das Skill unterstützt die Prinzipien von EEAT:
+Das Skill setzt nicht die vollen EEAT-Signale um – Expertise, Autorität und Erfahrung lassen sich nicht am Text allein feststellen. Es stützt EEAT aber dort, wo es belegbare Mechanik gibt:
 
-- **Expertise:** Der Text sollte von jemandem stammen, der das Thema kennt
-- **Erfahrung:** Praktische Erfahrung sollte nur durchscheinen, wenn sie im Text, Kontext oder Autorenmaterial angelegt ist
-- **Autorität:** Der Ton sollte kompetent und vertrauenswürdig sein
-- **Vertrauenswürdigkeit:** Der Text sollte ehrlich und nachvollziehbar sein
-
-KI-generierte Texte brechen diese Prinzipien oft durch zu perfekte Struktur, fehlende belegte Perspektive oder zu glatte Autoritätsbehauptungen. Das Skill darf Erfahrung und Autorität nicht erfinden.
+- **Erfahrung nicht erfinden:** Anekdoten, Ich-Perspektive und Praxiserfahrung bleiben nur, wenn sie im Text, Kontext oder Autorenmaterial angelegt sind (Muster 59).
+- **Vertrauenswürdigkeit über Belege:** Zahlen, Zitate und Quellen werden vor und nach jeder Änderung abgeglichen; fabrizierte oder nicht tragende Referenzen werden markiert statt kaschiert (Muster 26/42/53, Claim-Delta).
+- **Keine erfundene Autorität:** vage Autoritäts-Floskeln und nachträglich verstärkte Autoritätsgrade werden zurückgenommen (Muster 11/32) – der Skill macht einen Ton nicht künstlich kompetenter.
+- **Substanz und Fachsprache bewahren:** korrekte Terminologie und belegte Konkretion bleiben erhalten. Eine Autor-Expertise prüft der Skill nicht.
 
 ### Authentisches Deutsches Schreiben
 
-Gutes deutsches Schreiben hat Eigenschaften, die LLMs oft übersehen:
+Einige Eigenschaften guten deutschen Schreibens adressiert das Skill gezielt:
 
-- **Direktheit statt Metapher:** "Die Stadt ist groß" statt "Die Stadt steht als Zeugnis der menschlichen Ambition"
-- **Konkrete Details statt Abstraktion:** "50.000 Einwohner" statt "eine beachtliche Bevölkerung"
-- **Verben statt Nominalisierung:** "Die Wirtschaft wächst" statt "Das Wirtschaftswachstum ist evident"
-- **Einfachheit statt Komplexität:** Kurze Sätze statt Schachtelsätze
-- **Variabilität statt Muster:** Verschiedene Satzstrukturen statt wiederholter Muster
+- **Weniger symbolische Aufladung:** "Die Stadt ist groß" statt "Die Stadt steht als Zeugnis der menschlichen Ambition" (Muster 1, Aphorismus-Formeln Muster 56)
+- **Konkrete Details statt Abstraktion:** "50.000 Einwohner" statt "eine beachtliche Bevölkerung" (Muster 58)
+- **Verben statt Nominalketten:** Nominalstil wird aufgelöst, wo Akteur und Handlung belegt sind – fachüblicher Nominalstil im Formal-Modus bleibt geschützt (Muster 58)
+- **Variabilität statt Monotonie:** unterschiedliche Satzlängen und Satzanfänge statt gleichförmiger Kadenz (Muster 51/55/61, Rhythmus-Pass)
 
 ---
 
