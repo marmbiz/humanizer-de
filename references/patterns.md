@@ -1325,7 +1325,7 @@ Den Subtitel/Nachsatz *nicht* entfernen, solange er echte, nicht-redundante Info
 
 **Lösung:** Satzlänge bewusst spreizen – gelegentlich ein sehr kurzer Satz (3–5 Wörter) neben einem langen, gegliederten. Satzanfänge variieren (Adverbiale, vorangestellter Nebensatz, Subjekt). Es geht um Varianz, nicht um Fehler: keine Grammatik brechen, keine Substanz ändern, nur die Kadenz auflockern.
 
-**Wichtig – nicht übersteuern:** Sachliche Gleichförmigkeit ist in Fachtexten oft korrekt und gewollt. Behandle dieses Muster nur, wenn (a) der Nutzer ausdrücklich Detektor-Resilienz wünscht oder (b) die Monotonie die Lesbarkeit spürbar beeinträchtigt. Im Formal-Modus überspringen, wenn die Gleichförmigkeit fachkonventionell ist. Nie Substanz, Register oder Präzision opfern, nur um einen Detektor-Score zu senken.
+**Wichtig – nicht übersteuern:** Sachliche Gleichförmigkeit ist in Fachtexten oft korrekt und gewollt. Behandle dieses Muster nur bei echtem Cluster (niedrige Satzlängenvarianz oder wiederholte Satzanfänge, siehe `rhythm_lint.py`) oder wenn die Monotonie die Lesbarkeit spürbar beeinträchtigt. Im Formal-Modus überspringen, wenn die Gleichförmigkeit fachkonventionell ist. Nie Substanz, Register oder Präzision opfern, nur um einen Detektor-Score zu senken.
 
 **Beispiel:**
 

@@ -33,7 +33,7 @@ Das Ergebnis ist nicht sterile Korrektur. Es ist Überarbeitung, die vorhandene 
 
 Das Skill folgt deutschen Schreibkonventionen und den Prinzipien von EEAT (Expertise, Erfahrung, Autorität, Vertrauenswürdigkeit).
 
-Es ist kein Tool für Detektor-Umgehung, erfundene Autorenschaft, fingierte Erfahrung oder Quellenkosmetik.
+Es ist kein Tool für erfundene Autorenschaft, fingierte Erfahrung oder Quellenkosmetik.
 
 ---
 
