@@ -12,7 +12,7 @@ Vollstaendiger Musterkatalog fuer Humanizer (Deutsch) v5.0.0. Nur bei konkreter 
 | 4 | Mechanische Konjunktionen | HIGH | "darüber hinaus", "außerdem", "ferner", "ebenfalls" |
 | 5 | Abschnitts-Zusammenfassungen | HIGH | "zusammenfassend", "insgesamt", "kurz gesagt" |
 | 6 | Unpassendes "Fazit" | MEDIUM | "== Fazit ==", "== Zusammenfassung ==" |
-| 7 | Zu perfekte Dichotomie | MEDIUM | "Trotz X... steht Y vor Z", "Obwohl... jedoch..." |
+| 7 | Zu perfekte Dichotomie | MEDIUM | "Trotz X... steht Y vor Z", "Obwohl... jedoch..."; 3-Takt-Schablone "Lob→Herausforderungen→Ausblick" |
 | 8 | Negative Parallelismen und abgehackte Verneinungen | MEDIUM | "nicht nur... sondern auch", "kein Raten.", symmetrische Satzstrukturen |
 | 9 | Trikolon (Regel der Drei) | MEDIUM | Tripel-Aufzählungen ohne echten Grund |
 | 10 | Partizip-I-Konstruktionen | HIGH | "gewährleistend", "hervorhebend", "ermöglichend" |
@@ -62,15 +62,15 @@ Vollstaendiger Musterkatalog fuer Humanizer (Deutsch) v5.0.0. Nur bei konkreter 
 | 54 | Doppelpunkt-Titel-Schema | MEDIUM | "Phrase: Was/Warum/Wie ..." gehäuft in Titel/H1/H2 |
 | 55 | Gleichförmiger Satzrhythmus | MEDIUM | Sätze fast gleich lang, Subjekt zuerst, niedrige Burstiness |
 | 56 | Aphorismus-Formeln | MEDIUM | "X ist die Sprache des Y", "X wird zur Falle", "die Währung von" |
-| 57 | Markdown-Struktur-Artefakte | MEDIUM | Ein-Zeilen-Tabellen, übersprungene Heading-Ebenen (H2→H4), `---` vor Überschrift |
+| 57 | Markdown-Struktur-Artefakte | MEDIUM | Ein-Zeilen-Tabellen, übersprungene Heading-Ebenen (H2→H4), `---` vor Überschrift, gehäufte Inline-Header-Listen (`- **Titel:** …`) |
 | 58 | Abstrakta-Stapel und Hypernym-Präferenz | MEDIUM | "Maßnahmen", "Aspekte", "Lösungen", Nominalstil statt belegter Konkretion |
 | 59 | Erfundene Ich-Erfahrung und forcierte Lockerheit | HIGH | gestellte Anekdoten, "Ehrlich gesagt", "Spoiler:", behauptete Praxiserfahrung ohne Träger |
-| 60 | Synonym-Rotation für dieselbe Entität | MEDIUM | "die Hansestadt", "die Elbmetropole" für denselben Referenten |
+| 60 | Synonym-Rotation für dieselbe Entität | MEDIUM | "die Hansestadt"/"die Elbmetropole"; auch Sachbegriffe: "die Studie"→"die Untersuchung"→"die Analyse" |
 | 61 | Isometrisches Dokument | MEDIUM | alle Absätze/Sektionen/Listen-Items gleich lang, symmetrische Abdeckung |
 | 62 | Markerloser Schließzwang | MEDIUM | bewertender Abschlusssatz ohne neue Information am Absatzende |
 | 63 | Modalpartikel-Anomalie | LOW | Partikelarmut im Nähe-Register oder Partikel-Überdosis (nur Locker) |
 | 64 | KI-Marker-Vokabular | MEDIUM | "beleuchten", "eintauchen", "spannend", "nahtlos", "die digitale Landschaft" in Häufung |
-| 65 | Kopula-Vermeidung | MEDIUM | "fungiert als", "stellt dar", "verfügt über", "zeichnet sich aus durch" statt "ist"/"hat" |
+| 65 | Kopula-Vermeidung | MEDIUM | "fungiert als"/"verfügt über" statt "ist"/"hat"; "verfasste" statt "schrieb", "verstarb" statt "starb" |
 | 66 | Fake-Analyse-Anhang | MEDIUM | "...was X unterstreicht/verdeutlicht/belegt", "...und zeigt damit, dass" – Relativsatz ohne neue Information |
 
 ## Statistische Detektoren (GPTZero u. a.)
@@ -215,6 +215,12 @@ Häufige Indikatoren:
 
 ✓ Besser: "Das Land macht technologische Fortschritte, kämpft aber mit wirtschaftlichen Problemen."
 
+**Erweiterte Form – „Lob → Herausforderungen → Ausblick"-Dokumentschablone:** Dieselbe Dichotomie tritt oft nicht als Einzelsatz auf, sondern als dreiteilige Struktur über mehrere Absätze: (1) ein pauschal positiver Einleitungsabsatz, (2) „Trotz seiner Erfolge steht X vor Herausforderungen …" mit generischer Problemliste, (3) ein spekulativer „Zukunft/Ausblick"-Absatz ohne Beleg. Die drei Takte können über das Dokument verteilt sein. Als Cluster behandeln, nicht die Einzelteile.
+
+**Kein Problem, wenn:** Herausforderungen und Ausblick mit belegter Substanz gefüllt sind (konkrete Zahlen, benannte Risiken, datierte Vorhaben). Ein sachlicher Ausblick ist kein Tell – nur die inhaltsleere Dreier-Schablone.
+
+**Abgrenzung:** Muster 7 (Satzebene) = der einzelne „Trotz X … Y"-Satz. Muster 44 = ein einzelner Standardabschnitt ohne Substanz (etwa nur der Zukunfts-Absatz). Muster 38 = aspirativer Unternehmensschluss als Schlussfloskel.
+
 #### 8. Negative Parallelismen und abgehackte Verneinungen [MEDIUM]
 **Problem:** "Nicht nur... sondern auch" – zu argumentativ, zu literarisch. Dazu kommen abgehackte Verneinungsfragmente am Satzende wie "kein Raten", "kein Aufwand", die als Kurzform statt als echter Satz angehängt werden.
 
@@ -327,9 +333,9 @@ Häufige Indikatoren:
 
 #### 60. Synonym-Rotation für dieselbe Entität [MEDIUM]
 **Kategorie:** Sprache und Tonfall
-**Problem:** Zwanghafte Wiederholungsvermeidung: "die Hansestadt", "die Elbmetropole", "die Stadt an der Alster" für denselben Referenten. Menschen wiederholen das Wort oder pronominalisieren; die Rotation wirkt enzyklopädisch-bemüht und macht Texte schwerer lesbar, weil der Leser Referenzen neu auflösen muss.
+**Problem:** Zwanghafte Wiederholungsvermeidung: "die Hansestadt", "die Elbmetropole", "die Stadt an der Alster" für denselben Referenten. Menschen wiederholen das Wort oder pronominalisieren; die Rotation wirkt enzyklopädisch-bemüht und macht Texte schwerer lesbar, weil der Leser Referenzen neu auflösen muss. Derselbe Mechanismus trifft nicht nur Eigennamen, sondern jeden wiederkehrenden Sachbegriff: "die Studie" → "die Untersuchung" → "die Analyse" → "die Forschungsarbeit" für dieselbe Sache, "das Verfahren" → "die Methodik" → "der Ansatz" → "das Konzept". Ursache ist die Wiederholungsvermeidung beim Decoding, kein Bedeutungsunterschied.
 Häufige Indikatoren:
-- 3+ verschiedene Bezeichnungen für dieselbe Person/Stadt/Firma in einem Abschnitt
+- 3+ verschiedene Bezeichnungen für dieselbe Entität oder denselben Sachbegriff in einem Abschnitt
 - Beinamen ohne Informationswert ("der Streaming-Riese", "das Münchner Unternehmen")
 - Pronomen fast vollständig abwesend, obwohl Referenz eindeutig wäre
 **Warum LLMs das tun:** Stilratgeber-Trainingsdaten bestrafen Wortwiederholung; das Modell übergeneralisiert die Regel.
@@ -366,16 +372,17 @@ Häufige Indikatoren (Ko-Okkurrenz zählt):
 
 #### 65. Kopula-Vermeidung [MEDIUM]
 **Kategorie:** Sprache und Tonfall
-**Problem:** LLMs ersetzen das schlichte "ist"/"hat" durch gespreizte Ersatzkonstruktionen: "fungiert als", "dient als", "stellt ... dar", "repräsentiert", "bildet", "erweist sich als", "präsentiert sich als", "zeichnet sich durch ... aus", "verfügt über", "bietet", "beherbergt", "wartet mit ... auf". Der Satz klingt gehobener, sagt aber exakt dasselbe. Adaptiert aus blader/humanizer Muster #8 ("Copula Avoidance").
+**Problem:** LLMs ersetzen das schlichte "ist"/"hat" durch gespreizte Ersatzkonstruktionen: "fungiert als", "dient als", "stellt ... dar", "repräsentiert", "bildet", "erweist sich als", "präsentiert sich als", "zeichnet sich durch ... aus", "verfügt über", "bietet", "beherbergt", "wartet mit ... auf". Der Satz klingt gehobener, sagt aber exakt dasselbe. Adaptiert aus blader/humanizer Muster #8 ("Copula Avoidance"). Dieselbe Aufwertung trifft einfache Vollverben: "schrieb" → "verfasste", "starb" → "verstarb", "nutzte" → "verwendete", "machte" → "führte durch", "half" → "unterstützte". Das Verb wird gehobener, der Inhalt bleibt gleich.
 Häufige Indikatoren:
 - "fungiert als" / "dient als" statt "ist"
 - "verfügt über" / "bietet" / "beherbergt" statt "hat"
 - "stellt einen wichtigen Bestandteil dar" statt "ist Teil von"
 - "zeichnet sich durch hohe Qualität aus" statt "ist gut verarbeitet"
+- Aufgewertete Vollverben im Cluster: "verfasste"/"verstarb"/"verwendete"/"führte durch" statt "schrieb"/"starb"/"nutzte"/"machte"
 - Mehrere solcher Konstruktionen im selben Absatz
 **Warum LLMs das tun:** Ersatzverben wirken im Training "wertiger" als die Kopula; Stilratgeber gegen Wortwiederholung verstärken die Vermeidung von "ist"/"hat".
 **Abgrenzung:** Muster 1 = symbolische Aufladung ("steht als Zeugnis für"). Muster 65 = die nüchterne Ersatzkonstruktion ohne Symbolik. Muster 39 = Passiv/subjektlose Fragmente.
-**Kein Problem, wenn:** die Konstruktion echte Zusatzinformation trägt ("dient als Notausgang" beschreibt eine Funktion, die vom Wesen abweicht) oder eine einzelne Wiederholung von "ist" vermeidet. Erst bei Häufung behandeln.
+**Kein Problem, wenn:** die Konstruktion echte Zusatzinformation trägt ("dient als Notausgang" beschreibt eine Funktion, die vom Wesen abweicht) oder eine einzelne Wiederholung von "ist" vermeidet. Bei den Vollverben zählt zusätzlich das Register: im Formal-/gehobenen Kontext sind "verfasste"/"verstarb" korrekt und erwünscht – als Tell nur bei Häufung in neutralem oder nahem Register, wo das schlichte Verb natürlicher wäre. Erst bei Häufung behandeln.
 **Lösung:** Auf "ist"/"hat" zurückführen, wo keine Information verloren geht.
 ❌ Schlecht: "Die Galerie fungiert als Ausstellungsraum des Vereins und verfügt über vier Räume mit insgesamt 280 Quadratmetern."
 ✓ Besser: "Die Galerie ist der Ausstellungsraum des Vereins und hat vier Räume mit insgesamt 280 Quadratmetern."
@@ -1234,10 +1241,11 @@ Häufige Indikatoren:
 - **Fall A – Tabelle, wo Prosa hingehört:** Eine Tabelle mit nur einer Datenzeile, eine Spalte, die einen Wert wiederholt, oder "Aspekt/Beschreibung"-Paare, die in Wahrheit ein Satz sind.
 - **Fall B – Übersprungene Überschriften-Ebenen:** Eine H2 folgt direkt eine H4 (`##` dann `####`). Die Überschriftengröße wird als optisches Gewicht missbraucht, nicht als Hierarchie. Überschriften sollten eine Ebene nach der anderen absteigen.
 - **Fall C – Thematische Trennlinie vor Überschrift:** Eine dekorative horizontale Linie (`---`) steht direkt über einer Überschrift. Die Überschrift beginnt bereits einen neuen Abschnitt; die Linie ist redundantes Rauschen.
+- **Fall D – Inline-Header-Listen:** Listenpunkte, die sich mit einem gefetteten kategorischen Mini-Titel plus Doppelpunkt häufen: `- **Aspekt:** Beschreibung`, `- **Vorteil:** …`, `- **Herausforderung:** …`. Tell ist die Häufung generischer Etiketten, wo die Aufzählung in Wahrheit Fließtext ist; nach Copy-Paste teils ohne Zeilenumbruch aneinandergereiht.
 
 **Warum LLMs das tun:** Modelle optimieren auf optisch "aufgeräumte" Ausgaben und greifen zu Tabellen, Größensprüngen und Trennlinien als visuellen Markern, ohne die zugrunde liegende Dokumentstruktur zu prüfen.
 
-**Kein Problem, wenn:** Eine Tabelle echte mehrdimensionale Daten zeigt; eine `---`-Linie bewusst als Szenen- oder Themenwechsel *zwischen* gleichrangigen Abschnitten steht (nicht direkt vor einer Überschrift); ein CMS, Theme oder Markdown-Template die Struktur erzeugt. Konsistente, korrekte Formatierung allein ist kein KI-Tell.
+**Kein Problem, wenn:** Eine Tabelle echte mehrdimensionale Daten zeigt; eine `---`-Linie bewusst als Szenen- oder Themenwechsel *zwischen* gleichrangigen Abschnitten steht (nicht direkt vor einer Überschrift); ein CMS, Theme oder Markdown-Template die Struktur erzeugt. Konsistente, korrekte Formatierung allein ist kein KI-Tell. Eine Definitions- oder Merkmalsliste, deren Fett-Lead-in ein echtes Stichwort ist und deren Text eigenständige Substanz trägt (Glossar, Parameter-, Feature-Liste – auch dieser Katalog nutzt das Format legitim), ist kein Tell; Fall D greift erst, wenn sich generische Etiketten häufen und der „Titel" die Beschreibung nur wiederholt.
 
 **Abgrenzung:** Muster 16 = Dash-Satzzeichen und Gedankenstrich-Cluster im Fließtext, nicht die horizontale Linie `---`. Muster 13 = übermäßige Fettschrift, Muster 14 = falsche Listenzeichen. Muster 23 = Markdown statt Wikitext (Syntax-Wahl im Wiki-Kontext). Muster 57 = dekorativer Struktur-Missbrauch in Markdown selbst.
 
@@ -1257,6 +1265,13 @@ Häufige Indikatoren:
 ❌ Schlecht (Fall C – Linie vor Überschrift): ein Absatz, dann `---`, dann `## Nächster Abschnitt`
 
 ✓ Besser: der Absatz, dann direkt `## Nächster Abschnitt`
+
+❌ Schlecht (Fall D – Inline-Header-Liste, generische Etiketten):
+> - **Geschwindigkeit:** Der Dienst ist schnell.
+> - **Zuverlässigkeit:** Der Dienst ist zuverlässig.
+> - **Skalierbarkeit:** Der Dienst skaliert gut.
+
+✓ Besser: "Der Dienst ist schnell und zuverlässig und skaliert unter Last mit."
 
 ### Titel- und Satzbau (2 Muster)
 
