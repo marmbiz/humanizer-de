@@ -1,0 +1,104 @@
+{
+  "cases": [
+    {
+      "id": "nom_01",
+      "label": "nominal",
+      "text": "Strategie, Umsetzung, Kontrolle und Dokumentation prägen den Projektalltag."
+    },
+    {
+      "id": "nom_02",
+      "label": "nominal",
+      "text": "Risikobewertung, Datenschutz, Freigaben und Audittrail stehen im Vordergrund."
+    },
+    {
+      "id": "nom_03",
+      "label": "nominal",
+      "text": "Die Kombination aus Analyse, Planung und Governance erhöht die Qualität."
+    },
+    {
+      "id": "nom_04",
+      "label": "nominal",
+      "text": "Kostenrahmen, Verantwortlichkeiten und Abnahmekriterien bleiben die zentralen Steuerungsgrößen."
+    },
+    {
+      "id": "nom_05",
+      "label": "nominal",
+      "text": "Bei Migrationen dominieren Schnittstellen, Datenmodelle, Berechtigungen und Testprotokolle."
+    },
+    {
+      "id": "nom_06",
+      "label": "nominal",
+      "text": "Für die Entscheidung zählen Evidenz, Kontext, Aufwand und Wartbarkeit."
+    },
+    {
+      "id": "nom_07",
+      "label": "nominal",
+      "text": "Der Fokus liegt auf Präzision, Robustheit, Transparenz und Pflegeaufwand."
+    },
+    {
+      "id": "nom_08",
+      "label": "nominal",
+      "text": "In der Dokumentation fehlen Quellen, Versionsstände, Beispiele und Prüfpfade."
+    },
+    {
+      "id": "nom_09",
+      "label": "nominal",
+      "text": "Mehrwert entsteht durch Klarheit, Priorisierung, Umsetzung und Messbarkeit."
+    },
+    {
+      "id": "nom_10",
+      "label": "nominal",
+      "text": "Planung ohne Verantwortlichkeit erzeugt Abstimmungskosten, Verzögerungen und Qualitätsrisiken."
+    },
+    {
+      "id": "verb_01",
+      "label": "verb",
+      "text": "Das Team prüft den Entwurf, kürzt die Liste und testet die Änderung."
+    },
+    {
+      "id": "verb_02",
+      "label": "verb",
+      "text": "Wir lesen den Text, markieren Treffer, verwerfen Fehlalarme und schreiben nur betroffene Sätze um."
+    },
+    {
+      "id": "verb_03",
+      "label": "verb",
+      "text": "Der Server startet, lädt die Datei, prüft Rechte und schreibt Logs."
+    },
+    {
+      "id": "verb_04",
+      "label": "verb",
+      "text": "Nutzer öffnen den Dialog, wählen eine Option und bestätigen die Eingabe."
+    },
+    {
+      "id": "verb_05",
+      "label": "verb",
+      "text": "Die App speichert Daten, zeigt Warnungen und sendet Berichte."
+    },
+    {
+      "id": "verb_06",
+      "label": "verb",
+      "text": "Forscher vergleichen Gruppen, messen Effekte und berichten Grenzen."
+    },
+    {
+      "id": "verb_07",
+      "label": "verb",
+      "text": "Der Bot fragt nach, sammelt Kontext und schlägt eine Antwort vor."
+    },
+    {
+      "id": "verb_08",
+      "label": "verb",
+      "text": "Wir planen den Sprint, bauen den Prototyp und messen die Laufzeit."
+    },
+    {
+      "id": "verb_09",
+      "label": "verb",
+      "text": "Die Redaktion sichtet Quellen, prüft Belege und aktualisiert den Artikel."
+    },
+    {
+      "id": "verb_10",
+      "label": "verb",
+      "text": "Das Script liest Dateien, zählt Treffer und druckt JSON."
+    }
+  ]
+}

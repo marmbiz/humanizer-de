@@ -18,6 +18,10 @@ Thumbs.db
 __pycache__/
 *.pyc
 
+# Python virtual environments
+.venv/
+venv/
+
 # Interne Arbeitsdateien, noch nicht zur Veroeffentlichung (wird spaeter genutzt)
 docs/ki-text-eisberg-heuristik-bis-llm.md
 docs/todo-naechste-schritte.md

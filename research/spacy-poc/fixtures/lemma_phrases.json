@@ -1,0 +1,169 @@
+{
+  "cases": [
+    {
+      "id": "lemma_01",
+      "text": "Der Text beleuchtet die Risiken.",
+      "flexion_target": true,
+      "expected": [{"category": "ai_marker", "marker": "beleuchten"}]
+    },
+    {
+      "id": "lemma_02",
+      "text": "Der Abschnitt beleuchtete die Risiken.",
+      "flexion_target": true,
+      "expected": [{"category": "ai_marker", "marker": "beleuchten"}]
+    },
+    {
+      "id": "lemma_03",
+      "text": "Die Hinweise unterstreichen den Befund.",
+      "flexion_target": true,
+      "expected": [{"category": "ai_marker", "marker": "unterstreichen"}]
+    },
+    {
+      "id": "lemma_04",
+      "text": "Die Hinweise unterstrichen den Befund.",
+      "flexion_target": true,
+      "expected": [{"category": "ai_marker", "marker": "unterstreichen"}]
+    },
+    {
+      "id": "lemma_05",
+      "text": "Eine maßgebliche Veränderung folgt aus der Entscheidung.",
+      "flexion_target": true,
+      "expected": [{"category": "ai_marker", "marker": "maßgeblich"}]
+    },
+    {
+      "id": "lemma_06",
+      "text": "Maßgeschneiderte Lösungen verdecken die eigentliche Lücke.",
+      "flexion_target": true,
+      "expected": [
+        {"category": "ai_marker", "marker": "maßgeschneidert"},
+        {"category": "abstractum", "marker": "lösungen"}
+      ]
+    },
+    {
+      "id": "lemma_07",
+      "text": "Die digitale Landschaft verändert sich.",
+      "expected": [{"category": "ai_marker", "marker": "digitale landschaft"}]
+    },
+    {
+      "id": "lemma_08",
+      "text": "Das Zusammenspiel bleibt komplex.",
+      "expected": [{"category": "ai_marker", "marker": "zusammenspiel"}]
+    },
+    {
+      "id": "lemma_09",
+      "text": "Das Tool fungiert als Schnittstelle.",
+      "flexion_target": true,
+      "expected": [{"category": "copula_avoidance", "marker": "fungiert als"}]
+    },
+    {
+      "id": "lemma_10",
+      "text": "Die App diente als Brücke.",
+      "flexion_target": true,
+      "expected": [{"category": "copula_avoidance", "marker": "dient als"}]
+    },
+    {
+      "id": "lemma_11",
+      "text": "Die Lösung stellt einen Fortschritt dar.",
+      "expected": [
+        {"category": "abstractum", "marker": "lösungen"},
+        {"category": "copula_avoidance", "marker": "stellt dar"}
+      ]
+    },
+    {
+      "id": "lemma_12",
+      "text": "Die Lösung stellte einen Fortschritt dar.",
+      "flexion_target": true,
+      "expected": [
+        {"category": "abstractum", "marker": "lösungen"},
+        {"category": "copula_avoidance", "marker": "stellt dar"}
+      ]
+    },
+    {
+      "id": "lemma_13",
+      "text": "Das System verfügt über eine API.",
+      "flexion_target": true,
+      "expected": [{"category": "copula_avoidance", "marker": "verfügt über"}]
+    },
+    {
+      "id": "lemma_14",
+      "text": "Der Prozess zeichnet sich durch Stabilität aus.",
+      "expected": [
+        {"category": "abstractum", "marker": "prozesse"},
+        {"category": "copula_avoidance", "marker": "zeichnet sich"}
+      ]
+    },
+    {
+      "id": "lemma_15",
+      "text": "Der Ansatz erweist sich als robust.",
+      "expected": [{"category": "copula_avoidance", "marker": "erweist sich als"}]
+    },
+    {
+      "id": "lemma_16",
+      "text": "Die Maßnahme repräsentiert einen Wechsel.",
+      "flexion_target": true,
+      "expected": [{"category": "copula_avoidance", "marker": "repräsentiert"}]
+    },
+    {
+      "id": "lemma_17",
+      "text": "Maßnahmen, Aspekte und Faktoren bleiben offen.",
+      "expected": [
+        {"category": "abstractum", "marker": "maßnahmen"},
+        {"category": "abstractum", "marker": "aspekte"},
+        {"category": "abstractum", "marker": "faktoren"}
+      ]
+    },
+    {
+      "id": "lemma_18",
+      "text": "Die Herausforderungen der Prozesse wachsen.",
+      "expected": [
+        {"category": "abstractum", "marker": "herausforderungen"},
+        {"category": "abstractum", "marker": "prozesse"}
+      ]
+    },
+    {
+      "id": "lemma_19",
+      "text": "Das ist ja klar.",
+      "expected": [{"category": "particle", "marker": "ja"}]
+    },
+    {
+      "id": "lemma_20",
+      "text": "Wir testen das mal kurz.",
+      "expected": [{"category": "particle", "marker": "mal"}]
+    },
+    {
+      "id": "lemma_21",
+      "text": "Das ist schon ein Problem.",
+      "expected": [{"category": "particle", "marker": "schon"}]
+    },
+    {
+      "id": "lemma_22",
+      "text": "Schon im Januar startete das Team.",
+      "carveout_negative": true,
+      "expected": []
+    },
+    {
+      "id": "lemma_23",
+      "text": "Ja, das stimmt.",
+      "carveout_negative": true,
+      "expected": []
+    },
+    {
+      "id": "lemma_24",
+      "text": "Der Test lief 5-mal.",
+      "carveout_negative": true,
+      "expected": []
+    },
+    {
+      "id": "lemma_25",
+      "text": "Die Funktion stellt eine Frage.",
+      "carveout_negative": true,
+      "expected": []
+    },
+    {
+      "id": "lemma_26",
+      "text": "Das Wort „nahtlos“ steht hier nur als Beispiel.",
+      "known_limitation": "Use-Mention bleibt laut Plan offen.",
+      "expected": []
+    }
+  ]
+}
