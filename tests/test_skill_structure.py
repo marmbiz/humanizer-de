@@ -5,7 +5,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-EXPECTED_VERSION = "5.1.1"
+EXPECTED_VERSION = "5.2.0"
 EXPECTED_PATTERN_COUNT = 66
 
 
@@ -131,11 +131,13 @@ class SkillStructureTests(unittest.TestCase):
 
         self.assertIn("Deixis nur stabilisieren, nicht erfinden", skill)
         self.assertIn("Keine künstlichen Fragmente, Regelbrüche oder Partikel einsetzen", skill)
+        self.assertIn("Textqualität, Präzision oder Lesbarkeit schlechter werden können", skill)
 
         self.assertIn("Deixis und Sprecherposition", naturalness)
         self.assertIn("Diskursmarker und pragmatische Haltung", naturalness)
         self.assertIn("Verbalstil statt Nominalstil", naturalness)
         self.assertIn("Anti-Entropy-Reflex", naturalness)
+        self.assertIn("trotzdem Textqualität, Präzision oder Lesbarkeit verschlechtern", naturalness)
 
         self.assertIn("deictic_center", profiles)
         self.assertIn("Sprecherposition bleibt stabil", profiles)
@@ -145,11 +147,20 @@ class SkillStructureTests(unittest.TestCase):
 
     def test_ai_involvement_audit_stays_roadmap_not_active_skill(self):
         skill = (ROOT / "SKILL.md").read_text()
+        readme = (ROOT / "README.md").read_text()
         research = (ROOT / "docs" / "naturalness-research-brief.md").read_text()
 
         self.assertNotIn("references/ai-involvement-audit.md", skill)
         self.assertNotIn("Hinweisdichte", skill)
         self.assertFalse((ROOT / "references" / "ai-involvement-audit.md").exists())
+        self.assertIn("Preflight-Risiko", skill)
+        self.assertIn("keine Autorenschaftsprüfung", skill)
+        self.assertIn("Combing-Gate", skill)
+        self.assertIn("sentence_length_buckets", skill)
+        self.assertIn("Preflight-Risiko", readme)
+        self.assertIn("keine Aussage zur Autorenschaft", readme)
+        self.assertIn("kontrollierten Nachkamm", readme)
+        self.assertIn("schlechter werden können", readme)
 
         self.assertIn("Roadmap Ideas", research)
         self.assertIn("Calibrated AI-involvement audit", research)
@@ -184,8 +195,8 @@ class SkillStructureTests(unittest.TestCase):
 
         self.assertIn("German AI Text Humanizer", skill)
         self.assertIn("German AI text humanizer for Claude/Codex", agent_yaml)
-        self.assertIn("Nicht als Detektor-Garantie", readme)
-        self.assertIn("es erfindet keine Erfahrung, Quellen, Zahlen oder Autorensignale", readme)
+        self.assertNotIn("Nicht als Detektor-Garantie", readme)
+        self.assertNotIn("Undetectable-Tool", readme)
 
         required_keywords = {
             "ai-humanizer",

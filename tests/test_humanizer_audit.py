@@ -40,11 +40,14 @@ class HumanizerAuditTests(unittest.TestCase):
         self.assertEqual(report["file"], str(path))
         self.assertEqual(report["mode"], "sachlich")
         self.assertFalse(report["ok"])
-        self.assertEqual(set(report["summary"]), {"rhythm", "counts"})
+        self.assertEqual(set(report["summary"]), {"rhythm", "preflight", "counts"})
         self.assertEqual(set(report["summary"]["counts"]), {"unicode", "rhythm", "german_pattern", "register"})
         self.assertEqual(report["summary"]["counts"]["unicode"], 4)
         for key in humanizer_audit.RHYTHM_KEYS:
             self.assertIn(key, report["summary"]["rhythm"])
+        self.assertEqual(report["summary"]["preflight"]["risk"], "insufficient_text")
+        self.assertFalse(report["summary"]["preflight"]["combing"]["auto"])
+        self.assertIn("degrade text quality", report["summary"]["preflight"]["quality_warning"])
 
         unicode_findings = [item for item in report["findings"] if item["source"] == "unicode"]
         self.assertEqual(len(unicode_findings), 1)
@@ -67,6 +70,7 @@ class HumanizerAuditTests(unittest.TestCase):
         self.assertTrue(report["ok"])
         self.assertEqual(report["findings"], [])
         self.assertEqual(sum(report["summary"]["counts"].values()), 0)
+        self.assertEqual(report["summary"]["preflight"]["risk"], "insufficient_text")
 
     def test_markdown_format_is_compact_and_grouped(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -77,11 +81,39 @@ class HumanizerAuditTests(unittest.TestCase):
 
         self.assertEqual(exit_code, 0)
         self.assertTrue(output.startswith("Mode: sachlich\n"))
+        self.assertIn("Preflight: risk=", output)
+        self.assertIn("quality_risk=may_degrade_text_quality", output)
         self.assertIn("Rhythm: sentences=", output)
+        self.assertIn("short/medium/long=", output)
         self.assertIn("Findings:\nunicode:", output)
         self.assertIn("straight_quote x2", output)
         self.assertIn("rhythm:\n- none", output)
         self.assertNotIn('"findings"', output)
+
+    def test_preflight_high_risk_enables_auto_combing(self):
+        text = (
+            "Das System beleuchtet nahtlos dynamische Prozesse. "
+            "Das System unterstreicht ganzheitlich wichtige Aspekte. "
+            "Das System zeigt facettenreich zentrale Faktoren. "
+            "Das System fungiert als Lösung. "
+            "Das System verfügt über Module. "
+            "Das System prüft neue Maßnahmen. "
+            "Das System bündelt große Herausforderungen. "
+            "Das System liefert passende Ergebnisse."
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "text.md"
+            path.write_text(text, encoding="utf-8")
+
+            exit_code, report = run_json(["--file", str(path)])
+
+        self.assertEqual(exit_code, 0)
+        self.assertEqual(report["summary"]["preflight"]["risk"], "high")
+        self.assertTrue(report["summary"]["preflight"]["combing"]["auto"])
+        self.assertEqual(report["summary"]["preflight"]["combing"]["max_iterations"], 2)
+        driver_kinds = {item["kind"] for item in report["summary"]["preflight"]["drivers"]}
+        self.assertIn("low_burstiness", driver_kinds)
+        self.assertIn("ai_marker_cluster", driver_kinds)
 
     def test_latest_picks_newest_markdown_file_recursively(self):
         with tempfile.TemporaryDirectory() as tmp:

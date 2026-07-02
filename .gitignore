@@ -21,3 +21,6 @@ __pycache__/
 # Interne Arbeitsdateien, noch nicht zur Veroeffentlichung (wird spaeter genutzt)
 docs/ki-text-eisberg-heuristik-bis-llm.md
 docs/todo-naechste-schritte.md
+
+# Forschung/PoCs: lokal only, bis explizit review+commit entschieden ist
+research/

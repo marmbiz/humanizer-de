@@ -63,6 +63,7 @@ Diese Karten operationalisieren die spaeten Muster 54, 55, 58, 60, 63, 64 und 65
 - Signal: Ein Text wirkt gleichförmig, aber inhaltlich korrekt.
 - Schlechter Reflex: Satzfragmente, Regelbrüche, Füllwörter, Fehler oder willkürliche seltene Wörter einsetzen, um Vorhersagbarkeit zu senken.
 - Sicherer Eingriff: Satzlängen aus vorhandener Aussage spreizen, Vorfeld rotieren, Absätze nach Substanz gewichten und Wiederholungen reduzieren.
+- Transparenzpflicht: Erzwungenes Combing kann Burstiness/Mimicry erhöhen und trotzdem Textqualität, Präzision oder Lesbarkeit verschlechtern.
 - Nicht anfassen: fachliche Präzision, verständliche Wiederholung, Terminologiekonsistenz oder formale Gleichmäßigkeit ohne Lesbarkeitsproblem.
 
 ## 64 KI-Marker-Vokabular

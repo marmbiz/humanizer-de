@@ -4,7 +4,7 @@ description: deutschen Text humanisieren, KI-Schreibmuster/KI-Tells auditieren; 
 allowed-tools: [Read, Write, Edit, Grep, Glob, Bash]
 metadata:
   display_name: Humanizer (Deutsch)
-  version: 5.1.1
+  version: 5.2.0
   author: Martin Moeller
   maintainer_website: https://www.martin-moeller.biz
   based_on: 'Deutsche Wikipedia: Anzeichen für KI-generierte Inhalte, Erkennung KI-Einsatz, Schnelltest KI'
@@ -92,7 +92,7 @@ False Friends aus Muster 45 immer korrigieren. Calques und syntaktische Transfer
 
 Spätere Pässe dürfen frühere nicht invalidieren. Rhythmus immer zuletzt.
 
-**Pass 0 – Triage.** Modus, Arbeitszweig, Texttyp, Scope und Ziel bestimmen. Schreibprobe vorhanden? Dann Satzrhythmus, Wortniveau, Absatzanfänge, Sprecherposition (`ich`/`wir`/`man`/neutral), Anrede, Distanz, Terminologie und Lieblingszeichen als Zielprofil festhalten (im Formal-Modus nur KI-Tells entfernen). Bei Datei-Input zuerst den kompakten Sammelcheck ausführen: `python3 scripts/humanizer_audit.py --file <path> --mode <modus>`. Für den neuesten Markdown-Entwurf in einem Ordner: `python3 scripts/humanizer_audit.py --latest <dir> --mode <modus>`. Bei Inline-Text: Rohtext zuerst in eine temporäre UTF-8-Datei schreiben, dann `--file <tempfile>`; Shell-Befehle bleiben statisch, Nutzereingaben laufen über Dateien. Einzelchecks wie `unicode_lint.py`, `rhythm_lint.py`, `german_pattern_lint.py` und `register_lint.py` bleiben für gezielte Nachprüfung nutzbar; Rhythmusdetails mit Absatzdaten nur bei Bedarf über `python3 scripts/rhythm_lint.py --file <path> --scope user_text --mode <modus> --include-paragraphs` ausgeben. Läuft ein Script nicht, das melden und nicht blind per Hand korrigieren. Audit- und Lint-Ausgaben sind Verdacht, kein Verdikt – vor Eingriff gegen die Carve-outs und den Kontext prüfen. Fertig, wenn Modus, Zweig, Scope und prüfbare Verdachtsliste feststehen.
+**Pass 0 – Triage.** Modus, Arbeitszweig, Texttyp, Scope und Ziel bestimmen. Schreibprobe vorhanden? Dann Satzrhythmus, Wortniveau, Absatzanfänge, Sprecherposition (`ich`/`wir`/`man`/neutral), Anrede, Distanz, Terminologie und Lieblingszeichen als Zielprofil festhalten (im Formal-Modus nur KI-Tells entfernen). Bei Datei-Input zuerst den kompakten Sammelcheck ausführen: `python3 scripts/humanizer_audit.py --file <path> --mode <modus>`. Für den neuesten Markdown-Entwurf in einem Ordner: `python3 scripts/humanizer_audit.py --latest <dir> --mode <modus>`. Der Sammelcheck meldet ein Preflight-Risiko (`low`/`medium`/`high`/`insufficient_text`) fuer KI-artige Oberflächencluster und eine Combing-Empfehlung; das ist keine Autorenschaftsprüfung. Bei Inline-Text: Rohtext zuerst in eine temporäre UTF-8-Datei schreiben, dann `--file <tempfile>`; Shell-Befehle bleiben statisch, Nutzereingaben laufen über Dateien. Einzelchecks wie `unicode_lint.py`, `rhythm_lint.py`, `german_pattern_lint.py` und `register_lint.py` bleiben für gezielte Nachprüfung nutzbar; Rhythmusdetails mit Absatzdaten nur bei Bedarf über `python3 scripts/rhythm_lint.py --file <path> --scope user_text --mode <modus> --include-paragraphs` ausgeben. Läuft ein Script nicht, das melden und nicht blind per Hand korrigieren. Audit- und Lint-Ausgaben sind Verdacht, kein Verdikt – vor Eingriff gegen die Carve-outs und den Kontext prüfen. Fertig, wenn Modus, Zweig, Scope und prüfbare Verdachtsliste feststehen.
 
 **Pass 1 – Artefakte und Evidenz (immer, Einzelbefund genügt).** Chatbot-Floskeln, Platzhalter, Quellenprobleme (Decision Table Evidenz), Unicode, falsche Typografie und Claim-Delta prüfen. Bei Overlaps zuerst [references/decision-tables.md](references/decision-tables.md); [references/evidence-ledger.md](references/evidence-ledger.md) bei Faktenankern; [references/patterns.md](references/patterns.md) nur für konkrete Musterdiagnose, Audit oder Grenzfälle laden. Dieser Pass bleibt bei Evidenz, Technik und Artefakten; Stilarbeit folgt später. Für sichere Datei-Korrekturen: `unicode_lint.py --fix --write`; Ergebnis bei Frontmatter und Bildtiteln prüfen (siehe Carve-outs). Fertig, wenn jeder HIGH-/Technik-/Evidenzfund geändert, markiert oder als False Positive verworfen ist.
 
@@ -109,6 +109,8 @@ Spätere Pässe dürfen frühere nicht invalidieren. Rhythmus immer zuletzt.
 - Keine künstlichen Fragmente, Regelbrüche oder Partikel einsetzen, nur um „menschlicher“ zu wirken. Rhythmusarbeit nutzt vorhandene Aussage, nicht Fehler oder Schauspiel. Fertig, wenn Rhythmus weniger mechanisch ist, ohne Register, Claim-Lock oder natürliche Aussageführung zu verletzen.
 
 **Pass 5 – Selbst-Audit (immer).** Eigene Änderungen gegen Katalog, Zielprofil, Claim-Lock, Persona-Lock und Arbeitszweig prüfen: Hat eine Ersetzungsregel neue Monotonie erzeugt (gleiche Ersatzkonstruktion 3+ Mal → Strategie rotieren, vgl. Muster 16 vs. 51)? Danach Kurzaudit ausgeben. Fertig, wenn Restbefunde, verworfene Kandidaten und Ausgabeformat zum gewählten Zweig passen.
+
+**Combing-Gate – kontrollierter Nachkamm (optional).** Nach Pass 5 nur in Locker/Sachlich, ab 8 Sätzen und bei Preflight `high` oder ausdrücklichem Wunsch; bei `medium` erst nach Restprüfung. Messe vorher/nachher `mean_sentence_length`, `stddev_sentence_length`, `stddev_mean_ratio` und `sentence_length_buckets`. Maximal 2 gezielte Rhythmus-Nachbesserungen; keine neuen Fakten, Persona-Signale, Partikel oder Fragmente. Wer Combing ausdrücklich will, darf es als Burstiness-/Mimicry-Versuch bekommen; vorher klar sagen, dass Textqualität, Präzision oder Lesbarkeit schlechter werden können. Formal nur auf Wunsch. Fertig, wenn Burstiness messbar besser ist oder weitere Änderungen nur Detektorwirkung/Glattheit bringen würden.
 
 **QGIR – begrenzte zweite Runde (optional).** Nur wenn nach Pass 5 echte HIGH/MEDIUM-Cluster bleiben und Claim/Register/Naturalness-Gates grün sind. Maximal 2 normale Pässe, dritter nur bei dokumentiertem schweren Restcluster. Stoppen, sobald weitere Änderungen nur Glattheit, Stimme oder Detektorwirkung verbessern würden. Details: [references/qgir.md](references/qgir.md).
 
@@ -136,7 +138,8 @@ Format:
 2. **Gefundene Muster:** maximal 6 konkrete Bullet Points mit kurzem Zitat.
 3. **Geänderte Stellen:** Vorher/Nachher-Paare nur für bearbeitete Passagen.
 4. **Kurzaudit:** maximal 3 verbleibende Tells oder „Keine gefunden.“
-5. **Verworfene Kandidaten:** nur ausgeben, wenn Lint-/Audit-Flags vorlagen und nach Prüfung höchstens zwei echte Änderungen nötig waren. Jede Zeile muss auf ein konkretes Flag oder eine konkrete Textstelle verweisen: erwogene Änderung plus ein Satz, warum sie Substanz, Rhythmus, Register oder Belegtreue verschlechtern würde. Ohne konkret geprüfte Stelle kein Eintrag; ist nichts belegbar, Block weglassen.
+5. **Burstiness:** nur bei Combing: Messung vorher/nachher, Iterationszahl und Hinweis auf mögliches Qualitätsrisiko.
+6. **Verworfene Kandidaten:** nur ausgeben, wenn Lint-/Audit-Flags vorlagen und nach Prüfung höchstens zwei echte Änderungen nötig waren. Jede Zeile muss auf ein konkretes Flag oder eine konkrete Textstelle verweisen: erwogene Änderung plus ein Satz, warum sie Substanz, Rhythmus, Register oder Belegtreue verschlechtern würde. Ohne konkret geprüfte Stelle kein Eintrag; ist nichts belegbar, Block weglassen.
 
 Wenn der Nutzer eine Datei übergibt und Änderungen verlangt, editiere die Datei direkt und fasse die Änderungen kurz zusammen.
 

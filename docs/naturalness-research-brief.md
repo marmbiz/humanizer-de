@@ -57,6 +57,7 @@ Ideas submitted as planning notes, examples, or "scientific mechanisms" are not 
 
 Accepted as internal heuristics only:
 
+- Report deterministic preflight bands for KI-artige Oberflächencluster when framed as text-quality risk, not authorship proof.
 - Stabilize speaker position and address form when the input or target profile supports it.
 - Prefer verbs over nominalized process nouns when the actor and action are present.
 - Replace mechanical logical connectors with content-led transitions where the relation is already clear.

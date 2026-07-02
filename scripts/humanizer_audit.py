@@ -24,7 +24,10 @@ SOURCES = ("unicode", "rhythm", "german_pattern", "register")
 RHYTHM_KEYS = (
     "sentence_count",
     "mean_sentence_length",
+    "stddev_sentence_length",
     "stddev_mean_ratio",
+    "sentence_length_buckets",
+    "syntactic_complexity_variance",
     "subject_initial_ratio",
     "connector_density",
     "heading_count",
@@ -84,6 +87,109 @@ def evidence_summary(evidence: object) -> str:
 def rhythm_summary(report: dict) -> dict:
     document = report.get("document", {})
     return {key: document.get(key, 0) for key in RHYTHM_KEYS}
+
+
+def add_driver(drivers: list[dict], kind: str, detail: str, weight: int) -> int:
+    drivers.append({"kind": kind, "detail": detail, "weight": weight})
+    return weight
+
+
+def preflight_assessment(
+    rhythm_report: dict,
+    german_findings: list[dict],
+    register_findings: list[dict],
+    mode: str,
+) -> dict:
+    document = rhythm_report.get("document", {})
+    sentence_count = document.get("sentence_count", 0)
+    drivers: list[dict] = []
+    score = 0
+    quality_warning = (
+        "Combing may improve burstiness or mimicry metrics, but it can degrade text quality, "
+        "precision, readability, or register."
+    )
+    short_sample = sentence_count < 8
+    if short_sample:
+        add_driver(
+            drivers,
+            "short_sample",
+            f"sentence_count={sentence_count}; rhythm preflight needs at least 8",
+            0,
+        )
+
+    stddev_ratio = document.get("stddev_mean_ratio", 0.0)
+    subject_ratio = document.get("subject_initial_ratio", 0.0)
+    opener_count = len(document.get("repeated_openers", []))
+    connector_count = document.get("connector_density", 0)
+    buckets = document.get("sentence_length_buckets", {}).get("ratios", {})
+    short_ratio = buckets.get("short_lt_12", 0.0)
+    long_ratio = buckets.get("long_gt_28", 0.0)
+
+    if not short_sample and stddev_ratio < 0.4:
+        score += add_driver(drivers, "low_burstiness", f"stddev/mean={stddev_ratio}", 2)
+    if not short_sample and short_ratio < 0.15 and long_ratio < 0.1:
+        score += add_driver(
+            drivers,
+            "compressed_sentence_mix",
+            f"short_lt_12={short_ratio}, long_gt_28={long_ratio}",
+            1,
+        )
+    if not short_sample and opener_count >= 2:
+        score += add_driver(drivers, "repeated_openers", f"count={opener_count}", 2)
+    if not short_sample and subject_ratio > 0.85 and (stddev_ratio < 0.6 or opener_count >= 2):
+        score += add_driver(drivers, "subject_initial_cluster", f"subject_initial_ratio={subject_ratio}", 1)
+    if not short_sample and document.get("paragraph_sentence_counts_uniform"):
+        score += add_driver(drivers, "uniform_paragraphs", "paragraph sentence counts are near-uniform", 1)
+    if connector_count > 1:
+        score += add_driver(drivers, "mechanical_connectors", f"connector_density={connector_count}", 1)
+
+    weighted_kinds = {
+        "ai_marker_cluster": 2,
+        "copula_avoidance_cluster": 1,
+        "abstraction_cluster": 1,
+        "colon_heading_cluster": 1,
+    }
+    for item in german_findings:
+        kind = item.get("kind", "")
+        if kind in weighted_kinds:
+            score += add_driver(drivers, kind, evidence_summary(item.get("evidence", "")), weighted_kinds[kind])
+
+    if any(item.get("severity") == "blocker" for item in register_findings):
+        score += add_driver(drivers, "register_blocker", "register drift blocks automatic stylization", 0)
+
+    if short_sample and score == 0:
+        risk = "insufficient_text"
+    elif score >= 4:
+        risk = "high"
+    elif score >= 2:
+        risk = "medium"
+    else:
+        risk = "low"
+
+    if risk == "insufficient_text":
+        recommendation = "audit_only"
+        combing = {"auto": False, "max_iterations": 0, "reason": "too_few_sentences"}
+    elif mode == "formal":
+        recommendation = "humanizer_pass_without_auto_combing"
+        combing = {"auto": False, "max_iterations": 0, "reason": "formal_mode"}
+    elif risk == "high":
+        recommendation = "humanizer_pass_plus_combing"
+        combing = {"auto": True, "max_iterations": 2, "reason": "strong_cluster"}
+    elif risk == "medium":
+        recommendation = "humanizer_pass; combing_if_rhythm_remains"
+        combing = {"auto": False, "max_iterations": 2, "reason": "review_after_pass_5"}
+    else:
+        recommendation = "no_rewrite_or_local_edit_only"
+        combing = {"auto": False, "max_iterations": 0, "reason": "no_cluster"}
+
+    return {
+        "risk": risk,
+        "score": score,
+        "drivers": drivers[:6],
+        "recommendation": recommendation,
+        "combing": combing,
+        "quality_warning": quality_warning,
+    }
 
 
 def compact_unicode_findings(findings: list[dict]) -> list[dict]:
@@ -180,6 +286,12 @@ def analyze_file(path: Path, mode: str) -> dict:
         + compact_german_pattern_findings(german_report["findings"])
         + compact_register_findings(register_report["findings"])
     )
+    preflight = preflight_assessment(
+        rhythm_report,
+        german_report["findings"],
+        register_report["findings"],
+        mode,
+    )
 
     return {
         "file": str(path),
@@ -187,6 +299,7 @@ def analyze_file(path: Path, mode: str) -> dict:
         "ok": sum(counts.values()) == 0,
         "summary": {
             "rhythm": rhythm_summary(rhythm_report),
+            "preflight": preflight,
             "counts": counts,
         },
         "findings": findings,
@@ -201,14 +314,29 @@ def md_finding_line(item: dict) -> str:
 
 def format_markdown(report: dict) -> str:
     rhythm = report["summary"]["rhythm"]
+    preflight = report["summary"]["preflight"]
+    bucket_ratios = rhythm["sentence_length_buckets"]["ratios"]
+    driver_kinds = ", ".join(item["kind"] for item in preflight["drivers"]) or "none"
     lines = [
         f"Mode: {report['mode']}",
         f"File: {report['file']}",
         (
+            "Preflight: "
+            f"risk={preflight['risk']}, "
+            f"score={preflight['score']}, "
+            f"recommendation={preflight['recommendation']}, "
+            f"combing_auto={str(preflight['combing']['auto']).lower()}, "
+            "quality_risk=may_degrade_text_quality, "
+            f"drivers={driver_kinds}"
+        ),
+        (
             "Rhythm: "
             f"sentences={rhythm['sentence_count']}, "
             f"mean={rhythm['mean_sentence_length']}, "
+            f"stddev={rhythm['stddev_sentence_length']}, "
             f"stddev/mean={rhythm['stddev_mean_ratio']}, "
+            f"short/medium/long={bucket_ratios['short_lt_12']}/{bucket_ratios['medium_12_to_28']}/{bucket_ratios['long_gt_28']}, "
+            f"complexity_var={rhythm['syntactic_complexity_variance']}, "
             f"subject_initial={rhythm['subject_initial_ratio']}, "
             f"connectors={rhythm['connector_density']}, "
             f"headings={rhythm['heading_count']}, "

@@ -131,6 +131,7 @@ MONTHS = (
 )
 
 WORD_RE = re.compile(r"[A-Za-zÄÖÜäöüß0-9]+(?:[-'][A-Za-zÄÖÜäöüß0-9]+)?")
+CLAUSE_PUNCT_RE = re.compile(r"[,;:()]")
 DOT = "<RH_DOT>"
 
 
@@ -247,19 +248,59 @@ def sentence_lengths(sentences: list[str]) -> list[int]:
     return [len(tokens(sentence)) for sentence in sentences if tokens(sentence)]
 
 
-def mean(values: list[int]) -> float:
+def mean(values: list[int | float]) -> float:
     return sum(values) / len(values) if values else 0.0
 
 
-def stddev(values: list[int]) -> float:
+def variance(values: list[int | float]) -> float:
     if not values:
         return 0.0
     value_mean = mean(values)
-    return math.sqrt(sum((value - value_mean) ** 2 for value in values) / len(values))
+    return sum((value - value_mean) ** 2 for value in values) / len(values)
+
+
+def stddev(values: list[int | float]) -> float:
+    if not values:
+        return 0.0
+    return math.sqrt(variance(values))
 
 
 def rounded(value: float) -> float:
     return round(value, 3)
+
+
+def sentence_length_buckets(lengths: list[int]) -> dict:
+    counts = {
+        "short_lt_12": 0,
+        "medium_12_to_28": 0,
+        "long_gt_28": 0,
+    }
+    for length in lengths:
+        if length < 12:
+            counts["short_lt_12"] += 1
+        elif length > 28:
+            counts["long_gt_28"] += 1
+        else:
+            counts["medium_12_to_28"] += 1
+
+    total = len(lengths)
+    ratios = {key: rounded(value / total) if total else 0.0 for key, value in counts.items()}
+    return {"counts": counts, "ratios": ratios}
+
+
+def syntactic_complexity(sentence: str) -> int:
+    lowered_tokens = [token.lower() for token in tokens(sentence)]
+    subjunction_count = sum(1 for token in lowered_tokens if token in SUBJUNCTIONS)
+    return subjunction_count + len(CLAUSE_PUNCT_RE.findall(sentence))
+
+
+def syntactic_complexity_stats(sentences: list[str]) -> dict:
+    scores = [syntactic_complexity(sentence) for sentence in sentences if tokens(sentence)]
+    return {
+        "mean": rounded(mean(scores)),
+        "variance": rounded(variance(scores)),
+        "stddev": rounded(stddev(scores)),
+    }
 
 
 def first_token(sentence: str) -> str:
@@ -323,12 +364,17 @@ def paragraph_report(index: int, block: str) -> dict:
     lengths = sentence_lengths(sentences)
     length_mean = mean(lengths)
     length_stddev = stddev(lengths)
+    complexity = syntactic_complexity_stats(sentences)
     return {
         "index": index,
         "sentence_count": len(sentences),
         "mean_sentence_length": rounded(length_mean),
         "stddev_sentence_length": rounded(length_stddev),
         "stddev_mean_ratio": rounded(length_stddev / length_mean) if length_mean else 0.0,
+        "sentence_length_buckets": sentence_length_buckets(lengths),
+        "syntactic_complexity_mean": complexity["mean"],
+        "syntactic_complexity_variance": complexity["variance"],
+        "syntactic_complexity_stddev": complexity["stddev"],
         "subject_initial_ratio": rounded(subject_initial_ratio(sentences)),
         "max_main_clause_run": max_main_clause_run(sentences),
         "connector_density": connector_density(block),
@@ -391,6 +437,8 @@ def analyze(text: str, file: str | None = None, scope: str = "user_text", mode: 
     length_mean = mean(lengths)
     length_stddev = stddev(lengths)
     length_ratio = length_stddev / length_mean if length_mean else 0.0
+    length_buckets = sentence_length_buckets(lengths)
+    complexity = syntactic_complexity_stats(all_sentences)
     sentence_count = len(all_sentences)
     paragraph_sentence_counts = [report["sentence_count"] for report in paragraph_reports if report["sentence_count"]]
     uniform_paragraphs = len(paragraph_sentence_counts) >= 4 and max(paragraph_sentence_counts) - min(paragraph_sentence_counts) <= 2
@@ -462,6 +510,10 @@ def analyze(text: str, file: str | None = None, scope: str = "user_text", mode: 
             "mean_sentence_length": rounded(length_mean),
             "stddev_sentence_length": rounded(length_stddev),
             "stddev_mean_ratio": rounded(length_ratio),
+            "sentence_length_buckets": length_buckets,
+            "syntactic_complexity_mean": complexity["mean"],
+            "syntactic_complexity_variance": complexity["variance"],
+            "syntactic_complexity_stddev": complexity["stddev"],
             "subject_initial_ratio": rounded(subject_ratio),
             "max_main_clause_run": main_clause_run,
             "paragraph_sentence_counts": paragraph_sentence_counts,

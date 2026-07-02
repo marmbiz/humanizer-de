@@ -131,6 +131,8 @@ class RhythmLintTests(unittest.TestCase):
         self.assertNotIn("paragraphs", report)
         self.assertNotIn("paragraph_sentence_counts", report["document"])
         self.assertNotIn("connector_density_by_paragraph", report["document"])
+        self.assertIn("sentence_length_buckets", report["document"])
+        self.assertIn("syntactic_complexity_variance", report["document"])
         self.assertIn("paragraph_sentence_counts_uniform", report["document"])
         self.assertIn("raw_suspicions", report)
         self.assertIn("suppressed", report)
@@ -142,6 +144,21 @@ class RhythmLintTests(unittest.TestCase):
         self.assertIn("paragraphs", report)
         self.assertIn("paragraph_sentence_counts", report["document"])
         self.assertIn("connector_density_by_paragraph", report["document"])
+
+    def test_sentence_length_buckets_are_deterministic(self):
+        text = (
+            "Kurz. "
+            "Dieser Satz hat genau acht Wörter für den kurzen Bereich. "
+            "Dieser längere Satz enthält mehrere Wörter, bleibt aber bewusst innerhalb des mittleren Bereichs, "
+            "damit die Grenze zwischen kurz und lang sauber geprüft wird. "
+            "Dieser sehr lange Satz enthält viele zusätzliche Wörter, weil die Messung den langen Bereich oberhalb "
+            "von achtundzwanzig Wörtern zuverlässig zählen soll und deshalb genug Material für eine belastbare Probe braucht."
+        )
+        report = rhythm_lint.analyze(text)
+        buckets = report["document"]["sentence_length_buckets"]
+
+        self.assertEqual(buckets["counts"], {"short_lt_12": 2, "medium_12_to_28": 1, "long_gt_28": 1})
+        self.assertEqual(buckets["ratios"], {"short_lt_12": 0.5, "medium_12_to_28": 0.25, "long_gt_28": 0.25})
 
 
 if __name__ == "__main__":
