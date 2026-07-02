@@ -490,6 +490,20 @@ python3 scripts/run_review_eval.py tests/scenarios --check-invariants
 
 Die YAML-Szenarien in `tests/scenarios/` sind bewusst maschinenlesbare Contracts. QGIR-Szenarien prüfen zusätzlich Pass-Limits, Edit-Budget, geschützte Anker, Registerdrift und Claim-Richtungsdrift. Detector-Bezug bleibt außerhalb der Contract-Checks. Die ausführlichere Datei `tests/SCENARIOS.md` bleibt die manuelle LLM-im-Loop-Referenz.
 
+### Release-Regel
+
+Der Abschnitt **Was ist neu?** ist der laufende Changelog. Für veröffentlichte Versionen braucht es zusätzlich einen Git-Tag und einen GitHub Release.
+
+Bei jedem Version-Bump:
+
+1. Version in `SKILL.md`, Plugin-Metadaten, Referenzen und Changelog synchronisieren.
+2. `make verify` ausführen.
+3. Änderungen committen und `main` pushen.
+4. Einen Tag `vX.Y.Z` exakt auf den Release-Commit setzen und pushen.
+5. Auf GitHub einen Release aus diesem Tag erstellen. Die Release Notes dürfen die Changelog-Zeile erweitern, müssen aber denselben Scope beschreiben.
+
+Patch-Releases ohne öffentliche Relevanz dürfen im README-Changelog bleiben. Minor-/Major-Releases und sichtbare Tool- oder Workflow-Änderungen bekommen immer Tag und GitHub Release.
+
 ---
 
 ## Datenschutz & Sicherheit

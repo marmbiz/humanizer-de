@@ -77,6 +77,7 @@ class SkillStructureTests(unittest.TestCase):
         readme_text = (ROOT / "README.md").read_text()
         patterns_text = (ROOT / "references" / "patterns.md").read_text()
         decision_text = (ROOT / "references" / "decision-tables.md").read_text()
+        warp_text = (ROOT / "WARP.md").read_text()
 
         self.assertRegex(skill_text, rf"version:\s+['\"]?{re.escape(EXPECTED_VERSION)}['\"]?")
         self.assertEqual(plugin["version"], EXPECTED_VERSION)
@@ -103,6 +104,9 @@ class SkillStructureTests(unittest.TestCase):
         self.assertNotIn("65 Muster", plugin["description"])
         self.assertNotIn("65 Muster", codex_plugin["description"])
         self.assertNotIn("65 Muster", marketplace_plugin["description"])
+        self.assertIn("GitHub Release", readme_text)
+        self.assertIn("GitHub Release", warp_text)
+        self.assertIn("Tag `vX.Y.Z`", warp_text)
 
     def test_p0_docs_define_research_and_coverage_boundaries(self):
         research = (ROOT / "docs" / "naturalness-research-brief.md").read_text()
