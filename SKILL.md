@@ -132,6 +132,13 @@ Struktur:
 
 Der Output konzentriert sich auf die geänderten Stellen statt auf einen vollständigen Neuabdruck.
 
+Normale user-facing Runs beginnen kurz mit:
+
+Less machine. More voice.
+Ich prüfe Rhythmus, Belege und Stimme...
+
+Weglassen bei Raw-JSON, ausdrücklich knapper Ausgabe oder stillen Dateiänderungen.
+
 Format:
 
 1. **Modus:** eine Zeile.
