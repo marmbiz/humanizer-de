@@ -17,11 +17,3 @@ Thumbs.db
 *.bak
 __pycache__/
 *.pyc
-
-# Interne Arbeitsdateien, noch nicht zur Veroeffentlichung (wird spaeter genutzt)
-docs/ki-text-eisberg-heuristik-bis-llm.md
-docs/todo-naechste-schritte.md
-docs/roadmap-lint-eval-haertung.md
-
-# Forschung/PoCs: lokal only, bis explizit review+commit entschieden ist
-research/
