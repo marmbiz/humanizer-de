@@ -1,4 +1,6 @@
 import importlib.util
+import random
+import time
 import unittest
 from pathlib import Path
 
@@ -77,6 +79,40 @@ class UnicodeLintTests(unittest.TestCase):
     def test_inline_code_is_protected_from_quote_findings(self):
         text = '`"code"`'
         self.assertEqual(unicode_lint.lint(text), [])
+
+    def test_range_checker_matches_naive_in_ranges(self):
+        rng = random.Random(20260705)
+        fragments = [
+            "Prosa mit ein paar Wörtern. ",
+            chr(0x201E) + "Zitat" + chr(0x201C) + " ",
+            "`inline code` ",
+            "```\nblock\n``` ",
+            "https://example.org/pfad?x=1 ",
+            "mail@example.org ",
+            '"gerade Anführung" ',
+        ]
+        for _ in range(200):
+            text = "".join(rng.choice(fragments) for _ in range(rng.randint(1, 12)))
+            ranges = unicode_lint.protected_ranges(text)
+            contains = unicode_lint.range_checker(ranges)
+            for index in range(len(text) + 1):
+                self.assertEqual(
+                    contains(index),
+                    unicode_lint.in_ranges(index, ranges),
+                    f"Abweichung bei Index {index} in: {text!r}",
+                )
+
+    def test_large_file_lint_is_fast(self):
+        parts = []
+        for i in range(1000):
+            parts.append(f"Absatz {i} mit https://example.org/seite/{i} und `code_{i}` im Fließtext. ")
+            if i % 5 == 0:
+                parts.append(chr(0x201E) + f"Zitat {i}" + chr(0x201C) + " ")
+        text = "".join(parts)
+        start = time.perf_counter()
+        unicode_lint.lint(text)
+        elapsed = time.perf_counter() - start
+        self.assertLess(elapsed, 1.0, f"lint() brauchte {elapsed:.2f} s")
 
 
 if __name__ == "__main__":

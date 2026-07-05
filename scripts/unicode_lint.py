@@ -8,6 +8,7 @@ import json
 import re
 import sys
 import unicodedata
+from bisect import bisect_right
 from pathlib import Path
 
 
@@ -55,6 +56,28 @@ def protected_ranges(text: str) -> list[tuple[int, int]]:
     return ranges
 
 
+def merge_ranges(ranges: list[tuple[int, int]]) -> list[tuple[int, int]]:
+    merged: list[tuple[int, int]] = []
+    for start, end in sorted(ranges):
+        if merged and start <= merged[-1][1]:
+            merged[-1] = (merged[-1][0], max(merged[-1][1], end))
+        else:
+            merged.append((start, end))
+    return merged
+
+
+def range_checker(ranges: list[tuple[int, int]]):
+    merged = merge_ranges(ranges)
+    starts = [item[0] for item in merged]
+    ends = [item[1] for item in merged]
+
+    def contains(index: int) -> bool:
+        pos = bisect_right(starts, index) - 1
+        return pos >= 0 and index < ends[pos]
+
+    return contains
+
+
 def in_ranges(index: int, ranges: list[tuple[int, int]]) -> bool:
     return any(start <= index < end for start, end in ranges)
 
@@ -92,6 +115,7 @@ def looks_like_german_apostrophe(text: str, index: int) -> bool:
 def lint(text: str) -> list[dict]:
     findings: list[dict] = []
     ranges = protected_ranges(text)
+    in_range = range_checker(ranges)
     paired_quote_indices: set[int] = set()
 
     for index, char in enumerate(text):
@@ -100,18 +124,18 @@ def lint(text: str) -> list[dict]:
 
     quote_styles = set()
     for index, char in enumerate(text):
-        if in_ranges(index, ranges):
+        if in_range(index):
             continue
         if char in {OPEN_DE, CLOSE_DE, WRONG_CLOSE_DE, OPEN_DE_SINGLE, CLOSE_DE_SINGLE, WRONG_CLOSE_SINGLE, ASCII_QUOTE, "\u00ab", "\u00bb"}:
             quote_styles.add(char)
 
     for index, char in enumerate(text):
-        if char != OPEN_DE or in_ranges(index, ranges):
+        if char != OPEN_DE or in_range(index):
             continue
         closing_index = None
         closing_char = ""
         for probe in range(index + 1, len(text)):
-            if in_ranges(probe, ranges):
+            if in_range(probe):
                 continue
             if text[probe] in {CLOSE_DE, WRONG_CLOSE_DE, ASCII_QUOTE}:
                 closing_index = probe
@@ -127,12 +151,12 @@ def lint(text: str) -> list[dict]:
                 add_finding(findings, 46, "ascii_german_closing_quote", closing_index, closing_char, "Use U+201C after U+201E, not ASCII quote.")
 
     for index, char in enumerate(text):
-        if char != OPEN_DE_SINGLE or in_ranges(index, ranges):
+        if char != OPEN_DE_SINGLE or in_range(index):
             continue
         closing_index = None
         closing_char = ""
         for probe in range(index + 1, len(text)):
-            if in_ranges(probe, ranges):
+            if in_range(probe):
                 continue
             if text[probe] in {CLOSE_DE_SINGLE, WRONG_CLOSE_SINGLE, ASCII_QUOTE}:
                 closing_index = probe
@@ -148,11 +172,11 @@ def lint(text: str) -> list[dict]:
                 add_finding(findings, 46, "ascii_single_german_closing_quote", closing_index, closing_char, "Use U+2018 after U+201A, not ASCII quote.")
 
     for index, char in enumerate(text):
-        if char != OPEN_EN or index in paired_quote_indices or in_ranges(index, ranges):
+        if char != OPEN_EN or index in paired_quote_indices or in_range(index):
             continue
         closing_index = None
         for probe in range(index + 1, len(text)):
-            if in_ranges(probe, ranges):
+            if in_range(probe):
                 continue
             if text[probe] == WRONG_CLOSE_DE:
                 closing_index = probe
@@ -162,7 +186,7 @@ def lint(text: str) -> list[dict]:
             add_finding(findings, 46, "english_curly_quotes", index, char, "English curly quote pair in German prose; review German quote style.")
 
     for index, char in enumerate(text):
-        if index in paired_quote_indices or in_ranges(index, ranges):
+        if index in paired_quote_indices or in_range(index):
             continue
         if char == WRONG_CLOSE_DE:
             add_finding(findings, 46, "stray_wrong_german_closing_quote", index, char, "Wrong German closing quote without matching U+201E opener.")
@@ -170,7 +194,7 @@ def lint(text: str) -> list[dict]:
             add_finding(findings, 46, "stray_wrong_single_german_closing_quote", index, char, "Wrong single German closing quote without matching U+201A opener.")
 
     for index, char in enumerate(text):
-        if char == ASCII_QUOTE and not in_ranges(index, ranges):
+        if char == ASCII_QUOTE and not in_range(index):
             add_finding(findings, 46, "straight_quote", index, char, "Straight ASCII quote in prose; review German quote style.")
 
     style_families = 0
@@ -198,6 +222,7 @@ def lint(text: str) -> list[dict]:
 
 def fix(text: str) -> str:
     ranges = protected_ranges(text)
+    in_range = range_checker(ranges)
     chars = []
     for index, char in enumerate(text):
         if is_hidden_char(char):
@@ -205,13 +230,14 @@ def fix(text: str) -> str:
         chars.append(char)
     cleaned = "".join(chars)
     ranges = protected_ranges(cleaned)
+    in_range = range_checker(ranges)
     chars = list(cleaned)
 
     for index, char in enumerate(chars):
-        if char != OPEN_DE or in_ranges(index, ranges):
+        if char != OPEN_DE or in_range(index):
             continue
         for probe in range(index + 1, len(chars)):
-            if in_ranges(probe, ranges):
+            if in_range(probe):
                 continue
             if chars[probe] == WRONG_CLOSE_DE:
                 chars[probe] = CLOSE_DE
@@ -219,10 +245,10 @@ def fix(text: str) -> str:
             if chars[probe] in {CLOSE_DE, ASCII_QUOTE}:
                 break
     for index, char in enumerate(chars):
-        if char != OPEN_DE_SINGLE or in_ranges(index, ranges):
+        if char != OPEN_DE_SINGLE or in_range(index):
             continue
         for probe in range(index + 1, len(chars)):
-            if in_ranges(probe, ranges):
+            if in_range(probe):
                 continue
             if chars[probe] == WRONG_CLOSE_SINGLE:
                 chars[probe] = CLOSE_DE_SINGLE
