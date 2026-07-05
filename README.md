@@ -489,6 +489,16 @@ python3 scripts/german_pattern_lint.py --file <text.md> --mode locker
 python3 scripts/run_review_eval.py tests/scenarios --check-invariants
 ```
 
+### Evidence-Gate einzeln nutzen
+
+Das Evidence-Gate prüft ein Textpaar unabhängig vom Humanizing auf Faktenverschiebung:
+
+```bash
+python3 scripts/evidence_lint.py --before-file before.md --after-file after.md
+```
+
+Verglichen werden Faktenanker (Zahlen, Daten, URLs, DOIs, Paragraphen, Code, Zitate, Eigennamen), der Autoritätsgrad von Aussagen und die Claim-Richtung (Zunahme/Abnahme). Der JSON-Report listet jede Abweichung; ein Blocker (etwa eine neue Zahl oder eine gekippte Aussagerichtung) bedeutet: die Umformulierung hat Fakten verschoben und gehört zurückgewiesen. Exit-Code 1 nur bei Blockern, Warnings (z. B. neue Eigennamen) blocken nicht. Details zum Schema stehen in [`references/evidence-ledger.md`](references/evidence-ledger.md).
+
 Die YAML-Szenarien in `tests/scenarios/` sind bewusst maschinenlesbare Contracts. QGIR-Szenarien prüfen zusätzlich Pass-Limits, Edit-Budget, geschützte Anker, Registerdrift und Claim-Richtungsdrift. Detector-Bezug bleibt außerhalb der Contract-Checks. Die ausführlichere Datei `tests/SCENARIOS.md` bleibt die manuelle LLM-im-Loop-Referenz.
 
 ### Release-Regel
