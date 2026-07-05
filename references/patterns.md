@@ -8,14 +8,14 @@ Vollstaendiger Musterkatalog fuer Humanizer (Deutsch) v5.2.0. Nur bei konkreter 
 |---|--------|---------|-----------------------|
 | 1 | Übermäßige Betonung von Symbolik | HIGH | "steht als Zeugnis", "spielt eine wichtige Rolle", "symbolisiert" |
 | 2 | Werbesprache und Superlative | HIGH | "atemberaubend", "einzigartig", "faszinierend", "spektakulär" |
-| 3 | Redaktionelle Kommentare | HIGH | "es ist wichtig zu bemerken", "es sollte hervorgehoben werden" |
+| 3 | Redaktionelle Kommentare und Meta-Sprache | HIGH | "es ist wichtig zu bemerken", "es sollte hervorgehoben werden" |
 | 4 | Mechanische Konjunktionen | HIGH | "darüber hinaus", "außerdem", "ferner", "ebenfalls" |
 | 5 | Abschnitts-Zusammenfassungen | HIGH | "zusammenfassend", "insgesamt", "kurz gesagt" |
 | 6 | Unpassendes "Fazit" | MEDIUM | "== Fazit ==", "== Zusammenfassung ==" |
-| 7 | Zu perfekte Dichotomie | MEDIUM | "Trotz X... steht Y vor Z", "Obwohl... jedoch..."; 3-Takt-Schablone "Lob→Herausforderungen→Ausblick" |
+| 7 | Schlussfolgerungen mit zu starker Dichotomie | MEDIUM | "Trotz X... steht Y vor Z", "Obwohl... jedoch..."; 3-Takt-Schablone "Lob→Herausforderungen→Ausblick" |
 | 8 | Negative Parallelismen und abgehackte Verneinungen | MEDIUM | "nicht nur... sondern auch", "kein Raten.", symmetrische Satzstrukturen |
-| 9 | Trikolon (Regel der Drei) | MEDIUM | Tripel-Aufzählungen ohne echten Grund |
-| 10 | Partizip-I-Konstruktionen | HIGH | "gewährleistend", "hervorhebend", "ermöglichend" |
+| 9 | Trikolon und schematische Aufzählungen (Regel der Drei) | MEDIUM | Tripel-Aufzählungen ohne echten Grund |
+| 10 | Oberflächliche Analysen mit Partizip I | HIGH | "gewährleistend", "hervorhebend", "ermöglichend" |
 | 11 | Vage Autoritäten | HIGH | "Branchenberichte zeigen", "Manche argumentieren" |
 | 12 | Falsche Erweiterung ("von... bis") | MEDIUM | "von traditionellen bis modernen" |
 | 13 | Übermäßige Fettschrift | MEDIUM | **wichtige Wörter** in Absätzen fett |
@@ -27,7 +27,7 @@ Vollstaendiger Musterkatalog fuer Humanizer (Deutsch) v5.2.0. Nur bei konkreter 
 | 19 | Hinweise auf Wissensgrenzen | HIGH | "Stand [Datum]", "Bis zu meinem letzten Update" |
 | 20 | Prompt-Ablehnung | HIGH | "Als KI-Sprachmodell kann ich nicht...", "Es tut mir leid, aber..." |
 | 21 | Platzhaltertext | HIGH | "[Name einfügen]", "[Datum hier]", "TODO:" |
-| 22 | Links zu Suchanfragen | HIGH | "https://www.google.com/search?q=..." |
+| 22 | Links zu Suchanfragen statt Referenzen | HIGH | "https://www.google.com/search?q=..." |
 | 23 | Markdown statt Wikitext | MEDIUM | `# Überschrift` statt `== Überschrift ==` |
 | 24 | Fehlerhafter Wikitext und KI-Tool-Artefakte | MEDIUM | Unvollständige Template-Tags, oaicite, contentReference |
 | 25 | Defekte Links | MEDIUM | 404-Fehler, Links zu nicht-existenten Artikeln |
@@ -36,7 +36,7 @@ Vollstaendiger Musterkatalog fuer Humanizer (Deutsch) v5.2.0. Nur bei konkreter 
 | 28 | Falsche Kategorien | MEDIUM | `[[Category:...]]` statt `[[Kategorie:...]]` |
 | 29 | Abrupte Abbrüche | LOW | Text bricht mitten im Satz ab |
 | 30 | Wechsel im Schreibstil | MEDIUM | Absätze klingen wie verschiedene Autoren |
-| 31 | Bearbeitungszusammenfassungen in Ich-Form | LOW | "Ich habe einen Absatz über...", "Meine Änderungen..." |
+| 31 | Ausführliche Bearbeitungszusammenfassungen in Ich-Form | LOW | "Ich habe einen Absatz über...", "Meine Änderungen..." |
 | 32 | Persuasive Autoritäts-Floskeln | MEDIUM | "Die eigentliche Frage ist", "Im Kern", "In Wirklichkeit" |
 | 33 | Signposting und Ankündigungen | MEDIUM | "Schauen wir uns an", "Hier ist, was Sie wissen müssen" |
 | 34 | Fragmentierte Überschriften | LOW | Generischer Einzeiler nach Überschrift ("Geschwindigkeit zählt.") |

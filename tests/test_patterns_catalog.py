@@ -4,14 +4,70 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
+CATALOG_PATH = ROOT / "references" / "patterns.md"
+EXPECTED_PATTERN_COUNT = 66
+CATALOG_HEADING = f"## Die {EXPECTED_PATTERN_COUNT} Muster"
+PATTERN_HEADING_RE = re.compile(r"^#### (\d{1,2})\. (.+?) \[(HIGH|MEDIUM|LOW)\]$")
+SHORT_REFERENCE_RE = re.compile(r"^## Kurzreferenz\s*$\n(?P<section>.*?)(?=^## |\Z)", re.MULTILINE | re.DOTALL)
+SHORT_REFERENCE_ROW_RE = re.compile(r"^\|\s*(\d+)\s*\|\s*(.*?)\s*\|\s*(HIGH|MEDIUM|LOW)\s*\|.*\|\s*$")
+
+
+def read_catalog():
+    return CATALOG_PATH.read_text()
+
+
+def parse_pattern_headings(text):
+    entries = {}
+    for line in text.splitlines():
+        match = PATTERN_HEADING_RE.fullmatch(line)
+        if match:
+            entries[int(match.group(1))] = (match.group(2), match.group(3))
+    return entries
+
+
+def extract_short_reference_section(text):
+    match = SHORT_REFERENCE_RE.search(text)
+    if not match:
+        raise AssertionError("Kurzreferenz-Abschnitt fehlt")
+    return match.group("section")
+
+
+def parse_short_reference_entries(section):
+    entries = {}
+    for line in section.splitlines():
+        match = SHORT_REFERENCE_ROW_RE.fullmatch(line)
+        if not match:
+            continue
+        pattern_id = int(match.group(1))
+        if pattern_id in entries:
+            raise AssertionError(f"Kurzreferenz enthält Muster {pattern_id} doppelt")
+        entries[pattern_id] = (match.group(2).strip(), match.group(3))
+    return entries
+
+
+def extract_pattern_section(pattern_id):
+    text = read_catalog()
+    pattern = rf"^#### {pattern_id}\..*?(?=^#### \d+\.|^### |^## |\Z)"
+    match = re.search(pattern, text, re.MULTILINE | re.DOTALL)
+    if not match:
+        raise AssertionError(f"Muster {pattern_id} nicht gefunden")
+    return match.group(0)
+
+
+def extract_short_reference_row(pattern_id):
+    section = extract_short_reference_section(read_catalog())
+    match = re.search(rf"^\|\s*{pattern_id}\s*\|.*\|\s*$", section, re.MULTILINE)
+    if not match:
+        raise AssertionError(f"Kurzreferenz fehlt Muster {pattern_id}")
+    return match.group(0)
 
 
 class PatternCatalogTests(unittest.TestCase):
     def test_catalog_contains_exactly_66_pattern_ids(self):
-        text = (ROOT / "references" / "patterns.md").read_text()
+        text = read_catalog()
         ids = [int(match) for match in re.findall(r"^####\s+(\d+)\.", text, re.MULTILINE)]
-        self.assertEqual(sorted(ids), list(range(1, 67)))
-        self.assertEqual(len(ids), 66)
+        self.assertEqual(sorted(ids), list(range(1, EXPECTED_PATTERN_COUNT + 1)))
+        self.assertEqual(len(ids), EXPECTED_PATTERN_COUNT)
 
     def test_category_counts_match_actual(self):
         text = (ROOT / "references" / "patterns.md").read_text()
@@ -42,31 +98,46 @@ class PatternCatalogTests(unittest.TestCase):
         self.assertEqual(sum(declared.values()), 66)
 
     def test_catalog_keeps_required_sections(self):
-        text = (ROOT / "references" / "patterns.md").read_text()
+        text = read_catalog()
         self.assertIn("## Kurzreferenz", text)
-        self.assertIn("## Die 66 Muster", text)
-        self.assertIn("#### 52. Diff-verankertes Schreiben [MEDIUM]", text)
-        self.assertIn("#### 53. Lückenfüllende Spekulation [HIGH]", text)
-        self.assertIn("#### 16. Dash-Satzzeichen und Gedankenstrich-Cluster [MEDIUM]", text)
-        self.assertIn("#### 26. Zitatfabrikation und unverifizierbare Referenzen [HIGH]", text)
-        self.assertIn("#### 54. Doppelpunkt-Titel-Schema [MEDIUM]", text)
-        self.assertIn("#### 55. Gleichförmiger Satzrhythmus [MEDIUM]", text)
-        self.assertIn("#### 56. Aphorismus-Formeln [MEDIUM]", text)
-        self.assertIn("#### 57. Markdown-Struktur-Artefakte [MEDIUM]", text)
-        self.assertIn("#### 58. Abstrakta-Stapel und Hypernym-Präferenz [MEDIUM]", text)
-        self.assertIn("#### 59. Erfundene Ich-Erfahrung und forcierte Lockerheit [HIGH]", text)
-        self.assertIn("#### 60. Synonym-Rotation für dieselbe Entität [MEDIUM]", text)
-        self.assertIn("#### 61. Isometrisches Dokument [MEDIUM]", text)
-        self.assertIn("#### 62. Markerloser Schließzwang [MEDIUM]", text)
-        self.assertIn("#### 63. Modalpartikel-Anomalie [LOW]", text)
-        self.assertIn("#### 64. KI-Marker-Vokabular [MEDIUM]", text)
-        self.assertIn("#### 65. Kopula-Vermeidung [MEDIUM]", text)
-        self.assertIn("#### 66. Fake-Analyse-Anhang [MEDIUM]", text)
+        self.assertIn("## Statistische Detektoren (GPTZero u. a.)", text)
+        self.assertIn(CATALOG_HEADING, text)
+
+    def test_pattern_headings_have_required_format(self):
+        text = read_catalog()
+        pattern_lines = [line for line in text.splitlines() if line.startswith("####")]
+
+        self.assertTrue(pattern_lines, "Keine Musterzeilen gefunden")
+        for line in pattern_lines:
+            match = PATTERN_HEADING_RE.fullmatch(line)
+            self.assertIsNotNone(match, f"Musterzeile hat falsches Format: {line}")
+            self.assertTrue(match.group(2).strip(), f"Muster {match.group(1)} hat leeren Titel")
+
+    def test_short_reference_matches_pattern_headings(self):
+        text = read_catalog()
+        short_reference_section = extract_short_reference_section(text)
+        self.assertIn("| # | Muster | Schwere | Schlüssel-Indikatoren |", short_reference_section)
+        self.assertIn("|---|--------|---------|-----------------------|", short_reference_section)
+
+        short_reference = parse_short_reference_entries(short_reference_section)
+        pattern_headings = parse_pattern_headings(text)
+
+        for pattern_id in range(1, EXPECTED_PATTERN_COUNT + 1):
+            self.assertIn(pattern_id, short_reference, f"Kurzreferenz fehlt Muster {pattern_id}")
+            self.assertIn(pattern_id, pattern_headings, f"####-Block fehlt Muster {pattern_id}")
+            self.assertEqual(
+                short_reference[pattern_id],
+                pattern_headings[pattern_id],
+                f"Kurzreferenz stimmt für Muster {pattern_id} nicht mit dem ####-Block überein",
+            )
+
+        for pattern_id in sorted(set(short_reference) - set(pattern_headings)):
+            self.fail(f"Kurzreferenz enthält zusätzliches Muster {pattern_id}")
+        for pattern_id in sorted(set(pattern_headings) - set(short_reference)):
+            self.fail(f"####-Blöcke enthalten zusätzliches Muster {pattern_id}")
 
     def test_pattern_16_broadens_dash_rule_without_banning_word_hyphens(self):
-        text = (ROOT / "references" / "patterns.md").read_text()
-        section = text.split("#### 16. Dash-Satzzeichen und Gedankenstrich-Cluster [MEDIUM]", 1)[1]
-        section = section.split("### Kommunikation", 1)[0]
+        section = extract_pattern_section(16)
 
         self.assertIn("` - `", section)
         self.assertIn("` -- `", section)
@@ -74,9 +145,7 @@ class PatternCatalogTests(unittest.TestCase):
         self.assertIn("Bindestrich in Komposita, Namen, URLs, IDs", section)
 
     def test_pattern_26_is_factual_reliability_gate(self):
-        text = (ROOT / "references" / "patterns.md").read_text()
-        section = text.split("#### 26. Zitatfabrikation und unverifizierbare Referenzen [HIGH]", 1)[1]
-        section = section.split("#### 27. Inkorrekte Referenzen-Format [MEDIUM]", 1)[0]
+        section = extract_pattern_section(26)
 
         self.assertIn("Factual Reliability", section)
         self.assertIn("Jede konkrete Referenz zuerst als ungeprüft behandeln", section)
@@ -84,15 +153,17 @@ class PatternCatalogTests(unittest.TestCase):
         self.assertIn("Nie eine Ersatzquelle erfinden", section)
 
     def test_pattern_46_examples_use_real_codepoints(self):
-        text = (ROOT / "references" / "patterns.md").read_text()
-        section = text.split("#### 46. Falsche deutsche Anführungszeichen [HIGH]", 1)[1]
-        section = section.split("#### 47. Englische Titel-Großschreibung [MEDIUM]", 1)[0]
+        section = extract_pattern_section(46)
+        short_reference_row = extract_short_reference_row(46)
 
         self.assertIn(chr(0x201E) + "Text" + chr(0x201C), section)
         self.assertIn(chr(0x201A) + "Text" + chr(0x2018), section)
         self.assertIn(chr(0x201E) + "Text" + chr(0x201D), section)
         self.assertIn(chr(0x201C) + "Text" + chr(0x201D), section)
-        self.assertIn(chr(0x201E) + "Text" + chr(0x201D) + " statt " + chr(0x201E) + "Text" + chr(0x201C), text)
+        self.assertIn(
+            chr(0x201E) + "Text" + chr(0x201D) + " statt " + chr(0x201E) + "Text" + chr(0x201C),
+            short_reference_row,
+        )
 
         for line in section.splitlines():
             if "U+201C" in line and "gerade ASCII" not in line and "(\"...\")" not in line:
@@ -101,9 +172,7 @@ class PatternCatalogTests(unittest.TestCase):
                 self.assertNotIn(chr(0x0027) + " (U+2018", line)
 
     def test_pattern_49_apostrophe_uses_real_codepoints(self):
-        text = (ROOT / "references" / "patterns.md").read_text()
-        section = text.split("#### 49. Apostroph-Fehler [MEDIUM]", 1)[1]
-        section = section.split("#### 50. Interpunktion bei Stichpunkt-Aufzählungen [LOW]", 1)[0]
+        section = extract_pattern_section(49)
 
         self.assertIn(chr(0x2019) + " (U+2019", section)
         self.assertIn(chr(0x0027) + " (U+0027", section)
