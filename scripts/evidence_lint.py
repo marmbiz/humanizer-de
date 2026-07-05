@@ -54,6 +54,19 @@ DIRECTION_MARKERS = {
 }
 
 CAPITALIZED_RE = re.compile(r"\b(?:[A-ZÄÖÜ][\wÄÖÜäöüß-]+(?:\s+[A-ZÄÖÜ][\wÄÖÜäöüß-]+){0,3})\b")
+DETERMINERS = {
+    "der", "die", "das", "des", "dem", "den",
+    "ein", "eine", "einer", "eines", "einem", "einen",
+    "im", "am", "zum", "zur", "beim", "vom", "ins", "ans", "aufs",
+}
+ABSTRACT_NOUN_STOPLIST = {
+    "lösung", "loesung", "problem", "priorität", "prioritaet", "herausforderung",
+    "bedeutung", "aspekt", "aspekte", "faktor", "faktoren", "prozess", "prozesse",
+    "maßnahme", "massnahme", "ziel", "ziele", "ansatz", "ergebnis", "ergebnisse",
+    "vorteil", "vorteile", "nachteil", "nachteile", "grundlage", "rahmen",
+    "bereich", "bereiche", "thema", "themen", "inhalt", "inhalte", "beispiel",
+    "beispiele", "möglichkeit", "moeglichkeit", "entwicklung", "zukunft",
+}
 COMMON_SENTENCE_STARTS = {
     "Der",
     "Die",
@@ -79,6 +92,15 @@ def normalize(value: str) -> str:
     return re.sub(r"\s+", " ", value.strip()).strip(".,;:()[]")
 
 
+def name_key(value: str) -> str:
+    key = value.casefold()
+    if key.endswith("es") and len(key) > 5:
+        return key[:-2]
+    if key.endswith("s") and len(key) > 4:
+        return key[:-1]
+    return key
+
+
 def anchors(text: str) -> dict[str, set[str]]:
     result: dict[str, set[str]] = {kind: set() for kind in ANCHOR_PATTERNS}
     for kind, pattern in ANCHOR_PATTERNS.items():
@@ -88,14 +110,39 @@ def anchors(text: str) -> dict[str, set[str]]:
             if normalized:
                 result[kind].add(normalized)
 
+    # Known gap: single-token common nouns after verbs that are not in the
+    # stoplist (e.g. "hat Relevanz") still slip through as proper_name — that
+    # false-positive class needs real NER (spaCy) and is deliberately not
+    # solved here.
     names: set[str] = set()
     for match in CAPITALIZED_RE.finditer(text):
-        value = normalize(match.group(0))
-        if value in COMMON_SENTENCE_STARTS:
+        raw = match.group(0)
+        tokens = raw.split()
+        pos = 0
+        while tokens and (tokens[0] in COMMON_SENTENCE_STARTS or tokens[0].lower() in DETERMINERS):
+            pos = raw.index(tokens[0], pos) + len(tokens[0])
+            tokens = tokens[1:]
+        if not tokens:
             continue
+        value = normalize(" ".join(tokens))
         if len(value) <= 2:
             continue
         if value.lower() in {"prozent", "euro"}:
+            continue
+        if len(tokens) >= 2:
+            names.add(value)
+            continue
+        token = tokens[0]
+        if re.search(r"\d", token) or token[1:] != token[1:].lower():
+            names.add(value)
+            continue
+        prefix = text[: match.start() + raw.index(token, pos)]
+        preceding = re.search(r"([\wÄÖÜäöüß-]+)\s+$", prefix)
+        if preceding and preceding.group(1).lower() in DETERMINERS:
+            continue
+        if not prefix.strip() or re.search(r"[.!?:]\s+$", prefix) or re.search(r"\n[ \t]*$", prefix):
+            continue
+        if token.lower() in ABSTRACT_NOUN_STOPLIST:
             continue
         names.add(value)
     result["proper_name"] = names
@@ -130,8 +177,16 @@ def lint(before: str, after: str) -> list[dict]:
 
     hard_kinds = {"number", "date", "url", "doi", "paragraph", "code", "quote"}
     for kind in sorted(before_anchors):
-        removed = before_anchors[kind] - after_anchors.get(kind, set())
-        added = after_anchors.get(kind, set()) - before_anchors[kind]
+        if kind == "proper_name":
+            # Compare case-variant-insensitively (Problem <-> Problems), but
+            # report the original surface forms.
+            before_keys = {name_key(value) for value in before_anchors[kind]}
+            after_keys = {name_key(value) for value in after_anchors.get(kind, set())}
+            removed = {value for value in before_anchors[kind] if name_key(value) not in after_keys}
+            added = {value for value in after_anchors.get(kind, set()) if name_key(value) not in before_keys}
+        else:
+            removed = before_anchors[kind] - after_anchors.get(kind, set())
+            added = after_anchors.get(kind, set()) - before_anchors[kind]
         severity = "blocker" if kind in hard_kinds else "warning"
         if removed:
             add_finding(findings, severity, f"removed_{kind}", f"{kind} anchor removed or changed.", list(removed))

@@ -42,6 +42,53 @@ class EvidenceLintTests(unittest.TestCase):
         after = "Die Stadt Köln veröffentlichte den Bericht."
         self.assertIn("added_proper_name", kinds(evidence_lint.lint(before, after)))
 
+    def test_common_noun_after_article_is_not_proper_name(self):
+        before = "Es ist wichtig, das Problem zügig zu lösen. Danach geht es weiter."
+        after = "Die Lösung des Problems hat Priorität. Danach geht es weiter."
+        found = kinds(evidence_lint.lint(before, after))
+        self.assertNotIn("removed_proper_name", found)
+        self.assertNotIn("added_proper_name", found)
+
+    def test_case_variant_is_not_anchor_change(self):
+        before = "Wir besprechen das Problem."
+        after = "Wir besprechen die Ursache des Problems."
+        found = kinds(evidence_lint.lint(before, after))
+        self.assertNotIn("removed_proper_name", found)
+        self.assertNotIn("added_proper_name", found)
+
+    def test_real_entities_still_flagged(self):
+        before = "Der Konzern veröffentlichte Zahlen."
+        after = "Die Deutsche Bahn veröffentlichte Zahlen."
+        findings = evidence_lint.lint(before, after)
+        added = [item for item in findings if item["kind"] == "added_proper_name"]
+        self.assertTrue(added)
+        self.assertIn("Deutsche Bahn", added[0]["values"])
+
+    def test_acronym_after_article_is_kept(self):
+        before = "Die Behörde prüft."
+        after = "Die BaFin prüft."
+        findings = evidence_lint.lint(before, after)
+        added = [item for item in findings if item["kind"] == "added_proper_name"]
+        self.assertTrue(added)
+        self.assertIn("BaFin", added[0]["values"])
+
+    def test_hard_anchors_unaffected(self):
+        before = "Die Wartezeit sank laut Bericht."
+        after = "Die Wartezeit sank laut Bericht um 63 Prozent."
+        number_findings = [
+            item for item in evidence_lint.lint(before, after) if item["kind"] == "added_number"
+        ]
+        self.assertTrue(number_findings)
+        self.assertEqual(number_findings[0]["severity"], "blocker")
+
+        before_url = "Details unter https://example.org/bericht stehen bereit."
+        after_url = "Details stehen bereit."
+        url_findings = [
+            item for item in evidence_lint.lint(before_url, after_url) if item["kind"] == "removed_url"
+        ]
+        self.assertTrue(url_findings)
+        self.assertEqual(url_findings[0]["severity"], "blocker")
+
     def test_blocks_direction_reversal_with_same_anchor(self):
         before = "Die Fehlerquote sank um 12 Prozent."
         after = "Die Fehlerquote stieg um 12 Prozent."
