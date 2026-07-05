@@ -33,6 +33,18 @@ This matrix prevents one common documentation error: treating the 66-pattern cat
 | `evidence_lint.py` | 11, 26, 42, 53-adjacent claim-delta risks | Detects anchor drift; does not verify external sources |
 | `run_review_eval.py` | Cross-pattern scenario contracts | Tests output invariants, not free-form prose quality |
 
+## Axis View: Check Axis x Check Level
+
+Second view on the same coverage: which check axis is enforced at which level. Axes are equal-ranked and individually engageable; the profile axis works without any AI forensics.
+
+| Check axis | Linter | Golden corpus | Scenario contract |
+|---|---|---|---|
+| Tells | `unicode_lint.py`, `rhythm_lint.py`, `german_pattern_lint.py` (selected patterns) | `unicode_patterns` / `rhythm_patterns` in `tests/corpus/*_expected.json` | `invariant_violations` in `run_review_eval.py`; exact zero-tell samples since strict mode |
+| Register | `register_lint.py` | — | `register_shift` / `formal_register_break` invariants; scenario 19 |
+| Rhythm | `rhythm_lint.py` (suspicions) | `style_profile_ranges` (cases 06-08) | via profile corridors (`stddev_mean_ratio`) |
+| Evidence | `evidence_lint.py` (standalone before/after CLI) | — | anchor/claim invariants, QGIR contracts |
+| Profile | `style_profile.py` + `references/style-targets.json` (measurement, no verdict) | `style_profile_ranges` (cases 06-08) | `style_profile_contract` (`profile_out_of_range`, `profile_required_metric_failed`); scenarios 16, 19, 20 |
+
 ## Judgment-Only Or Partly Judgment-Only Areas
 
 These areas can be guided by rules and tests, but should not be documented as fully automated:
