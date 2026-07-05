@@ -94,7 +94,7 @@ Der einzige substanzwahrende Hebel gegen niedrige Burstiness ist Muster 55 (Satz
 
 ## Die 66 Muster
 
-### Sprache und Tonfall (17 Muster)
+### Sprache und Tonfall (18 Muster)
 
 #### 1. Übermäßige Betonung von Symbolik [HIGH]
 **Problem:** Bestimmte Wendungen erzeugen symbolische, zu perfekte Bedeutungen.

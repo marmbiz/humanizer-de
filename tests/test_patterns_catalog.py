@@ -13,6 +13,34 @@ class PatternCatalogTests(unittest.TestCase):
         self.assertEqual(sorted(ids), list(range(1, 67)))
         self.assertEqual(len(ids), 66)
 
+    def test_category_counts_match_actual(self):
+        text = (ROOT / "references" / "patterns.md").read_text()
+        catalog = text.split("## Die 66 Muster", 1)[1]
+
+        declared = {}
+        actual = {}
+        category = None
+        for line in catalog.splitlines():
+            heading = re.match(r"^### (.+?) \((\d+) Muster\)\s*$", line)
+            if heading:
+                category = heading.group(1)
+                self.assertNotIn(category, declared, f"Kategorie doppelt: {category}")
+                declared[category] = int(heading.group(2))
+                actual[category] = 0
+            elif re.match(r"^##(?!##)", line):
+                category = None
+            elif category is not None and re.match(r"^#### \d+\.", line):
+                actual[category] += 1
+
+        self.assertTrue(declared, "Keine Kategorie-Headings gefunden")
+        for category, count in declared.items():
+            self.assertEqual(
+                actual[category],
+                count,
+                f"Kategorie '{category}' deklariert {count} Muster, enthält aber {actual[category]}",
+            )
+        self.assertEqual(sum(declared.values()), 66)
+
     def test_catalog_keeps_required_sections(self):
         text = (ROOT / "references" / "patterns.md").read_text()
         self.assertIn("## Kurzreferenz", text)
