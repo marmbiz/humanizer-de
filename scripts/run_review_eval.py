@@ -186,7 +186,10 @@ def check_scenario(path: Path) -> dict:
         output = sample_output(sample)
         actual = set(invariant_violations(scenario, output)) | set(qgir_violations(scenario, sample))
         expected = set(sample.get("expect_violations", []))
-        sample_ok = expected.issubset(actual)
+        if sample.get("expect_violations_exact"):
+            sample_ok = expected == actual
+        else:
+            sample_ok = expected.issubset(actual)
         ok = ok and sample_ok
         sample_results.append(
             {

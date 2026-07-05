@@ -1,4 +1,6 @@
 import importlib.util
+import json
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -61,6 +63,43 @@ class ScenarioContractTests(unittest.TestCase):
             "und mehrere hypothetische Vorteile, die im Ausgangstext nicht belegt sind."
         )
         self.assertGreater(run_review_eval.changed_sentence_ratio(before, after), 0.35)
+
+    def test_strict_mode_fails_on_unexpected_violation(self):
+        scenario = {
+            "id": 99, "mode": "Sachlich",
+            "input": "Die Fehlerquote sank um 12 Prozent.",
+            "expected_behavior": [], "quality_risks": [], "output_contract": [],
+            "sample_outputs": [],
+        }
+        sample_output = "Die Fehlerquote stieg um 12 Prozent."
+        violations = run_review_eval.invariant_violations(scenario, sample_output)
+        self.assertIn("claim_direction_changed", violations)
+        self.assertNotEqual(set(), set(violations))
+
+    def test_check_scenario_exact_expectation_mismatch_fails(self):
+        scenario = {
+            "id": 98,
+            "mode": "Sachlich",
+            "input": "Die Fehlerquote sank um 12 Prozent.",
+            "expected_behavior": [],
+            "quality_risks": [],
+            "output_contract": [],
+            "sample_outputs": [
+                {
+                    "name": "direction flipped but expected clean",
+                    "text": "Die Fehlerquote stieg um 12 Prozent.",
+                    "expect_violations": [],
+                    "expect_violations_exact": True,
+                }
+            ],
+        }
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            path = Path(tmp_dir) / "98_exact_mismatch.yaml"
+            path.write_text(json.dumps(scenario), encoding="utf-8")
+            result = run_review_eval.check_scenario(path)
+        self.assertFalse(result["ok"])
+        self.assertFalse(result["sample_results"][0]["ok"])
+        self.assertIn("claim_direction_changed", result["sample_results"][0]["actual"])
 
     def test_qgir_detector_wording_is_not_a_contract_violation(self):
         scenario = {
