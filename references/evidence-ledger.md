@@ -53,6 +53,42 @@ Jede geaenderte Passage muss intern diese Frage bestehen:
 
 Wenn eine Antwort unklar ist, nicht glatter schreiben. Markieren oder Rueckfrage stellen.
 
+## Maschinenlesbarer Report
+
+`scripts/evidence_lint.py` prueft ein Before/After-Paar automatisch gegen diese Ledger-Regeln und schreibt einen JSON-Report auf stdout.
+
+Aufrufmodi:
+
+- `--before "<text>" --after "<text>"` — Passagen direkt als Argument
+- `--before-file <datei> --after-file <datei>` — Passagen aus Dateien (Datei-Paar-Modus)
+- `--fixture <datei-oder-verzeichnis>` — JSON-Fixtures mit `before`, `after` und optional `expect_kinds`
+
+Report im Paar-Modus:
+
+```json
+{
+  "ok": false,
+  "findings": [
+    {"severity": "blocker", "kind": "added_number", "message": "New number anchor introduced.", "values": ["63 Prozent"]}
+  ]
+}
+```
+
+`ok` ist nur `true`, wenn gar keine Findings vorliegen. Der Exit-Code haengt allein an Blockern.
+
+Finding-Kinds:
+
+- `removed_<anker>` / `added_<anker>` — Anker verschwunden bzw. neu eingefuehrt. Anker-Arten: `number`, `date`, `url`, `doi`, `paragraph`, `code`, `quote` (jeweils Blocker) sowie `proper_name` (Warning).
+- `authority_strengthened` (Blocker) — starker Autoritaetsmarker (z. B. "belegt", "muss") neu im After.
+- `hedge_removed` (Warning) — Hedge (z. B. "kann", "vermutlich") entfernt, waehrend starke Marker im After stehen.
+- `claim_direction_changed` (Blocker) — Aussagerichtung kippt zwischen Zunahme und Abnahme.
+
+Severity und Exit-Codes:
+
+- `blocker` = Verstoss gegen die Ledger-Regeln oben; `warning` = manuell pruefen, blockt nicht automatisch.
+- Paar-Modus: Exit 1 nur, wenn mindestens ein Finding `severity = blocker` hat. Nur Warnings → Exit 0.
+- Fixture-Modus: Report `{"ok": ..., "results": [{"fixture": ..., "ok": ..., "findings": [...]}]}`; Exit 1, wenn eine Fixture-Erwartung (`expect_kinds`) nicht getroffen wird — unabhaengig von der Severity.
+
 ## QGIR-Invarianten
 
 Bei iterativer Revision gilt die Claim-Delta-Regel nach jedem Pass, nicht nur am Ende.

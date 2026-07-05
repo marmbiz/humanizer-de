@@ -1,4 +1,8 @@
 import importlib.util
+import json
+import subprocess
+import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -42,6 +46,39 @@ class EvidenceLintTests(unittest.TestCase):
         before = "Die Fehlerquote sank um 12 Prozent."
         after = "Die Fehlerquote stieg um 12 Prozent."
         self.assertIn("claim_direction_changed", kinds(evidence_lint.lint(before, after)))
+
+
+class EvidenceLintCliTests(unittest.TestCase):
+    def run_pair(self, before: str, after: str) -> tuple[int, dict]:
+        with tempfile.TemporaryDirectory() as tmp:
+            before_path = Path(tmp) / "before.txt"
+            after_path = Path(tmp) / "after.txt"
+            before_path.write_text(before, encoding="utf-8")
+            after_path.write_text(after, encoding="utf-8")
+            proc = subprocess.run(
+                [sys.executable, str(SCRIPT), "--before-file", str(before_path), "--after-file", str(after_path)],
+                capture_output=True,
+                text=True,
+            )
+        return proc.returncode, json.loads(proc.stdout)
+
+    def test_file_pair_mode_blocker_exits_1(self):
+        code, report = self.run_pair(
+            "Die Wartezeit sank laut Bericht.",
+            "Die Wartezeit sank laut Bericht um 63 Prozent.",
+        )
+        self.assertEqual(code, 1)
+        self.assertFalse(report["ok"])
+        blockers = [item for item in report["findings"] if item["severity"] == "blocker"]
+        self.assertIn("added_number", {item["kind"] for item in blockers})
+
+    def test_file_pair_mode_clean_exits_0(self):
+        code, report = self.run_pair(
+            "Die API liefert Status 200 und ein leeres Array.",
+            "Die API liefert Status 200. Sie gibt ein leeres Array zurück.",
+        )
+        self.assertEqual(code, 0)
+        self.assertFalse(any(item["severity"] == "blocker" for item in report["findings"]))
 
 
 if __name__ == "__main__":

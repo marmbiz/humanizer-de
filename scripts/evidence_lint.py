@@ -188,10 +188,10 @@ def check_fixtures(path: Path) -> list[dict]:
 
 def parse_args(argv: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Compare before/after passages for factual anchor drift.")
-    parser.add_argument("--before")
-    parser.add_argument("--after")
-    parser.add_argument("--before-file", type=Path)
-    parser.add_argument("--after-file", type=Path)
+    parser.add_argument("--before", help="Before passage as inline text.")
+    parser.add_argument("--after", help="After passage as inline text.")
+    parser.add_argument("--before-file", type=Path, help="Read before passage from file.")
+    parser.add_argument("--after-file", type=Path, help="Read after passage from file.")
     parser.add_argument("--fixture", type=Path, help="JSON fixture file or directory.")
     return parser.parse_args(argv)
 
