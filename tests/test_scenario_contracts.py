@@ -101,6 +101,33 @@ class ScenarioContractTests(unittest.TestCase):
         self.assertFalse(result["sample_results"][0]["ok"])
         self.assertIn("claim_direction_changed", result["sample_results"][0]["actual"])
 
+    def test_style_profile_contract_flags_out_of_range_and_required_metric(self):
+        scenario = {
+            "style_profile_contract": {
+                "target": "sachlich",
+                "max_out_of_range": 1,
+                "required_in_range": ["particle_count"],
+            },
+            "input": "Der Bericht liegt vor.",
+        }
+        sample = {"text": "Das ist ja irgendwie ein Thema. Das ist halt eben doch ein Thema."}
+        violations = run_review_eval.style_profile_violations(scenario, sample)
+        self.assertIn("profile_out_of_range", violations)
+        self.assertIn("profile_required_metric_failed", violations)
+
+    def test_style_profile_contract_respects_out_of_range_budget(self):
+        scenario = {
+            "style_profile_contract": {"target": "sachlich", "max_out_of_range": 3},
+            "input": "Der Bericht liegt vor.",
+        }
+        sample = {"text": "Das ist ja irgendwie ein Thema. Das ist halt eben doch ein Thema."}
+        self.assertEqual([], run_review_eval.style_profile_violations(scenario, sample))
+
+    def test_style_profile_contract_absent_yields_no_violations(self):
+        scenario = {"input": "Der Bericht liegt vor."}
+        sample = {"text": "Das ist ja halt so."}
+        self.assertEqual([], run_review_eval.style_profile_violations(scenario, sample))
+
     def test_qgir_detector_wording_is_not_a_contract_violation(self):
         scenario = {
             "qgir_contract": {"max_passes": 1},

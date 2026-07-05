@@ -12,13 +12,19 @@
     "required_address": "Sie",
     "register_drift_markers": ["ja", "doch", "halt"]
   },
+  "style_profile_contract": {
+    "target": "sachlich",
+    "max_out_of_range": 1,
+    "required_in_range": ["particle_count"]
+  },
   "sample_outputs": [
     {
       "name": "address drift",
       "passes": [
         "Du bekommst die Freigabe, sobald alles vollständig ist. Schick die fehlenden Nachweise bitte bis Freitag an die Projektadresse."
       ],
-      "expect_violations": ["register_shift", "edit_budget_exceeded"]
+      "expect_violations": ["register_shift", "edit_budget_exceeded"],
+      "expect_violations_exact": true
     }
   ]
 }

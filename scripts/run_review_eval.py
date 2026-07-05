@@ -21,6 +21,11 @@ spec = importlib.util.spec_from_file_location("evidence_lint", EVIDENCE_SCRIPT)
 evidence_lint = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(evidence_lint)
 
+STYLE_PROFILE_SCRIPT = ROOT / "scripts" / "style_profile.py"
+style_profile_spec = importlib.util.spec_from_file_location("style_profile", STYLE_PROFILE_SCRIPT)
+style_profile = importlib.util.module_from_spec(style_profile_spec)
+style_profile_spec.loader.exec_module(style_profile)
+
 REQUIRED_KEYS = {"id", "mode", "input", "expected_behavior", "quality_risks", "output_contract"}
 PERSONAL_EXPERIENCE_RE = re.compile(
     r"\b(?:Als ich|ich habe erlebt|ein Kunde erzählte|aus meiner Praxis|letzte Woche)\b",
@@ -178,13 +183,41 @@ def qgir_violations(scenario: dict, sample: dict) -> list[str]:
     return sorted(set(violations))
 
 
+def style_profile_violations(scenario: dict, sample: dict) -> list[str]:
+    contract = scenario.get("style_profile_contract")
+    if not contract:
+        return []
+
+    violations: list[str] = []
+    output = sample_output(sample)
+    corridors = style_profile.load_targets()[contract["target"]]
+    report = style_profile.delta(style_profile.profile(output, "<sample>")["metrics"], corridors)
+
+    max_out_of_range = contract.get("max_out_of_range")
+    if max_out_of_range is not None:
+        out_of_range = sum(1 for item in report.values() if not item["in_range"])
+        if out_of_range > max_out_of_range:
+            violations.append("profile_out_of_range")
+
+    for metric in contract.get("required_in_range", []):
+        if not report[metric]["in_range"]:
+            violations.append("profile_required_metric_failed")
+            break
+
+    return sorted(set(violations))
+
+
 def check_scenario(path: Path) -> dict:
     scenario = load_scenario(path)
     sample_results = []
     ok = True
     for sample in scenario.get("sample_outputs", []):
         output = sample_output(sample)
-        actual = set(invariant_violations(scenario, output)) | set(qgir_violations(scenario, sample))
+        actual = (
+            set(invariant_violations(scenario, output))
+            | set(qgir_violations(scenario, sample))
+            | set(style_profile_violations(scenario, sample))
+        )
         expected = set(sample.get("expect_violations", []))
         if sample.get("expect_violations_exact"):
             sample_ok = expected == actual
