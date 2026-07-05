@@ -136,6 +136,32 @@ class PatternCatalogTests(unittest.TestCase):
         for pattern_id in sorted(set(pattern_headings) - set(short_reference)):
             self.fail(f"####-Blöcke enthalten zusätzliches Muster {pattern_id}")
 
+    def test_every_pattern_has_haltbarkeit(self):
+        haltbarkeit_re = re.compile(
+            r"^<!-- haltbarkeit: (kern|jahrgang stand=\d{4}-\d{2}) -->$", re.MULTILINE
+        )
+        any_haltbarkeit_re = re.compile(r"^<!-- haltbarkeit:.*-->$", re.MULTILINE)
+
+        for pattern_id in range(1, EXPECTED_PATTERN_COUNT + 1):
+            section = extract_pattern_section(pattern_id)
+            annotations = any_haltbarkeit_re.findall(section)
+            self.assertEqual(
+                len(annotations),
+                1,
+                f"Muster {pattern_id} braucht genau ein haltbarkeit-Attribut, hat {len(annotations)}",
+            )
+            self.assertRegex(
+                annotations[0],
+                haltbarkeit_re,
+                f"Muster {pattern_id} hat ungültiges haltbarkeit-Attribut: {annotations[0]!r}",
+            )
+            first_line, second_line = section.splitlines()[:2]
+            self.assertEqual(
+                second_line,
+                annotations[0],
+                f"haltbarkeit-Attribut von Muster {pattern_id} steht nicht direkt unter dem Heading",
+            )
+
     def test_pattern_16_broadens_dash_rule_without_banning_word_hyphens(self):
         section = extract_pattern_section(16)
 
