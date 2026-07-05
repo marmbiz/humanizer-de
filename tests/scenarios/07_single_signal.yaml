@@ -10,6 +10,12 @@
       "name": "full text echoed",
       "text": "Die neue Regel ist einfach – jede Rückfrage bekommt einen Kommentar.",
       "expect_violations": ["full_text_output"]
+    },
+    {
+      "name": "clean single-signal report",
+      "text": "Nur ein Einzelsignal gefunden, der Text bleibt unverändert.",
+      "expect_violations": [],
+      "expect_violations_exact": true
     }
   ]
 }

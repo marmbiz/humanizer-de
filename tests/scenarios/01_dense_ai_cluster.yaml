@@ -10,6 +10,12 @@
       "name": "full text rewrite",
       "text": "In der heutigen Zeit fungiert unsere Plattform als zentraler Begleiter. Darüber hinaus beleuchtet sie verschiedene Aspekte.",
       "expect_violations": ["full_text_output"]
+    },
+    {
+      "name": "clean cluster rewrite",
+      "text": "Heute ist unsere Plattform ein zentraler Begleiter. Sie behandelt außerdem verschiedene Aspekte.",
+      "expect_violations": [],
+      "expect_violations_exact": true
     }
   ]
 }

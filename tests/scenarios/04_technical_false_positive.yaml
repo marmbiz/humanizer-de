@@ -10,6 +10,12 @@
       "name": "status changed",
       "text": "Die API liefert bei leeren Ergebnislisten Status 204 und ein leeres Array.",
       "expect_violations": ["new_factual_anchor"]
+    },
+    {
+      "name": "clean minimal rewrite",
+      "text": "Die API sendet bei leeren Ergebnislisten Status 200 und ein leeres Array.",
+      "expect_violations": [],
+      "expect_violations_exact": true
     }
   ]
 }

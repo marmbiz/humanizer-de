@@ -10,6 +10,12 @@
       "name": "invented source",
       "text": "Eine Studie der Universität Köln von 2024 zeigt, dass 63 Prozent zufriedener sind.",
       "expect_violations": ["new_factual_anchor"]
+    },
+    {
+      "name": "vague authority marked",
+      "text": "Studien sollen das stützen, bleiben aber unbenannt. Beschäftigte seien demnach zufriedener: Quelle nötig.",
+      "expect_violations": [],
+      "expect_violations_exact": true
     }
   ]
 }
