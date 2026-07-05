@@ -115,6 +115,45 @@ class HumanizerAuditTests(unittest.TestCase):
         self.assertIn("low_burstiness", driver_kinds)
         self.assertIn("ai_marker_cluster", driver_kinds)
 
+    def test_style_profile_section_without_mode_has_no_delta(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "text.md"
+            path.write_text("Das Team prüft die Datei. Danach endet der Test.", encoding="utf-8")
+
+            exit_code, report = run_json(["--file", str(path)])
+
+        self.assertEqual(exit_code, 0)
+        style = report["style_profile"]
+        self.assertEqual(set(style), {"word_count", "sentence_count", "metrics"})
+        self.assertGreater(style["word_count"], 0)
+        self.assertEqual(style["sentence_count"], 2)
+        for key in (
+            "mean_sentence_len",
+            "stddev_mean_ratio",
+            "connector_density",
+            "address_counts",
+            "particle_count",
+            "nominal_style_ratio",
+            "type_token_ratio",
+        ):
+            self.assertIn(key, style["metrics"])
+
+    def test_style_profile_delta_appears_with_explicit_mode(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "text.md"
+            path.write_text("Das Team prüft die Datei. Danach endet der Test.", encoding="utf-8")
+
+            exit_code, report = run_json(["--file", str(path), "--mode", "sachlich"])
+
+        self.assertEqual(exit_code, 0)
+        style = report["style_profile"]
+        self.assertIn("delta", style)
+        self.assertGreater(len(style["delta"]), 0)
+        for name, item in style["delta"].items():
+            self.assertEqual(set(item), {"value", "range", "in_range"})
+            self.assertEqual(item["value"], style["metrics"][name])
+            self.assertIsInstance(item["in_range"], bool)
+
     def test_latest_picks_newest_markdown_file_recursively(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

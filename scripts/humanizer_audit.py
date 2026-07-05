@@ -17,6 +17,7 @@ if str(SCRIPT_DIR) not in sys.path:
 import german_pattern_lint
 import register_lint
 import rhythm_lint
+import style_profile
 import unicode_lint
 
 
@@ -41,7 +42,7 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     source = parser.add_mutually_exclusive_group(required=True)
     source.add_argument("--file", type=Path, help="UTF-8 text file to audit.")
     source.add_argument("--latest", type=Path, help="Directory whose newest recursive *.md file should be audited.")
-    parser.add_argument("--mode", choices=["locker", "sachlich", "formal"], default="sachlich")
+    parser.add_argument("--mode", choices=["locker", "sachlich", "formal"], default=None)
     parser.add_argument("--format", choices=["json", "md"], default="json")
     return parser.parse_args(argv)
 
@@ -266,7 +267,21 @@ def compact_register_findings(findings: list[dict]) -> list[dict]:
     return compact
 
 
-def analyze_file(path: Path, mode: str) -> dict:
+def style_profile_section(text: str, path: Path, mode: str, mode_explicit: bool) -> dict:
+    profile_report = style_profile.profile(text, str(path))
+    section = {
+        "word_count": profile_report["meta"]["word_count"],
+        "sentence_count": profile_report["meta"]["sentence_count"],
+        "metrics": profile_report["metrics"],
+    }
+    if mode_explicit:
+        targets = style_profile.load_targets()
+        if mode in targets:
+            section["delta"] = style_profile.delta(profile_report["metrics"], targets[mode])
+    return section
+
+
+def analyze_file(path: Path, mode: str, mode_explicit: bool = False) -> dict:
     text = path.read_text(encoding="utf-8")
 
     unicode_findings = unicode_lint.lint(text)
@@ -302,6 +317,7 @@ def analyze_file(path: Path, mode: str) -> dict:
             "preflight": preflight,
             "counts": counts,
         },
+        "style_profile": style_profile_section(text, path, mode, mode_explicit),
         "findings": findings,
     }
 
@@ -343,8 +359,22 @@ def format_markdown(report: dict) -> str:
             f"colon_headings={rhythm['colon_heading_count']}, "
             f"uniform_paragraphs={str(rhythm['paragraph_sentence_counts_uniform']).lower()}"
         ),
-        "Findings:",
     ]
+    style = report["style_profile"]
+    metrics = style["metrics"]
+    style_line = (
+        "StyleProfile: "
+        f"words={style['word_count']}, "
+        f"nominal_style_ratio={metrics['nominal_style_ratio']}, "
+        f"type_token_ratio={metrics['type_token_ratio']}, "
+        f"particles={metrics['particle_count']}, "
+        f"emojis={metrics['emoji_count']}"
+    )
+    if "delta" in style:
+        out_of_range = [name for name, item in style["delta"].items() if not item["in_range"]]
+        style_line += f", delta_out_of_range={','.join(out_of_range) or 'none'}"
+    lines.append(style_line)
+    lines.append("Findings:")
     for source in SOURCES:
         lines.append(f"{source}:")
         source_findings = [item for item in report["findings"] if item["source"] == source]
@@ -362,7 +392,7 @@ def main(argv: list[str] | None = None) -> int:
     except ValueError as error:
         raise SystemExit(str(error))
 
-    report = analyze_file(path, args.mode)
+    report = analyze_file(path, args.mode or "sachlich", mode_explicit=args.mode is not None)
     if args.format == "md":
         print(format_markdown(report))
     else:
