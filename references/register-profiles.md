@@ -29,6 +29,16 @@ Im Formal-Modus wird keine Stimme eingebracht. Passiv, Nominalstil und gleichmae
 
 Locker bedeutet nicht erfunden persoenlich. Stimme darf nur aus Schreibprobe, Nutzerangabe oder vorhandenem Textmaterial kommen. Modalpartikeln sind erlaubt, aber nur sparsam und nicht mechanisch.
 
+## Maschinenlesbare Zielkorridore
+
+`references/style-targets.json` haelt pro Modus (`locker`, `sachlich`, `formal`) messbare
+Sollkorridore fuer die Metriken aus `scripts/style_profile.py`. Schema pro Profil:
+`{"<metric>": {"min": x}}`, `{"max": x}` oder beides; Grenzen sind inklusiv. Die Werte sind
+konservativ aus den kalibrierten Schwellen in `scripts/rhythm_lint.py` und
+`scripts/register_lint.py` abgeleitet — unbelegte Korridore fehlen bewusst.
+`style_profile.py --target <profil>` ergaenzt den Report um einen `delta`-Block
+(`value`, `range`, `in_range` je Korridor-Metrik), ohne Aggregat-Score oder Note.
+
 ## QGIR-Profilschutz
 
 Iterative Revision darf das Profil nicht in generisches, glattes Standarddeutsch ziehen.

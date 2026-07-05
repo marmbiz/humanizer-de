@@ -3,7 +3,7 @@ import importlib.util
 import json
 import tempfile
 import unittest
-from contextlib import redirect_stdout
+from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 
 
@@ -105,6 +105,62 @@ class StyleProfileShapeTests(unittest.TestCase):
         self.assertEqual(exit_code, 0)
         self.assertEqual(report["meta"]["source"], str(path))
         self.assertGreater(report["meta"]["word_count"], 0)
+
+
+class StyleProfileTargetTests(unittest.TestCase):
+    def test_target_adds_delta_section(self):
+        exit_code, report = run_json(["--text", UNIFORM_TEXT, "--target", "sachlich"])
+
+        self.assertEqual(exit_code, 0)
+        self.assertEqual(set(report), {"meta", "metrics", "delta"})
+        for name, entry in report["delta"].items():
+            self.assertIn(name, METRIC_KEYS)
+            self.assertEqual(set(entry), {"value", "range", "in_range"})
+            self.assertIsInstance(entry["in_range"], bool)
+            self.assertTrue(set(entry["range"]) <= {"min", "max"})
+
+    def test_target_sachlich_separates_fixtures(self):
+        _, uniform = run_json(["--text", UNIFORM_TEXT, "--target", "sachlich"])
+        _, varied = run_json(["--text", VARIED_TEXT, "--target", "sachlich"])
+
+        self.assertFalse(uniform["delta"]["stddev_mean_ratio"]["in_range"])
+        self.assertFalse(uniform["delta"]["repeated_openers"]["in_range"])
+        self.assertTrue(varied["delta"]["stddev_mean_ratio"]["in_range"])
+        self.assertTrue(varied["delta"]["repeated_openers"]["in_range"])
+
+    def test_unknown_target_fails_cleanly(self):
+        stdout = io.StringIO()
+        stderr = io.StringIO()
+        with redirect_stdout(stdout), redirect_stderr(stderr):
+            exit_code = style_profile.main(["--text", UNIFORM_TEXT, "--target", "episch"])
+
+        self.assertEqual(exit_code, 2)
+        self.assertEqual(stdout.getvalue(), "")
+        self.assertIn("episch", stderr.getvalue())
+
+    def test_in_range_boundaries(self):
+        min_only = style_profile.delta({"m": 0.4}, {"m": {"min": 0.4}})
+        self.assertTrue(min_only["m"]["in_range"])
+        self.assertFalse(style_profile.delta({"m": 0.399}, {"m": {"min": 0.4}})["m"]["in_range"])
+
+        max_only = style_profile.delta({"m": 1}, {"m": {"max": 1}})
+        self.assertTrue(max_only["m"]["in_range"])
+        self.assertFalse(style_profile.delta({"m": 2}, {"m": {"max": 1}})["m"]["in_range"])
+
+        corridor = {"m": {"min": 0.4, "max": 0.9}}
+        self.assertTrue(style_profile.delta({"m": 0.4}, corridor)["m"]["in_range"])
+        self.assertTrue(style_profile.delta({"m": 0.9}, corridor)["m"]["in_range"])
+        self.assertFalse(style_profile.delta({"m": 0.3}, corridor)["m"]["in_range"])
+        self.assertFalse(style_profile.delta({"m": 0.91}, corridor)["m"]["in_range"])
+
+    def test_targets_file_uses_known_metrics_and_lint_modes(self):
+        targets = style_profile.load_targets()
+        self.assertEqual(set(targets), {"locker", "sachlich", "formal"})
+        for corridors in targets.values():
+            for metric, corridor in corridors.items():
+                self.assertIn(metric, METRIC_KEYS)
+                self.assertTrue(set(corridor) <= {"min", "max"})
+                self.assertTrue(corridor)
 
 
 class StyleProfileContrastTests(unittest.TestCase):

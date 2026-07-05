@@ -1,0 +1,17 @@
+{
+  "locker": {
+    "stddev_mean_ratio": {"min": 0.4},
+    "repeated_openers": {"max": 1},
+    "particle_count": {"max": 3}
+  },
+  "sachlich": {
+    "stddev_mean_ratio": {"min": 0.4},
+    "repeated_openers": {"max": 1},
+    "particle_count": {"max": 0}
+  },
+  "formal": {
+    "particle_count": {"max": 0},
+    "emoji_count": {"max": 0},
+    "rhetorical_questions": {"max": 0}
+  }
+}

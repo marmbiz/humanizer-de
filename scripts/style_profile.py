@@ -23,6 +23,26 @@ import register_lint
 import rhythm_lint
 
 
+TARGETS_PATH = SCRIPT_DIR.parent / "references" / "style-targets.json"
+
+
+def load_targets() -> dict:
+    return json.loads(TARGETS_PATH.read_text(encoding="utf-8"))
+
+
+def delta(metrics: dict, corridors: dict) -> dict:
+    report = {}
+    for name, corridor in corridors.items():
+        value = metrics[name]
+        in_range = True
+        if "min" in corridor and value < corridor["min"]:
+            in_range = False
+        if "max" in corridor and value > corridor["max"]:
+            in_range = False
+        report[name] = {"value": value, "range": corridor, "in_range": in_range}
+    return report
+
+
 def nominal_style_ratio(text: str, word_count: int) -> float:
     if not word_count:
         return 0.0
@@ -80,18 +100,30 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     source = parser.add_mutually_exclusive_group(required=True)
     source.add_argument("--file", type=Path, help="UTF-8 text file to profile.")
     source.add_argument("--text", help="Text to profile.")
+    parser.add_argument("--target", help="Profile name from references/style-targets.json; adds a delta section.")
     return parser.parse_args(argv)
 
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv or sys.argv[1:])
+    corridors = None
+    if args.target:
+        targets = load_targets()
+        if args.target not in targets:
+            known = ", ".join(sorted(targets))
+            print(f"error: unknown target profile '{args.target}' (known: {known})", file=sys.stderr)
+            return 2
+        corridors = targets[args.target]
     if args.file:
         text = args.file.read_text(encoding="utf-8")
         source = str(args.file)
     else:
         text = args.text
         source = "<text>"
-    print(json.dumps(profile(text, source), ensure_ascii=False, indent=2))
+    report = profile(text, source)
+    if corridors is not None:
+        report["delta"] = delta(report["metrics"], corridors)
+    print(json.dumps(report, ensure_ascii=False, indent=2))
     return 0
 
 
