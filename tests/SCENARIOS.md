@@ -31,6 +31,10 @@ python3 scripts/run_review_eval.py tests/scenarios --check-invariants
 | 11 | Sachlich | Ein lokaler KI-polierter Absatz führt zu globaler Politur menschlicher Absätze. |
 | 12 | Locker | Eine Schreibprobe wird ignoriert oder in generische Lockerheit übersetzt. |
 | 13 | Sachlich | Output-Disziplin und Fabrikationsschutz werden bei ankerlosem Text verletzt. |
+| 19 | Formal | Ein tell-freier förmlicher Text wird in flapsiges Du-Register gekippt. |
+| 20 | Sachlich | Ein tell-freier Text behält nach der Überarbeitung seinen monotonen Satzrhythmus. |
+
+Die Szenarien 14 bis 18 (QGIR-Contracts) existieren nur als maschinenlesbare Fixtures in `tests/scenarios/` und laufen ausschließlich über den Runner; sie haben bewusst keinen Eintrag in dieser Datei.
 
 ## Szenario 1: Flagranter KI-Cluster (Sachlich)
 
@@ -314,6 +318,44 @@ Darüber hinaus ist davon auszugehen, dass die Maßnahme aus einer besonderen Be
 **Relevante Muster:** 53 feuert bei unbelegter Lückenfüllung; 5, 32, 37, 58, 64 und 65 feuern als ankerlose Floskel-Cluster. 42 feuert nicht, weil keine konkrete Quelle geprüft werden kann.
 
 **Warum dieses Szenario zählt:** Es prüft gleichzeitig die Output-Regel und den Fabrikationsschutz. Der Failure-Mode wäre, den ganzen Text neu auszugeben oder fehlende Konkretion mit plausibel klingenden Details zu füllen.
+
+## Szenario 19: Registerbruch ohne KI-Tells (Formal)
+
+**Skill-Modus:** Formal
+**Nutzer-Prompt:** "Bitte prüfe diese Anfrage im Modus Formal und ändere nur, was wirklich nötig ist."
+
+**Input:**
+```
+Sehr geehrte Frau Berger, für die Schlussabrechnung des Projekts fehlt uns noch Ihre unterschriebene Stundenübersicht. Bitte senden Sie das Dokument bis Donnerstag an das Sekretariat. Für Rückfragen erreichen Sie mich vormittags telefonisch.
+```
+
+**Erwartetes Verhalten (Pass/Fail):**
+- [ ] Der Input wird als tell-freier menschlicher Text erkannt; es gibt keine erfundenen Muster-Befunde und keine unnötige Umschreibung.
+- [ ] Sie-Anrede, förmlicher Ton und die Anker (Frau Berger, Stundenübersicht, Donnerstag, Sekretariat) bleiben unangetastet.
+- [ ] Eine Antwort im flapsigen Du-Register (halt, doch, einfach) wird als Registerbruch behandelt, auch wenn sie inhaltlich korrekt und tell-frei ist.
+
+**Relevante Muster:** bewusst keine — der Text enthält kein einziges KI-Tell. Das Urteil kommt allein aus Registertreue (`register_shift`, `formal_register_break`) und Profil-Contract (`particle_count`, Rhythmus-Korridor).
+
+**Warum dieses Szenario zählt:** Es ist der Existenzbeweis für die Nach-Tell-Ära: menschlicher Text, null Katalog-Treffer, trotzdem ein hartes Urteil. Der Failure-Mode wäre ein Harness, das ohne Tells nichts mehr zu sagen hat. Das Contract-File erzwingt beides exakt: der Du-Umbau feuert Register- und Profil-Verletzungen, die registertreue Minimalkorrektur bleibt bei exakt null Verletzungen.
+
+## Szenario 20: Monotonie ohne KI-Tells (Sachlich)
+
+**Skill-Modus:** Sachlich
+**Nutzer-Prompt:** "Bitte öffne den Satzrhythmus dieses Abschnitts, ohne Inhalte zu ändern."
+
+**Input:**
+```
+Die Werkstatt öffnet unter der Woche am frühen Morgen. Die Kunden geben ihre Räder direkt am Tresen ab. Die Mechaniker prüfen zuerst Bremsen, Schaltung und Beleuchtung. Die Reparaturen dauern meistens nur wenige Tage. Die Abholung klappt danach auch ohne festen Termin.
+```
+
+**Erwartetes Verhalten (Pass/Fail):**
+- [ ] Der Text wird als fehlerfrei und tell-frei erkannt; das einzige Problem ist der gleichförmige Satzrhythmus (fünf Sätze nahezu gleicher Länge).
+- [ ] Eine Überarbeitung, die die Monotonie beibehält, gilt als gescheitert — auch wenn sie sprachlich sauber bleibt.
+- [ ] Die rhythmisch geöffnete Fassung variiert Satzlängen und Satzanfänge, ohne neue Inhalte, Partikeln oder Volltext-Echo.
+
+**Relevante Muster:** bewusst keine Katalog-Treffer. Das Urteil kommt allein aus dem Stilprofil: der `stddev_mean_ratio`-Korridor des Zielprofils `sachlich` (min 0.4) schlägt bei der monotonen Fassung an (`profile_out_of_range`), die geöffnete Fassung liegt im Korridor.
+
+**Warum dieses Szenario zählt:** Es prüft, ob das Harness ein reines Rhythmusurteil ohne jede Tell-Oberfläche tragen kann. Der Failure-Mode wäre, Monotonie nur dann zu erkennen, wenn zugleich Katalogmuster feuern. Beide Contract-Samples laufen exakt: die monotone Umschreibung erwartet genau `profile_out_of_range`, die geöffnete Fassung genau null Verletzungen.
 
 ## Neue Szenarien hinzufügen
 

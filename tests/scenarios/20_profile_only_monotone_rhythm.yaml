@@ -1,0 +1,26 @@
+{
+  "id": 20,
+  "mode": "Sachlich",
+  "input": "Die Werkstatt öffnet unter der Woche am frühen Morgen. Die Kunden geben ihre Räder direkt am Tresen ab. Die Mechaniker prüfen zuerst Bremsen, Schaltung und Beleuchtung. Die Reparaturen dauern meistens nur wenige Tage. Die Abholung klappt danach auch ohne festen Termin.",
+  "expected_behavior": ["Satzrhythmus öffnen", "keine Lexikpolitur", "keine neuen Inhalte"],
+  "quality_risks": ["Monotonie bleibt trotz Umschreibung erhalten", "erfundene Details", "Volltext-Echo"],
+  "output_contract": ["nur geänderte Stellen", "Kurzaudit"],
+  "style_profile_contract": {
+    "target": "sachlich",
+    "max_out_of_range": 0
+  },
+  "sample_outputs": [
+    {
+      "name": "umschreibung bleibt monoton",
+      "text": "Die Werkstatt öffnet werktags bereits am frühen Morgen. Die Räder landen bei der Abgabe direkt am Tresen. Die Mechaniker prüfen zunächst Bremsen, Schaltung und Beleuchtung. Die Reparaturen dauern im Schnitt nur wenige Tage. Die Abholung funktioniert später auch ohne festen Termin.",
+      "expect_violations": ["profile_out_of_range"],
+      "expect_violations_exact": true
+    },
+    {
+      "name": "rhythmisch geoeffneter sauberer text",
+      "text": "Die Werkstatt öffnet werktags am frühen Morgen, und die Kunden geben ihre Räder direkt am Tresen ab. Geprüft werden zuerst Bremsen, Schaltung und Beleuchtung. Meistens dauert eine Reparatur nur wenige Tage. Abgeholt wird ohne festen Termin.",
+      "expect_violations": [],
+      "expect_violations_exact": true
+    }
+  ]
+}

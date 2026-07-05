@@ -17,7 +17,7 @@ spec.loader.exec_module(run_review_eval)
 class ScenarioContractTests(unittest.TestCase):
     def test_all_scenarios_have_required_contract_fields(self):
         files = run_review_eval.scenario_files(SCENARIOS)
-        self.assertEqual(len(files), 18)
+        self.assertEqual(len(files), 20)
         for file_path in files:
             with self.subTest(file=file_path.name):
                 scenario = run_review_eval.load_scenario(file_path)

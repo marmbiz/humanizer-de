@@ -1,0 +1,68 @@
+{
+  "id": 19,
+  "mode": "Formal",
+  "input": "Sehr geehrte Frau Berger, für die Schlussabrechnung des Projekts fehlt uns noch Ihre unterschriebene Stundenübersicht. Bitte senden Sie das Dokument bis Donnerstag an das Sekretariat. Für Rückfragen erreichen Sie mich vormittags telefonisch.",
+  "expected_behavior": [
+    "Sie-Anrede erhalten",
+    "förmliches Register erhalten",
+    "keine Tell-Korrekturen erfinden"
+  ],
+  "quality_risks": [
+    "Du-Wechsel",
+    "flapsige Partikeln",
+    "unnötige Umschreibung eines sauberen Texts"
+  ],
+  "output_contract": [
+    "Modus",
+    "Gefundene Muster",
+    "Geänderte Stellen",
+    "Kurzaudit"
+  ],
+  "qgir_contract": {
+    "max_passes": 2,
+    "max_changed_sentence_ratio": 0.35,
+    "protected_anchors": [
+      "Frau Berger",
+      "Stundenübersicht",
+      "Donnerstag",
+      "Sekretariat"
+    ],
+    "required_address": "Sie",
+    "register_drift_markers": [
+      "ja",
+      "doch",
+      "halt"
+    ]
+  },
+  "style_profile_contract": {
+    "target": "sachlich",
+    "max_out_of_range": 1,
+    "required_in_range": [
+      "particle_count"
+    ]
+  },
+  "sample_outputs": [
+    {
+      "name": "flapsiges du statt foermlicher anrede",
+      "passes": [
+        "Frau Berger, uns fehlt halt noch deine unterschriebene Stundenübersicht. Schick das Dokument doch bitte bis Donnerstag ans Sekretariat. Für Rückfragen ruf mich einfach vormittags an."
+      ],
+      "expect_violations": [
+        "edit_budget_exceeded",
+        "formal_register_break",
+        "profile_out_of_range",
+        "profile_required_metric_failed",
+        "register_shift"
+      ],
+      "expect_violations_exact": true
+    },
+    {
+      "name": "registertreue minimalkorrektur",
+      "passes": [
+        "Sehr geehrte Frau Berger, für die Schlussabrechnung des Projekts fehlt uns weiterhin Ihre unterschriebene Stundenübersicht. Bitte senden Sie das Dokument bis Donnerstag an das Sekretariat. Für Rückfragen erreichen Sie mich vormittags telefonisch."
+      ],
+      "expect_violations": [],
+      "expect_violations_exact": true
+    }
+  ]
+}
