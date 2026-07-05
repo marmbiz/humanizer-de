@@ -193,14 +193,14 @@ Der Skill arbeitet mit einem Katalog aus **66 KI-Schreibmustern** in 10 Kategori
 |---|--------|---------|
 | 1 | Übermäßige Betonung von Symbolik ("steht als Zeugnis") | HIGH |
 | 2 | Werbesprache und Superlative ("atemberaubend") | HIGH |
-| 3 | Redaktionelle Kommentare ("es ist wichtig zu bemerken") | HIGH |
+| 3 | Redaktionelle Kommentare und Meta-Sprache ("es ist wichtig zu bemerken") | HIGH |
 | 4 | Mechanische Konjunktionen ("darüber hinaus", "außerdem") | HIGH |
 | 5 | Abschnitts-Zusammenfassungen ("insgesamt") | HIGH |
 | 6 | Unpassendes "Fazit" | MEDIUM |
-| 7 | Zu perfekte Dichotomie | MEDIUM |
+| 7 | Schlussfolgerungen mit zu starker Dichotomie | MEDIUM |
 | 8 | Negative Parallelismen und abgehackte Verneinungen | MEDIUM |
-| 9 | Trikolon (Regel der Drei) | MEDIUM |
-| 10 | Partizip-I-Konstruktionen | HIGH |
+| 9 | Trikolon und schematische Aufzählungen (Regel der Drei) | MEDIUM |
+| 10 | Oberflächliche Analysen mit Partizip I | HIGH |
 | 11 | Vage Autoritäten ("Branchenberichte zeigen") | HIGH |
 | 12 | Falsche Erweiterung ("von... bis") | MEDIUM |
 | 58 | Abstrakta-Stapel und Hypernym-Präferenz | MEDIUM |
@@ -234,7 +234,7 @@ Der Skill arbeitet mit einem Katalog aus **66 KI-Schreibmustern** in 10 Kategori
 | 19 | Hinweise auf Wissensgrenzen ("Stand Datum") | HIGH |
 | 20 | Prompt-Ablehnung ("Als KI kann ich nicht...") | HIGH |
 | 21 | Platzhaltertext ("[Name einfügen]") | HIGH |
-| 22 | Links zu Suchanfragen | HIGH |
+| 22 | Links zu Suchanfragen statt Referenzen | HIGH |
 
 </details>
 
@@ -259,7 +259,7 @@ Der Skill arbeitet mit einem Katalog aus **66 KI-Schreibmustern** in 10 Kategori
 |---|--------|---------|
 | 29 | Abrupte Abbrüche | LOW |
 | 30 | Wechsel im Schreibstil | MEDIUM |
-| 31 | Bearbeitungszusammenfassungen in Ich-Form | LOW |
+| 31 | Ausführliche Bearbeitungszusammenfassungen in Ich-Form | LOW |
 
 </details>
 
