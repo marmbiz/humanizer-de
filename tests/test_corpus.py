@@ -18,6 +18,7 @@ def load_module(name, path):
 
 unicode_lint = load_module("unicode_lint", ROOT / "scripts" / "unicode_lint.py")
 rhythm_lint = load_module("rhythm_lint", ROOT / "scripts" / "rhythm_lint.py")
+style_profile = load_module("style_profile", ROOT / "scripts" / "style_profile.py")
 
 
 class CorpusTests(unittest.TestCase):
@@ -47,6 +48,14 @@ class CorpusTests(unittest.TestCase):
                     self.assertTrue(expected_rhythm.issubset(rhythm_patterns))
                 else:
                     self.assertEqual(rhythm_patterns, set())
+
+                ranges = expected.get("style_profile_ranges")
+                if ranges:
+                    metrics = style_profile.profile(text, str(input_path))["metrics"]
+                    for metric, corridor in ranges.items():
+                        value = metrics[metric]
+                        self.assertGreaterEqual(value, corridor["min"], f"{metric} below corridor")
+                        self.assertLessEqual(value, corridor["max"], f"{metric} above corridor")
 
 
 if __name__ == "__main__":

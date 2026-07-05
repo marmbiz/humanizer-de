@@ -1,0 +1,7 @@
+# Vermerk zur Umstellung des Ablageverfahrens
+
+Gegenstand dieses Vermerks ist die Umstellung der zentralen Ablage auf das im März beschlossene Ordnungsschema. Betroffen sind sämtliche Vorgänge der Sachgebiete 2 und 3 sowie die zugehörigen Registraturbestände aus den Jahren 2019 bis 2024, soweit deren Aufbewahrungsfrist noch nicht abgelaufen ist und keine Abgabe an das Zwischenarchiv erfolgt ist. Grundlage ist der Beschluss vom 14. März.
+
+Die Durchführung erfolgt in zwei Abschnitten. Zunächst werden die laufenden Vorgänge nach dem neuen Aktenplan gekennzeichnet, wobei die bisherige Signatur als Nebeneintrag erhalten bleibt, damit ältere Verweise in Schriftverkehr und Registern ohne zusätzliche Konkordanzliste nachvollziehbar bleiben. Anschließend folgt die Überführung der Altbestände. Deren Umfang wird derzeit auf rund 1.200 Einheiten geschätzt. Für die Kennzeichnung dieser Bestände ist eine gesonderte Arbeitsanweisung in Vorbereitung, die den Sachgebieten vor Beginn des zweiten Abschnitts zugeht.
+
+Die Verantwortung für die fachliche Prüfung verbleibt bei den Sachgebietsleitungen. Abweichungen vom Schema sind schriftlich zu begründen und der Registratur zur Entscheidung vorzulegen. Eine rückwirkende Änderung bereits vergebener Signaturen ist ausgeschlossen, da die Nachvollziehbarkeit der Aktenführung andernfalls nicht gewährleistet wäre. Der Abschluss des ersten Abschnitts ist für Ende September vorgesehen. Über den Fortgang wird quartalsweise berichtet. Der Vermerk wird der Verfahrensakte beigefügt.

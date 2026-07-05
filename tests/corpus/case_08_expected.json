@@ -1,0 +1,11 @@
+{
+  "unicode_patterns": [],
+  "rhythm_patterns": [],
+  "style_profile_ranges": {
+    "mean_sentence_len": {"min": 10.0, "max": 20.0},
+    "stddev_mean_ratio": {"min": 0.4, "max": 1.0},
+    "particle_count": {"min": 0, "max": 0},
+    "rhetorical_questions": {"min": 0, "max": 0},
+    "repeated_openers": {"min": 0, "max": 1}
+  }
+}
