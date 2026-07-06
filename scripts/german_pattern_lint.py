@@ -32,8 +32,6 @@ AI_MARKERS = (
 COPULA_AVOIDANCE = (
     "fungiert als",
     "dient als",
-    "stellt",
-    "stellt dar",
     "verfügt über",
     "verfuegt ueber",
     "zeichnet sich",
@@ -52,6 +50,12 @@ ABSTRACTA = (
     "prozesse",
 )
 PARTICLES = ("ja", "doch", "eben", "halt", "wohl", "mal", "schon")
+STELLT_DAR_RE = re.compile(
+    r"\bstell(?:t|te|ten|en)\b(?:\s+\S+){0,6}?\s+dar\b"
+    r"|\bdarstell(?:t|te|ten|en)\b"
+    r"|\bdargestellt\b"
+    r"|\bdarzustellen\b"
+)
 
 
 def marker_stem(marker: str) -> str:
@@ -82,6 +86,9 @@ def lint(text: str, mode: str = "sachlich") -> dict:
         findings.append({"pattern": 64, "kind": "ai_marker_cluster", "severity": "warning", "evidence": ai_hits})
 
     copula_hits = {marker: count_marker(lowered, marker) for marker in COPULA_AVOIDANCE if count_marker(lowered, marker)}
+    separable_hits = len(STELLT_DAR_RE.findall(lowered))
+    if separable_hits:
+        copula_hits["stellt ... dar"] = separable_hits
     if sum(copula_hits.values()) >= 2:
         findings.append({"pattern": 65, "kind": "copula_avoidance_cluster", "severity": "warning", "evidence": copula_hits})
 

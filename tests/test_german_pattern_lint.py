@@ -28,6 +28,21 @@ class GermanPatternLintTests(unittest.TestCase):
         text = "Die Plattform fungiert als Werkzeug und verfügt über mehrere Module."
         self.assertIn("copula_avoidance_cluster", kinds(german_pattern_lint.lint(text)))
 
+    def test_single_stellt_dar_is_not_double_counted(self):
+        text = "Dies stellt dar, was gemeint ist."
+        self.assertNotIn("copula_avoidance_cluster", kinds(german_pattern_lint.lint(text)))
+
+    def test_stellt_full_verbs_are_not_copula_avoidance(self):
+        text = "Der Bericht stellt eine Frage. Das Team stellt den Plan nächste Woche vor."
+        self.assertNotIn("copula_avoidance_cluster", kinds(german_pattern_lint.lint(text)))
+
+    def test_stellt_dar_cluster_counts_separable_forms(self):
+        text = "Der Absatz stellt den Ablauf dar. Die Grafik stellt die Rollen dar."
+        report = german_pattern_lint.lint(text)
+        self.assertIn("copula_avoidance_cluster", kinds(report))
+        finding = next(item for item in report["findings"] if item["kind"] == "copula_avoidance_cluster")
+        self.assertEqual(finding["evidence"], {"stellt ... dar": 2})
+
     def test_formal_particles_are_reported(self):
         text = "Die Entscheidung ist ja eben wichtig."
         self.assertIn("particles_outside_locker", kinds(german_pattern_lint.lint(text, mode="formal")))
