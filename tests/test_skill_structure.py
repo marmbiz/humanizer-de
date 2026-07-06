@@ -157,6 +157,22 @@ class SkillStructureTests(unittest.TestCase):
         self.assertIn("Accepted as internal heuristics only", research)
         self.assertIn("Rejected as unsafe defaults", research)
 
+    def test_quality_rubric_exists_and_is_anchored_in_pass_5(self):
+        rubric = (ROOT / "references" / "quality-rubric.md")
+        self.assertTrue(rubric.exists())
+
+        rubric_text = rubric.read_text()
+        self.assertIn("Leserführung", rubric_text)
+        self.assertIn("Argumentdichte", rubric_text)
+        self.assertIn("Stimmkonsistenz", rubric_text)
+        self.assertIn("Sparsamkeit", rubric_text)
+        self.assertIn("Urteilsraster, kein Linter", rubric_text)
+
+        skill = (ROOT / "SKILL.md").read_text()
+        pass_5 = re.search(r"\*\*Pass 5\b[\s\S]*?(?=\n\n\*\*|\Z)", skill)
+        self.assertIsNotNone(pass_5)
+        self.assertIn("references/quality-rubric.md", pass_5.group(0))
+
     def test_ai_involvement_audit_stays_roadmap_not_active_skill(self):
         skill = (ROOT / "SKILL.md").read_text()
         readme = (ROOT / "README.md").read_text()
