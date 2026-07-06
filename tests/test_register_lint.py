@@ -32,6 +32,20 @@ class RegisterLintTests(unittest.TestCase):
         report = register_lint.lint("Das hilft ja im Alltag.", mode="locker")
         self.assertEqual(kinds(report), set())
 
+    def test_neutral_profile_blocks_direct_address(self):
+        du_report = register_lint.lint("Du bekommst die Auswertung morgen.", expected_address="neutral")
+        sie_report = register_lint.lint("Sie erhalten die Auswertung morgen.", expected_address="neutral")
+        wir_report = register_lint.lint("Wir prüfen die Auswertung morgen.", expected_address="neutral")
+        self.assertIn("unexpected_direct_address", kinds(du_report))
+        self.assertIn("unexpected_direct_address", kinds(sie_report))
+        self.assertIn("unexpected_direct_address", kinds(wir_report))
+
+    def test_wir_profile_blocks_du_or_sie(self):
+        du_report = register_lint.lint("Du bekommst die Auswertung morgen.", expected_address="wir")
+        sie_report = register_lint.lint("Sie erhalten die Auswertung morgen.", expected_address="wir")
+        self.assertIn("unexpected_direct_address", kinds(du_report))
+        self.assertIn("unexpected_direct_address", kinds(sie_report))
+
 
 if __name__ == "__main__":
     unittest.main()

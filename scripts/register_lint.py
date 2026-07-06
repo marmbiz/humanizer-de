@@ -45,6 +45,10 @@ def lint(text: str, mode: str = "sachlich", expected_address: str | None = None)
         add(findings, "blocker", "unexpected_sie", "Profile expects du-address, but formal Sie appears.")
     if expected_address == "sie" and found["du_count"]:
         add(findings, "blocker", "unexpected_du", "Profile expects Sie-address, but du-address appears.")
+    if expected_address == "wir" and (found["du_count"] or found["sie_formal_count"]):
+        add(findings, "blocker", "unexpected_direct_address", "Profile expects wir-address, but du/Sie-address appears.")
+    if expected_address == "neutral" and (found["du_count"] or found["sie_formal_count"] or found["wir_count"]):
+        add(findings, "blocker", "unexpected_direct_address", "Profile expects neutral address, but direct address appears.")
     if mode in {"sachlich", "formal"} and found["modal_particle_count"]:
         add(findings, "warning", "particles_outside_locker", "Modal particles should not be added in Sachlich/Formal.")
     if mode == "formal" and (found["emoji_count"] or found["rhetorical_questions"]):
