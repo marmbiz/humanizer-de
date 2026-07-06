@@ -4,10 +4,17 @@
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import re
 import sys
 from pathlib import Path
+
+
+REGISTER_SCRIPT = Path(__file__).resolve().parent / "register_lint.py"
+register_spec = importlib.util.spec_from_file_location("register_lint", REGISTER_SCRIPT)
+register_lint = importlib.util.module_from_spec(register_spec)
+register_spec.loader.exec_module(register_lint)
 
 
 AI_MARKERS = (
@@ -49,7 +56,7 @@ ABSTRACTA = (
     "faktoren",
     "prozesse",
 )
-PARTICLES = ("ja", "doch", "eben", "halt", "wohl", "mal", "schon")
+PARTICLES = tuple(sorted(register_lint.MODAL_PARTICLES))
 STELLT_DAR_RE = re.compile(
     r"\bstell(?:t|te|ten|en)\b(?:\s+\S+){0,6}?\s+dar\b"
     r"|\bdarstell(?:t|te|ten|en)\b"

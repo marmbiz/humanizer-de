@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+from collections.abc import Iterable
 import json
 import re
 import sys
@@ -11,18 +12,21 @@ from pathlib import Path
 
 
 MODAL_PARTICLES = {"ja", "doch", "eben", "halt", "wohl", "mal", "schon", "ohnehin"}
+DU_FORMS = ("du", "dir", "dich", "dein", "deine", "deinen", "deinem", "deiner", "deines")
+SIE_FORMS = ("Sie", "Ihnen", "Ihr", "Ihre", "Ihren", "Ihrem", "Ihrer", "Ihres")
+SIE_FORMS_RE = re.compile(rf"\b(?:{'|'.join(re.escape(form) for form in SIE_FORMS)})\b")
 EMOJI_RE = re.compile("[\U0001F300-\U0001FAFF]")
 
 
-def count_words(text: str, words: set[str]) -> int:
+def count_words(text: str, words: Iterable[str]) -> int:
     lowered = text.lower()
     return sum(len(re.findall(rf"\b{re.escape(word)}\b", lowered)) for word in words)
 
 
 def features(text: str) -> dict:
     return {
-        "du_count": count_words(text, {"du", "dir", "dich", "dein", "deine", "deinen", "deinem"}),
-        "sie_formal_count": len(re.findall(r"\b(?:Sie|Ihnen|Ihr|Ihre|Ihren|Ihrem)\b", text)),
+        "du_count": count_words(text, DU_FORMS),
+        "sie_formal_count": len(SIE_FORMS_RE.findall(text)),
         "wir_count": count_words(text, {"wir", "uns", "unser", "unsere", "unseren"}),
         "man_count": count_words(text, {"man"}),
         "modal_particle_count": count_words(text, MODAL_PARTICLES),

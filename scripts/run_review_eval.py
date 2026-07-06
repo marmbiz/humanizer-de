@@ -21,6 +21,16 @@ spec = importlib.util.spec_from_file_location("evidence_lint", EVIDENCE_SCRIPT)
 evidence_lint = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(evidence_lint)
 
+REGISTER_SCRIPT = ROOT / "scripts" / "register_lint.py"
+register_spec = importlib.util.spec_from_file_location("register_lint", REGISTER_SCRIPT)
+register_lint = importlib.util.module_from_spec(register_spec)
+register_spec.loader.exec_module(register_lint)
+
+RHYTHM_SCRIPT = ROOT / "scripts" / "rhythm_lint.py"
+rhythm_spec = importlib.util.spec_from_file_location("rhythm_lint", RHYTHM_SCRIPT)
+rhythm_lint = importlib.util.module_from_spec(rhythm_spec)
+rhythm_spec.loader.exec_module(rhythm_lint)
+
 STYLE_PROFILE_SCRIPT = ROOT / "scripts" / "style_profile.py"
 style_profile_spec = importlib.util.spec_from_file_location("style_profile", STYLE_PROFILE_SCRIPT)
 style_profile = importlib.util.module_from_spec(style_profile_spec)
@@ -32,8 +42,8 @@ PERSONAL_EXPERIENCE_RE = re.compile(
     r"\b(?:Als ich|ich habe erlebt|ein Kunde erzählte|aus meiner Praxis|letzte Woche)\b",
     re.IGNORECASE,
 )
-DU_RE = re.compile(r"\b(?:du|dir|dich|dein|deine|deinem|deinen|deiner)\b", re.IGNORECASE)
-SIE_RE = re.compile(r"\b(?:Sie|Ihnen|Ihr|Ihre|Ihrem|Ihren|Ihrer)\b")
+DU_RE = re.compile(rf"\b(?:{'|'.join(re.escape(form) for form in register_lint.DU_FORMS)})\b", re.IGNORECASE)
+SIE_RE = re.compile(rf"\b(?:{'|'.join(re.escape(form) for form in register_lint.SIE_FORMS)})\b")
 SENTENCE_SIMILARITY_THRESHOLD = 0.72
 
 
@@ -46,7 +56,12 @@ def normalize(text: str) -> str:
 
 
 def sentences(text: str) -> list[str]:
-    return [normalize(item) for item in re.findall(r"[^.!?\n]+[.!?]?", text) if normalize(item)]
+    normalized: list[str] = []
+    for item in rhythm_lint.split_sentences(text):
+        sentence = normalize(item)
+        if sentence:
+            normalized.append(sentence)
+    return normalized
 
 
 def changed_sentence_ratio(before: str, after: str) -> float:
