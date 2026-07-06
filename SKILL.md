@@ -150,7 +150,7 @@ Format:
 5. **Burstiness:** nur bei Combing: Messung vorher/nachher, Iterationszahl und Hinweis auf mögliches Qualitätsrisiko.
 6. **Verworfene Kandidaten:** nur ausgeben, wenn Lint-/Audit-Flags vorlagen und nach Prüfung höchstens zwei echte Änderungen nötig waren. Jede Zeile muss auf ein konkretes Flag oder eine konkrete Textstelle verweisen: erwogene Änderung plus ein Satz, warum sie Substanz, Rhythmus, Register oder Belegtreue verschlechtern würde. Ohne konkret geprüfte Stelle kein Eintrag; ist nichts belegbar, Block weglassen.
 
-Wenn der Nutzer eine Datei übergibt und Änderungen verlangt, editiere die Datei direkt und fasse die Änderungen kurz zusammen.
+Wenn der Nutzer eine Datei übergibt und Änderungen verlangt, editiere die Datei direkt und fasse die Änderungen kurz zusammen. Bei wiederholten Nutzerkorrekturen in dieselbe Richtung: Abschluss-Dialog nach [references/user-profile.md](references/user-profile.md).
 
 ## Referenzen
 
