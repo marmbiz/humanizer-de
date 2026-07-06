@@ -77,6 +77,7 @@ class SkillStructureTests(unittest.TestCase):
         readme_text = (ROOT / "README.md").read_text()
         patterns_text = (ROOT / "references" / "patterns.md").read_text()
         decision_text = (ROOT / "references" / "decision-tables.md").read_text()
+        coverage_text = (ROOT / "docs" / "coverage-matrix.md").read_text()
         warp_text = (ROOT / "WARP.md").read_text()
 
         self.assertRegex(skill_text, rf"version:\s+['\"]?{re.escape(EXPECTED_VERSION)}['\"]?")
@@ -91,6 +92,7 @@ class SkillStructureTests(unittest.TestCase):
         self.assertIn(f"- **{EXPECTED_VERSION}**", readme_text)
         self.assertIn(f"v{EXPECTED_VERSION}", patterns_text)
         self.assertIn(f"v{EXPECTED_VERSION}", decision_text)
+        self.assertIn(f"v{EXPECTED_VERSION}", coverage_text)
 
         expected_pattern_label = f"{EXPECTED_PATTERN_COUNT} Muster"
         self.assertIn(expected_pattern_label, plugin["description"])
