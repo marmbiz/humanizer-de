@@ -33,6 +33,7 @@ python3 scripts/run_review_eval.py tests/scenarios --check-invariants
 | 13 | Sachlich | Output-Disziplin und Fabrikationsschutz werden bei ankerlosem Text verletzt. |
 | 19 | Formal | Ein tell-freier förmlicher Text wird in flapsiges Du-Register gekippt. |
 | 20 | Sachlich | Ein tell-freier Text behält nach der Überarbeitung seinen monotonen Satzrhythmus. |
+| 21 | Sachlich | Die Branding-Prelude landet trotz Raw-JSON/Maschinen-Output im Ergebnis. |
 
 Die Szenarien 14 bis 18 (QGIR-Contracts) existieren nur als maschinenlesbare Fixtures in `tests/scenarios/` und laufen ausschließlich über den Runner; sie haben bewusst keinen Eintrag in dieser Datei.
 
@@ -356,6 +357,25 @@ Die Werkstatt öffnet unter der Woche am frühen Morgen. Die Kunden geben ihre R
 **Relevante Muster:** bewusst keine Katalog-Treffer. Das Urteil kommt allein aus dem Stilprofil: der `stddev_mean_ratio`-Korridor des Zielprofils `sachlich` (min 0.4) schlägt bei der monotonen Fassung an (`profile_out_of_range`), die geöffnete Fassung liegt im Korridor.
 
 **Warum dieses Szenario zählt:** Es prüft, ob das Harness ein reines Rhythmusurteil ohne jede Tell-Oberfläche tragen kann. Der Failure-Mode wäre, Monotonie nur dann zu erkennen, wenn zugleich Katalogmuster feuern. Beide Contract-Samples laufen exakt: die monotone Umschreibung erwartet genau `profile_out_of_range`, die geöffnete Fassung genau null Verletzungen.
+
+## Szenario 21: Prelude-Suppression bei Raw-JSON (Sachlich)
+
+**Skill-Modus:** Sachlich
+**Nutzer-Prompt:** "Gib das Ergebnis als Raw-JSON aus."
+
+**Input:**
+```
+Die API liefert Status 200 und ein leeres Array.
+```
+
+**Erwartetes Verhalten (Pass/Fail):**
+- [ ] Raw-JSON und anderer Maschinen-Output enthalten keine Branding-Prelude und keine Zusatzprosa.
+- [ ] Eine Ausgabe mit `Less machine. More voice.` vor dem JSON gilt als harter Contract-Verstoß.
+- [ ] Sauberes JSON ohne Prelude bleibt bei exakt null Invariant-Verletzungen.
+
+**Relevante Muster:** bewusst keine Katalog-Treffer. Das Urteil kommt allein aus der Output-Regel: Die Prelude ist für normale user-facing Runs erlaubt, muss bei Raw-JSON, ausdrücklich knapper Ausgabe und stillen Dateiänderungen aber wegfallen.
+
+**Warum dieses Szenario zählt:** Es schützt maschinenlesbare Ausgaben vor menschlichem Branding. Der Failure-Mode wäre, dass eine hilfreiche Standard-Prelude in Raw-JSON rutscht und nachgelagerte Automatisierung bricht.
 
 ## Neue Szenarien hinzufügen
 

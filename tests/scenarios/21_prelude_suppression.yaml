@@ -1,0 +1,22 @@
+{
+  "id": 21,
+  "mode": "Sachlich",
+  "machine_output": true,
+  "input": "Die API liefert Status 200 und ein leeres Array.",
+  "expected_behavior": ["Prelude bei Raw-JSON weglassen", "Maschinen-Output unverfälscht lassen"],
+  "quality_risks": ["Branding-Prelude rutscht in JSON", "Maschinen-Output wird für Menschen gerahmt"],
+  "output_contract": ["Raw-JSON ohne Prelude", "keine Zusatzprosa"],
+  "sample_outputs": [
+    {
+      "name": "prelude leaks into json",
+      "text": "Less machine. More voice.\n{\"ok\": true, \"findings\": []}",
+      "expect_violations": ["branding_prelude_in_machine_output"]
+    },
+    {
+      "name": "clean json output",
+      "text": "{\"ok\": true, \"findings\": []}",
+      "expect_violations": [],
+      "expect_violations_exact": true
+    }
+  ]
+}

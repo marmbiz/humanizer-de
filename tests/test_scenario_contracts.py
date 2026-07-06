@@ -17,7 +17,7 @@ spec.loader.exec_module(run_review_eval)
 class ScenarioContractTests(unittest.TestCase):
     def test_all_scenarios_have_required_contract_fields(self):
         files = run_review_eval.scenario_files(SCENARIOS)
-        self.assertEqual(len(files), 20)
+        self.assertEqual(len(files), 21)
         for file_path in files:
             with self.subTest(file=file_path.name):
                 scenario = run_review_eval.load_scenario(file_path)
@@ -75,6 +75,27 @@ class ScenarioContractTests(unittest.TestCase):
         violations = run_review_eval.invariant_violations(scenario, sample_output)
         self.assertIn("claim_direction_changed", violations)
         self.assertNotEqual(set(), set(violations))
+
+    def test_machine_output_rejects_branding_prelude(self):
+        scenario = {
+            "id": 99,
+            "mode": "Sachlich",
+            "machine_output": True,
+            "input": "Die API liefert Status 200.",
+            "expected_behavior": [],
+            "quality_risks": [],
+            "output_contract": [],
+            "sample_outputs": [],
+        }
+        output = 'Less machine. More voice.\n{"ok": true, "findings": []}'
+        self.assertIn("branding_prelude_in_machine_output", run_review_eval.invariant_violations(scenario, output))
+
+        without_machine_output = dict(scenario)
+        without_machine_output.pop("machine_output")
+        self.assertNotIn(
+            "branding_prelude_in_machine_output",
+            run_review_eval.invariant_violations(without_machine_output, output),
+        )
 
     def test_check_scenario_exact_expectation_mismatch_fails(self):
         scenario = {

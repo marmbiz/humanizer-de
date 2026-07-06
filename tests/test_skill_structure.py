@@ -64,6 +64,12 @@ class SkillStructureTests(unittest.TestCase):
         self.assertLessEqual(len(description), 220)
         self.assertIn("deutschen Text humanisieren", description)
 
+    def test_output_prelude_has_suppression_clause(self):
+        text = (ROOT / "SKILL.md").read_text()
+
+        self.assertIn("Less machine. More voice.", text)
+        self.assertIn("Weglassen bei Raw-JSON", text)
+
     def test_release_metadata_stays_in_sync(self):
         skill_text = (ROOT / "SKILL.md").read_text()
         plugin = json.loads((ROOT / ".claude-plugin" / "plugin.json").read_text())

@@ -27,6 +27,7 @@ style_profile = importlib.util.module_from_spec(style_profile_spec)
 style_profile_spec.loader.exec_module(style_profile)
 
 REQUIRED_KEYS = {"id", "mode", "input", "expected_behavior", "quality_risks", "output_contract"}
+PRELUDE_RE = re.compile(r"less machine\.\s*more voice\.", re.IGNORECASE)
 PERSONAL_EXPERIENCE_RE = re.compile(
     r"\b(?:Als ich|ich habe erlebt|ein Kunde erzählte|aus meiner Praxis|letzte Woche)\b",
     re.IGNORECASE,
@@ -118,7 +119,7 @@ def invariant_violations(scenario: dict, output: str) -> list[str]:
     elif len(words(output)) >= max(80, int(len(words(input_text)) * 0.8)):
         violations.append("possible_full_text_output")
 
-    evidence_findings = evidence_lint.lint(input_text, output)
+    evidence_findings = [] if scenario.get("machine_output") else evidence_lint.lint(input_text, output)
     if any(
         item["severity"] == "blocker" and (item["kind"].startswith("added_") or item["kind"].startswith("removed_"))
         for item in evidence_findings
@@ -139,6 +140,9 @@ def invariant_violations(scenario: dict, output: str) -> list[str]:
         if risky_phrase.lower() in output.lower():
             violations.append("risky_phrase")
             break
+
+    if scenario.get("machine_output") and PRELUDE_RE.search(output):
+        violations.append("branding_prelude_in_machine_output")
 
     return sorted(set(violations))
 
