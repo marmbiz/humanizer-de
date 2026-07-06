@@ -143,7 +143,7 @@ def preflight_assessment(
         score += add_driver(drivers, "subject_initial_cluster", f"subject_initial_ratio={subject_ratio}", 1)
     if not short_sample and document.get("paragraph_sentence_counts_uniform"):
         score += add_driver(drivers, "uniform_paragraphs", "paragraph sentence counts are near-uniform", 1)
-    if connector_count > 1:
+    if not short_sample and connector_count > 1:
         score += add_driver(drivers, "mechanical_connectors", f"connector_density={connector_count}", 1)
 
     weighted_kinds = {

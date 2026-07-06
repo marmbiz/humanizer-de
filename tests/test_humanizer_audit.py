@@ -72,6 +72,29 @@ class HumanizerAuditTests(unittest.TestCase):
         self.assertEqual(sum(report["summary"]["counts"].values()), 0)
         self.assertEqual(report["summary"]["preflight"]["risk"], "insufficient_text")
 
+    def test_short_text_with_connectors_is_insufficient_text(self):
+        text = (
+            "Das Team prüft den Entwurf. "
+            "Außerdem klärt es die offenen Punkte. "
+            "Zudem dokumentiert es die nächsten Schritte."
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "text.md"
+            path.write_text(text, encoding="utf-8")
+
+            exit_code, report = run_json(["--file", str(path)])
+
+        self.assertEqual(exit_code, 0)
+        self.assertEqual(report["summary"]["rhythm"]["connector_density"], 2)
+        self.assertEqual(report["summary"]["preflight"]["risk"], "insufficient_text")
+        self.assertFalse(report["summary"]["preflight"]["combing"]["auto"])
+        self.assertFalse(
+            any(
+                item["kind"] == "mechanical_connectors"
+                for item in report["summary"]["preflight"]["drivers"]
+            )
+        )
+
     def test_markdown_format_is_compact_and_grouped(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "text.md"
