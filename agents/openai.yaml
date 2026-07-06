@@ -1,6 +1,6 @@
 interface:
   display_name: "Humanizer (Deutsch)"
-  short_description: "German AI text humanizer for Claude/Codex"
+  short_description: "German style editor and German AI text humanizer for Claude/Codex"
   icon_small: "./assets/banner-light.svg"
   icon_large: "./assets/banner-light.svg"
   brand_color: "#C4501F"

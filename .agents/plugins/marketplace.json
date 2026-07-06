@@ -2,7 +2,7 @@
   "name": "humanizer-de",
   "interface": {
     "displayName": "Humanizer DE",
-    "description": "German AI Text Humanizer / deutscher Humanizer Skill für Claude Code und Codex"
+    "description": "Deutscher Stil-Editor und German AI Text Humanizer / deutscher Humanizer Skill für Claude Code und Codex: misst Register und Rhythmus, redigiert evidence-safe, auditiert KI-Schreibmuster"
   },
   "plugins": [
     {

@@ -1,6 +1,6 @@
 ---
 name: humanizer-de
-description: deutschen Text humanisieren, KI-Schreibmuster/KI-Tells auditieren; German AI Text Humanizer für Claude Code/Codex, evidence-safe rewrites, Register- und Naturalness-Checks.
+description: 'Deutscher Stil-Editor für Claude Code/Codex: Register messen, Rhythmus glätten, evidence-safe rewrites, Naturalness-Checks; deutschen Text humanisieren, KI-Schreibmuster/KI-Tells auditieren; German AI Text Humanizer.'
 allowed-tools: [Read, Write, Edit, Grep, Glob, Bash]
 metadata:
   display_name: Humanizer (Deutsch)
@@ -19,6 +19,8 @@ metadata:
 ## Auftrag
 
 Wenn der Nutzer deutschen Text humanisieren, KI-Schreibmuster entfernen oder deutsche KI-Tells prüfen will, überarbeite die betroffenen Stellen. Bewahre Substanz, Register und belegbare Aussagen. Ziel ist ein guter, natürlicher Text mit proportionalen Eingriffen.
+
+Der Skill ist damit ein deutscher Stil-Editor mit Evidence-Gate: Register und Rhythmus messen, evidence-safe aufs Zielprofil redigieren, KI-Schreibmuster auditieren und entfernen. Humanizing ist der prominenteste Anwendungsfall.
 
 Fokus des Skills ist KI-Muster-Audit mit gezielter Textverbesserung. Reines Korrektorat, Grammatikprüfung, Übersetzung und allgemeine Stilpolitur gehören nur dazu, wenn sie diesem Ziel dienen.
 
