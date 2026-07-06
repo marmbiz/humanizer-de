@@ -548,6 +548,19 @@ python3 scripts/german_pattern_lint.py --file <text.md> --mode locker
 python3 scripts/run_review_eval.py tests/scenarios --check-invariants
 ```
 
+### Exit-Codes
+
+Alle Scripts folgen der Konvention `0` = ok, `1` = Findings gemäß Fail-Schwelle bzw. Fixture-/Eval-Mismatch, `2` = Aufruffehler (falsche Argumente). Die Fail-Schwelle unterscheidet sich bewusst je Script:
+
+| Script | Exit `1` bei |
+|---|---|
+| `unicode_lint.py` | jedem Finding |
+| `register_lint.py`, `evidence_lint.py` | nur Blockern — Warnings blocken nicht |
+| `rhythm_lint.py`, `german_pattern_lint.py`, `humanizer_audit.py` | nie — Messen ist kein Urteil, der JSON-Report ist die Schnittstelle |
+| `run_review_eval.py` und alle `--fixture`-Modi | Erwartungs-Mismatch |
+
+Wer ein Script in CI als Gate nutzt, muss diese Semantik kennen: `german_pattern_lint.py` und `rhythm_lint.py` liefern auch mit Befunden Exit `0` — dort gehört der JSON-Report ausgewertet, nicht der Exit-Code.
+
 ### Evidence-Gate einzeln nutzen
 
 Das Evidence-Gate prüft ein Textpaar unabhängig vom Humanizing auf Faktenverschiebung:
