@@ -22,6 +22,7 @@ import unicode_lint
 
 
 SOURCES = ("unicode", "rhythm", "german_pattern", "register")
+DEDUP_FINDING_KINDS = {"particles_outside_locker", "particle_overdose"}
 RHYTHM_KEYS = (
     "sentence_count",
     "mean_sentence_length",
@@ -268,6 +269,19 @@ def compact_register_findings(findings: list[dict]) -> list[dict]:
     return compact
 
 
+def dedupe_findings(findings: list[dict]) -> list[dict]:
+    compact: list[dict] = []
+    seen_kinds: set[str] = set()
+    for item in findings:
+        kind = item.get("kind")
+        if kind in DEDUP_FINDING_KINDS:
+            if kind in seen_kinds:
+                continue
+            seen_kinds.add(kind)
+        compact.append(item)
+    return compact
+
+
 def style_profile_section(text: str, path: Path, mode: str, mode_explicit: bool, use_profile: bool = True) -> dict:
     profile_report = style_profile.profile(text, str(path))
     section = {
@@ -303,7 +317,7 @@ def analyze_file(path: Path, mode: str, mode_explicit: bool = False, use_profile
         "german_pattern": len(german_report["findings"]),
         "register": len(register_report["findings"]),
     }
-    findings = (
+    findings = dedupe_findings(
         compact_unicode_findings(unicode_findings)
         + compact_rhythm_findings(rhythm_report["suspicions"])
         + compact_german_pattern_findings(german_report["findings"])

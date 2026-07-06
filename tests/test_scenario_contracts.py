@@ -101,6 +101,30 @@ class ScenarioContractTests(unittest.TestCase):
         self.assertFalse(result["sample_results"][0]["ok"])
         self.assertIn("claim_direction_changed", result["sample_results"][0]["actual"])
 
+    def test_check_scenario_can_skip_invariants(self):
+        scenario = {
+            "id": 97,
+            "mode": "Sachlich",
+            "input": "Die Fehlerquote sank um 12 Prozent.",
+            "expected_behavior": [],
+            "quality_risks": [],
+            "output_contract": [],
+            "sample_outputs": [
+                {
+                    "name": "direction flipped but skipped",
+                    "text": "Die Fehlerquote stieg um 12 Prozent.",
+                    "expect_violations": [],
+                    "expect_violations_exact": True,
+                }
+            ],
+        }
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            path = Path(tmp_dir) / "97_skip_invariants.yaml"
+            path.write_text(json.dumps(scenario), encoding="utf-8")
+            result = run_review_eval.check_scenario(path, check_invariants=False)
+        self.assertTrue(result["ok"])
+        self.assertEqual(result["sample_results"], [])
+
     def test_style_profile_contract_flags_out_of_range_and_required_metric(self):
         scenario = {
             "style_profile_contract": {
