@@ -9,7 +9,7 @@ metadata:
   maintainer_website: https://www.martin-moeller.biz
   based_on: 'Deutsche Wikipedia: Anzeichen für KI-generierte Inhalte, Erkennung KI-Einsatz, Schnelltest KI'
   original_skill: https://github.com/blader/humanizer
-  tags: [writing, ai-detection, humanizer, ai-humanizer, claude-skill, codex-skill, german, deutsch, ki-text, germanizer, prompt-engineering, wikipedia, text-improvement]
+  tags: [writing, ai-detection, humanizer, ai-humanizer, claude-skill, codex-skill, german, deutsch, ki-text, germanizer, prompt-engineering, wikipedia, text-improvement, style-editor, stil-editor, text-editing, ai-writing, lektorat]
 ---
 
 # Humanizer (Deutsch)
