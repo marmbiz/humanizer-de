@@ -276,12 +276,12 @@ def main(argv: list[str] | None = None) -> int:
     if args.write and (not args.fix or not args.file):
         raise SystemExit("--write requires --fix and --file")
 
-    text = args.text if args.text is not None else args.file.read_text()
+    text = args.text if args.text is not None else args.file.read_text(encoding="utf-8")
     findings = lint(text)
     fixed_text = fix(text) if args.fix else text
 
     if args.write and fixed_text != text:
-        args.file.write_text(fixed_text)
+        args.file.write_text(fixed_text, encoding="utf-8")
 
     result = {
         "ok": not findings,
