@@ -30,7 +30,7 @@ Das Projekt ist Anfang 2026 als Fork von blader/humanizer entstanden und hat sic
 
 Dieses Skill prüft typische KI-Schreibmuster in deutschen Texten und hilft, betroffene Stellen belegtreu, registerstabil und natürlicher zu überarbeiten.
 
-Unter der Haube ist es heute ein deutscher Stil-Editor mit Evidence-Gate und messbarem Register: `scripts/style_profile.py` misst Register und Satzrhythmus gegen die Zielprofile in `references/style-targets.json`, und das Evidence-Gate (`scripts/evidence_lint.py`) sichert Fakten bei jeder Umformulierung. Der Skill misst also Register und Rhythmus, redigiert evidence-safe auf ein Zielprofil und auditiert oder entfernt KI-Schreibmuster (66 Muster in 10 Kategorien). Humanizing bleibt der prominenteste Anwendungsfall: eine Teilmenge dieses Stil-Editors, nicht seine ganze Identität.
+Unter der Haube ist es ein deutscher Stil-Editor mit Evidence-Gate und messbarem Register: `scripts/style_profile.py` misst Register und Satzrhythmus gegen die Zielprofile in `references/style-targets.json` (persönliche Abweichungen über `.humanizer/profile.json`), das Evidence-Gate (`scripts/evidence_lint.py`) sichert Fakten bei jeder Umformulierung, und der Katalog mit 66 Mustern in 10 Kategorien liefert das Redaktionswissen. Humanizing bleibt der prominenteste Anwendungsfall dieses Stil-Editors – nicht seine ganze Identität.
 
 Das Ergebnis ist nicht sterile Korrektur. Es ist Überarbeitung, die vorhandene Substanz schützt und deutsche Textqualität verbessert. Gutes Schreiben darf Ecken haben – es sollte sogar welche haben.
 
@@ -64,6 +64,22 @@ Hinter dem Katalog steht ein einfaches Bild: KI-Textbewertung hat drei Schichten
 - **Heuristik – das Harte, Sichtbare.** Regex, Unicode-Checks, Wortlisten, deterministische Linter. Ein gerades Anführungszeichen statt „…“, drei Doppelpunkt-Titel in Folge, das Füllwort „nahtlos“. Billig, sofort – und es altert nicht: Ein verdächtiges Muster bleibt verdächtig, egal welcher Modell-Jahrgang gerade schreibt.
 - **Messen – die objektiven Fakten.** Satzbau, Anker (Namen, Zahlen, Daten), Bedeutungstreue beim Umschreiben. Fragen mit *einer richtigen Antwort*, die sich berechnen lassen, statt sie zu erraten.
 - **Urteilen – Kontext und Geschmack.** „Ist das guter Text?“ braucht Weltwissen und Fingerspitzengefühl. Das leistet nur das große Modell (Claude, Codex) – deshalb sitzt das eigentliche Umschreiben dort, nicht in einer starren Regel.
+
+Im Ablauf sieht das so aus – fünf Pässe, flankiert von Zielprofilen und dem Evidence-Gate:
+
+```mermaid
+flowchart TD
+    T([Eingabetext]) --> M["Messen – Pass 0<br/>Stilkarte: Rhythmus, Register, Preflight"]
+    Z["Zielprofile<br/>style-targets.json + .humanizer/profile.json"] -.-> M
+    M --> E["Fakten sichern – Pass 1<br/>Anker: Zahlen, Namen, Quellen, Zitate"]
+    E --> R["Redigieren – Pass 2–4<br/>Lexik, Struktur, Rhythmus · 66-Muster-Katalog"]
+    R --> A["Selbst-Audit – Pass 5"]
+    A --> G{"Evidence-Gate:<br/>alle Fakten unverändert?"}
+    G -- ja --> O([Überarbeiteter Text + Kurzaudit])
+    G -- nein --> R
+```
+
+Die Messwerte informieren das Zielprofil, aber sie richten nicht: Ob eine auffällige Stelle wirklich ein Problem ist, entscheidet das Modell im Kontext – nach der Cluster-Regel und den Carve-outs für bekannte Fehlalarme.
 
 Daraus folgen die Leitlinien des Skills:
 
@@ -180,6 +196,8 @@ Der Sammelcheck ruft Unicode-, Rhythmus-, Naturalness- und Register-Prüfung in 
 
 Der Report enthält außerdem ein Preflight-Risiko (`low`, `medium`, `high`, `insufficient_text`). Es beschreibt, ob der Text messbar zu gleichförmig wirkt: etwa durch sehr ähnliche Satzlängen, kaum kurze oder lange Sätze, wiederholte Satzanfänge, viele mechanische Übergänge oder Naturalness-Cluster. Das ist eine Qualitätsheuristik, keine Aussage zur Autorenschaft.
 
+Bei hohem Risiko empfiehlt der Skill nach der normalen Überarbeitung einen kontrollierten Nachkamm: das **Combing-Gate**. Dabei dürfen höchstens zwei gezielte Rhythmusänderungen passieren, zum Beispiel ein kürzerer Satz, ein anderer Satzanfang oder ein besser verteilter Absatz. Neue Fakten, künstliche Ich-Signale, Füllwörter oder Satzfragmente bleiben tabu. Der Report weist ausdrücklich darauf hin, dass Textqualität, Präzision oder Lesbarkeit durch solchen Rhythmus-Feinschliff auch schlechter werden können.
+
 ### Persönliches Stilprofil
 
 Wiederkehrende Stilvorlieben überleben die Session in einer optionalen Datei `.humanizer/profile.json` im Arbeitsverzeichnis. Sie enthält ausschließlich Korridor-Overrides im Schema von [`references/style-targets.json`](references/style-targets.json) plus datierte Stilnotizen – niemals eigene Texte oder Textauszüge:
@@ -197,8 +215,6 @@ Wiederkehrende Stilvorlieben überleben die Session in einer optionalen Datei `.
 ```
 
 `humanizer_audit.py` und `style_profile.py` legen diese Overrides automatisch über die Basis-Korridore (Override ersetzt den Korridor der Metrik komplett); überschriebene Korridore sind im Delta-Report mit `"override": true` markiert. Mit `--no-profile` laufen beide Skripte reproduzierbar ohne Nutzerprofil; unbekannte Metriken oder kaputtes JSON erzeugen nur eine Warnung. Die Datei gehört in die `.gitignore` des jeweiligen Projekts, nicht ins Repository.
-
-Bei hohem Risiko empfiehlt der Skill nach der normalen Überarbeitung einen kontrollierten Nachkamm: das **Combing-Gate**. Dabei dürfen höchstens zwei gezielte Rhythmusänderungen passieren, zum Beispiel ein kürzerer Satz, ein anderer Satzanfang oder ein besser verteilter Absatz. Neue Fakten, künstliche Ich-Signale, Füllwörter oder Satzfragmente bleiben tabu. Der Report weist ausdrücklich darauf hin, dass Textqualität, Präzision oder Lesbarkeit durch solchen Rhythmus-Feinschliff auch schlechter werden können.
 
 ---
 
