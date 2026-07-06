@@ -109,10 +109,10 @@ class UnicodeLintTests(unittest.TestCase):
             if i % 5 == 0:
                 parts.append(chr(0x201E) + f"Zitat {i}" + chr(0x201C) + " ")
         text = "".join(parts)
-        start = time.perf_counter()
+        start = time.process_time()
         unicode_lint.lint(text)
-        elapsed = time.perf_counter() - start
-        self.assertLess(elapsed, 1.0, f"lint() brauchte {elapsed:.2f} s")
+        elapsed = time.process_time() - start
+        self.assertLess(elapsed, 1.0, f"lint() brauchte {elapsed:.2f} s CPU-Zeit")
 
 
 if __name__ == "__main__":
