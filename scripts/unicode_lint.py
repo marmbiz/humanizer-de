@@ -44,14 +44,17 @@ def codepoint(char: str) -> str:
 def protected_ranges(text: str) -> list[tuple[int, int]]:
     ranges: list[tuple[int, int]] = []
     patterns = [
-        r"```.*?```",
-        r"`[^`\n]+`",
-        r"https?://[^\s<>)]+",
-        r"\b[\w.-]+@[\w.-]+\.[A-Za-z]{2,}\b",
+        (r"```.*?```", 0),
+        (r"`[^`\n]+`", 0),
+        (r"https?://[^\s<>)]+", 0),
+        (r"\b[\w.-]+@[\w.-]+\.[A-Za-z]{2,}\b", 0),
+        (r"\A---[ \t]*\r?\n.*?\r?\n---[ \t]*(?:\r?\n|\Z)", 0),
+        (r"\]\([^()\s]+[ \t]+(\"[^\"\n]*\")\)", 1),
+        (r"<[A-Za-z/!][^<>\n]*>", 0),
     ]
-    for pattern in patterns:
+    for pattern, group in patterns:
         for match in re.finditer(pattern, text, re.DOTALL):
-            ranges.append(match.span())
+            ranges.append(match.span(group))
     ranges.sort()
     return ranges
 

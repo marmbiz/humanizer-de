@@ -80,6 +80,28 @@ class UnicodeLintTests(unittest.TestCase):
         text = '`"code"`'
         self.assertEqual(unicode_lint.lint(text), [])
 
+    def test_yaml_frontmatter_quotes_are_protected(self):
+        text = '---\ntitle: "Mein Beitrag"\n---\n\nProsa ohne Quotes.'
+        self.assertFalse(any(item["kind"] == "straight_quote" for item in unicode_lint.lint(text)))
+
+    def test_markdown_image_title_quotes_are_protected(self):
+        text = '![Alt](https://example.com/b.png "Titel")'
+        self.assertFalse(any(item["kind"] == "straight_quote" for item in unicode_lint.lint(text)))
+
+    def test_html_attribute_quotes_are_protected(self):
+        text = '<iframe title="Eingebetteter Beitrag" src="https://example.com/e"></iframe>'
+        self.assertFalse(any(item["kind"] == "straight_quote" for item in unicode_lint.lint(text)))
+
+    def test_prose_straight_quotes_next_to_frontmatter_still_flagged(self):
+        text = '---\ntitle: "Mein Beitrag"\n---\n\nEr sagte "Hallo".'
+        findings = [item for item in unicode_lint.lint(text) if item["kind"] == "straight_quote"]
+        self.assertEqual(len(findings), 2)
+
+    def test_dash_line_in_document_middle_is_not_frontmatter(self):
+        text = 'Einleitung.\n\n---\ntitle: "Mitte"\n---\n'
+        findings = [item for item in unicode_lint.lint(text) if item["kind"] == "straight_quote"]
+        self.assertEqual(len(findings), 2)
+
     def test_range_checker_matches_naive_in_ranges(self):
         rng = random.Random(20260705)
         fragments = [
