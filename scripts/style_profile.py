@@ -24,13 +24,80 @@ import rhythm_lint
 
 
 TARGETS_PATH = SCRIPT_DIR.parent / "references" / "style-targets.json"
+USER_PROFILE_PATH = Path(".humanizer") / "profile.json"
+
+KNOWN_METRICS = frozenset(
+    {
+        "mean_sentence_len",
+        "stddev_sentence_len",
+        "stddev_mean_ratio",
+        "subject_initial_ratio",
+        "connector_density",
+        "repeated_openers",
+        "particle_count",
+        "emoji_count",
+        "rhetorical_questions",
+        "nominal_style_ratio",
+        "type_token_ratio",
+    }
+)
 
 
 def load_targets() -> dict:
     return json.loads(TARGETS_PATH.read_text(encoding="utf-8"))
 
 
-def delta(metrics: dict, corridors: dict) -> dict:
+def valid_corridor(corridor: object) -> bool:
+    if not isinstance(corridor, dict) or not corridor:
+        return False
+    if not set(corridor) <= {"min", "max"}:
+        return False
+    return all(isinstance(value, (int, float)) and not isinstance(value, bool) for value in corridor.values())
+
+
+def load_user_profile(path: Path, targets: dict) -> tuple[dict, list[str]]:
+    """Read metric overrides from a user profile; invalid input degrades to warnings."""
+    if not path.is_file():
+        return {}, []
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError) as error:
+        return {}, [f"user profile {path} ignored: {error}"]
+    if not isinstance(data, dict):
+        return {}, [f"user profile {path} ignored: top level must be an object"]
+
+    warnings: list[str] = []
+    overrides: dict = {}
+    raw_overrides = data.get("overrides", {})
+    if not isinstance(raw_overrides, dict):
+        return {}, [f"user profile {path} ignored: 'overrides' must be an object"]
+    for target_name, corridors in raw_overrides.items():
+        if target_name not in targets:
+            warnings.append(f"user profile: unknown target '{target_name}' ignored")
+            continue
+        if not isinstance(corridors, dict):
+            warnings.append(f"user profile: overrides for '{target_name}' must be an object, ignored")
+            continue
+        for metric, corridor in corridors.items():
+            if metric not in KNOWN_METRICS:
+                warnings.append(f"user profile: unknown metric '{target_name}.{metric}' ignored")
+                continue
+            if not valid_corridor(corridor):
+                warnings.append(f"user profile: invalid corridor for '{target_name}.{metric}' ignored (need min/max numbers)")
+                continue
+            overrides.setdefault(target_name, {})[metric] = corridor
+    return overrides, warnings
+
+
+def merge_targets(targets: dict, overrides: dict) -> dict:
+    """Overlay user corridors over the base targets; an override replaces the whole corridor."""
+    merged = {name: dict(corridors) for name, corridors in targets.items()}
+    for target_name, corridors in overrides.items():
+        merged.setdefault(target_name, {}).update(corridors)
+    return merged
+
+
+def delta(metrics: dict, corridors: dict, overridden: frozenset = frozenset()) -> dict:
     report = {}
     for name, corridor in corridors.items():
         value = metrics[name]
@@ -39,7 +106,10 @@ def delta(metrics: dict, corridors: dict) -> dict:
             in_range = False
         if "max" in corridor and value > corridor["max"]:
             in_range = False
-        report[name] = {"value": value, "range": corridor, "in_range": in_range}
+        entry = {"value": value, "range": corridor, "in_range": in_range}
+        if name in overridden:
+            entry["override"] = True
+        report[name] = entry
     return report
 
 
@@ -101,18 +171,32 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     source.add_argument("--file", type=Path, help="UTF-8 text file to profile.")
     source.add_argument("--text", help="Text to profile.")
     parser.add_argument("--target", help="Profile name from references/style-targets.json; adds a delta section.")
+    parser.add_argument(
+        "--profile",
+        type=Path,
+        default=USER_PROFILE_PATH,
+        help="User profile JSON with corridor overrides (default: .humanizer/profile.json).",
+    )
+    parser.add_argument("--no-profile", action="store_true", help="Ignore any user profile; use base targets only.")
     return parser.parse_args(argv)
 
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv or sys.argv[1:])
     corridors = None
+    overridden: frozenset = frozenset()
     if args.target:
         targets = load_targets()
         if args.target not in targets:
             known = ", ".join(sorted(targets))
             print(f"error: unknown target profile '{args.target}' (known: {known})", file=sys.stderr)
             return 2
+        if not args.no_profile:
+            overrides, warnings = load_user_profile(args.profile, targets)
+            for warning in warnings:
+                print(f"warning: {warning}", file=sys.stderr)
+            targets = merge_targets(targets, overrides)
+            overridden = frozenset(overrides.get(args.target, {}))
         corridors = targets[args.target]
     if args.file:
         text = args.file.read_text(encoding="utf-8")
@@ -122,7 +206,7 @@ def main(argv: list[str] | None = None) -> int:
         source = "<text>"
     report = profile(text, source)
     if corridors is not None:
-        report["delta"] = delta(report["metrics"], corridors)
+        report["delta"] = delta(report["metrics"], corridors, overridden)
     print(json.dumps(report, ensure_ascii=False, indent=2))
     return 0
 

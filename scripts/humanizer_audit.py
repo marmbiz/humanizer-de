@@ -44,6 +44,7 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     source.add_argument("--latest", type=Path, help="Directory whose newest recursive *.md file should be audited.")
     parser.add_argument("--mode", choices=["locker", "sachlich", "formal"], default=None)
     parser.add_argument("--format", choices=["json", "md"], default="json")
+    parser.add_argument("--no-profile", action="store_true", help="Ignore any user profile (.humanizer/profile.json); use base targets only.")
     return parser.parse_args(argv)
 
 
@@ -267,7 +268,7 @@ def compact_register_findings(findings: list[dict]) -> list[dict]:
     return compact
 
 
-def style_profile_section(text: str, path: Path, mode: str, mode_explicit: bool) -> dict:
+def style_profile_section(text: str, path: Path, mode: str, mode_explicit: bool, use_profile: bool = True) -> dict:
     profile_report = style_profile.profile(text, str(path))
     section = {
         "word_count": profile_report["meta"]["word_count"],
@@ -276,12 +277,19 @@ def style_profile_section(text: str, path: Path, mode: str, mode_explicit: bool)
     }
     if mode_explicit:
         targets = style_profile.load_targets()
+        overridden: frozenset = frozenset()
+        if use_profile:
+            overrides, warnings = style_profile.load_user_profile(style_profile.USER_PROFILE_PATH, targets)
+            for warning in warnings:
+                print(f"warning: {warning}", file=sys.stderr)
+            targets = style_profile.merge_targets(targets, overrides)
+            overridden = frozenset(overrides.get(mode, {}))
         if mode in targets:
-            section["delta"] = style_profile.delta(profile_report["metrics"], targets[mode])
+            section["delta"] = style_profile.delta(profile_report["metrics"], targets[mode], overridden)
     return section
 
 
-def analyze_file(path: Path, mode: str, mode_explicit: bool = False) -> dict:
+def analyze_file(path: Path, mode: str, mode_explicit: bool = False, use_profile: bool = True) -> dict:
     text = path.read_text(encoding="utf-8")
 
     unicode_findings = unicode_lint.lint(text)
@@ -317,7 +325,7 @@ def analyze_file(path: Path, mode: str, mode_explicit: bool = False) -> dict:
             "preflight": preflight,
             "counts": counts,
         },
-        "style_profile": style_profile_section(text, path, mode, mode_explicit),
+        "style_profile": style_profile_section(text, path, mode, mode_explicit, use_profile),
         "findings": findings,
     }
 
@@ -373,6 +381,9 @@ def format_markdown(report: dict) -> str:
     if "delta" in style:
         out_of_range = [name for name, item in style["delta"].items() if not item["in_range"]]
         style_line += f", delta_out_of_range={','.join(out_of_range) or 'none'}"
+        overridden = [name for name, item in style["delta"].items() if item.get("override")]
+        if overridden:
+            style_line += f", profile_overrides={','.join(overridden)}"
     lines.append(style_line)
     lines.append("Findings:")
     for source in SOURCES:
@@ -392,7 +403,7 @@ def main(argv: list[str] | None = None) -> int:
     except ValueError as error:
         raise SystemExit(str(error))
 
-    report = analyze_file(path, args.mode or "sachlich", mode_explicit=args.mode is not None)
+    report = analyze_file(path, args.mode or "sachlich", mode_explicit=args.mode is not None, use_profile=not args.no_profile)
     if args.format == "md":
         print(format_markdown(report))
     else:

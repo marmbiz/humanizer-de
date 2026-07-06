@@ -163,6 +163,83 @@ class StyleProfileTargetTests(unittest.TestCase):
                 self.assertTrue(corridor)
 
 
+class UserProfileTests(unittest.TestCase):
+    def write_profile(self, tmp: str, payload) -> Path:
+        path = Path(tmp) / "profile.json"
+        content = payload if isinstance(payload, str) else json.dumps(payload)
+        path.write_text(content, encoding="utf-8")
+        return path
+
+    def test_missing_profile_is_silent(self):
+        overrides, warnings = style_profile.load_user_profile(Path("/nonexistent/profile.json"), style_profile.load_targets())
+        self.assertEqual(overrides, {})
+        self.assertEqual(warnings, [])
+
+    def test_broken_json_degrades_to_warning(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = self.write_profile(tmp, "{not json")
+            overrides, warnings = style_profile.load_user_profile(path, style_profile.load_targets())
+        self.assertEqual(overrides, {})
+        self.assertEqual(len(warnings), 1)
+        self.assertIn("ignored", warnings[0])
+
+    def test_unknown_target_and_metric_are_skipped_with_warning(self):
+        payload = {
+            "schema_version": 1,
+            "overrides": {
+                "episch": {"particle_count": {"max": 5}},
+                "sachlich": {
+                    "particle_count": {"max": 1},
+                    "unbekannte_metrik": {"max": 1},
+                    "emoji_count": {"max": "viele"},
+                },
+            },
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            path = self.write_profile(tmp, payload)
+            overrides, warnings = style_profile.load_user_profile(path, style_profile.load_targets())
+        self.assertEqual(overrides, {"sachlich": {"particle_count": {"max": 1}}})
+        self.assertEqual(len(warnings), 3)
+
+    def test_merge_override_replaces_whole_corridor(self):
+        base = {"sachlich": {"stddev_mean_ratio": {"min": 0.4}, "particle_count": {"max": 0}}}
+        merged = style_profile.merge_targets(base, {"sachlich": {"stddev_mean_ratio": {"max": 2.0}}})
+
+        self.assertEqual(merged["sachlich"]["stddev_mean_ratio"], {"max": 2.0})
+        self.assertEqual(merged["sachlich"]["particle_count"], {"max": 0})
+        self.assertEqual(base["sachlich"]["stddev_mean_ratio"], {"min": 0.4})
+
+    def test_delta_marks_overridden_metrics(self):
+        report = style_profile.delta({"m": 1, "n": 2}, {"m": {"max": 3}, "n": {"max": 3}}, frozenset({"m"}))
+        self.assertTrue(report["m"]["override"])
+        self.assertNotIn("override", report["n"])
+
+    def test_cli_profile_overrides_target_corridor(self):
+        payload = {"schema_version": 1, "overrides": {"sachlich": {"particle_count": {"max": 99}}}}
+        with tempfile.TemporaryDirectory() as tmp:
+            path = self.write_profile(tmp, payload)
+            _, with_profile = run_json(["--text", UNIFORM_TEXT, "--target", "sachlich", "--profile", str(path)])
+            _, without_profile = run_json(["--text", UNIFORM_TEXT, "--target", "sachlich", "--profile", str(path), "--no-profile"])
+
+        self.assertEqual(with_profile["delta"]["particle_count"]["range"], {"max": 99})
+        self.assertTrue(with_profile["delta"]["particle_count"]["override"])
+        self.assertEqual(without_profile["delta"]["particle_count"]["range"], {"max": 0})
+        self.assertNotIn("override", without_profile["delta"]["particle_count"])
+
+    def test_cli_broken_profile_warns_and_continues(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = self.write_profile(tmp, "{not json")
+            stdout = io.StringIO()
+            stderr = io.StringIO()
+            with redirect_stdout(stdout), redirect_stderr(stderr):
+                exit_code = style_profile.main(["--text", UNIFORM_TEXT, "--target", "sachlich", "--profile", str(path)])
+
+        self.assertEqual(exit_code, 0)
+        self.assertIn("warning:", stderr.getvalue())
+        report = json.loads(stdout.getvalue())
+        self.assertEqual(report["delta"]["particle_count"]["range"], {"max": 0})
+
+
 class StyleProfileContrastTests(unittest.TestCase):
     def test_uniform_text_has_low_variance_and_high_repetition(self):
         _, report = run_json(["--text", UNIFORM_TEXT])
