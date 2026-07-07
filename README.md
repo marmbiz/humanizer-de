@@ -12,7 +12,7 @@
 [![Claude Code](https://img.shields.io/badge/Claude_Code-Plugin-d97757)](#installation)
 [![Codex](https://img.shields.io/badge/Codex-Supported-10a37f)](#installation)
 
-**[Warum nutzen?](#warum-nutzen)** · **[Wie es denkt](#wie-der-skill-denkt)** · **[Installation](#installation)** · **[Benutzung](#benutzung)** · **[AI-Assistenten](#für-ai-assistenten)** · **[Die 66 Muster](#66-muster-in-10-kategorien)** · **[Verifikation](#entwicklung-und-verifikation)** · **[Was ist neu?](#was-ist-neu)**
+**[Warum nutzen?](#warum-nutzen)** · **[Wie der Skill arbeitet](#wie-der-skill-arbeitet)** · **[Installation](#installation)** · **[Benutzung](#benutzung)** · **[Für AI-Assistenten](#für-ai-assistenten)** · **[66 Muster in 10 Kategorien](#66-muster-in-10-kategorien)** · **[Entwicklung und Verifikation](#entwicklung-und-verifikation)** · **[Was ist neu?](#was-ist-neu)**
 
 <sub>German AI Text Humanizer · Claude Humanizer Deutsch · KI-Texte humanisieren Deutsch · Supports Claude Code and Codex · Von [Martin Moeller](https://www.martin-moeller.biz) · basiert auf den Wikipedia-Leitlinien [Anzeichen für KI-generierte Inhalte](https://de.wikipedia.org/wiki/Wikipedia:Anzeichen_f%C3%BCr_KI-generierte_Inhalte) (de) und [Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing) (en) · hervorgegangen aus dem [Humanizer](https://github.com/blader/humanizer) von [blader](https://github.com/blader)</sub>
 
@@ -55,7 +55,7 @@ Besonders nützlich ist er für:
 
 ---
 
-## Wie der Skill denkt
+## Wie der Skill arbeitet
 
 Hinter dem Katalog steht ein einfaches Bild: KI-Textbewertung hat drei Schichten, und jede macht nur, wofür sie gebaut ist.
 
