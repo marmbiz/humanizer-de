@@ -18,20 +18,45 @@ SIE_FORMS_RE = re.compile(rf"\b(?:{'|'.join(re.escape(form) for form in SIE_FORM
 EMOJI_RE = re.compile("[\U0001F300-\U0001FAFF]")
 
 
+def protected_ranges(text: str) -> list[tuple[int, int]]:
+    ranges: list[tuple[int, int]] = []
+    patterns = [
+        r"```.*?```",
+        r"`[^`\n]+`",
+        r"https?://[^\s<>)]+",
+        r"\b[\w.-]+@[\w.-]+\.[A-Za-z]{2,}\b",
+    ]
+    for pattern in patterns:
+        for match in re.finditer(pattern, text, re.DOTALL):
+            ranges.append(match.span())
+    ranges.sort()
+    return ranges
+
+
+def strip_protected(text: str) -> str:
+    chars = list(text)
+    for start, end in protected_ranges(text):
+        for index in range(start, end):
+            if chars[index] != "\n":
+                chars[index] = " "
+    return "".join(chars)
+
+
 def count_words(text: str, words: Iterable[str]) -> int:
     lowered = text.lower()
     return sum(len(re.findall(rf"\b{re.escape(word)}\b", lowered)) for word in words)
 
 
 def features(text: str) -> dict:
+    clean_text = strip_protected(text)
     return {
-        "du_count": count_words(text, DU_FORMS),
-        "sie_formal_count": len(SIE_FORMS_RE.findall(text)),
-        "wir_count": count_words(text, {"wir", "uns", "unser", "unsere", "unseren"}),
-        "man_count": count_words(text, {"man"}),
-        "modal_particle_count": count_words(text, MODAL_PARTICLES),
-        "emoji_count": len(EMOJI_RE.findall(text)),
-        "rhetorical_questions": len(re.findall(r"\?\s*(?:$|\n|[A-ZÄÖÜ])", text)),
+        "du_count": count_words(clean_text, DU_FORMS),
+        "sie_formal_count": len(SIE_FORMS_RE.findall(clean_text)),
+        "wir_count": count_words(clean_text, {"wir", "uns", "unser", "unsere", "unseren"}),
+        "man_count": count_words(clean_text, {"man"}),
+        "modal_particle_count": count_words(clean_text, MODAL_PARTICLES),
+        "emoji_count": len(EMOJI_RE.findall(clean_text)),
+        "rhetorical_questions": len(re.findall(r"\?\s*(?:$|\n|[A-ZÄÖÜ])", clean_text)),
     }
 
 

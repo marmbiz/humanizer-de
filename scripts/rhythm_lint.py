@@ -180,6 +180,24 @@ def is_list_item(line: str) -> bool:
     return bool(re.match(r"^\s*(?:[-*+]|\d+[.)])\s+\S", line))
 
 
+def is_markdown_table_row(line: str) -> bool:
+    stripped = line.strip()
+    return stripped.startswith("|") and stripped.count("|") >= 2
+
+
+def is_markdown_rule(line: str) -> bool:
+    return bool(re.match(r"^\s{0,3}(?:-{3,}|\*{3,}|_{3,})\s*$", line))
+
+
+def is_html_block_line(line: str) -> bool:
+    stripped = line.strip()
+    if not stripped:
+        return False
+    if re.match(r"^</?[A-Za-z][^>]*>\s*$", stripped):
+        return True
+    return bool(re.match(r"^<[A-Za-z][^>]*>.*</[A-Za-z][^>]*>\s*$", stripped))
+
+
 def split_blocks(text: str) -> tuple[list[str], list[str]]:
     headings: list[str] = []
     blocks: list[str] = []
@@ -196,6 +214,9 @@ def split_blocks(text: str) -> tuple[list[str], list[str]]:
         if is_markdown_heading(line) or is_wikitext_heading(line):
             flush_current()
             headings.append(heading_text(line))
+            continue
+        if is_markdown_table_row(line) or is_markdown_rule(line) or is_html_block_line(line):
+            flush_current()
             continue
         if is_list_item(line):
             flush_current()
@@ -343,6 +364,8 @@ def repeated_openers(sentences: list[str]) -> list[dict]:
     for index, sentence in enumerate(sentences):
         opener_tokens = [token.lower() for token in tokens(sentence)[:2]]
         if len(opener_tokens) < 2:
+            continue
+        if all(token.isdigit() for token in opener_tokens):
             continue
         opener = " ".join(opener_tokens)
         for previous_opener, previous_index in seen[-2:]:

@@ -102,6 +102,49 @@ class RhythmLintTests(unittest.TestCase):
         self.assertNotIn(55, pattern_ids(report))
         self.assertNotIn(51, pattern_ids(report))
 
+    def test_markdown_table_rows_are_not_prose_blocks(self):
+        text = (
+            "Ein kurzer Vorspann erklärt die Tabelle.\n\n"
+            "| Nr. | Muster | Schwere |\n"
+            "|---|---|---|\n"
+            '| 1 | Mechanische Konjunktionen ("darüber hinaus", "außerdem") | HIGH |\n'
+            '| 2 | Abschnitts-Zusammenfassungen ("insgesamt") | HIGH |\n'
+            '| 3 | Persuasive Floskeln ("Im Kern", "In Wirklichkeit") | MEDIUM |\n\n'
+            "Ein kurzer Nachsatz beendet den Abschnitt."
+        )
+        report = rhythm_lint.analyze(text)
+
+        self.assertEqual(report["document"]["sentence_count"], 2)
+        self.assertEqual(report["document"]["connector_density"], 0)
+        self.assertNotIn(4, pattern_ids(report))
+
+    def test_html_summary_lines_are_not_prose_blocks(self):
+        text = (
+            "<details>\n"
+            "<summary><strong>Inhalt</strong></summary>\n\n"
+            "Ein echter Satz bleibt sichtbar.\n\n"
+            "</details>\n"
+            "<details>\n"
+            "<summary><strong>Inhalt</strong></summary>\n\n"
+            "Ein zweiter Satz bleibt sichtbar.\n\n"
+            "</details>\n"
+        )
+        report = rhythm_lint.analyze(text)
+
+        self.assertEqual(report["document"]["sentence_count"], 2)
+        self.assertEqual(report["document"]["repeated_openers"], [])
+
+    def test_version_list_openers_do_not_count_as_repeated_openers(self):
+        text = (
+            "- **5.1.1** - Skill-Routing geschärft.\n"
+            "- **5.1.0** - Vier Muster geschärft.\n"
+            "- **4.3.1** - Naturalness-Guidance geschärft.\n"
+            "- **4.3.0** - Factual-Reliability-Gate geschärft.\n"
+        )
+        report = rhythm_lint.analyze(text)
+
+        self.assertEqual(report["document"]["repeated_openers"], [])
+
     def test_connector_density_flags_pattern_4(self):
         text = "Darüber hinaus prüft das Team die Werte. Darüber hinaus speichert es die Notizen."
         self.assertIn(4, pattern_ids(rhythm_lint.analyze(text)))

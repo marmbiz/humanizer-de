@@ -92,6 +92,11 @@ class UnicodeLintTests(unittest.TestCase):
         text = '<iframe title="Eingebetteter Beitrag" src="https://example.com/e"></iframe>'
         self.assertFalse(any(item["kind"] == "straight_quote" for item in unicode_lint.lint(text)))
 
+    def test_markdown_table_rows_are_protected(self):
+        text = '| 1 | Unpassendes "Fazit" | MEDIUM |\n\nProsa "Hallo".'
+        findings = [item for item in unicode_lint.lint(text) if item["kind"] == "straight_quote"]
+        self.assertEqual(len(findings), 2)
+
     def test_prose_straight_quotes_next_to_frontmatter_still_flagged(self):
         text = '---\ntitle: "Mein Beitrag"\n---\n\nEr sagte "Hallo".'
         findings = [item for item in unicode_lint.lint(text) if item["kind"] == "straight_quote"]

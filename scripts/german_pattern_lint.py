@@ -85,7 +85,8 @@ def count_particle(text: str, marker: str) -> int:
 
 
 def lint(text: str, mode: str = "sachlich") -> dict:
-    lowered = text.lower()
+    clean_text = register_lint.strip_protected(text)
+    lowered = clean_text.lower()
     findings: list[dict] = []
 
     ai_hits = {marker: count_marker(lowered, marker) for marker in AI_MARKERS if count_marker(lowered, marker)}
@@ -111,7 +112,7 @@ def lint(text: str, mode: str = "sachlich") -> dict:
 
     colon_headings = [
         line.strip()
-        for line in text.splitlines()
+        for line in clean_text.splitlines()
         if re.match(r"^\s{0,3}#{1,3}\s+.+:.+", line)
     ]
     if len(colon_headings) >= 2:

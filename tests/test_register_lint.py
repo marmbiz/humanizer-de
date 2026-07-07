@@ -32,6 +32,19 @@ class RegisterLintTests(unittest.TestCase):
         report = register_lint.lint("Das hilft ja im Alltag.", mode="locker")
         self.assertEqual(kinds(report), set())
 
+    def test_protected_code_is_not_counted_as_register(self):
+        text = (
+            "Sachlicher Text.\n\n"
+            "```mermaid\n"
+            "G -- ja --> O\n"
+            "Wie Sie sehen können, hilft das.\n"
+            "```\n\n"
+            "Noch ein Satz."
+        )
+        report = register_lint.lint(text, mode="sachlich")
+
+        self.assertEqual(kinds(report), set())
+
     def test_neutral_profile_blocks_direct_address(self):
         du_report = register_lint.lint("Du bekommst die Auswertung morgen.", expected_address="neutral")
         sie_report = register_lint.lint("Sie erhalten die Auswertung morgen.", expected_address="neutral")
