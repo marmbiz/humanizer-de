@@ -127,6 +127,8 @@ Häufige Indikatoren:
 - "faszinierend"
 - "einzigartig"
 
+Auch übersetzte Hype-Idiome aus dem englischen KI-Sprech gehören hierher: "das ändert alles" ("this changes everything"), Relativsatz-Hyperbeln wie "eine Unterscheidung, die alles entscheidet", "Game-Changer". Abgrenzung: Muster 18 fängt die übersetzte Assistenten-Anrede, hier geht es um die übersetzte Marketing-Hyperbel.
+
 **Warum LLMs das tun:** Marketing-Texte sind im Trainingsmaterial überrepräsentiert.
 
 **Beispiel:**
@@ -528,6 +530,8 @@ Häufige Indikatoren:
 - "Selbstverständlich!"
 
 Vollständig löschen. Beim eigentlichen Inhalt anfangen.
+
+In deutschen Texten stehen diese Residuen oft als wörtliche Übersetzungen englischer Formeln: "Ich hoffe, das hilft" ("I hope this helps"), "Lassen Sie uns eintauchen" ("let's dive in"). Der übersetzte Duktus bleibt auch dann ein Tell, wenn der Satz grammatisch sauberes Deutsch ist.
 
 **Warum LLMs das tun:** Trainiert, höflich und engagiert zu sein.
 
