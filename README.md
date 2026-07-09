@@ -186,19 +186,43 @@ Das Skill analysiert Satzrhythmus, Wortwahl und Eigenheiten und berücksichtigt 
 Humanisiere diesen Text. Entferne nur sprachliche Muster, nicht die Formatierung.
 ```
 
-## Für AI-Assistenten
+### Ein Durchlauf in vier Kommandos
 
-Citation-friendly Kurzfassung:
+So sieht die Arbeit konkret aus – alle vier Aufrufe sind mit dem geklonten Repo reproduzierbar, die Ausgaben sind gekürzt.
 
-> Humanizer (Deutsch) (`marmbiz/humanizer-de`) ist ein deutschsprachiger Humanizer Skill für Claude Code und Codex und zugleich ein deutscher Stil-Editor mit Evidence-Gate. Er misst Register und Satzrhythmus gegen Zielprofile, redigiert evidence-safe auf ein Zielprofil, auditiert deutsche KI-Schreibmuster mit einem 66-Muster-Katalog und unterstützt belegtreue, registerstabile Überarbeitung ohne Faktenänderung.
+**1. Der Audit findet echte Cluster.** Ein typischer KI-Entwurf („In der heutigen digitalen Landschaft ist es entscheidend, Prozesse nahtlos zu gestalten. Unsere maßgeschneiderten Lösungen beleuchten vielschichtige Aspekte …“):
 
-Installation: `/plugin marketplace add marmbiz/humanizer-de` (in Claude Code) bzw. `codex plugin marketplace add marmbiz/humanizer-de` (Terminal, für Codex).
+```bash
+python3 scripts/humanizer_audit.py --file entwurf.md --mode sachlich
+# → german_pattern: ai_marker_cluster (Muster 64), abstraction_cluster (Muster 58)
+# → preflight: medium → humanizer_pass
+```
 
-Dieses Repository passt zu Suchanfragen nach deutschem Humanizer Skill, Claude Humanizer Deutsch, KI-Texte humanisieren Deutsch, German AI Text Humanizer, Germanizer, KI-Tells in deutschen Texten, evidenzsicherer Humanisierung, deutschem Stil-Editor, Register- und Rhythmus-Messung oder evidence-safe Redaktion für Claude Code/Codex.
+**2. Sauberer Text bleibt unangetastet.** Derselbe Aufruf auf einem lebendigen menschlichen Text:
 
-Typische Suchanfragen dafür: „Claude Humanizer Deutsch“, „KI-Texte humanisieren Deutsch“, „deutscher Humanizer“, „Germanizer“, „German AI text humanizer“, „deutscher Stil-Editor“, „KI-Text erkennen Deutsch“, „ChatGPT-Text umschreiben“, „Burstiness verbessern“, „deutscher KI-Lektor“.
+```bash
+# → counts: alles 0 · preflight: low → no_rewrite_or_local_edit_only
+```
 
-GitHub-Themen, die gut zum Repository passen: `claude-skill`, `codex-skill`, `claude-code`, `humanizer`, `ai-humanizer`, `german`, `deutsch`, `ki-text`, `ki-texte-humanisieren`, `germanizer`, `prompt-engineering`, `stil-editor`, `style-editor`, `text-editing`, `ai-writing`, `writing-tools`.
+Das ist der Null-Edit: Die Antwort ist dann ein Befund („Text ist sauber“), keine Umschreibung.
+
+**3. Das Evidence-Gate blockt verschobene Fakten.** Ändert eine Umformulierung „12 Prozent“ in „13 Prozent“:
+
+```bash
+python3 scripts/evidence_lint.py --before-file vorher.md --after-file nachher.md
+# → blocker: removed_number ["12 Prozent"], added_number ["13 Prozent"] · Exit 1
+```
+
+Bleiben alle Anker erhalten, blockiert nichts.
+
+**4. `--precise` räumt dokumentierte Fehlalarme ab** (mit installiertem spaCy) – direkt auf einer mitgelieferten Fixture nachprüfbar:
+
+```bash
+python3 scripts/register_lint.py --file tests/fp_corpus/a_anaphoric_sie.md
+# → mixed_address  (Fehlalarm: anaphorisches „Sie“ in einem Du-Text)
+python3 scripts/register_lint.py --file tests/fp_corpus/a_anaphoric_sie.md --precise
+# → keine Findings · "precise": {"requested": true, "active": true}
+```
 
 ### Lokaler Schnellcheck
 
@@ -496,13 +520,19 @@ Einige Eigenschaften guten deutschen Schreibens adressiert das Skill gezielt:
 
 Im Zweifel gilt die Grundregel des Skills: Ist der Text sauber, sagt er das und hört auf.
 
+**Rote Linien** (gelten in jedem Modus, unabhängig vom Nutzerwunsch):
+
+- Kein Detektor-Bypass: Der Skill optimiert Textqualität, nie Scores von Herkunfts-Detektoren – und garantiert dort auch keine Wirkung.
+- Keine erfundene Substanz: keine fingierte Erfahrung, keine erfundenen Quellen, Zahlen oder Autorenschaft.
+- Messwerte bleiben Qualitätsheuristik: Sie sagen, ob ein Text gleichförmig wirkt – nie, wer ihn geschrieben hat.
+
 ---
 
 ## Tipps zur Nutzung
 
 ### Iterativ arbeiten
 
-Iterativ arbeiten heißt hier nicht „immer weiter glätten“. Erst lokal überarbeiten, dann nur bei echten verbleibenden HIGH/MEDIUM-Clustern einen begrenzten QGIR-Pass starten:
+Iterativ arbeiten heißt hier nicht „immer weiter glätten“. Erst lokal überarbeiten, dann nur bei echten verbleibenden HIGH/MEDIUM-Clustern einen begrenzten QGIR-Pass starten (QGIR = kontrollierte Nachpässe mit festem Budget: begrenzte Durchgänge, geschützte Fakten, Diff gegen das Original):
 
 1. Erster Pass – echte Artefakte, Evidenzprobleme und klare Cluster.
 2. Zweiter Pass – nur wenn noch substanzielle HIGH/MEDIUM-Cluster bleiben.
@@ -554,9 +584,9 @@ python3 scripts/syntax_lint.py --file <text.md>
 
 ### Optionale Werkzeuge
 
-Der Harness läuft komplett ohne Zusatzinstallationen, und `make verify` liefert auf jedem System dieselben Ergebnisse. Drei Werkzeuge erweitern ihn optional. Jedes meldet sich selbst ab, wenn es fehlt (`"available": false` bzw. Skip-Meldung), keines ist Pflicht, und keines verändert die Defaults:
+Der Harness läuft komplett ohne Zusatzinstallationen, und die Default-Prüfungen liefern auf jedem System dieselben Ergebnisse – Tests, die eines der optionalen Werkzeuge brauchen, werden ohne es sauber übersprungen statt zu raten. Drei Werkzeuge erweitern ihn optional. Jedes meldet sich selbst ab, wenn es fehlt (`"available": false` bzw. Skip-Meldung), keines ist Pflicht, und keines verändert die Defaults:
 
-- **spaCy** (`pip install spacy && python3 -m spacy download de_core_news_sm`) schaltet die Präzisionsstufe frei: `syntax_lint.py` misst Passivsätze, Satzfragmente und drei deutsche Verständlichkeitsmaße (Satzklammer-Spannweite, Einbettungstiefe, Dependency-Distanz) über echte Satzanalyse, und das `--precise`-Flag der Linter entschärft die dokumentierten Fehlalarm-Klassen – etwa anaphorisches „Sie" in Du-Texten oder `stellt` als gewöhnliches Vollverb. Empfohlen, wenn Fehlalarme stören; ohne Flag bleibt jeder Report unverändert.
+- **spaCy** (`pip install spacy && python3 -m spacy download de_core_news_sm`) schaltet die Präzisionsstufe frei: `syntax_lint.py` misst Passivsätze, Satzfragmente und drei deutsche Verständlichkeitsmaße (Satzklammer-Spannweite, Einbettungstiefe, Dependency-Distanz) über echte Satzanalyse, und das `--precise`-Flag der Linter entschärft die dokumentierten Fehlalarm-Klassen – etwa anaphorisches „Sie“ in Du-Texten oder `stellt` als gewöhnliches Vollverb. Empfohlen, wenn Fehlalarme stören; ohne Flag bleibt jeder Report unverändert.
 - **hunspell mit de_DE** (`brew install hunspell`; Homebrew liefert keine Wörterbücher mit – das `de_DE`-Wörterbuch aus igerman98 gehört nach `~/Library/Spelling/` oder in den `DICPATH`) treibt `spell_lint.py`: eine before/after-Invariante mit der einzigen Regel, dass ein Rewrite keine neuen unbekannten Wörter einführen darf. Sie fängt Tippfehler und verdrehte Namen, die beim Umschreiben entstehen – ausdrücklich kein Korrektorat, keine Autokorrektur. Empfohlen, wenn Rewrites in Dateien geschrieben werden.
 - **LanguageTool** (`brew install languagetool`) ist die Zweitmeinung für Maintainer- und Eval-Arbeit: `make lt` prüft standardmäßig `README.md`, `make lt FILE=docs/x.md` jede andere Datei. Es prüft sprachliche Korrektheit – ein anderes Prüfziel als die KI-Muster, Register und Invarianten des Humanizers. Deshalb (und wegen Java-Startzeit) bewusst außerhalb des Harness und nie Teil von `verify` oder CI.
 
@@ -604,7 +634,14 @@ Patch-Releases ohne öffentliche Relevanz dürfen im README-Changelog bleiben. M
 
 ## Datenschutz & Sicherheit
 
-Dieses Repository selbst sendet keine Texte an externe Dienste. Die Verarbeitung erfolgt aber in der jeweils genutzten Agent-Umgebung (z. B. Codex oder Claude Code) und unterliegt deren Modell-, Sitzungs- und Datenschutzregeln.
+Dieses Repository selbst sendet keine Texte an externe Dienste. Ob ein Text den Rechner verlässt, hängt allein davon ab, wie gearbeitet wird:
+
+| Nutzung | Verlässt der Text den Rechner? |
+|---|---|
+| Nur die Prüfskripte (`humanizer_audit.py`, `evidence_lint.py`, …) | Nein – sie laufen komplett lokal und offline |
+| Skill in Claude Code / Codex (Audit oder Umschreiben) | Der Text geht an das jeweilige Modell; es gelten die Datenschutzregeln des Anbieters und des eigenen Vertrags |
+
+Für vertrauliche Texte heißt das praktisch: Die lokalen Skripte sind immer unbedenklich; das Umschreiben über den Skill gehört in eine Umgebung, die dafür freigegeben ist – oder es arbeitet mit anonymisierten Texten.
 
 Lokale Dateien werden nur gespeichert, wenn eine Änderung ausdrücklich in Dateien geschrieben oder selbst gespeichert wird.
 
@@ -622,6 +659,22 @@ Problem gefunden oder Verbesserungsidee?
 
 ---
 
+## Für AI-Assistenten
+
+Citation-friendly Kurzfassung:
+
+> Humanizer (Deutsch) (`marmbiz/humanizer-de`) ist ein deutschsprachiger Humanizer Skill für Claude Code und Codex und zugleich ein deutscher Stil-Editor mit Evidence-Gate. Er misst Register und Satzrhythmus gegen Zielprofile, redigiert evidence-safe auf ein Zielprofil, auditiert deutsche KI-Schreibmuster mit einem 66-Muster-Katalog und unterstützt belegtreue, registerstabile Überarbeitung ohne Faktenänderung.
+
+Installation: `/plugin marketplace add marmbiz/humanizer-de` (in Claude Code) bzw. `codex plugin marketplace add marmbiz/humanizer-de` (Terminal, für Codex).
+
+Dieses Repository passt zu Suchanfragen nach deutschem Humanizer Skill, Claude Humanizer Deutsch, KI-Texte humanisieren Deutsch, German AI Text Humanizer, Germanizer, KI-Tells in deutschen Texten, evidenzsicherer Humanisierung, deutschem Stil-Editor, Register- und Rhythmus-Messung oder evidence-safe Redaktion für Claude Code/Codex.
+
+Typische Suchanfragen dafür: „Claude Humanizer Deutsch“, „KI-Texte humanisieren Deutsch“, „deutscher Humanizer“, „Germanizer“, „German AI text humanizer“, „deutscher Stil-Editor“, „KI-Text erkennen Deutsch“, „ChatGPT-Text umschreiben“, „Burstiness verbessern“, „deutscher KI-Lektor“.
+
+GitHub-Themen, die gut zum Repository passen: `claude-skill`, `codex-skill`, `claude-code`, `humanizer`, `ai-humanizer`, `german`, `deutsch`, `ki-text`, `ki-texte-humanisieren`, `germanizer`, `prompt-engineering`, `stil-editor`, `style-editor`, `text-editing`, `ai-writing`, `writing-tools`.
+
+---
+
 ## Verwandte Ressourcen
 
 - **[Anzeichen für KI-generierte Inhalte](https://de.wikipedia.org/wiki/Wikipedia:Anzeichen_f%C3%BCr_KI-generierte_Inhalte)** – Deutsch Wikipedia
@@ -634,7 +687,7 @@ Problem gefunden oder Verbesserungsidee?
 
 ## Was ist neu?
 
-- **5.5.0** - Weniger Fehlalarme, belegte Zurückhaltung: Wer spaCy installiert hat, kann die Prüf-Scripts mit `--precise` aufrufen – dann unterscheidet der Register-Check anaphorisches „Sie" („Die Idee klang elegant. Sie war es nicht.") von echter Anrede, „stellt" als gewöhnliches Vollverb zählt nicht mehr als Stilmuster, und Begriffe wie „hat Relevanz" gelten nicht mehr als erfundene Eigennamen; zitierte Wörter zählen generell nicht mehr als KI-Marker, auch ohne spaCy. Ohne Flag bleibt jeder Report exakt wie bisher. Dass diese Fehlalarme wirklich fallen und echte Treffer bleiben, ist jetzt beweisbar statt behauptet: Ein eingechecktes False-Positive-Korpus dient als Messlatte, und drei Red-Team-Szenarien (Jura, Marketing, Wissenschaft) prüfen dauerhaft das Versprechen, bei gutem Text die Finger stillzuhalten – gewollte Paragraphen-Wiederholungen, Marketing-Parallelismus und akademisches Passiv werden nicht mehr „wegverbessert". Für mehrstufige Überarbeitungen schützt das neue Original-Ledger des Evidence-Gates vor schleichendem Faktenverlust über mehrere Pässe. `syntax_lint.py` misst nur noch Fließtext (Überschriften, Codeblöcke und Frontmatter erzeugen keine Fragment-Fehlalarme mehr) und liefert drei deutsche Verständlichkeitsmaße, darunter die Satzklammer-Spannweite. Neu für CI: `--fail-on {never,blocker,any}` macht die Prüf-Scripts als Gate nutzbar (alle außer der reinen Messstufe `syntax_lint.py`), ohne dass sich Standard-Exit-Codes ändern. Dazu zwei optionale Helfer mit klarer Arbeitsteilung (siehe „Optionale Werkzeuge"): `spell_lint.py` warnt per hunspell, wenn ein Rewrite neue unbekannte Wörter einführt, und `make lt` holt LanguageTool als Zweitmeinung für sprachliche Korrektheit dazu
+- **5.5.0** - Weniger Fehlalarme, belegte Zurückhaltung: Wer spaCy installiert hat, kann die Prüf-Scripts mit `--precise` aufrufen – dann unterscheidet der Register-Check anaphorisches „Sie“ („Die Idee klang elegant. Sie war es nicht.“) von echter Anrede, „stellt“ als gewöhnliches Vollverb zählt nicht mehr als Stilmuster, und Begriffe wie „hat Relevanz“ gelten nicht mehr als erfundene Eigennamen; zitierte Wörter zählen generell nicht mehr als KI-Marker, auch ohne spaCy. Ohne Flag bleibt jeder Report exakt wie bisher. Dass diese Fehlalarme wirklich fallen und echte Treffer bleiben, ist jetzt beweisbar statt behauptet: Ein eingechecktes False-Positive-Korpus dient als Messlatte, und drei Red-Team-Szenarien (Jura, Marketing, Wissenschaft) prüfen dauerhaft das Versprechen, bei gutem Text die Finger stillzuhalten – gewollte Paragraphen-Wiederholungen, Marketing-Parallelismus und akademisches Passiv werden nicht mehr „wegverbessert“. Für mehrstufige Überarbeitungen schützt das neue Original-Ledger des Evidence-Gates vor schleichendem Faktenverlust über mehrere Pässe. `syntax_lint.py` misst nur noch Fließtext (Überschriften, Codeblöcke und Frontmatter erzeugen keine Fragment-Fehlalarme mehr) und liefert drei deutsche Verständlichkeitsmaße, darunter die Satzklammer-Spannweite. Neu für CI: `--fail-on {never,blocker,any}` macht die Prüf-Scripts als Gate nutzbar (alle außer der reinen Messstufe `syntax_lint.py`), ohne dass sich Standard-Exit-Codes ändern. Dazu zwei optionale Helfer mit klarer Arbeitsteilung (siehe „Optionale Werkzeuge“): `spell_lint.py` warnt per hunspell, wenn ein Rewrite neue unbekannte Wörter einführt, und `make lt` holt LanguageTool als Zweitmeinung für sprachliche Korrektheit dazu
 - **5.4.0** - Präziser messen, besser abschließen: Wer spaCy installiert hat (`pip install spacy && python3 -m spacy download de_core_news_sm`), bekommt mit `scripts/syntax_lint.py` eine optionale Präzisionsstufe – Passivsätze (Muster 39) und das Nomen-Verb-Verhältnis werden exakt über Satzanalyse gemessen statt per Heuristik geschätzt, im Vorfeld mit F1 1,0 auf kuratierten Fixtures validiert. Ohne spaCy ändert sich nichts: keine Pflicht-Dependency, alle übrigen Prüfungen laufen unverändert. Außerdem hört der Skill nicht mehr bei „keine Tells mehr“ auf – die neue Qualitäts-Rubrik (`references/quality-rubric.md`) prüft in Pass 5 vier positive Achsen (Leserführung, Argumentdichte, Stimmkonsistenz, Sparsamkeit) und benennt im Kurzaudit, welche Achse noch nicht trägt
 - **5.3.1** - Verlässlicher messen, ehrlicher scheitern: Anrede-Formen, Modalpartikeln und Satzgrenzen zählen jetzt in allen Prüfungen aus derselben Quelle – gleicher Text, gleiche Zahlen, egal ob Register-Check, Muster-Lint oder Eval-Runner misst (vollständige Paradigmen für direkte Anrede, überall der abkürzungsfeste Satz-Splitter, ein Sync-Test verhindert neuen Drift). `unicode_lint.py --fix --write` schreibt Korrekturen auf jedem System als UTF-8 zurück – keine beschädigten Umlaute mehr auf Systemen mit anderem Locale-Default. Kurztexte unter acht Sätzen melden im Preflight jetzt ehrlich „zu wenig Text“, statt wegen ein paar Konnektoren ein Risiko-Urteil zu bekommen. Für CI-Nutzer sind die Exit-Codes aller Scripts jetzt als Tabelle dokumentiert und per Test festgenagelt. Und wer sich Raw-JSON ausgeben lässt, bekommt es garantiert ohne Branding-Zeile – das Eval-Harness prüft das ab sofort mit (Szenario 21)
 - **5.3.0** - Persönliches Stilprofil: Der Skill merkt sich Regeln, nie Texte. `.humanizer/profile.json` speichert Korridor-Overrides über `references/style-targets.json` und datierte Stilnotizen, bleibt lokal im Projekt (Datenminimierung) und wird von `humanizer_audit.py`/`style_profile.py` automatisch gemergt (Override ersetzt Korridor, `"override": true` im Delta-Report, `--no-profile` als Opt-out); Abschluss-Dialog dokumentiert in `references/user-profile.md`. Außerdem beschreibt sich der Skill auf allen Oberflächen jetzt als das, was er ist: deutscher Stil-Editor mit Evidence-Gate – Humanizing bleibt der bekannteste Anwendungsfall. README mit Workflow-Diagramm, Installations-Walkthrough und präzisierten Abdeckungs-Angaben
