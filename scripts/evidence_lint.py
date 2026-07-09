@@ -364,6 +364,7 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--ledger", type=Path, help="Read original anchors from a JSON ledger instead of --before.")
     parser.add_argument("--fixture", type=Path, help="JSON fixture file or directory.")
     parser.add_argument("--precise", action="store_true", help="spaCy-gestützte Verfeinerung, wenn installiert; sonst wirkungslos")
+    parser.add_argument("--fail-on", choices=["never", "blocker", "any"], default="blocker")
     args = parser.parse_args(argv)
     if args.ledger and (args.before is not None or args.before_file is not None):
         parser.error("--ledger cannot be combined with --before or --before-file")
@@ -372,6 +373,14 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     if args.fixture and (args.ledger or args.write_ledger):
         parser.error("--fixture cannot be combined with --ledger or --write-ledger")
     return args
+
+
+def exit_code(findings: list[dict], fail_on: str) -> int:
+    if fail_on == "never":
+        return 0
+    if fail_on == "blocker":
+        return 1 if any(item["severity"] == "blocker" for item in findings) else 0
+    return 1 if findings else 0
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -424,7 +433,7 @@ def main(argv: list[str] | None = None) -> int:
     if status is not None:
         report["precise"] = status
     print(json.dumps(report, ensure_ascii=False, indent=2))
-    return 1 if any(item["severity"] == "blocker" for item in findings) else 0
+    return exit_code(findings, args.fail_on)
 
 
 if __name__ == "__main__":

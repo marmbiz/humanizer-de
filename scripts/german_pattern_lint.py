@@ -226,7 +226,16 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     source.add_argument("--fixture", type=Path)
     parser.add_argument("--mode", choices=["locker", "sachlich", "formal"], default="sachlich")
     parser.add_argument("--precise", action="store_true", help="spaCy-gestützte Verfeinerung, wenn installiert; sonst wirkungslos")
+    parser.add_argument("--fail-on", choices=["never", "blocker", "any"], default="never")
     return parser.parse_args(argv)
+
+
+def exit_code(findings: list[dict], fail_on: str) -> int:
+    if fail_on == "never":
+        return 0
+    if fail_on == "blocker":
+        return 1 if any(item["severity"] == "blocker" for item in findings) else 0
+    return 1 if findings else 0
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -240,7 +249,7 @@ def main(argv: list[str] | None = None) -> int:
     text = args.file.read_text(encoding="utf-8") if args.file else args.text or ""
     report = lint(text, mode=args.mode, precise=args.precise)
     print(json.dumps(report, ensure_ascii=False, indent=2))
-    return 0
+    return exit_code(report["findings"], args.fail_on)
 
 
 if __name__ == "__main__":

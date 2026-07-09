@@ -269,7 +269,16 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     source.add_argument("--file", type=Path, help="UTF-8 text file to lint.")
     parser.add_argument("--fix", action="store_true", help="Apply safe fixes in output.")
     parser.add_argument("--write", action="store_true", help="Write fixed text back to --file. Requires --fix.")
+    parser.add_argument("--fail-on", choices=["never", "blocker", "any"], default="any")
     return parser.parse_args(argv)
+
+
+def exit_code(findings: list[dict], fail_on: str) -> int:
+    if fail_on == "never":
+        return 0
+    if fail_on == "blocker":
+        return 1 if any(item.get("severity") == "blocker" for item in findings) else 0
+    return 1 if findings else 0
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -293,7 +302,7 @@ def main(argv: list[str] | None = None) -> int:
         result["fixed_text"] = fixed_text
 
     print(json.dumps(result, ensure_ascii=False, indent=2))
-    return 1 if findings else 0
+    return exit_code(findings, args.fail_on)
 
 
 if __name__ == "__main__":

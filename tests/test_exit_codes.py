@@ -49,6 +49,24 @@ class ExitCodeTests(unittest.TestCase):
         self.assertEqual(clean_code, 0)
         self.assertEqual(clean_report["findings"], [])
 
+    def test_unicode_lint_fail_on_never_exits_0_for_finding(self):
+        code, report = run_cli(unicode_lint, ["--text", 'Er sagte "Hallo".', "--fail-on", "never"])
+
+        self.assertEqual(code, 0)
+        self.assertIn("straight_quote", finding_kinds(report))
+
+    def test_unicode_lint_fail_on_blocker_exits_0_without_blocker_severity(self):
+        code, report = run_cli(unicode_lint, ["--text", 'Er sagte "Hallo".', "--fail-on", "blocker"])
+
+        self.assertEqual(code, 0)
+        self.assertIn("straight_quote", finding_kinds(report))
+
+    def test_unicode_lint_fail_on_any_exits_1_for_finding(self):
+        code, report = run_cli(unicode_lint, ["--text", 'Er sagte "Hallo".', "--fail-on", "any"])
+
+        self.assertEqual(code, 1)
+        self.assertIn("straight_quote", finding_kinds(report))
+
     def test_register_lint_exits_1_only_for_blockers(self):
         blocker_code, blocker_report = run_cli(
             register_lint,
@@ -68,6 +86,51 @@ class ExitCodeTests(unittest.TestCase):
         self.assertTrue(all(item["severity"] == "warning" for item in warning_report["findings"]))
         self.assertEqual(clean_code, 0)
         self.assertEqual(clean_report["findings"], [])
+
+    def test_register_lint_fail_on_never_exits_0_for_warning(self):
+        code, report = run_cli(
+            register_lint,
+            [
+                "--text",
+                "Du kannst die Datei pruefen. Bitte senden Sie danach die Freigabe.",
+                "--fail-on",
+                "never",
+            ],
+        )
+
+        self.assertEqual(code, 0)
+        self.assertIn("mixed_address", finding_kinds(report))
+        self.assertTrue(all(item["severity"] == "warning" for item in report["findings"]))
+
+    def test_register_lint_fail_on_blocker_exits_0_for_warning(self):
+        code, report = run_cli(
+            register_lint,
+            [
+                "--text",
+                "Du kannst die Datei pruefen. Bitte senden Sie danach die Freigabe.",
+                "--fail-on",
+                "blocker",
+            ],
+        )
+
+        self.assertEqual(code, 0)
+        self.assertIn("mixed_address", finding_kinds(report))
+        self.assertTrue(all(item["severity"] == "warning" for item in report["findings"]))
+
+    def test_register_lint_fail_on_any_exits_1_for_warning(self):
+        code, report = run_cli(
+            register_lint,
+            [
+                "--text",
+                "Du kannst die Datei pruefen. Bitte senden Sie danach die Freigabe.",
+                "--fail-on",
+                "any",
+            ],
+        )
+
+        self.assertEqual(code, 1)
+        self.assertIn("mixed_address", finding_kinds(report))
+        self.assertTrue(all(item["severity"] == "warning" for item in report["findings"]))
 
     def test_evidence_lint_exits_1_only_for_blockers(self):
         blocker_code, blocker_report = run_cli(
@@ -107,6 +170,57 @@ class ExitCodeTests(unittest.TestCase):
         self.assertEqual(clean_code, 0)
         self.assertEqual(clean_report["findings"], [])
 
+    def test_evidence_lint_fail_on_never_exits_0_for_blocker(self):
+        code, report = run_cli(
+            evidence_lint,
+            [
+                "--before",
+                "Die Wartezeit sank laut Bericht.",
+                "--after",
+                "Die Wartezeit sank laut Bericht um 63 Prozent.",
+                "--fail-on",
+                "never",
+            ],
+        )
+
+        self.assertEqual(code, 0)
+        self.assertIn("added_number", finding_kinds(report))
+        self.assertTrue(any(item["severity"] == "blocker" for item in report["findings"]))
+
+    def test_evidence_lint_fail_on_blocker_exits_1_for_blocker(self):
+        code, report = run_cli(
+            evidence_lint,
+            [
+                "--before",
+                "Die Wartezeit sank laut Bericht.",
+                "--after",
+                "Die Wartezeit sank laut Bericht um 63 Prozent.",
+                "--fail-on",
+                "blocker",
+            ],
+        )
+
+        self.assertEqual(code, 1)
+        self.assertIn("added_number", finding_kinds(report))
+        self.assertTrue(any(item["severity"] == "blocker" for item in report["findings"]))
+
+    def test_evidence_lint_fail_on_any_exits_1_for_blocker(self):
+        code, report = run_cli(
+            evidence_lint,
+            [
+                "--before",
+                "Die Wartezeit sank laut Bericht.",
+                "--after",
+                "Die Wartezeit sank laut Bericht um 63 Prozent.",
+                "--fail-on",
+                "any",
+            ],
+        )
+
+        self.assertEqual(code, 1)
+        self.assertIn("added_number", finding_kinds(report))
+        self.assertTrue(any(item["severity"] == "blocker" for item in report["findings"]))
+
     def test_rhythm_lint_always_exits_0(self):
         finding_code, finding_report = run_cli(
             rhythm_lint,
@@ -133,6 +247,51 @@ class ExitCodeTests(unittest.TestCase):
         self.assertIn("ai_marker_cluster", finding_kinds(finding_report))
         self.assertEqual(clean_code, 0)
         self.assertEqual(clean_report["findings"], [])
+
+    def test_german_pattern_lint_fail_on_never_exits_0_for_warning(self):
+        code, report = run_cli(
+            german_pattern_lint,
+            [
+                "--text",
+                "Der Text beleuchtet das vielschichtige Zusammenspiel in einer dynamischen Landschaft.",
+                "--fail-on",
+                "never",
+            ],
+        )
+
+        self.assertEqual(code, 0)
+        self.assertIn("ai_marker_cluster", finding_kinds(report))
+        self.assertTrue(all(item["severity"] == "warning" for item in report["findings"]))
+
+    def test_german_pattern_lint_fail_on_blocker_exits_0_for_warning(self):
+        code, report = run_cli(
+            german_pattern_lint,
+            [
+                "--text",
+                "Der Text beleuchtet das vielschichtige Zusammenspiel in einer dynamischen Landschaft.",
+                "--fail-on",
+                "blocker",
+            ],
+        )
+
+        self.assertEqual(code, 0)
+        self.assertIn("ai_marker_cluster", finding_kinds(report))
+        self.assertTrue(all(item["severity"] == "warning" for item in report["findings"]))
+
+    def test_german_pattern_lint_fail_on_any_exits_1_for_warning(self):
+        code, report = run_cli(
+            german_pattern_lint,
+            [
+                "--text",
+                "Der Text beleuchtet das vielschichtige Zusammenspiel in einer dynamischen Landschaft.",
+                "--fail-on",
+                "any",
+            ],
+        )
+
+        self.assertEqual(code, 1)
+        self.assertIn("ai_marker_cluster", finding_kinds(report))
+        self.assertTrue(all(item["severity"] == "warning" for item in report["findings"]))
 
     def test_humanizer_audit_always_exits_0(self):
         with tempfile.TemporaryDirectory() as tmp:
