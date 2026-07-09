@@ -544,6 +544,7 @@ python3 scripts/unicode_lint.py --file <text.md>
 python3 scripts/rhythm_lint.py --file <text.md> --scope user_text --mode sachlich
 python3 scripts/rhythm_lint.py --file <text.md> --scope user_text --mode sachlich --include-paragraphs
 python3 scripts/evidence_lint.py --before-file before.md --after-file after.md
+python3 scripts/spell_lint.py --before-file before.md --after-file after.md
 python3 scripts/register_lint.py --file <text.md> --mode formal
 python3 scripts/german_pattern_lint.py --file <text.md> --mode locker
 python3 scripts/run_review_eval.py tests/scenarios --check-invariants
@@ -551,6 +552,8 @@ python3 scripts/syntax_lint.py --file <text.md>
 ```
 
 `syntax_lint.py` ist eine optionale Präzisionsstufe: Ist spaCy samt deutschem Modell installiert (`pip install spacy && python3 -m spacy download de_core_news_sm`), misst es Passivsätze (Muster 39) und das Nomen-Verb-Verhältnis exakt über Dependency- und POS-Analyse statt per Heuristik. Ohne spaCy meldet das Script nur `"available": false` – alle übrigen Prüfungen laufen unverändert, es gibt keine Pflicht-Dependency.
+
+`spell_lint.py` ist eine before/after-Invariante: Ein Rewrite soll keine neuen Wörter einführen, die hunspell mit `de_DE` nicht kennt. Das ist ausdrücklich kein Korrektorat und macht keine Autokorrektur. Installation: `brew install hunspell`; Homebrew liefert aber keine Wörterbücher mit. Das `de_DE`-Wörterbuch aus igerman98 muss z. B. nach `~/Library/Spelling/` oder über `DICPATH` verfügbar sein. Ohne hunspell oder Wörterbuch meldet das Script nur `"available": false`.
 
 ### Exit-Codes
 
@@ -560,7 +563,7 @@ Alle Scripts folgen der Konvention `0` = ok, `1` = Findings gemäß Fail-Schwell
 |---|---|
 | `unicode_lint.py` | jedem Finding |
 | `register_lint.py`, `evidence_lint.py` | nur Blockern; Warnings blocken nicht |
-| `rhythm_lint.py`, `german_pattern_lint.py`, `humanizer_audit.py`, `syntax_lint.py` | nie; Messen ist kein Urteil, der JSON-Report ist die Schnittstelle |
+| `rhythm_lint.py`, `german_pattern_lint.py`, `humanizer_audit.py`, `syntax_lint.py`, `spell_lint.py` | nie; Messen ist kein Urteil, der JSON-Report ist die Schnittstelle |
 | `run_review_eval.py` und alle `--fixture`-Modi | Erwartungs-Mismatch |
 
 Wer ein Script in CI als Gate nutzt, muss diese Semantik kennen: `german_pattern_lint.py` und `rhythm_lint.py` liefern auch mit Befunden Exit `0`; dort gehört der JSON-Report ausgewertet, nicht der Exit-Code.
