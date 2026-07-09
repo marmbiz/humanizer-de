@@ -20,6 +20,7 @@ DU_FORMS = ("du", "dir", "dich", "dein", "deine", "deinen", "deinem", "deiner", 
 SIE_FORMS = ("Sie", "Ihnen", "Ihr", "Ihre", "Ihren", "Ihrem", "Ihrer", "Ihres")
 SIE_FORMS_RE = re.compile(rf"\b(?:{'|'.join(re.escape(form) for form in SIE_FORMS)})\b")
 EMOJI_RE = re.compile("[\U0001F300-\U0001FAFF]")
+BLOCKQUOTE_LINE_RE = re.compile(r"(?m)^[ \t]*>.*(?:\n|$)")
 
 
 def load_syntax_lint():
@@ -38,9 +39,9 @@ def load_syntax_lint():
     return module
 
 
-def precise_status(precise: bool) -> dict | None:
+def precise_context(precise: bool) -> tuple[dict | None, object | None]:
     if not precise:
-        return None
+        return None, None
 
     syntax_lint = load_syntax_lint()
     if not hasattr(syntax_lint, "_HUMANIZER_PRECISE_CACHE"):
@@ -48,8 +49,13 @@ def precise_status(precise: bool) -> dict | None:
 
     nlp, reason = syntax_lint._HUMANIZER_PRECISE_CACHE
     if nlp is None:
-        return {"requested": True, "active": False, "reason": reason or "spacy_missing"}
-    return {"requested": True, "active": True}
+        return {"requested": True, "active": False, "reason": reason or "spacy_missing"}, None
+    return {"requested": True, "active": True}, nlp
+
+
+def precise_status(precise: bool) -> dict | None:
+    status, _ = precise_context(precise)
+    return status
 
 
 def protected_ranges(text: str) -> list[tuple[int, int]]:
@@ -76,16 +82,94 @@ def strip_protected(text: str) -> str:
     return "".join(chars)
 
 
+def blockquote_ranges(text: str) -> list[tuple[int, int]]:
+    return [match.span() for match in BLOCKQUOTE_LINE_RE.finditer(text)]
+
+
+def is_in_ranges(start: int, end: int, ranges: Iterable[tuple[int, int]]) -> bool:
+    return any(start < range_end and end > range_start for range_start, range_end in ranges)
+
+
 def count_words(text: str, words: Iterable[str]) -> int:
     lowered = text.lower()
     return sum(len(re.findall(rf"\b{re.escape(word)}\b", lowered)) for word in words)
 
 
-def features(text: str) -> dict:
+def is_sentence_initial_sie(text: str, start: int) -> bool:
+    prefix = text[:start]
+    return not prefix.strip() or re.search(r"[.!?:]\s+$", prefix) is not None
+
+
+def has_morph(token: object, key: str, value: str) -> bool:
+    return value in token.morph.get(key)
+
+
+def token_for_match(doc: object, start: int, end: int):
+    for token in doc:
+        if token.idx == start and token.idx + len(token.text) == end:
+            return token
+    return None
+
+
+def previous_sentence(doc: object, token: object):
+    sentences = list(doc.sents)
+    for index, sent in enumerate(sentences):
+        if sent.start <= token.i < sent.end:
+            return sentences[index - 1] if index > 0 else None
+    return None
+
+
+def contains_du_form(text: str) -> bool:
+    return count_words(text, DU_FORMS) > 0
+
+
+def contains_imperative(sent: object) -> bool:
+    return any("Imp" in token.morph.get("Mood") or token.tag_ == "VVIMP" for token in sent)
+
+
+def previous_sentence_allows_anaphora(doc: object, token: object) -> bool:
+    sent = previous_sentence(doc, token)
+    if sent is None:
+        return True
+    return not contains_imperative(sent) and not contains_du_form(sent.text)
+
+
+def is_anaphoric_sie(match: re.Match, text: str, doc: object) -> bool:
+    if match.group(0) != "Sie":
+        return False
+    if not is_sentence_initial_sie(text, match.start()):
+        return False
+
+    token = token_for_match(doc, match.start(), match.end())
+    if token is None:
+        return False
+    return (
+        token.text == "Sie"
+        and has_morph(token, "Person", "3")
+        and has_morph(token, "Case", "Nom")
+        and has_morph(token, "Number", "Sing")
+        and previous_sentence_allows_anaphora(doc, token)
+    )
+
+
+def sie_formal_count(text: str, nlp: object | None = None) -> int:
+    blockquotes = blockquote_ranges(text) if nlp is not None else []
+    doc = nlp(text) if nlp is not None else None
+    count = 0
+    for match in SIE_FORMS_RE.finditer(text):
+        if is_in_ranges(match.start(), match.end(), blockquotes):
+            continue
+        if doc is not None and is_anaphoric_sie(match, text, doc):
+            continue
+        count += 1
+    return count
+
+
+def features(text: str, nlp: object | None = None) -> dict:
     clean_text = strip_protected(text)
     return {
         "du_count": count_words(clean_text, DU_FORMS),
-        "sie_formal_count": len(SIE_FORMS_RE.findall(clean_text)),
+        "sie_formal_count": sie_formal_count(clean_text, nlp=nlp),
         "wir_count": count_words(clean_text, {"wir", "uns", "unser", "unsere", "unseren"}),
         "man_count": count_words(clean_text, {"man"}),
         "modal_particle_count": count_words(clean_text, MODAL_PARTICLES),
@@ -99,7 +183,8 @@ def add(findings: list[dict], severity: str, kind: str, message: str) -> None:
 
 
 def lint(text: str, mode: str = "sachlich", expected_address: str | None = None, precise: bool = False) -> dict:
-    found = features(text)
+    status, nlp = precise_context(precise)
+    found = features(text, nlp=nlp)
     findings: list[dict] = []
 
     if found["du_count"] and found["sie_formal_count"]:
@@ -120,7 +205,6 @@ def lint(text: str, mode: str = "sachlich", expected_address: str | None = None,
         add(findings, "warning", "particle_overdose", "Locker mode uses too many modal particles.")
 
     report = {"ok": not findings, "mode": mode, "expected_address": expected_address, "features": found, "findings": findings}
-    status = precise_status(precise)
     if status is not None:
         report["precise"] = status
     return report
