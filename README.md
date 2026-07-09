@@ -555,6 +555,10 @@ python3 scripts/syntax_lint.py --file <text.md>
 
 `spell_lint.py` ist eine before/after-Invariante: Ein Rewrite soll keine neuen Wörter einführen, die hunspell mit `de_DE` nicht kennt. Das ist ausdrücklich kein Korrektorat und macht keine Autokorrektur. Installation: `brew install hunspell`; Homebrew liefert aber keine Wörterbücher mit. Das `de_DE`-Wörterbuch aus igerman98 muss z. B. nach `~/Library/Spelling/` oder über `DICPATH` verfügbar sein. Ohne hunspell oder Wörterbuch meldet das Script nur `"available": false`.
 
+LanguageTool ist als optionale Zweitmeinung für Maintainer- und Eval-Arbeit eingebunden, nicht als Teil des Harness und nicht als Runtime-Dependency. Der Grund ist praktisch: Java und Startzeit gehören nicht in die Standardprüfung.
+
+Installation: `brew install languagetool`. Aufruf: `make lt` prüft standardmäßig `README.md`, `make lt FILE=docs/x.md` prüft eine andere Datei. LT-Befunde sind keine Humanizer-Findings; LanguageTool prüft sprachliche Korrektheit, der Humanizer prüft KI-Muster, Register, Stil und Invarianten.
+
 ### Exit-Codes
 
 Alle Scripts folgen der Konvention `0` = ok, `1` = Findings gemäß Fail-Schwelle bzw. Fixture-/Eval-Mismatch, `2` = Aufruffehler (falsche Argumente). Die Fail-Schwelle unterscheidet sich bewusst je Script:

@@ -1,4 +1,6 @@
-.PHONY: test lint eval-contracts verify bench
+FILE ?= README.md
+
+.PHONY: test lint eval-contracts verify bench lt
 
 test:
 	python3 -m unittest discover -s tests -v
@@ -19,3 +21,6 @@ verify: test lint eval-contracts
 
 bench:
 	python3 scripts/bench.py --check
+
+lt:
+	@command -v languagetool >/dev/null && languagetool -l de-DE --json $(FILE) || echo "languagetool nicht installiert (brew install languagetool) — übersprungen"
