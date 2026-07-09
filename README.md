@@ -72,7 +72,7 @@ flowchart TD
     A --> G{"Evidence-Gate:<br/>alle Fakten unverändert?"}
     G -- ja --> O([Überarbeiteter Text + Kurzaudit])
     G -- nein --> R
-    O -.-> Q["Optionale QGIR-Nachpässe:<br/>jeder Pass difft gegen das Original-Ledger,<br/>spell-Invariante warnt vor neuen Tippfehlern"]
+    O -.-> Q["Optionale QGIR-Nachpässe:<br/>jeder Pass difft gegen das Original-Ledger"]
     Q -.-> G
 ```
 
@@ -122,6 +122,8 @@ Für Option 3 und 4 zuerst das Repository lokal holen:
 ```bash
 git clone https://github.com/marmbiz/humanizer-de.git
 ```
+
+Die folgenden Befehle laufen in dem Verzeichnis, in dem geklont wurde – also **oberhalb** von `humanizer-de/`, nicht darin.
 
 ### Codex-Skill ohne Plugin (Option 3)
 
@@ -561,7 +563,7 @@ Der Harness läuft komplett ohne Zusatzinstallationen, und `make verify` liefert
 ### Exit-Codes
 
 Alle Scripts folgen der Konvention `0` = ok, `1` = Findings gemäß Fail-Schwelle bzw. Fixture-/Eval-Mismatch, `2` = Aufruffehler (falsche Argumente). Die Fail-Schwelle unterscheidet sich bewusst je Script:
-`--fail-on {never,blocker,any}` übersteuert die Fail-Schwelle pro Aufruf, die Defaults bleiben unverändert.
+`--fail-on {never,blocker,any}` übersteuert die Fail-Schwelle pro Aufruf, die Defaults bleiben unverändert; das Flag haben alle Scripts der Tabelle außer `syntax_lint.py` (reine Messstufe) und `run_review_eval.py`.
 
 | Script | Exit `1` bei |
 |---|---|
@@ -606,9 +608,7 @@ Dieses Repository selbst sendet keine Texte an externe Dienste. Die Verarbeitung
 
 Lokale Dateien werden nur gespeichert, wenn eine Änderung ausdrücklich in Dateien geschrieben oder selbst gespeichert wird.
 
-Das persönliche Stilprofil (`.humanizer/profile.json`) folgt dem Prinzip der Datenminimierung (Privacy by Design, Art. 25 DSGVO): Es speichert ausschließlich Regeln und Korridore, niemals Texte oder Textauszüge, und bleibt lokal im Projekt – nichts davon wird übertragen. Auskunft, Berichtigung und Löschung sind hier ein Texteditor, kein Support-Ticket.
-
-Das optionale Feedback-Ledger `.humanizer/decisions.jsonl` sammelt nur Muster-Nr. oder Regel, Entscheidung und Grund, nie Nutzertext, und wird von keinem Script gelesen.
+Beide lokalen Dateien unter `.humanizer/` folgen der Datenminimierung (Privacy by Design, Art. 25 DSGVO): Das Stilprofil `profile.json` (siehe [Persönliches Stilprofil](#persönliches-stilprofil)) speichert Regeln und Korridore, das Feedback-Ledger `decisions.jsonl` nur Muster-Nr. bzw. Regel, Entscheidung und Grund – niemals Texte oder Textauszüge, nichts wird übertragen, und das Ledger wird von keinem Script gelesen. Auskunft, Berichtigung und Löschung sind hier ein Texteditor, kein Support-Ticket.
 
 ---
 
@@ -634,7 +634,7 @@ Problem gefunden oder Verbesserungsidee?
 
 ## Was ist neu?
 
-- **5.5.0** - Weniger Fehlalarme, belegte Zurückhaltung: Wer spaCy installiert hat, kann die Prüf-Scripts mit `--precise` aufrufen – dann unterscheidet der Register-Check anaphorisches „Sie" („Die Idee klang elegant. Sie war es nicht.") von echter Anrede, „stellt" als gewöhnliches Vollverb zählt nicht mehr als Stilmuster, und Begriffe wie „hat Relevanz" gelten nicht mehr als erfundene Eigennamen; zitierte Wörter zählen generell nicht mehr als KI-Marker, auch ohne spaCy. Ohne Flag bleibt jeder Report exakt wie bisher. Dass diese Fehlalarme wirklich fallen und echte Treffer bleiben, ist jetzt beweisbar statt behauptet: Ein eingechecktes False-Positive-Korpus dient als Messlatte, und drei Red-Team-Szenarien (Jura, Marketing, Wissenschaft) prüfen dauerhaft das Versprechen, bei gutem Text die Finger stillzuhalten – gewollte Paragraphen-Wiederholungen, Marketing-Parallelismus und akademisches Passiv werden nicht mehr „wegverbessert". Für mehrstufige Überarbeitungen schützt das neue Original-Ledger des Evidence-Gates vor schleichendem Faktenverlust über mehrere Pässe. `syntax_lint.py` misst nur noch Fließtext (Überschriften, Codeblöcke und Frontmatter erzeugen keine Fragment-Fehlalarme mehr) und liefert drei deutsche Verständlichkeitsmaße, darunter die Satzklammer-Spannweite. Neu für CI: `--fail-on {never,blocker,any}` macht jedes Script als Gate nutzbar, ohne dass sich Standard-Exit-Codes ändern. Dazu zwei optionale Helfer mit klarer Arbeitsteilung (siehe „Optionale Werkzeuge"): `spell_lint.py` warnt per hunspell, wenn ein Rewrite neue unbekannte Wörter einführt, und `make lt` holt LanguageTool als Zweitmeinung für sprachliche Korrektheit dazu
+- **5.5.0** - Weniger Fehlalarme, belegte Zurückhaltung: Wer spaCy installiert hat, kann die Prüf-Scripts mit `--precise` aufrufen – dann unterscheidet der Register-Check anaphorisches „Sie" („Die Idee klang elegant. Sie war es nicht.") von echter Anrede, „stellt" als gewöhnliches Vollverb zählt nicht mehr als Stilmuster, und Begriffe wie „hat Relevanz" gelten nicht mehr als erfundene Eigennamen; zitierte Wörter zählen generell nicht mehr als KI-Marker, auch ohne spaCy. Ohne Flag bleibt jeder Report exakt wie bisher. Dass diese Fehlalarme wirklich fallen und echte Treffer bleiben, ist jetzt beweisbar statt behauptet: Ein eingechecktes False-Positive-Korpus dient als Messlatte, und drei Red-Team-Szenarien (Jura, Marketing, Wissenschaft) prüfen dauerhaft das Versprechen, bei gutem Text die Finger stillzuhalten – gewollte Paragraphen-Wiederholungen, Marketing-Parallelismus und akademisches Passiv werden nicht mehr „wegverbessert". Für mehrstufige Überarbeitungen schützt das neue Original-Ledger des Evidence-Gates vor schleichendem Faktenverlust über mehrere Pässe. `syntax_lint.py` misst nur noch Fließtext (Überschriften, Codeblöcke und Frontmatter erzeugen keine Fragment-Fehlalarme mehr) und liefert drei deutsche Verständlichkeitsmaße, darunter die Satzklammer-Spannweite. Neu für CI: `--fail-on {never,blocker,any}` macht die Prüf-Scripts als Gate nutzbar (alle außer der reinen Messstufe `syntax_lint.py`), ohne dass sich Standard-Exit-Codes ändern. Dazu zwei optionale Helfer mit klarer Arbeitsteilung (siehe „Optionale Werkzeuge"): `spell_lint.py` warnt per hunspell, wenn ein Rewrite neue unbekannte Wörter einführt, und `make lt` holt LanguageTool als Zweitmeinung für sprachliche Korrektheit dazu
 - **5.4.0** - Präziser messen, besser abschließen: Wer spaCy installiert hat (`pip install spacy && python3 -m spacy download de_core_news_sm`), bekommt mit `scripts/syntax_lint.py` eine optionale Präzisionsstufe – Passivsätze (Muster 39) und das Nomen-Verb-Verhältnis werden exakt über Satzanalyse gemessen statt per Heuristik geschätzt, im Vorfeld mit F1 1,0 auf kuratierten Fixtures validiert. Ohne spaCy ändert sich nichts: keine Pflicht-Dependency, alle übrigen Prüfungen laufen unverändert. Außerdem hört der Skill nicht mehr bei „keine Tells mehr“ auf – die neue Qualitäts-Rubrik (`references/quality-rubric.md`) prüft in Pass 5 vier positive Achsen (Leserführung, Argumentdichte, Stimmkonsistenz, Sparsamkeit) und benennt im Kurzaudit, welche Achse noch nicht trägt
 - **5.3.1** - Verlässlicher messen, ehrlicher scheitern: Anrede-Formen, Modalpartikeln und Satzgrenzen zählen jetzt in allen Prüfungen aus derselben Quelle – gleicher Text, gleiche Zahlen, egal ob Register-Check, Muster-Lint oder Eval-Runner misst (vollständige Paradigmen für direkte Anrede, überall der abkürzungsfeste Satz-Splitter, ein Sync-Test verhindert neuen Drift). `unicode_lint.py --fix --write` schreibt Korrekturen auf jedem System als UTF-8 zurück – keine beschädigten Umlaute mehr auf Systemen mit anderem Locale-Default. Kurztexte unter acht Sätzen melden im Preflight jetzt ehrlich „zu wenig Text“, statt wegen ein paar Konnektoren ein Risiko-Urteil zu bekommen. Für CI-Nutzer sind die Exit-Codes aller Scripts jetzt als Tabelle dokumentiert und per Test festgenagelt. Und wer sich Raw-JSON ausgeben lässt, bekommt es garantiert ohne Branding-Zeile – das Eval-Harness prüft das ab sofort mit (Szenario 21)
 - **5.3.0** - Persönliches Stilprofil: Der Skill merkt sich Regeln, nie Texte. `.humanizer/profile.json` speichert Korridor-Overrides über `references/style-targets.json` und datierte Stilnotizen, bleibt lokal im Projekt (Datenminimierung) und wird von `humanizer_audit.py`/`style_profile.py` automatisch gemergt (Override ersetzt Korridor, `"override": true` im Delta-Report, `--no-profile` als Opt-out); Abschluss-Dialog dokumentiert in `references/user-profile.md`. Außerdem beschreibt sich der Skill auf allen Oberflächen jetzt als das, was er ist: deutscher Stil-Editor mit Evidence-Gate – Humanizing bleibt der bekannteste Anwendungsfall. README mit Workflow-Diagramm, Installations-Walkthrough und präzisierten Abdeckungs-Angaben
