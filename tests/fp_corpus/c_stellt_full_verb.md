@@ -1,0 +1,3 @@
+Der Techniker stellt den Messkoffer auf den Tisch und prüft zuerst die Kabel. Er stellt sicher. Kurz darauf legte er dar, warum der Sensor gestern keinen stabilen Wert geliefert hatte. Gemeint war kein Ersatz für ein schlichtes „ist“, sondern eine ganz normale Handlung im Ablaufprotokoll.
+
+Am Nachmittag stellt die Koordinatorin Fragen. Danach legt sie dar, welche Rückmeldungen aus dem Feld noch fehlen. Auch hier beschreibt „stellt“ eine Tätigkeit: Das Team stellt eine Reihenfolge her, stellt Material bereit und stellt den nächsten Termin in den Kalender. Der Text wirkt trocken, aber fachlich präzise. Du würdest ihn nicht umschreiben, nur weil ein Zähler über Satzgrenzen hinweg ein Muster aus „stellt“ und „dar“ zusammensucht.

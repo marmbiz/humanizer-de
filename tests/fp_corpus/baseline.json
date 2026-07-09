@@ -1,0 +1,23 @@
+{
+  "tests/fp_corpus/a_anaphoric_sie.md": {
+    "mixed_address": 1
+  },
+  "tests/fp_corpus/b_use_mention_ai_markers.md": {
+    "ai_marker_cluster": 1,
+    "low sentence-length variance": 1
+  },
+  "tests/fp_corpus/c_stellt_full_verb.md": {
+    "copula_avoidance_cluster": 1,
+    "high subject-initial ratio": 1
+  },
+  "tests/fp_corpus/d_evidence_single_token_abstracta.json": {
+    "added_proper_name": 1
+  },
+  "tests/fp_corpus/e_legitimate_abstractions.md": {
+    "abstraction_cluster": 1
+  },
+  "tests/fp_corpus/f_blockquote_sie_address.md": {
+    "low sentence-length variance": 1,
+    "mixed_address": 1
+  }
+}

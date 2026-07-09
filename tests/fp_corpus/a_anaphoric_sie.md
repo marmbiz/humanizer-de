@@ -1,0 +1,3 @@
+Du kennst solche Produktideen: Auf dem Papier wirkt alles sauber, im Alltag reibt es sofort. Die Idee klang elegant. Sie war es nicht. Die Oberfläche versprach Klarheit, aber die ersten Rückmeldungen zeigten lange Wege, doppelte Eingaben und ein Team, das ständig nachfragen musste.
+
+Du musst daraus keinen großen Grundsatz machen. Wichtig ist nur, dass die Kritik nicht an der Person hängt, die den Entwurf gebaut hat. Die Lösung hatte einen guten Ausgangspunkt. Sie brauchte aber mehr Kontext aus echten Abläufen, bevor sie im Betrieb tragen konnte. Wenn du so einen Befund notierst, hilft eine nüchterne Formulierung: Was wurde getestet, wo stockte der Ablauf, welche Annahme war falsch, und was muss als Nächstes geprüft werden?
