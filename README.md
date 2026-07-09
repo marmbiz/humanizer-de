@@ -24,19 +24,13 @@
 
 ## Was ist das?
 
-Humanizer (Deutsch) ist ein German AI Text Humanizer und deutscher Stil-Editor für Claude Code und Codex: Du gibst dem Skill einen KI-Entwurf, er macht daraus natürlichen deutschen Text – ohne Fakten, Zahlen oder Quellen zu verändern.
+Humanizer (Deutsch) ist ein German AI Text Humanizer und deutscher Stil-Editor mit Evidence-Gate für Claude Code und Codex: Du gibst dem Skill einen KI-Entwurf, er macht daraus natürlichen deutschen Text – ohne Fakten, Zahlen oder Quellen zu verändern. Und wenn der Text bereits sauber ist, sagt er genau das und lässt die Finger davon.
 
-Das Projekt ist Anfang 2026 als Fork von blader/humanizer entstanden und hat sich seitdem zu einem eigenen System für deutschsprachige Texte entwickelt: ein Katalog mit 66 Mustern in 10 Kategorien, rund die Hälfte ohne Upstream-Pendant, darunter die komplette Evidenz-Familie und die deutsche Typografie, deterministische Linter für ausgewählte Risiken, Testsuite mit Golden Corpus und ein 5-Pass-Workflow. Ab v4.0.0 folgt das Projekt einem eigenen Versionsschema ohne Fork-Suffix.
+Drei Bausteine tragen das: ein Katalog mit 66 Mustern in 10 Kategorien als Redaktionswissen, deterministische Prüfskripte für Register, Satzrhythmus und Faktentreue, und das große Modell für das eigentliche Urteil im Kontext. Humanizing ist der bekannteste Anwendungsfall dieses Stil-Editors – nicht seine ganze Identität.
 
-Dieses Skill prüft typische KI-Schreibmuster in deutschen Texten und hilft, betroffene Stellen belegtreu, registerstabil und natürlicher zu überarbeiten.
+Das Ergebnis ist nicht sterile Korrektur. Es ist Überarbeitung, die vorhandene Substanz schützt und deutsche Textqualität verbessert. Gutes Schreiben darf Ecken haben – es sollte sogar welche haben. Ein Tool für erfundene Autorenschaft, fingierte Erfahrung oder Quellenkosmetik ist es nicht.
 
-Unter der Haube ist es ein deutscher Stil-Editor mit Evidence-Gate und messbarem Register: `scripts/style_profile.py` misst Register und Satzrhythmus gegen die Zielprofile in `references/style-targets.json` (persönliche Abweichungen über `.humanizer/profile.json`), das Evidence-Gate (`scripts/evidence_lint.py`) sichert Fakten bei jeder Umformulierung, und der Katalog mit 66 Mustern in 10 Kategorien liefert das Redaktionswissen. Humanizing bleibt der prominenteste Anwendungsfall dieses Stil-Editors – nicht seine ganze Identität.
-
-Das Ergebnis ist nicht sterile Korrektur. Es ist Überarbeitung, die vorhandene Substanz schützt und deutsche Textqualität verbessert. Gutes Schreiben darf Ecken haben – es sollte sogar welche haben.
-
-Das Skill folgt deutschen Schreibkonventionen und den Prinzipien von EEAT (Expertise, Erfahrung, Autorität, Vertrauenswürdigkeit).
-
-Es ist kein Tool für erfundene Autorenschaft, fingierte Erfahrung oder Quellenkosmetik.
+Entstanden ist das Projekt Anfang 2026 als Fork von blader/humanizer; seitdem ist es ein eigenes System für deutschsprachige Texte (rund die Hälfte der Muster ohne Upstream-Pendant, darunter die komplette Evidenz-Familie und die deutsche Typografie; eigenes Versionsschema ab v4.0.0).
 
 ---
 
@@ -63,28 +57,33 @@ Hinter dem Katalog steht ein einfaches Bild: KI-Textbewertung hat drei Schichten
 - **Messen – die objektiven Fakten.** Satzbau, Anker (Namen, Zahlen, Daten), Bedeutungstreue beim Umschreiben. Fragen mit *einer richtigen Antwort*, die sich berechnen lassen, statt sie zu erraten.
 - **Urteilen – Kontext und Geschmack.** „Ist das guter Text?“ braucht Weltwissen und Fingerspitzengefühl. Das leistet nur das große Modell (Claude, Codex) – deshalb sitzt das eigentliche Umschreiben dort, nicht in einer starren Regel.
 
-Im Ablauf sieht das so aus – fünf Pässe, flankiert von Zielprofilen und dem Evidence-Gate:
+Im Ablauf sieht das so aus – fünf Pässe, flankiert von Zielprofilen und dem Evidence-Gate. Der wichtigste Ausgang steht ganz oben: Ist der Text sauber, wird er nicht angefasst.
 
 ```mermaid
 flowchart TD
     T([Eingabetext]) --> M["Messen – Pass 0<br/>Stilkarte: Rhythmus, Register, Preflight"]
     Z["Zielprofile<br/>style-targets.json + .humanizer/profile.json"] -.-> M
-    M --> E["Fakten sichern – Pass 1<br/>Anker: Zahlen, Namen, Quellen, Zitate"]
+    P["Optional: spaCy-Präzisionsstufe<br/>--precise entschärft bekannte Fehlalarme"] -.-> M
+    M --> C{"Echte Muster-Cluster<br/>gefunden?"}
+    C -- "nein – Text ist sauber" --> N([Null-Edit: Befund statt Umschreiben])
+    C -- ja --> E["Fakten sichern – Pass 1<br/>Anker: Zahlen, Namen, Quellen, Zitate"]
     E --> R["Redigieren – Pass 2–4<br/>Lexik, Struktur, Rhythmus · 66-Muster-Katalog"]
-    R --> A["Selbst-Audit – Pass 5"]
+    R --> A["Selbst-Audit – Pass 5<br/>+ Qualitäts-Rubrik: 4 positive Achsen"]
     A --> G{"Evidence-Gate:<br/>alle Fakten unverändert?"}
     G -- ja --> O([Überarbeiteter Text + Kurzaudit])
     G -- nein --> R
+    O -.-> Q["Optionale QGIR-Nachpässe:<br/>jeder Pass difft gegen das Original-Ledger,<br/>spell-Invariante warnt vor neuen Tippfehlern"]
+    Q -.-> G
 ```
 
-Die Messwerte informieren das Zielprofil, aber sie richten nicht: Ob eine auffällige Stelle wirklich ein Problem ist, entscheidet das Modell im Kontext – nach der Cluster-Regel und den Carve-outs für bekannte Fehlalarme.
+Die Messwerte informieren das Zielprofil, aber sie richten nicht: Ob eine auffällige Stelle wirklich ein Problem ist, entscheidet das Modell im Kontext – nach der Cluster-Regel und den Carve-outs für bekannte Fehlalarme. Mit installiertem spaCy fängt `--precise` die dokumentierten Fehlalarm-Klassen direkt scriptseitig ab (siehe [Optionale Werkzeuge](#optionale-werkzeuge)).
 
 Daraus folgen die Leitlinien des Skills:
 
 - **Nur Zeitloses wird Regel.** Der Katalog nimmt bewusst nur stabile Tells auf. Ein Wort, das bloß zur Mode eines LLM-Jahrgangs gehört, bläht die Liste auf und veraltet – solche driftenden Signale bleiben dem Urteil überlassen. Kern und Rand werden getrennt gehalten.
 - **Messen statt richten.** Regeln und Messungen gehören dorthin, wo es eine richtige Antwort gibt. Wo es Geschmack braucht, entscheidet das Modell im Kontext – nicht ein Detektor-Score.
 - **Der Boden ist der Mensch.** Unter dem Modell sitzt der Autor. Der Skill schützt Substanz und Belege, aber er erfindet keine Erfahrung, keine Quelle, keine Zahl. Verantwortung bleibt beim Menschen.
-- **Proportional eingreifen.** So viel wie nötig, so wenig wie möglich. Ist der Text sauber, hört der Skill auf – statt mit dem stärksten Werkzeug über jeden Satz zu bügeln.
+- **Proportional eingreifen.** So viel wie nötig, so wenig wie möglich. Ist der Text sauber, hört der Skill auf – statt mit dem stärksten Werkzeug über jeden Satz zu bügeln. Das ist keine Absichtserklärung, sondern Teil der Testsuite: Red-Team-Szenarien mit gutem menschlichem Schreiben (Jura, Marketing, Wissenschaft) und ein False-Positive-Korpus halten das Versprechen dauerhaft messbar.
 
 ---
 
@@ -213,7 +212,7 @@ Für Arbeitsordner mit Markdown-Entwürfen kann der neueste Stand automatisch ge
 python3 scripts/humanizer_audit.py --latest <dir> --mode sachlich --format md
 ```
 
-Der Sammelcheck ruft Unicode-, Rhythmus-, Naturalness- und Register-Prüfung in einem Prozess auf und gibt eine kurze gemeinsame Befundliste aus. Die Einzelskripte bleiben für gezielte Nachprüfung nutzbar; `scripts/rhythm_lint.py` druckt standardmäßig eine kompakte Dokumentansicht und zeigt volle Absatzdaten nur mit `--include-paragraphs`.
+Der Sammelcheck ruft Unicode-, Rhythmus-, Naturalness- und Register-Prüfung in einem Prozess auf und gibt eine kurze gemeinsame Befundliste aus. Mit `--precise` (und installiertem spaCy) fängt er die dokumentierten Fehlalarm-Klassen ab und hängt die Syntax-Analyse als eigene Sektion an. Die Einzelskripte bleiben für gezielte Nachprüfung nutzbar; `scripts/rhythm_lint.py` druckt standardmäßig eine kompakte Dokumentansicht und zeigt volle Absatzdaten nur mit `--include-paragraphs`.
 
 Der Report enthält außerdem ein Preflight-Risiko (`low`, `medium`, `high`, `insufficient_text`). Es beschreibt, ob der Text messbar zu gleichförmig wirkt: etwa durch sehr ähnliche Satzlängen, kaum kurze oder lange Sätze, wiederholte Satzanfänge, viele mechanische Übergänge oder Naturalness-Cluster. Das ist eine Qualitätsheuristik, keine Aussage zur Autorenschaft.
 
@@ -511,7 +510,7 @@ Iterativ arbeiten heißt hier nicht „immer weiter glätten“. Erst lokal übe
 
 Das Skill funktioniert gut mit:
 - **Linters** für Formatierung
-- **Spellcheck** für Tippfehler
+- **`spell_lint.py`** (mitgeliefert, optional) gegen Tippfehler, die erst beim Umschreiben entstehen – für klassisches Korrektorat bleibt ein externer Spellcheck zuständig
 - **Style Guides** für Konsistenz
 - **Human Review** für Kontext und Nuancen
 
