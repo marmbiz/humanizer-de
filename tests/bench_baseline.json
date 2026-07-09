@@ -1,0 +1,18 @@
+{
+  "note": "machine-specific baseline; re-measure after hardware change",
+  "humanizer_audit": {
+    "10kb": 0.043557,
+    "70kb": 0.285668,
+    "280kb": 1.1252
+  },
+  "rhythm_lint": {
+    "10kb": 0.010352,
+    "70kb": 0.06928,
+    "280kb": 0.278517
+  },
+  "unicode_lint": {
+    "10kb": 0.008592,
+    "70kb": 0.052255,
+    "280kb": 0.200637
+  }
+}

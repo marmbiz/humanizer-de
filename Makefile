@@ -1,4 +1,4 @@
-.PHONY: test lint eval-contracts verify
+.PHONY: test lint eval-contracts verify bench
 
 test:
 	python3 -m unittest discover -s tests -v
@@ -16,3 +16,6 @@ eval-contracts:
 
 verify: test lint eval-contracts
 	git diff --check
+
+bench:
+	python3 scripts/bench.py --check
