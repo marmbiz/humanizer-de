@@ -61,7 +61,48 @@ Aufrufmodi:
 
 - `--before "<text>" --after "<text>"` — Passagen direkt als Argument
 - `--before-file <datei> --after-file <datei>` — Passagen aus Dateien (Datei-Paar-Modus)
+- `--write-ledger <datei>` — Original-Anker aus `--before`/`--before-file` als Ledger schreiben
+- `--ledger <datei>` — `--after`/`--after-file` gegen ein Original-Ledger pruefen
 - `--fixture <datei-oder-verzeichnis>` — JSON-Fixtures mit `before`, `after` und optional `expect_kinds`
+
+## Ledger-Modus
+
+Der Ledger-Modus schuetzt QGIR gegen kumulativen Drift: Vor Pass 1 wird aus dem Original ein
+Anker-Ledger geschrieben; nach jedem Pass wird der aktuelle Text gegen dieses Original-Ledger
+geprueft, nicht nur gegen den direkten Vorpass.
+
+Schema:
+
+```json
+{
+  "schema_version": 1,
+  "anchors": {
+    "number": ["12 Prozent"],
+    "date": [],
+    "url": [],
+    "doi": [],
+    "paragraph": [],
+    "code": [],
+    "quote": [],
+    "proper_name": []
+  }
+}
+```
+
+Vor Pass 1:
+
+```bash
+python3 scripts/evidence_lint.py --before-file /tmp/qgir-original.txt --write-ledger /tmp/qgir-ledger.json
+```
+
+Nach jedem Pass:
+
+```bash
+python3 scripts/evidence_lint.py --ledger /tmp/qgir-ledger.json --after-file /tmp/qgir-pass.txt
+```
+
+Mit `--precise` wirkt der spaCy-Filter im Write-Modus auf die Before-Anker im Ledger und im
+Ledger-Diff nur auf die After-Anker. Das Ledger selbst bleibt die Original-Quelle.
 
 Report im Paar-Modus:
 

@@ -112,6 +112,32 @@ class EvidenceLintTests(unittest.TestCase):
         after = "Die Fehlerquote stieg um 12 Prozent."
         self.assertIn("claim_direction_changed", kinds(evidence_lint.lint(before, after)))
 
+    def test_write_and_load_ledger_roundtrip_preserves_anchors(self):
+        before = (
+            "Die Wartezeit sank am 3. Mai 2024 um 12 Prozent. "
+            "Details stehen unter https://example.org/bericht."
+        )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            ledger_path = Path(tmp) / "ledger.json"
+            expected = evidence_lint.write_ledger(before, ledger_path)
+            loaded = evidence_lint.load_ledger(ledger_path)
+
+        self.assertEqual(loaded, expected)
+        self.assertEqual(loaded, evidence_lint.anchors(before))
+
+    def test_ledger_catches_multi_pass_number_drift_against_original(self):
+        original = "Die Fehlerquote sank laut Bericht um 12 Prozent."
+        pass1 = "Laut Bericht sank die Fehlerquote um rund 12 Prozent."
+        pass2 = "Laut Bericht sank die Fehlerquote um etwa ein Achtel."
+        pass3 = "Der Bericht beschreibt eine spürbar geringere Fehlerquote."
+
+        ledger_anchors = evidence_lint.anchors(original)
+
+        self.assertIn("removed_number", kinds(evidence_lint.lint(pass1, pass2)))
+        self.assertNotIn("removed_number", kinds(evidence_lint.lint(pass2, pass3)))
+        self.assertIn("removed_number", kinds(evidence_lint.lint_with_anchors(ledger_anchors, pass3)))
+
 
 class EvidenceLintCliTests(unittest.TestCase):
     def run_pair(self, before: str, after: str) -> tuple[int, dict]:
@@ -144,6 +170,33 @@ class EvidenceLintCliTests(unittest.TestCase):
         )
         self.assertEqual(code, 0)
         self.assertFalse(any(item["severity"] == "blocker" for item in report["findings"]))
+
+    def test_ledger_mode_matches_anchor_lint(self):
+        before = "Die Fehlerquote sank laut Bericht um 12 Prozent."
+        after = "Der Bericht beschreibt eine geringere Fehlerquote."
+
+        with tempfile.TemporaryDirectory() as tmp:
+            ledger_path = Path(tmp) / "ledger.json"
+            evidence_lint.write_ledger(before, ledger_path)
+            proc = subprocess.run(
+                [sys.executable, str(SCRIPT), "--ledger", str(ledger_path), "--after", after],
+                capture_output=True,
+                text=True,
+            )
+            expected = evidence_lint.lint_with_anchors(evidence_lint.load_ledger(ledger_path), after)
+
+        self.assertEqual(proc.returncode, 1)
+        self.assertEqual(json.loads(proc.stdout)["findings"], expected)
+
+    def test_ledger_mode_rejects_before_argument(self):
+        proc = subprocess.run(
+            [sys.executable, str(SCRIPT), "--ledger", "ledger.json", "--before", "alt", "--after", "neu"],
+            capture_output=True,
+            text=True,
+        )
+
+        self.assertEqual(proc.returncode, 2)
+        self.assertIn("--ledger cannot be combined with --before or --before-file", proc.stderr)
 
 
 @unittest.skipUnless(SPACY_MODEL_AVAILABLE, "spaCy German model is not available")

@@ -13,6 +13,7 @@ from pathlib import Path
 
 SYNTAX_SCRIPT = Path(__file__).resolve().parent / "syntax_lint.py"
 _SYNTAX_LINT = None
+LEDGER_SCHEMA_VERSION = 1
 
 ANCHOR_PATTERNS = {
     "number": re.compile(r"\b\d+(?:[.,]\d+)?\s*(?:%|Prozent|Euro|EUR|km|kg|Mio\.?|Millionen)?\b", re.IGNORECASE),
@@ -220,29 +221,53 @@ def add_finding(findings: list[dict], severity: str, kind: str, message: str, va
     findings.append({"severity": severity, "kind": kind, "message": message, "values": sorted(values)})
 
 
-def lint(before: str, after: str, precise: bool = False) -> list[dict]:
-    _, nlp = precise_context(precise)
-    findings: list[dict] = []
-    before_anchors = anchors(before, nlp=nlp)
-    after_anchors = anchors(after, nlp=nlp)
+def anchor_kinds() -> tuple[str, ...]:
+    return tuple(ANCHOR_PATTERNS) + ("proper_name",)
 
+
+def serializable_anchors(anchor_map: dict[str, set[str]]) -> dict[str, list[str]]:
+    return {kind: sorted(anchor_map.get(kind, set())) for kind in anchor_kinds()}
+
+
+def anchor_counts(anchor_map: dict[str, set[str]]) -> dict[str, int]:
+    return {kind: len(anchor_map.get(kind, set())) for kind in anchor_kinds()}
+
+
+def add_anchor_findings(
+    findings: list[dict],
+    before_anchors: dict[str, set[str]],
+    after_anchors: dict[str, set[str]],
+) -> None:
     hard_kinds = {"number", "date", "url", "doi", "paragraph", "code", "quote"}
-    for kind in sorted(before_anchors):
+    for kind in sorted(anchor_kinds()):
         if kind == "proper_name":
             # Compare case-variant-insensitively (Problem <-> Problems), but
             # report the original surface forms.
-            before_keys = {name_key(value) for value in before_anchors[kind]}
+            before_keys = {name_key(value) for value in before_anchors.get(kind, set())}
             after_keys = {name_key(value) for value in after_anchors.get(kind, set())}
-            removed = {value for value in before_anchors[kind] if name_key(value) not in after_keys}
+            removed = {value for value in before_anchors.get(kind, set()) if name_key(value) not in after_keys}
             added = {value for value in after_anchors.get(kind, set()) if name_key(value) not in before_keys}
         else:
-            removed = before_anchors[kind] - after_anchors.get(kind, set())
-            added = after_anchors.get(kind, set()) - before_anchors[kind]
+            removed = before_anchors.get(kind, set()) - after_anchors.get(kind, set())
+            added = after_anchors.get(kind, set()) - before_anchors.get(kind, set())
         severity = "blocker" if kind in hard_kinds else "warning"
         if removed:
             add_finding(findings, severity, f"removed_{kind}", f"{kind} anchor removed or changed.", list(removed))
         if added:
             add_finding(findings, severity, f"added_{kind}", f"New {kind} anchor introduced.", list(added))
+
+
+def lint_with_anchors(before_anchors: dict[str, set[str]], after: str, precise: bool = False) -> list[dict]:
+    _, nlp = precise_context(precise)
+    findings: list[dict] = []
+    add_anchor_findings(findings, before_anchors, anchors(after, nlp=nlp))
+    return findings
+
+
+def lint(before: str, after: str, precise: bool = False) -> list[dict]:
+    _, nlp = precise_context(precise)
+    findings: list[dict] = []
+    add_anchor_findings(findings, anchors(before, nlp=nlp), anchors(after, nlp=nlp))
 
     before_auth = authority_profile(before)
     after_auth = authority_profile(after)
@@ -276,6 +301,43 @@ def load_text(value: str | None, path: Path | None) -> str:
     return value or ""
 
 
+def write_ledger(text: str, path: Path, precise: bool = False) -> dict[str, set[str]]:
+    _, nlp = precise_context(precise)
+    before_anchors = anchors(text, nlp=nlp)
+    data = {"schema_version": LEDGER_SCHEMA_VERSION, "anchors": serializable_anchors(before_anchors)}
+    path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    return before_anchors
+
+
+def load_ledger(path: Path) -> dict[str, set[str]]:
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except OSError as exc:
+        raise ValueError(f"{path}: cannot read ledger: {exc.strerror}") from exc
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"{path}: invalid JSON: {exc.msg}") from exc
+
+    if not isinstance(data, dict):
+        raise ValueError(f"{path}: ledger must be a JSON object")
+    if data.get("schema_version") != LEDGER_SCHEMA_VERSION:
+        raise ValueError(f"{path}: unsupported schema_version {data.get('schema_version')!r}")
+    ledger_anchors = data.get("anchors")
+    if not isinstance(ledger_anchors, dict):
+        raise ValueError(f"{path}: missing or invalid 'anchors' object")
+
+    missing = [kind for kind in anchor_kinds() if kind not in ledger_anchors]
+    if missing:
+        raise ValueError(f"{path}: ledger anchors missing keys: {', '.join(missing)}")
+
+    result: dict[str, set[str]] = {}
+    for kind in anchor_kinds():
+        values = ledger_anchors[kind]
+        if not isinstance(values, list) or not all(isinstance(value, str) for value in values):
+            raise ValueError(f"{path}: ledger anchors.{kind} must be a list of strings")
+        result[kind] = set(values)
+    return result
+
+
 def check_fixture(path: Path, precise: bool = False) -> list[dict]:
     data = json.loads(path.read_text(encoding="utf-8"))
     findings = lint(data["before"], data["after"], precise=precise)
@@ -298,9 +360,18 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--after", help="After passage as inline text.")
     parser.add_argument("--before-file", type=Path, help="Read before passage from file.")
     parser.add_argument("--after-file", type=Path, help="Read after passage from file.")
+    parser.add_argument("--write-ledger", type=Path, help="Write original before anchors to a JSON ledger and exit.")
+    parser.add_argument("--ledger", type=Path, help="Read original anchors from a JSON ledger instead of --before.")
     parser.add_argument("--fixture", type=Path, help="JSON fixture file or directory.")
     parser.add_argument("--precise", action="store_true", help="spaCy-gestützte Verfeinerung, wenn installiert; sonst wirkungslos")
-    return parser.parse_args(argv)
+    args = parser.parse_args(argv)
+    if args.ledger and (args.before is not None or args.before_file is not None):
+        parser.error("--ledger cannot be combined with --before or --before-file")
+    if args.ledger and args.write_ledger:
+        parser.error("--ledger cannot be combined with --write-ledger")
+    if args.fixture and (args.ledger or args.write_ledger):
+        parser.error("--fixture cannot be combined with --ledger or --write-ledger")
+    return args
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -314,10 +385,41 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps(report, ensure_ascii=False, indent=2))
         return 0 if all(item["ok"] for item in results) else 1
 
-    before = load_text(args.before, args.before_file)
+    if args.write_ledger:
+        before = load_text(args.before, args.before_file)
+        before_anchors = write_ledger(before, args.write_ledger, precise=args.precise)
+        report = {
+            "ok": True,
+            "ledger": str(args.write_ledger),
+            "anchor_counts": anchor_counts(before_anchors),
+        }
+        if args.precise:
+            report["precise_scope"] = "before_anchors"
+        status = precise_status(args.precise)
+        if status is not None:
+            report["precise"] = status
+        print(json.dumps(report, ensure_ascii=False, indent=2))
+        return 0
+
     after = load_text(args.after, args.after_file)
-    findings = lint(before, after, precise=args.precise)
-    report = {"ok": not findings, "findings": findings}
+    if args.ledger:
+        try:
+            before_anchors = load_ledger(args.ledger)
+        except ValueError as exc:
+            print(f"error: {exc}", file=sys.stderr)
+            return 2
+        findings = lint_with_anchors(before_anchors, after, precise=args.precise)
+        report = {
+            "ok": not findings,
+            "findings": findings,
+            "ledger": str(args.ledger),
+        }
+        if args.precise:
+            report["precise_scope"] = "after_anchors"
+    else:
+        before = load_text(args.before, args.before_file)
+        findings = lint(before, after, precise=args.precise)
+        report = {"ok": not findings, "findings": findings}
     status = precise_status(args.precise)
     if status is not None:
         report["precise"] = status

@@ -18,6 +18,10 @@ QGIR ist ein begrenzter Revisionsmodus fuer Faelle, in denen ein einzelner Audit
 4. Edit-Budget: Anteil substanziell geaenderter Saetze pruefen.
 5. Stoppen: wenn Restbefunde niedrig sind oder ein weiterer Pass Drift riskieren wuerde.
 
+Fuer Claim-Delta reicht der direkte Vorpass-Diff nicht aus. Vor Pass 1 ein Original-Ledger mit
+`scripts/evidence_lint.py --write-ledger` schreiben und nach jedem QGIR-Pass zusaetzlich mit
+`--ledger` gegen dieses Original-Ledger pruefen; so faellt auch schrittweiser Ankerverlust auf.
+
 ## Harte Grenzen
 
 | Grenze | Regel |
