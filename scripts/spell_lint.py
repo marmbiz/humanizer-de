@@ -94,15 +94,28 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--after", help="After passage as inline text.")
     parser.add_argument("--before-file", type=Path, help="Read before passage from file.")
     parser.add_argument("--after-file", type=Path, help="Read after passage from file.")
+    parser.add_argument("--fail-on", choices=["never", "blocker", "any"], default="never")
     return parser.parse_args(argv)
+
+
+def exit_code(report: dict, fail_on: str) -> int:
+    if not report.get("available", True):
+        return 0
+    findings = report["findings"]
+    if fail_on == "never":
+        return 0
+    if fail_on == "blocker":
+        return 1 if any(item.get("severity") == "blocker" for item in findings) else 0
+    return 1 if findings else 0
 
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(sys.argv[1:] if argv is None else argv)
     before = load_text(args.before, args.before_file)
     after = load_text(args.after, args.after_file)
-    print(json.dumps(lint(before, after), ensure_ascii=False, indent=2))
-    return 0
+    report = lint(before, after)
+    print(json.dumps(report, ensure_ascii=False, indent=2))
+    return exit_code(report, args.fail_on)
 
 
 if __name__ == "__main__":

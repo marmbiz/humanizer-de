@@ -48,6 +48,7 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--format", choices=["json", "md"], default="json")
     parser.add_argument("--no-profile", action="store_true", help="Ignore any user profile (.humanizer/profile.json); use base targets only.")
     parser.add_argument("--precise", action="store_true", help="spaCy-gestützte Verfeinerung, wenn installiert; sonst wirkungslos")
+    parser.add_argument("--fail-on", choices=["never", "blocker", "any"], default="never")
     return parser.parse_args(argv)
 
 
@@ -428,6 +429,14 @@ def format_markdown(report: dict) -> str:
     return "\n".join(lines)
 
 
+def exit_code(report: dict, fail_on: str) -> int:
+    if fail_on == "never":
+        return 0
+    if fail_on == "blocker":
+        return 1 if any(item.get("severity") == "blocker" for item in report["findings"]) else 0
+    return 1 if any(report["summary"]["counts"].values()) else 0
+
+
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv or sys.argv[1:])
     try:
@@ -446,7 +455,7 @@ def main(argv: list[str] | None = None) -> int:
         print(format_markdown(report))
     else:
         print(json.dumps(report, ensure_ascii=False, indent=2))
-    return 0
+    return exit_code(report, args.fail_on)
 
 
 if __name__ == "__main__":

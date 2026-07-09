@@ -558,6 +558,7 @@ python3 scripts/syntax_lint.py --file <text.md>
 ### Exit-Codes
 
 Alle Scripts folgen der Konvention `0` = ok, `1` = Findings gemäß Fail-Schwelle bzw. Fixture-/Eval-Mismatch, `2` = Aufruffehler (falsche Argumente). Die Fail-Schwelle unterscheidet sich bewusst je Script:
+`--fail-on {never,blocker,any}` übersteuert die Fail-Schwelle pro Aufruf, die Defaults bleiben unverändert.
 
 | Script | Exit `1` bei |
 |---|---|

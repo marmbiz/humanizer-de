@@ -563,7 +563,16 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--scope", choices=["skill_doc", "user_text", "changed_passages"], default="user_text")
     parser.add_argument("--mode", choices=["locker", "sachlich", "formal"], default="sachlich")
     parser.add_argument("--include-paragraphs", action="store_true", help="Print full paragraph-level diagnostics.")
+    parser.add_argument("--fail-on", choices=["never", "blocker", "any"], default="never")
     return parser.parse_args(argv)
+
+
+def exit_code(suspicions: list[dict], fail_on: str) -> int:
+    if fail_on == "never":
+        return 0
+    if fail_on == "blocker":
+        return 1 if any(item.get("severity") == "blocker" for item in suspicions) else 0
+    return 1 if suspicions else 0
 
 
 def compact_cli_report(report: dict) -> dict:
@@ -588,7 +597,7 @@ def main(argv: list[str] | None = None) -> int:
     if not args.include_paragraphs:
         report = compact_cli_report(report)
     print(json.dumps(report, ensure_ascii=False, indent=2))
-    return 0
+    return exit_code(report["suspicions"], args.fail_on)
 
 
 if __name__ == "__main__":

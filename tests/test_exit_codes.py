@@ -5,6 +5,7 @@ import tempfile
 import unittest
 from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
+from unittest import mock
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -25,6 +26,14 @@ evidence_lint = load_script("evidence_lint")
 rhythm_lint = load_script("rhythm_lint")
 german_pattern_lint = load_script("german_pattern_lint")
 humanizer_audit = load_script("humanizer_audit")
+spell_lint = load_script("spell_lint")
+
+
+def hunspell_de_available():
+    return spell_lint.availability_reason() is None
+
+
+HUNSPELL_DE_AVAILABLE = hunspell_de_available()
 
 
 def run_cli(module, argv):
@@ -233,6 +242,50 @@ class ExitCodeTests(unittest.TestCase):
         self.assertEqual(clean_code, 0)
         self.assertEqual(clean_report["suspicions"], [])
 
+    def test_rhythm_lint_fail_on_never_exits_0_for_suspicion(self):
+        code, report = run_cli(
+            rhythm_lint,
+            [
+                "--text",
+                "Zudem prueft das Team die Werte. Zudem speichert es die Notizen.",
+                "--fail-on",
+                "never",
+            ],
+        )
+
+        self.assertEqual(code, 0)
+        self.assertIn("connector density", {item["reason"] for item in report["suspicions"]})
+        self.assertTrue(all(item.get("severity") == "warning" for item in report["suspicions"]))
+
+    def test_rhythm_lint_fail_on_blocker_exits_0_for_warning_suspicion(self):
+        code, report = run_cli(
+            rhythm_lint,
+            [
+                "--text",
+                "Zudem prueft das Team die Werte. Zudem speichert es die Notizen.",
+                "--fail-on",
+                "blocker",
+            ],
+        )
+
+        self.assertEqual(code, 0)
+        self.assertIn("connector density", {item["reason"] for item in report["suspicions"]})
+        self.assertTrue(all(item.get("severity") == "warning" for item in report["suspicions"]))
+
+    def test_rhythm_lint_fail_on_any_exits_1_for_suspicion(self):
+        code, report = run_cli(
+            rhythm_lint,
+            [
+                "--text",
+                "Zudem prueft das Team die Werte. Zudem speichert es die Notizen.",
+                "--fail-on",
+                "any",
+            ],
+        )
+
+        self.assertEqual(code, 1)
+        self.assertIn("connector density", {item["reason"] for item in report["suspicions"]})
+
     def test_german_pattern_lint_always_exits_0(self):
         finding_code, finding_report = run_cli(
             german_pattern_lint,
@@ -315,6 +368,104 @@ class ExitCodeTests(unittest.TestCase):
         self.assertEqual(clean_code, 0)
         self.assertTrue(clean_report["ok"])
         self.assertEqual(clean_report["findings"], [])
+
+    def test_humanizer_audit_fail_on_never_exits_0_for_finding(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            finding_path = Path(tmp) / "finding.md"
+            finding_path.write_text('Er sagte "Hallo".', encoding="utf-8")
+
+            code, report = run_cli(
+                humanizer_audit,
+                ["--file", str(finding_path), "--no-profile", "--fail-on", "never"],
+            )
+
+        self.assertEqual(code, 0)
+        self.assertIn("straight_quote", finding_kinds(report))
+        self.assertGreater(report["summary"]["counts"]["unicode"], 0)
+
+    def test_humanizer_audit_fail_on_blocker_exits_1_for_register_blocker(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            finding_path = Path(tmp) / "finding.md"
+            finding_path.write_text("Klingt spannend?", encoding="utf-8")
+
+            code, report = run_cli(
+                humanizer_audit,
+                ["--file", str(finding_path), "--mode", "formal", "--no-profile", "--fail-on", "blocker"],
+            )
+
+        self.assertEqual(code, 1)
+        self.assertIn("formal_voice_intrusion", finding_kinds(report))
+        self.assertTrue(any(item["severity"] == "blocker" for item in report["findings"]))
+
+    def test_humanizer_audit_fail_on_any_exits_1_for_finding_count(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            finding_path = Path(tmp) / "finding.md"
+            finding_path.write_text('Er sagte "Hallo".', encoding="utf-8")
+
+            code, report = run_cli(
+                humanizer_audit,
+                ["--file", str(finding_path), "--no-profile", "--fail-on", "any"],
+            )
+
+        self.assertEqual(code, 1)
+        self.assertIn("straight_quote", finding_kinds(report))
+        self.assertGreater(sum(report["summary"]["counts"].values()), 0)
+
+    def test_spell_lint_default_exits_0_when_unavailable(self):
+        with mock.patch.object(spell_lint.shutil, "which", return_value=None):
+            code, report = run_cli(
+                spell_lint,
+                ["--before", "Das Team prüft.", "--after", "Das Team prüft."],
+            )
+
+        self.assertEqual(code, 0)
+        self.assertEqual(report, {"available": False, "reason": "hunspell_missing", "findings": []})
+
+    def test_spell_lint_fail_on_never_exits_0_when_unavailable(self):
+        with mock.patch.object(spell_lint.shutil, "which", return_value=None):
+            code, report = run_cli(
+                spell_lint,
+                ["--before", "Das Team prüft.", "--after", "Das Team prüft.", "--fail-on", "never"],
+            )
+
+        self.assertEqual(code, 0)
+        self.assertEqual(report, {"available": False, "reason": "hunspell_missing", "findings": []})
+
+    @unittest.skipUnless(HUNSPELL_DE_AVAILABLE, "hunspell de_DE dictionary is not available")
+    def test_spell_lint_fail_on_blocker_exits_0_for_warning_only_finding(self):
+        code, report = run_cli(
+            spell_lint,
+            [
+                "--before",
+                "Das Team prüft den Bericht.",
+                "--after",
+                "Das Team prüft den Berihct.",
+                "--fail-on",
+                "blocker",
+            ],
+        )
+
+        self.assertEqual(code, 0)
+        self.assertTrue(report["available"])
+        self.assertEqual(report["findings"][0]["severity"], "warning")
+
+    @unittest.skipUnless(HUNSPELL_DE_AVAILABLE, "hunspell de_DE dictionary is not available")
+    def test_spell_lint_fail_on_any_exits_1_for_warning_finding(self):
+        code, report = run_cli(
+            spell_lint,
+            [
+                "--before",
+                "Das Team prüft den Bericht.",
+                "--after",
+                "Das Team prüft den Berihct.",
+                "--fail-on",
+                "any",
+            ],
+        )
+
+        self.assertEqual(code, 1)
+        self.assertTrue(report["available"])
+        self.assertEqual(report["findings"][0]["severity"], "warning")
 
 
 if __name__ == "__main__":
