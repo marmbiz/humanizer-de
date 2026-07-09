@@ -24,6 +24,33 @@ class GermanPatternLintTests(unittest.TestCase):
         text = "Die robuste Statistik nutzt ein dynamisches Routing."
         self.assertNotIn("ai_marker_cluster", kinds(german_pattern_lint.lint(text)))
 
+    def test_ai_marker_mentions_in_quotes_are_not_cluster(self):
+        text = (
+            "Im Review ging es um Wörter wie „nahtlos“, „beleuchten“ und "
+            "„maßgeschneidert“, nicht um ihren Einsatz im Text."
+        )
+        self.assertNotIn("ai_marker_cluster", kinds(german_pattern_lint.lint(text)))
+
+    def test_ai_marker_cluster_ignores_extra_quote_marker(self):
+        text = (
+            "Der Text beleuchtet den Prozess, bleibt dynamisch und nutzt ein "
+            "vielschichtiges Modell. Im Review fiel auch „nahtlos“."
+        )
+        report = german_pattern_lint.lint(text)
+        finding = next(item for item in report["findings"] if item["kind"] == "ai_marker_cluster")
+        self.assertEqual(sum(finding["evidence"].values()), 3)
+
+    def test_ai_marker_mentions_in_markdown_are_not_cluster(self):
+        text = "Im Glossar steht *nahtlos* neben `beleuchten` und *maßgeschneidert*."
+        self.assertNotIn("ai_marker_cluster", kinds(german_pattern_lint.lint(text)))
+
+    def test_apostrophes_do_not_open_mention_spans(self):
+        text = (
+            "Das gibt's öfter: Der Text beleuchtet den Prozess, bleibt dynamisch "
+            "und wirkt vielschichtig, sagt's Team."
+        )
+        self.assertIn("ai_marker_cluster", kinds(german_pattern_lint.lint(text)))
+
     def test_copula_avoidance_cluster(self):
         text = "Die Plattform fungiert als Werkzeug und verfügt über mehrere Module."
         self.assertIn("copula_avoidance_cluster", kinds(german_pattern_lint.lint(text)))

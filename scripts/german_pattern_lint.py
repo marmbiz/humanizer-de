@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import functools
 import importlib.util
 import json
 import re
@@ -104,12 +105,41 @@ def marker_stem(marker: str) -> str:
     return marker
 
 
+@functools.lru_cache(maxsize=8)
+def mention_ranges(text: str) -> tuple[tuple[int, int], ...]:
+    ranges: list[tuple[int, int]] = []
+    patterns = [
+        r"```.*?```",
+        r"`[^`\n]+`",
+        r"„[^“\n]+“",
+        r"‚[^‘\n]+‘",
+        r'"[^"\n]+"',
+        # Wortgrenzen-Schutz: Apostrophe in Kontraktionen („gibt's") und
+        # Unterstriche in snake_case dürfen keine Spans öffnen/schließen.
+        r"(?<!\w)'[^'\n]+'(?!\w)",
+        r"\*[^*\n]+\*",
+        r"(?<!\w)_[^_\n]+_(?!\w)",
+    ]
+    for pattern in patterns:
+        for match in re.finditer(pattern, text, re.DOTALL):
+            ranges.append(match.span())
+    ranges.sort()
+    return tuple(ranges)
+
+
+def in_mention(index: int, ranges: tuple[tuple[int, int], ...]) -> bool:
+    return any(start <= index < end for start, end in ranges)
+
+
 def count_marker(text: str, marker: str) -> int:
     lowered = text.lower()
+    ranges = mention_ranges(lowered)
     if " " in marker:
-        return len(re.findall(rf"\b{re.escape(marker)}\w*\b", lowered))
+        matches = re.finditer(rf"\b{re.escape(marker)}\w*\b", lowered)
+        return sum(1 for match in matches if not in_mention(match.start(), ranges))
     stem = marker_stem(marker)
-    return len(re.findall(rf"\b{re.escape(stem)}\w*\b", lowered))
+    matches = re.finditer(rf"\b{re.escape(stem)}\w*\b", lowered)
+    return sum(1 for match in matches if not in_mention(match.start(), ranges))
 
 
 def count_particle(text: str, marker: str) -> int:
