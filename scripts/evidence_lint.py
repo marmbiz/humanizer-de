@@ -4,11 +4,15 @@
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import re
 import sys
 from pathlib import Path
 
+
+SYNTAX_SCRIPT = Path(__file__).resolve().parent / "syntax_lint.py"
+_SYNTAX_LINT = None
 
 ANCHOR_PATTERNS = {
     "number": re.compile(r"\b\d+(?:[.,]\d+)?\s*(?:%|Prozent|Euro|EUR|km|kg|Mio\.?|Millionen)?\b", re.IGNORECASE),
@@ -86,6 +90,36 @@ COMMON_SENTENCE_STARTS = {
     "Ihr",
     "Ihre",
 }
+
+
+def load_syntax_lint():
+    global _SYNTAX_LINT
+    if _SYNTAX_LINT is not None:
+        return _SYNTAX_LINT
+
+    module = sys.modules.get("syntax_lint")
+    if module is None:
+        spec = importlib.util.spec_from_file_location("syntax_lint", SYNTAX_SCRIPT)
+        module = importlib.util.module_from_spec(spec)
+        sys.modules["syntax_lint"] = module
+        spec.loader.exec_module(module)
+
+    _SYNTAX_LINT = module
+    return module
+
+
+def precise_status(precise: bool) -> dict | None:
+    if not precise:
+        return None
+
+    syntax_lint = load_syntax_lint()
+    if not hasattr(syntax_lint, "_HUMANIZER_PRECISE_CACHE"):
+        syntax_lint._HUMANIZER_PRECISE_CACHE = syntax_lint.load_nlp()
+
+    nlp, reason = syntax_lint._HUMANIZER_PRECISE_CACHE
+    if nlp is None:
+        return {"requested": True, "active": False, "reason": reason or "spacy_missing"}
+    return {"requested": True, "active": True}
 
 
 def normalize(value: str) -> str:
@@ -170,7 +204,8 @@ def add_finding(findings: list[dict], severity: str, kind: str, message: str, va
     findings.append({"severity": severity, "kind": kind, "message": message, "values": sorted(values)})
 
 
-def lint(before: str, after: str) -> list[dict]:
+def lint(before: str, after: str, precise: bool = False) -> list[dict]:
+    precise_status(precise)
     findings: list[dict] = []
     before_anchors = anchors(before)
     after_anchors = anchors(after)
@@ -225,9 +260,9 @@ def load_text(value: str | None, path: Path | None) -> str:
     return value or ""
 
 
-def check_fixture(path: Path) -> list[dict]:
+def check_fixture(path: Path, precise: bool = False) -> list[dict]:
     data = json.loads(path.read_text(encoding="utf-8"))
-    findings = lint(data["before"], data["after"])
+    findings = lint(data["before"], data["after"], precise=precise)
     expected = data.get("expect_kinds")
     ok = True
     if expected is not None:
@@ -236,9 +271,9 @@ def check_fixture(path: Path) -> list[dict]:
     return [{"fixture": str(path), "ok": ok, "findings": findings}]
 
 
-def check_fixtures(path: Path) -> list[dict]:
+def check_fixtures(path: Path, precise: bool = False) -> list[dict]:
     files = sorted(path.glob("*.json")) if path.is_dir() else [path]
-    return [item for file_path in files for item in check_fixture(file_path)]
+    return [item for file_path in files for item in check_fixture(file_path, precise=precise)]
 
 
 def parse_args(argv: list[str]) -> argparse.Namespace:
@@ -248,20 +283,29 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--before-file", type=Path, help="Read before passage from file.")
     parser.add_argument("--after-file", type=Path, help="Read after passage from file.")
     parser.add_argument("--fixture", type=Path, help="JSON fixture file or directory.")
+    parser.add_argument("--precise", action="store_true", help="spaCy-gestützte Verfeinerung, wenn installiert; sonst wirkungslos")
     return parser.parse_args(argv)
 
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv or sys.argv[1:])
     if args.fixture:
-        results = check_fixtures(args.fixture)
-        print(json.dumps({"ok": all(item["ok"] for item in results), "results": results}, ensure_ascii=False, indent=2))
+        results = check_fixtures(args.fixture, precise=args.precise)
+        report = {"ok": all(item["ok"] for item in results), "results": results}
+        status = precise_status(args.precise)
+        if status is not None:
+            report["precise"] = status
+        print(json.dumps(report, ensure_ascii=False, indent=2))
         return 0 if all(item["ok"] for item in results) else 1
 
     before = load_text(args.before, args.before_file)
     after = load_text(args.after, args.after_file)
-    findings = lint(before, after)
-    print(json.dumps({"ok": not findings, "findings": findings}, ensure_ascii=False, indent=2))
+    findings = lint(before, after, precise=args.precise)
+    report = {"ok": not findings, "findings": findings}
+    status = precise_status(args.precise)
+    if status is not None:
+        report["precise"] = status
+    print(json.dumps(report, ensure_ascii=False, indent=2))
     return 1 if any(item["severity"] == "blocker" for item in findings) else 0
 
 

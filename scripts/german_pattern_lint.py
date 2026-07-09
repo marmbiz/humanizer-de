@@ -16,6 +16,9 @@ register_spec = importlib.util.spec_from_file_location("register_lint", REGISTER
 register_lint = importlib.util.module_from_spec(register_spec)
 register_spec.loader.exec_module(register_lint)
 
+SYNTAX_SCRIPT = Path(__file__).resolve().parent / "syntax_lint.py"
+_SYNTAX_LINT = None
+
 
 AI_MARKERS = (
     "beleuchten",
@@ -65,6 +68,36 @@ STELLT_DAR_RE = re.compile(
 )
 
 
+def load_syntax_lint():
+    global _SYNTAX_LINT
+    if _SYNTAX_LINT is not None:
+        return _SYNTAX_LINT
+
+    module = sys.modules.get("syntax_lint")
+    if module is None:
+        spec = importlib.util.spec_from_file_location("syntax_lint", SYNTAX_SCRIPT)
+        module = importlib.util.module_from_spec(spec)
+        sys.modules["syntax_lint"] = module
+        spec.loader.exec_module(module)
+
+    _SYNTAX_LINT = module
+    return module
+
+
+def precise_status(precise: bool) -> dict | None:
+    if not precise:
+        return None
+
+    syntax_lint = load_syntax_lint()
+    if not hasattr(syntax_lint, "_HUMANIZER_PRECISE_CACHE"):
+        syntax_lint._HUMANIZER_PRECISE_CACHE = syntax_lint.load_nlp()
+
+    nlp, reason = syntax_lint._HUMANIZER_PRECISE_CACHE
+    if nlp is None:
+        return {"requested": True, "active": False, "reason": reason or "spacy_missing"}
+    return {"requested": True, "active": True}
+
+
 def marker_stem(marker: str) -> str:
     if marker.endswith("en") and len(marker) > 5:
         return marker[:-2]
@@ -84,7 +117,7 @@ def count_particle(text: str, marker: str) -> int:
     return len(re.findall(rf"\b{re.escape(marker)}\b", lowered))
 
 
-def lint(text: str, mode: str = "sachlich") -> dict:
+def lint(text: str, mode: str = "sachlich", precise: bool = False) -> dict:
     clean_text = register_lint.strip_protected(text)
     lowered = clean_text.lower()
     findings: list[dict] = []
@@ -118,12 +151,16 @@ def lint(text: str, mode: str = "sachlich") -> dict:
     if len(colon_headings) >= 2:
         findings.append({"pattern": 54, "kind": "colon_heading_cluster", "severity": "warning", "evidence": colon_headings})
 
-    return {"ok": not findings, "mode": mode, "findings": findings}
+    report = {"ok": not findings, "mode": mode, "findings": findings}
+    status = precise_status(precise)
+    if status is not None:
+        report["precise"] = status
+    return report
 
 
-def check_fixture(path: Path) -> dict:
+def check_fixture(path: Path, precise: bool = False) -> dict:
     data = json.loads(path.read_text(encoding="utf-8"))
-    report = lint(data["text"], mode=data.get("mode", "sachlich"))
+    report = lint(data["text"], mode=data.get("mode", "sachlich"), precise=precise)
     expected = set(data.get("expect_kinds", []))
     actual = {item["kind"] for item in report["findings"]}
     return {"fixture": str(path), "ok": actual == expected, "report": report}
@@ -136,6 +173,7 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     source.add_argument("--file", type=Path)
     source.add_argument("--fixture", type=Path)
     parser.add_argument("--mode", choices=["locker", "sachlich", "formal"], default="sachlich")
+    parser.add_argument("--precise", action="store_true", help="spaCy-gestützte Verfeinerung, wenn installiert; sonst wirkungslos")
     return parser.parse_args(argv)
 
 
@@ -143,12 +181,12 @@ def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv or sys.argv[1:])
     if args.fixture:
         files = sorted(args.fixture.glob("*.json")) if args.fixture.is_dir() else [args.fixture]
-        results = [check_fixture(file_path) for file_path in files]
+        results = [check_fixture(file_path, precise=args.precise) for file_path in files]
         print(json.dumps({"ok": all(item["ok"] for item in results), "results": results}, ensure_ascii=False, indent=2))
         return 0 if all(item["ok"] for item in results) else 1
 
     text = args.file.read_text(encoding="utf-8") if args.file else args.text or ""
-    report = lint(text, mode=args.mode)
+    report = lint(text, mode=args.mode, precise=args.precise)
     print(json.dumps(report, ensure_ascii=False, indent=2))
     return 0
 
