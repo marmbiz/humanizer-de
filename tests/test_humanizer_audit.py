@@ -6,6 +6,7 @@ import tempfile
 import unittest
 from contextlib import redirect_stdout
 from pathlib import Path
+from unittest import mock
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -14,6 +15,11 @@ SCRIPT = ROOT / "scripts" / "humanizer_audit.py"
 spec = importlib.util.spec_from_file_location("humanizer_audit", SCRIPT)
 humanizer_audit = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(humanizer_audit)
+
+SPACY_AVAILABLE = (
+    importlib.util.find_spec("spacy") is not None
+    and importlib.util.find_spec("de_core_news_sm") is not None
+)
 
 
 def run_cli(argv):
@@ -26,6 +32,11 @@ def run_cli(argv):
 def run_json(argv):
     exit_code, output = run_cli(argv)
     return exit_code, json.loads(output)
+
+
+def clear_precise_cache():
+    if hasattr(humanizer_audit.syntax_lint, "_HUMANIZER_PRECISE_CACHE"):
+        delattr(humanizer_audit.syntax_lint, "_HUMANIZER_PRECISE_CACHE")
 
 
 class HumanizerAuditTests(unittest.TestCase):
@@ -71,6 +82,61 @@ class HumanizerAuditTests(unittest.TestCase):
         self.assertEqual(report["findings"], [])
         self.assertEqual(sum(report["summary"]["counts"].values()), 0)
         self.assertEqual(report["summary"]["preflight"]["risk"], "insufficient_text")
+
+    def test_without_precise_keeps_default_report_shape(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "clean.md"
+            path.write_text("Das Team prüft die Datei. Danach endet der Test.", encoding="utf-8")
+
+            exit_code, report = run_json(["--file", str(path)])
+
+        self.assertEqual(exit_code, 0)
+        self.assertEqual(set(report), {"file", "mode", "ok", "summary", "style_profile", "findings"})
+        self.assertEqual(set(report["summary"]), {"rhythm", "preflight", "counts"})
+        self.assertEqual(set(report["summary"]["counts"]), {"unicode", "rhythm", "german_pattern", "register"})
+        self.assertNotIn("precise", report["summary"])
+        self.assertNotIn("syntax", report)
+
+    def test_precise_without_spacy_reports_status_and_keeps_findings(self):
+        text = "Die Idee war neu. Sie überzeugte sofort. Und du merkst das."
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "text.md"
+            path.write_text(text, encoding="utf-8")
+
+            clear_precise_cache()
+            _, default_report = run_json(["--file", str(path)])
+            with mock.patch.object(humanizer_audit.syntax_lint, "load_nlp", return_value=(None, "spacy_missing")):
+                clear_precise_cache()
+                exit_code, precise_report = run_json(["--file", str(path), "--precise"])
+            clear_precise_cache()
+
+        self.assertEqual(exit_code, 0)
+        self.assertEqual(precise_report["findings"], default_report["findings"])
+        self.assertEqual(precise_report["summary"]["counts"], default_report["summary"]["counts"])
+        self.assertEqual(
+            precise_report["summary"]["precise"],
+            {"requested": True, "active": False, "reason": "spacy_missing"},
+        )
+        self.assertEqual(
+            precise_report["syntax"],
+            {"available": False, "reason": "spacy_missing", "metrics": None, "findings": []},
+        )
+
+    @unittest.skipUnless(SPACY_AVAILABLE, "spaCy German model not installed")
+    def test_precise_with_spacy_reports_active_status_and_syntax(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "text.md"
+            path.write_text("Das Team prüft die Datei. Danach endet der Test.", encoding="utf-8")
+
+            clear_precise_cache()
+            exit_code, report = run_json(["--file", str(path), "--precise"])
+            clear_precise_cache()
+
+        self.assertEqual(exit_code, 0)
+        self.assertEqual(report["summary"]["precise"], {"requested": True, "active": True})
+        self.assertTrue(report["syntax"]["available"])
+        self.assertIn("metrics", report["syntax"])
+        self.assertIn("findings", report["syntax"])
 
     def test_short_text_with_connectors_is_insufficient_text(self):
         text = (

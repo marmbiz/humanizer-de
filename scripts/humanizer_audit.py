@@ -18,6 +18,7 @@ import german_pattern_lint
 import register_lint
 import rhythm_lint
 import style_profile
+import syntax_lint
 import unicode_lint
 
 
@@ -46,6 +47,7 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--mode", choices=["locker", "sachlich", "formal"], default=None)
     parser.add_argument("--format", choices=["json", "md"], default="json")
     parser.add_argument("--no-profile", action="store_true", help="Ignore any user profile (.humanizer/profile.json); use base targets only.")
+    parser.add_argument("--precise", action="store_true", help="spaCy-gestützte Verfeinerung, wenn installiert; sonst wirkungslos")
     return parser.parse_args(argv)
 
 
@@ -303,13 +305,25 @@ def style_profile_section(text: str, path: Path, mode: str, mode_explicit: bool,
     return section
 
 
-def analyze_file(path: Path, mode: str, mode_explicit: bool = False, use_profile: bool = True) -> dict:
+def analyze_file(
+    path: Path,
+    mode: str,
+    mode_explicit: bool = False,
+    use_profile: bool = True,
+    precise: bool = False,
+) -> dict:
     text = path.read_text(encoding="utf-8")
 
     unicode_findings = unicode_lint.lint(text)
     rhythm_report = rhythm_lint.analyze(text, file=str(path), scope="user_text", mode=mode)
-    german_report = german_pattern_lint.lint(text, mode=mode)
-    register_report = register_lint.lint(text, mode=mode)
+    german_report = german_pattern_lint.lint(text, mode=mode, precise=precise)
+    register_report = register_lint.lint(text, mode=mode, precise=precise)
+    syntax_report = None
+    if precise:
+        # nlp aus dem geteilten Prozess-Cache der Linter wiederverwenden,
+        # damit das Modell pro Audit-Lauf nur einmal geladen wird.
+        _, cached_nlp = register_lint.precise_context(precise)
+        syntax_report = syntax_lint.lint(text, nlp=cached_nlp)
 
     counts = {
         "unicode": len(unicode_findings),
@@ -330,7 +344,7 @@ def analyze_file(path: Path, mode: str, mode_explicit: bool = False, use_profile
         mode,
     )
 
-    return {
+    report = {
         "file": str(path),
         "mode": mode,
         "ok": sum(counts.values()) == 0,
@@ -342,6 +356,10 @@ def analyze_file(path: Path, mode: str, mode_explicit: bool = False, use_profile
         "style_profile": style_profile_section(text, path, mode, mode_explicit, use_profile),
         "findings": findings,
     }
+    if precise:
+        report["summary"]["precise"] = register_report.get("precise") or german_report.get("precise")
+        report["syntax"] = syntax_report
+    return report
 
 
 def md_finding_line(item: dict) -> str:
@@ -417,7 +435,13 @@ def main(argv: list[str] | None = None) -> int:
     except ValueError as error:
         raise SystemExit(str(error))
 
-    report = analyze_file(path, args.mode or "sachlich", mode_explicit=args.mode is not None, use_profile=not args.no_profile)
+    report = analyze_file(
+        path,
+        args.mode or "sachlich",
+        mode_explicit=args.mode is not None,
+        use_profile=not args.no_profile,
+        precise=args.precise,
+    )
     if args.format == "md":
         print(format_markdown(report))
     else:

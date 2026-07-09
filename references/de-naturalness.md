@@ -80,6 +80,12 @@ Diese Karten operationalisieren die spaeten Muster 54, 55, 58, 60, 63, 64 und 65
 - Sicherer Eingriff: auf "ist" oder "hat" zurueckfuehren, wenn keine Information verloren geht.
 - Nicht anfassen: echte Funktionsbeschreibung, etwa "dient als Notausgang".
 
+## Scriptseitige Carve-outs
+- `register_lint --precise` faengt anaphorisches satzinitiales „Sie“ und Blockquotes wie `> Bitte pruefen Sie das.` ab.
+- `german_pattern_lint --precise` faengt `stellt`-Vollverb- und Satzgrenzen-Faelle wie `stellt sicher. ... legte er dar` ab.
+- `evidence_lint --precise` filtert Einzeltoken-`proper_name`-Fehlalarme wie `hat Relevanz`.
+- Use-Mention bei Muster 64 ist seit P-AP-4 immer abgefangen, auch ohne `--precise`: `"nahtlos"` als Wortbeispiel zaehlt nicht.
+
 ## DACH-Regionalstil
 
 - Signal: Text weicht von Standarddeutsch ab durch regionale Lexik, Syntax oder Registerebene.

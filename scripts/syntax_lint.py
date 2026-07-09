@@ -17,7 +17,6 @@ NOUN_POS = {"NOUN", "PROPN"}
 VERB_POS = {"VERB", "AUX"}
 FINITE_VERB_POS = {"VERB", "AUX"}
 
-
 def load_nlp() -> tuple[Any | None, str | None]:
     try:
         import spacy
@@ -176,10 +175,11 @@ def unavailable_report(reason: str) -> dict:
     return {"available": False, "reason": reason, "metrics": None, "findings": []}
 
 
-def lint(text: str) -> dict:
-    nlp, reason = load_nlp()
+def lint(text: str, nlp: Any | None = None) -> dict:
     if nlp is None:
-        return unavailable_report(reason or "spacy_missing")
+        nlp, reason = load_nlp()
+        if nlp is None:
+            return unavailable_report(reason or "spacy_missing")
 
     doc = nlp(prose_text(text))
     sentences = list(doc.sents)
