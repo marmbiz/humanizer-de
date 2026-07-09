@@ -3,7 +3,6 @@
     "mixed_address": 1
   },
   "tests/fp_corpus/b_use_mention_ai_markers.md": {
-    "ai_marker_cluster": 1,
     "low sentence-length variance": 1
   },
   "tests/fp_corpus/c_stellt_full_verb.md": {
