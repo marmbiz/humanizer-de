@@ -609,6 +609,8 @@ Lokale Dateien werden nur gespeichert, wenn eine Änderung ausdrücklich in Date
 
 Das persönliche Stilprofil (`.humanizer/profile.json`) folgt dem Prinzip der Datenminimierung (Privacy by Design, Art. 25 DSGVO): Es speichert ausschließlich Regeln und Korridore, niemals Texte oder Textauszüge, und bleibt lokal im Projekt – nichts davon wird übertragen. Auskunft, Berichtigung und Löschung sind hier ein Texteditor, kein Support-Ticket.
 
+Das optionale Feedback-Ledger `.humanizer/decisions.jsonl` sammelt nur Muster-Nr. oder Regel, Entscheidung und Grund, nie Nutzertext, und wird von keinem Script gelesen.
+
 ---
 
 ## Feedback & Beitrag

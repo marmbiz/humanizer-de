@@ -48,3 +48,31 @@ Bei Zustimmung `profile.json` aktualisieren:
   Projekts aufzunehmen; nie selbst fremde `.gitignore`-Dateien editieren.
 
 Ohne erkennbares Korrektur-Muster keinen Dialog führen und nichts schreiben.
+
+## Feedback-Ledger (`decisions.jsonl`)
+
+Getroffene Nutzerentscheidungen über angenommene oder verworfene Kandidaten können zusätzlich
+append-only in `.humanizer/decisions.jsonl` gesammelt werden. Die Datei liegt neben
+`profile.json`, nicht darin, und nutzt eine JSON-Zeile pro Entscheidung:
+
+```json
+{"date": "2026-07-09", "pattern": 64, "lexem": "nahtlos", "mode": "sachlich", "decision": "rejected", "reason": "Wort ist hier Fachbegriff des Kunden"}
+{"date": "2026-07-09", "rule": "rhythm/opener_echo", "mode": "locker", "decision": "accepted", "reason": "Openerdopplung war unbeabsichtigt"}
+```
+
+- `pattern` (Muster-Nr.) ODER `rule` (Slug für Nicht-Katalog-Regeln) — genau eins von beiden.
+- `lexem` optional (einzelnes Wort/Stem, KEIN Satz, KEIN Span).
+- `mode` hält den Laufmodus fest.
+- `decision`: `accepted` | `rejected`; `reason` freitextlich, beschreibt die REGEL, nie die
+  Fundstelle.
+- **Privacy hart:** keine Textauszüge, keine Zitate, keine Spans, keine Dateipfade des
+  Nutzertexts. Der Ledger hält Entscheidungen über Regeln fest, keine Korpusse.
+
+Abschluss-Dialog: Wenn der Nutzer in einem Lauf konkrete Kandidaten annimmt oder ablehnt, pro
+getroffener Nutzer-Entscheidung eine Zeile an `.humanizer/decisions.jsonl` anhängen. Die Datei
+bei Bedarf anlegen; bestehende Zeilen nie umschreiben oder löschen ohne explizite Aufforderung.
+Beim ersten Anlegen einmalig darauf hinweisen, `.humanizer/` in die `.gitignore` des Projekts
+aufzunehmen; nie selbst fremde `.gitignore`-Dateien editieren.
+
+Stufe 1 sammelt nur: keine Auswertung, keine Aggregation, kein Einfluss auf Linter, Preflight
+oder Profil. Eval und `make verify` lesen `decisions.jsonl` nie.
