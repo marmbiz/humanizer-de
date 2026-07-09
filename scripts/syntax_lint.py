@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import sys
 from pathlib import Path
@@ -11,6 +12,7 @@ from typing import Any
 
 
 MODEL = "de_core_news_sm"
+SCRIPT_DIR = Path(__file__).resolve().parent
 NOUN_POS = {"NOUN", "PROPN"}
 VERB_POS = {"VERB", "AUX"}
 FINITE_VERB_POS = {"VERB", "AUX"}
@@ -26,6 +28,45 @@ def load_nlp() -> tuple[Any | None, str | None]:
         return spacy.load(MODEL), None
     except Exception:
         return None, "model_missing"
+
+
+def load_sibling_module(name: str) -> Any:
+    module = sys.modules.get(name)
+    if module is None:
+        spec = importlib.util.spec_from_file_location(name, SCRIPT_DIR / f"{name}.py")
+        module = importlib.util.module_from_spec(spec)
+        sys.modules[name] = module
+        spec.loader.exec_module(module)
+    return module
+
+
+def mask_range(chars: list[str], start: int, end: int) -> None:
+    for index in range(start, end):
+        if chars[index] != "\n":
+            chars[index] = " "
+
+
+def prose_text(text: str) -> str:
+    chars = list(text)
+    unicode_lint = load_sibling_module("unicode_lint")
+    rhythm_lint = load_sibling_module("rhythm_lint")
+
+    for start, end in unicode_lint.protected_ranges(text):
+        mask_range(chars, start, end)
+
+    offset = 0
+    for line in text.splitlines(keepends=True):
+        body_end = len(line.rstrip("\r\n"))
+        body = line[:body_end]
+        if rhythm_lint.is_markdown_heading(body) or rhythm_lint.is_list_item(body):
+            mask_range(chars, offset, offset + body_end)
+        offset += len(line)
+
+    for index, char in enumerate(chars):
+        if char in {"*", "_"}:
+            chars[index] = " "
+
+    return "".join(chars)
 
 
 def token_lemma(token: Any) -> str:
@@ -140,7 +181,7 @@ def lint(text: str) -> dict:
     if nlp is None:
         return unavailable_report(reason or "spacy_missing")
 
-    doc = nlp(text)
+    doc = nlp(prose_text(text))
     sentences = list(doc.sents)
     passive_findings = detect_passive(doc)
     fragment_findings = detect_subjectless_fragment(doc)

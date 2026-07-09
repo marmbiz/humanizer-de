@@ -76,6 +76,51 @@ class SyntaxLintOptionalDependencyTests(unittest.TestCase):
 
 @unittest.skipUnless(SPACY_MODEL_AVAILABLE, "spaCy German model is not available")
 class SyntaxLintSpacyTests(unittest.TestCase):
+    def test_markdown_structure_does_not_create_subjectless_fragments(self):
+        text = """---
+title: Sauberer Artikel
+description: Struktur darf nicht als Satz gelten.
+---
+
+# Eisberg-Heuristik
+
+```text
+Quelle --> Prüfung
+         |
+         v
+      Befund
+```
+
+Der Artikel erklärt die Methode. Die Auswertung bleibt nachvollziehbar.
+"""
+        exit_code, report = run_cli(syntax_lint, ["--text", text])
+
+        self.assertEqual(exit_code, 0)
+        self.assertTrue(report["available"])
+        subjectless = [
+            finding
+            for finding in report["findings"]
+            if finding["kind"] == "subjectless_fragment"
+        ]
+        self.assertEqual(subjectless, [])
+
+    def test_subjectless_fragment_in_markdown_prose_is_still_reported(self):
+        text = """# Kontext
+
+Ohne klares Subjekt. Der zweite Satz ist vollständig.
+"""
+        exit_code, report = run_cli(syntax_lint, ["--text", text])
+
+        self.assertEqual(exit_code, 0)
+        self.assertTrue(report["available"])
+        subjectless = [
+            finding
+            for finding in report["findings"]
+            if finding["kind"] == "subjectless_fragment"
+        ]
+        self.assertEqual(len(subjectless), 1)
+        self.assertEqual(subjectless[0]["sentence"], "Ohne klares Subjekt.")
+
     def test_passive_sentence_reports_agent_phrase(self):
         exit_code, report = run_cli(
             syntax_lint,
