@@ -34,6 +34,9 @@ python3 scripts/run_review_eval.py tests/scenarios --check-invariants
 | 19 | Formal | Ein tell-freier förmlicher Text wird in flapsiges Du-Register gekippt. |
 | 20 | Sachlich | Ein tell-freier Text behält nach der Überarbeitung seinen monotonen Satzrhythmus. |
 | 21 | Sachlich | Die Branding-Prelude landet trotz Raw-JSON/Maschinen-Output im Ergebnis. |
+| 22 | Formal | Juristische Wiederholungen und Paragraphenanker werden aus falschem Glättungsdrang entfernt. |
+| 23 | Locker | Bewusste Marketing-Repetition wird in generische Werbesprache geglättet. |
+| 24 | Formal | Akademische Abstrakta, Passiv und Aussagevorsicht werden als vermeintliche KI-Tells überarbeitet. |
 
 Die Szenarien 14 bis 18 (QGIR-Contracts) existieren nur als maschinenlesbare Fixtures in `tests/scenarios/` und laufen ausschließlich über den Runner; sie haben bewusst keinen Eintrag in dieser Datei.
 
@@ -376,6 +379,63 @@ Die API liefert Status 200 und ein leeres Array.
 **Relevante Muster:** bewusst keine Katalog-Treffer. Das Urteil kommt allein aus der Output-Regel: Die Prelude ist für normale user-facing Runs erlaubt, muss bei Raw-JSON, ausdrücklich knapper Ausgabe und stillen Dateiänderungen aber wegfallen.
 
 **Warum dieses Szenario zählt:** Es schützt maschinenlesbare Ausgaben vor menschlichem Branding. Der Failure-Mode wäre, dass eine hilfreiche Standard-Prelude in Raw-JSON rutscht und nachgelagerte Automatisierung bricht.
+
+## Szenario 22: Red-Team Rechtstext Do-nothing (Formal)
+
+**Skill-Modus:** Formal
+**Nutzer-Prompt:** "Bitte prüfe diesen Vertragsauszug im Formal-Modus und ändere nur echte KI-Artefakte."
+
+**Input:**
+```
+Im Sinne dieser Vereinbarung bezeichnet „Vertrauliche Information“ jede Unterlage, die im Datenraum bereitgestellt wird. Die Mieterin darf Unterlagen nach § 5 Abs. 2 nur für die Prüfung verwenden. § 5 Abs. 2 gilt auch für Kopien, Auszüge und Notizen. Vertrauliche Information bleibt Vertrauliche Information, selbst wenn sie mündlich erläutert wird. Einwendungen sind binnen 14 Tagen in Textform mitzuteilen.
+```
+
+**Erwartetes Verhalten (Pass/Fail):**
+- [ ] Die wiederholten Verweise auf § 5 Abs. 2 bleiben stehen; sie sind juristische Präzision, kein Stilproblem.
+- [ ] Die Definitionswiederholung „Vertrauliche Information“ wird nicht durch Synonyme ersetzt.
+- [ ] Eine minimale Umstellung ist zulässig, wenn Mieterin, Frist, Textform und alle Paragraphenanker erhalten bleiben.
+
+**Relevante Muster:** bewusst keine Katalog-Tells. Das Urteil kommt aus Anker- und Registertreue: Ein Over-Edit, der Paragraphen, Definition oder Formanforderung glättet, verletzt den Contract.
+
+**Warum dieses Szenario zählt:** Der Fall schützt Rechtssprache vor falscher Varianz. Der Failure-Mode wäre, Wiederholung als KI-Signal zu behandeln und dadurch Rechtsbezüge unpräziser zu machen.
+
+## Szenario 23: Red-Team Marketing-Repetition (Locker)
+
+**Skill-Modus:** Locker
+**Nutzer-Prompt:** "Bitte prüfe diesen Kampagnenabschnitt auf KI-Tells. Die Wiederholung im Claim ist beabsichtigt."
+
+**Input:**
+```
+Wir starten klein. Wir testen schnell. Wir lernen offen. Das ist kein Zufall, sondern unser Arbeitsversprechen für die Frühjahrskampagne 2026: weniger Reibung im Shop, klare Preise im Warenkorb und Antworten binnen 24 Stunden. Wieder schneller finden. Wieder leichter kaufen. Wieder sicherer entscheiden. Genau diese Wiederholung soll im Claim stehen.
+```
+
+**Erwartetes Verhalten (Pass/Fail):**
+- [ ] Parallelismus und „Wieder“-Repetition bleiben als Stilmittel erhalten.
+- [ ] Kampagnenjahr, Antwortzeit und die drei Claim-Zeilen werden nicht zusammengezogen oder verallgemeinert.
+- [ ] Zulässig ist nur eine kleine syntaktische Straffung außerhalb des Claims.
+
+**Relevante Muster:** bewusst keine Eingriffe wegen Repetition allein. Der Contract schützt die beabsichtigte Wiederholung und die Kampagnenanker vor generischer Werbeglättung.
+
+**Warum dieses Szenario zählt:** Marketingtexte nutzen Wiederholung oft absichtlich. Der Test fängt ab, ob das Skill Repetition nur dann behandelt, wenn sie tatsächlich künstlich wirkt und nicht, wenn sie als Claim-Mechanik markiert ist.
+
+## Szenario 24: Red-Team Akademisches Register (Formal)
+
+**Skill-Modus:** Formal
+**Nutzer-Prompt:** "Bitte prüfe diesen Methodikabschnitt im Formal-Modus. Fachregister und Aussagevorsicht sollen erhalten bleiben."
+
+**Input:**
+```
+Die Auswertung wurde auf Ebene der Kursgruppen vorgenommen. Im Mittelpunkt standen die Vergleichbarkeit der Erhebungszeitpunkte, die Nachvollziehbarkeit der Kodierung und die Begrenzung möglicher Verzerrungen. Abweichungen wurden dokumentiert; eine kausale Wirkung wurde ausdrücklich nicht behauptet. Diese Zurückhaltung ist Teil der Argumentation, nicht ein Mangel an Stimme.
+```
+
+**Erwartetes Verhalten (Pass/Fail):**
+- [ ] Abstrakta wie Vergleichbarkeit, Nachvollziehbarkeit und Verzerrungen bleiben erhalten, weil sie die Methode präzise benennen.
+- [ ] Das Passiv wird nicht pauschal in ein lockeres „Wir“-Register umgeschrieben.
+- [ ] Die Aussage „kausale Wirkung wurde ausdrücklich nicht behauptet“ darf nicht in eine stärkere Ergebnisbehauptung kippen.
+
+**Relevante Muster:** bewusst keine Eingriffe wegen akademischem Passiv oder Nominalstil. Der Contract misst Ankererhalt und verhindert Register- sowie Claim-Drift.
+
+**Warum dieses Szenario zählt:** Der Fall hält die Grenze zwischen berechtigter Humanisierung und fachlicher Verwässerung. Akademische Vorsicht ist hier Substanz, kein Artefakt.
 
 ## Neue Szenarien hinzufügen
 

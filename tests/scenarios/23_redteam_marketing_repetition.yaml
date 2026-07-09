@@ -1,0 +1,62 @@
+{
+  "id": 23,
+  "mode": "Locker",
+  "input": "Wir starten klein. Wir testen schnell. Wir lernen offen. Das ist kein Zufall, sondern unser Arbeitsversprechen für die Frühjahrskampagne 2026: weniger Reibung im Shop, klare Preise im Warenkorb und Antworten binnen 24 Stunden. Wieder schneller finden. Wieder leichter kaufen. Wieder sicherer entscheiden. Genau diese Wiederholung soll im Claim stehen.",
+  "expected_behavior": [
+    "bewusste Repetition und Parallelismus erhalten",
+    "Claim-Zeilen nicht zu generischer Werbesprache glätten",
+    "Kampagnenanker und Serviceversprechen erhalten"
+  ],
+  "quality_risks": [
+    "Parallelismus entfernt",
+    "Claim in generische Marketingfloskel gekippt",
+    "Kampagnenjahr oder Antwortzeit verloren"
+  ],
+  "output_contract": [
+    "Modus",
+    "Gefundene Muster",
+    "Geänderte Stellen",
+    "Kurzaudit"
+  ],
+  "qgir_contract": {
+    "max_passes": 2,
+    "max_changed_sentence_ratio": 0.35,
+    "protected_anchors": [
+      "Frühjahrskampagne 2026",
+      "24 Stunden",
+      "Wieder schneller finden",
+      "Wieder leichter kaufen",
+      "Wieder sicherer entscheiden"
+    ]
+  },
+  "sample_outputs": [
+    {
+      "name": "known-good unchanged marketing input",
+      "passes": [
+        "Wir starten klein. Wir testen schnell. Wir lernen offen. Das ist kein Zufall, sondern unser Arbeitsversprechen für die Frühjahrskampagne 2026: weniger Reibung im Shop, klare Preise im Warenkorb und Antworten binnen 24 Stunden. Wieder schneller finden. Wieder leichter kaufen. Wieder sicherer entscheiden. Genau diese Wiederholung soll im Claim stehen."
+      ],
+      "expect_violations": [
+        "full_text_output"
+      ],
+      "expect_violations_exact": true
+    },
+    {
+      "name": "minimal umgestellt alles erhalten",
+      "passes": [
+        "Wir starten klein. Wir testen schnell. Wir lernen offen. Das ist kein Zufall, sondern unser Arbeitsversprechen für die Frühjahrskampagne 2026: klare Preise im Warenkorb, weniger Reibung im Shop und Antworten binnen 24 Stunden. Wieder schneller finden. Wieder leichter kaufen. Wieder sicherer entscheiden. Genau diese Wiederholung soll im Claim stehen."
+      ],
+      "expect_violations": [],
+      "expect_violations_exact": true
+    },
+    {
+      "name": "over-edit glättet repetition weg",
+      "passes": [
+        "Unsere Kampagne macht den Einkauf einfacher und moderner. Sie verbindet klare Preise im Warenkorb mit schnellem Service und einem reibungslosen Erlebnis."
+      ],
+      "expect_violations": [
+        "edit_budget_exceeded",
+        "missing_protected_anchor"
+      ]
+    }
+  ]
+}

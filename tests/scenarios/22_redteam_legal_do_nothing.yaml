@@ -1,0 +1,62 @@
+{
+  "id": 22,
+  "mode": "Formal",
+  "input": "Im Sinne dieser Vereinbarung bezeichnet „Vertrauliche Information“ jede Unterlage, die im Datenraum bereitgestellt wird. Die Mieterin darf Unterlagen nach § 5 Abs. 2 nur für die Prüfung verwenden. § 5 Abs. 2 gilt auch für Kopien, Auszüge und Notizen. Vertrauliche Information bleibt Vertrauliche Information, selbst wenn sie mündlich erläutert wird. Einwendungen sind binnen 14 Tagen in Textform mitzuteilen.",
+  "expected_behavior": [
+    "gewollte Paragraphen-Wiederholungen erhalten",
+    "Definitionswiederholung nicht glätten",
+    "juristisches Formalregister erhalten"
+  ],
+  "quality_risks": [
+    "Paragraphenanker entfernt",
+    "Definition variiert und dadurch ungenauer",
+    "Frist oder Formanforderung verloren"
+  ],
+  "output_contract": [
+    "Modus",
+    "Gefundene Muster",
+    "Geänderte Stellen",
+    "Kurzaudit"
+  ],
+  "qgir_contract": {
+    "max_passes": 2,
+    "max_changed_sentence_ratio": 0.35,
+    "protected_anchors": [
+      "§ 5 Abs. 2",
+      "Vertrauliche Information",
+      "Mieterin",
+      "14 Tagen",
+      "Textform"
+    ]
+  },
+  "sample_outputs": [
+    {
+      "name": "known-good unchanged legal input",
+      "passes": [
+        "Im Sinne dieser Vereinbarung bezeichnet „Vertrauliche Information“ jede Unterlage, die im Datenraum bereitgestellt wird. Die Mieterin darf Unterlagen nach § 5 Abs. 2 nur für die Prüfung verwenden. § 5 Abs. 2 gilt auch für Kopien, Auszüge und Notizen. Vertrauliche Information bleibt Vertrauliche Information, selbst wenn sie mündlich erläutert wird. Einwendungen sind binnen 14 Tagen in Textform mitzuteilen."
+      ],
+      "expect_violations": [
+        "full_text_output"
+      ],
+      "expect_violations_exact": true
+    },
+    {
+      "name": "minimal umgestellt alles erhalten",
+      "passes": [
+        "Im Sinne dieser Vereinbarung bezeichnet „Vertrauliche Information“ jede Unterlage, die im Datenraum bereitgestellt wird. Unterlagen darf die Mieterin nach § 5 Abs. 2 nur für die Prüfung verwenden. Auch für Kopien, Auszüge und Notizen gilt § 5 Abs. 2. Vertrauliche Information bleibt Vertrauliche Information, selbst wenn sie mündlich erläutert wird. Einwendungen sind in Textform binnen 14 Tagen mitzuteilen."
+      ],
+      "expect_violations": [],
+      "expect_violations_exact": true
+    },
+    {
+      "name": "over-edit verliert rechtsanker",
+      "passes": [
+        "Die Mieterin darf die Unterlagen nur intern prüfen. Auch Kopien und Notizen bleiben vertraulich. Einwände sollen zeitnah als Nachricht kommen."
+      ],
+      "expect_violations": [
+        "edit_budget_exceeded",
+        "missing_protected_anchor"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "id": 24,
+  "mode": "Formal",
+  "input": "Die Auswertung wurde auf Ebene der Kursgruppen vorgenommen. Im Mittelpunkt standen die Vergleichbarkeit der Erhebungszeitpunkte, die Nachvollziehbarkeit der Kodierung und die Begrenzung möglicher Verzerrungen. Abweichungen wurden dokumentiert; eine kausale Wirkung wurde ausdrücklich nicht behauptet. Diese Zurückhaltung ist Teil der Argumentation, nicht ein Mangel an Stimme.",
+  "expected_behavior": [
+    "legitime Abstrakta erhalten",
+    "fachliches Passiv nicht zwanghaft aktivieren",
+    "Zurückhaltung der Aussage nicht verstärken oder kippen"
+  ],
+  "quality_risks": [
+    "Abstrakta pauschal vereinfacht",
+    "Passiv in lockeres Wir-Register gekippt",
+    "kausale Zurückhaltung verloren"
+  ],
+  "output_contract": [
+    "Modus",
+    "Gefundene Muster",
+    "Geänderte Stellen",
+    "Kurzaudit"
+  ],
+  "qgir_contract": {
+    "max_passes": 2,
+    "max_changed_sentence_ratio": 0.35,
+    "protected_anchors": [
+      "Kursgruppen",
+      "Vergleichbarkeit",
+      "Nachvollziehbarkeit",
+      "Verzerrungen",
+      "kausale Wirkung",
+      "nicht behauptet"
+    ]
+  },
+  "sample_outputs": [
+    {
+      "name": "known-good unchanged academic input",
+      "passes": [
+        "Die Auswertung wurde auf Ebene der Kursgruppen vorgenommen. Im Mittelpunkt standen die Vergleichbarkeit der Erhebungszeitpunkte, die Nachvollziehbarkeit der Kodierung und die Begrenzung möglicher Verzerrungen. Abweichungen wurden dokumentiert; eine kausale Wirkung wurde ausdrücklich nicht behauptet. Diese Zurückhaltung ist Teil der Argumentation, nicht ein Mangel an Stimme."
+      ],
+      "expect_violations": [
+        "full_text_output"
+      ],
+      "expect_violations_exact": true
+    },
+    {
+      "name": "minimal umgestellt alles erhalten",
+      "passes": [
+        "Die Auswertung wurde auf Ebene der Kursgruppen vorgenommen. Im Mittelpunkt standen die Nachvollziehbarkeit der Kodierung, die Vergleichbarkeit der Erhebungszeitpunkte und die Begrenzung möglicher Verzerrungen. Abweichungen wurden dokumentiert; eine kausale Wirkung wurde ausdrücklich nicht behauptet. Diese Zurückhaltung ist Teil der Argumentation, nicht ein Mangel an Stimme."
+      ],
+      "expect_violations": [],
+      "expect_violations_exact": true
+    },
+    {
+      "name": "over-edit kippt akademische vorsicht",
+      "passes": [
+        "Wir haben die Kurse ausgewertet und zeigen damit eine klare Wirkung. Die Methode war sauber und verständlich, mögliche Verzerrungen spielen kaum eine Rolle."
+      ],
+      "expect_violations": [
+        "edit_budget_exceeded",
+        "missing_protected_anchor"
+      ]
+    }
+  ]
+}
