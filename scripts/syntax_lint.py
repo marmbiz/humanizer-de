@@ -165,6 +165,54 @@ def nominal_verb_ratio(doc: Any) -> dict:
     }
 
 
+def verb_bracket_spans(doc: Any) -> list[int]:
+    spans: list[int] = []
+    for sent in doc.sents:
+        for token in sent:
+            if not is_finite_verb_or_aux(token):
+                continue
+            for child in token.children:
+                if (
+                    child.dep_ == "oc"
+                    and child.pos_ == "VERB"
+                    and child.tag_ == "VVPP"
+                    and has_morph(child, "VerbForm", "Part")
+                ) or (child.dep_ == "svp" and child.tag_ == "PTKVZ"):
+                    spans.append(abs(token.i - child.i))
+    return spans
+
+
+def finite_verb_embedding_depth(token: Any, sent: Any) -> int:
+    depth = 0
+    ancestor = token.head
+    while ancestor != token and ancestor in sent:
+        if is_finite_verb_or_aux(ancestor):
+            depth += 1
+        if ancestor.head == ancestor:
+            break
+        ancestor = ancestor.head
+    return depth
+
+
+def max_embedding_depth(doc: Any) -> int:
+    max_depth = 0
+    for sent in doc.sents:
+        for token in sent:
+            if is_finite_verb_or_aux(token):
+                max_depth = max(max_depth, finite_verb_embedding_depth(token, sent))
+    return max_depth
+
+
+def mean_dependency_distance(doc: Any) -> float:
+    distances = [
+        abs(token.i - token.head.i)
+        for token in doc
+        if not token.is_punct and not token.is_space
+    ]
+    # Root tokens stay in the denominator with distance 0.
+    return ratio(sum(distances), len(distances))
+
+
 def ratio(numerator: int, denominator: int) -> float:
     if denominator == 0:
         return float(numerator) if numerator else 0.0
@@ -186,6 +234,7 @@ def lint(text: str, nlp: Any | None = None) -> dict:
     passive_findings = detect_passive(doc)
     fragment_findings = detect_subjectless_fragment(doc)
     noun_verb = nominal_verb_ratio(doc)
+    bracket_spans = verb_bracket_spans(doc)
 
     findings = [
         {
@@ -214,6 +263,10 @@ def lint(text: str, nlp: Any | None = None) -> dict:
             "sentence_count": len(sentences),
             "passive_sentence_count": len(passive_findings),
             "passive_ratio": ratio(len(passive_findings), len(sentences)),
+            "verb_bracket_span_mean": ratio(sum(bracket_spans), len(bracket_spans)),
+            "verb_bracket_span_max": max(bracket_spans, default=0),
+            "max_embedding_depth": max_embedding_depth(doc),
+            "mean_dependency_distance": mean_dependency_distance(doc),
         },
         "findings": findings,
     }

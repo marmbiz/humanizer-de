@@ -168,6 +168,62 @@ Ohne klares Subjekt. Der zweite Satz ist vollständig.
             verbal_report["metrics"]["noun_verb_ratio"],
         )
 
+    def test_verb_bracket_span_detects_german_bracket(self):
+        bracket_code, bracket_report = run_cli(
+            syntax_lint,
+            [
+                "--text",
+                "Er hat die Rechnung nach langem Hin und Her gestern endlich bezahlt.",
+            ],
+        )
+        plain_code, plain_report = run_cli(
+            syntax_lint,
+            ["--text", "Das Team bezahlt die Rechnung."],
+        )
+
+        self.assertEqual(bracket_code, 0)
+        self.assertEqual(plain_code, 0)
+        self.assertTrue(bracket_report["available"])
+        self.assertTrue(plain_report["available"])
+        self.assertGreaterEqual(
+            bracket_report["metrics"]["verb_bracket_span_max"],
+            8,
+        )
+        self.assertEqual(plain_report["metrics"]["verb_bracket_span_max"], 0)
+        self.assertGreater(
+            bracket_report["metrics"]["verb_bracket_span_max"],
+            plain_report["metrics"]["verb_bracket_span_max"],
+        )
+
+    def test_embedding_depth_rises_for_nested_clauses(self):
+        simple_code, simple_report = run_cli(
+            syntax_lint,
+            ["--text", "Er sagt, dass sie kommt."],
+        )
+        nested_code, nested_report = run_cli(
+            syntax_lint,
+            ["--text", "Er sagt, dass sie kommt, weil er fragt, ob es klappt."],
+        )
+
+        self.assertEqual(simple_code, 0)
+        self.assertEqual(nested_code, 0)
+        self.assertTrue(simple_report["available"])
+        self.assertTrue(nested_report["available"])
+        self.assertGreater(
+            nested_report["metrics"]["max_embedding_depth"],
+            simple_report["metrics"]["max_embedding_depth"],
+        )
+
+    def test_mean_dependency_distance_is_positive_for_sentence(self):
+        exit_code, report = run_cli(
+            syntax_lint,
+            ["--text", "Das Team prüft die Rechnung sorgfältig."],
+        )
+
+        self.assertEqual(exit_code, 0)
+        self.assertTrue(report["available"])
+        self.assertGreater(report["metrics"]["mean_dependency_distance"], 0)
+
 
 if __name__ == "__main__":
     unittest.main()
