@@ -108,9 +108,9 @@ def load_syntax_lint():
     return module
 
 
-def precise_status(precise: bool) -> dict | None:
+def precise_context(precise: bool) -> tuple[dict | None, object | None]:
     if not precise:
-        return None
+        return None, None
 
     syntax_lint = load_syntax_lint()
     if not hasattr(syntax_lint, "_HUMANIZER_PRECISE_CACHE"):
@@ -118,8 +118,13 @@ def precise_status(precise: bool) -> dict | None:
 
     nlp, reason = syntax_lint._HUMANIZER_PRECISE_CACHE
     if nlp is None:
-        return {"requested": True, "active": False, "reason": reason or "spacy_missing"}
-    return {"requested": True, "active": True}
+        return {"requested": True, "active": False, "reason": reason or "spacy_missing"}, None
+    return {"requested": True, "active": True}, nlp
+
+
+def precise_status(precise: bool) -> dict | None:
+    status, _ = precise_context(precise)
+    return status
 
 
 def normalize(value: str) -> str:
@@ -135,7 +140,14 @@ def name_key(value: str) -> str:
     return key
 
 
-def anchors(text: str) -> dict[str, set[str]]:
+def token_in_named_entity(doc: object, start: int, end: int) -> bool:
+    for ent in doc.ents:
+        if ent.label_ in {"PER", "ORG", "LOC", "MISC"} and ent.start_char <= start and end <= ent.end_char:
+            return True
+    return False
+
+
+def anchors(text: str, nlp: object | None = None) -> dict[str, set[str]]:
     result: dict[str, set[str]] = {kind: set() for kind in ANCHOR_PATTERNS}
     for kind, pattern in ANCHOR_PATTERNS.items():
         for match in pattern.finditer(text):
@@ -144,11 +156,11 @@ def anchors(text: str) -> dict[str, set[str]]:
             if normalized:
                 result[kind].add(normalized)
 
-    # Known gap: single-token common nouns after verbs that are not in the
-    # stoplist (e.g. "hat Relevanz") still slip through as proper_name — that
-    # false-positive class needs real NER (spaCy) and is deliberately not
-    # solved here.
+    # Known default-path gap: single-token common nouns after verbs that are
+    # not in the stoplist (e.g. "hat Relevanz") still slip through as
+    # proper_name; --precise can filter that class with spaCy NER.
     names: set[str] = set()
+    doc = nlp(text) if nlp is not None else None
     for match in CAPITALIZED_RE.finditer(text):
         raw = match.group(0)
         tokens = raw.split()
@@ -170,13 +182,17 @@ def anchors(text: str) -> dict[str, set[str]]:
         if re.search(r"\d", token) or token[1:] != token[1:].lower():
             names.add(value)
             continue
-        prefix = text[: match.start() + raw.index(token, pos)]
+        token_start = match.start() + raw.index(token, pos)
+        token_end = token_start + len(token)
+        prefix = text[:token_start]
         preceding = re.search(r"([\wÄÖÜäöüß-]+)\s+$", prefix)
         if preceding and preceding.group(1).lower() in DETERMINERS:
             continue
         if not prefix.strip() or re.search(r"[.!?:]\s+$", prefix) or re.search(r"\n[ \t]*$", prefix):
             continue
         if token.lower() in ABSTRACT_NOUN_STOPLIST:
+            continue
+        if doc is not None and not token_in_named_entity(doc, token_start, token_end):
             continue
         names.add(value)
     result["proper_name"] = names
@@ -205,10 +221,10 @@ def add_finding(findings: list[dict], severity: str, kind: str, message: str, va
 
 
 def lint(before: str, after: str, precise: bool = False) -> list[dict]:
-    precise_status(precise)
+    _, nlp = precise_context(precise)
     findings: list[dict] = []
-    before_anchors = anchors(before)
-    after_anchors = anchors(after)
+    before_anchors = anchors(before, nlp=nlp)
+    after_anchors = anchors(after, nlp=nlp)
 
     hard_kinds = {"number", "date", "url", "doi", "paragraph", "code", "quote"}
     for kind in sorted(before_anchors):

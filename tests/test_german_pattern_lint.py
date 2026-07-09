@@ -15,6 +15,19 @@ def kinds(report):
     return {item["kind"] for item in report["findings"]}
 
 
+def spacy_model_available():
+    try:
+        import spacy
+
+        spacy.load("de_core_news_sm")
+    except Exception:
+        return False
+    return True
+
+
+SPACY_MODEL_AVAILABLE = spacy_model_available()
+
+
 class GermanPatternLintTests(unittest.TestCase):
     def test_ai_marker_cluster(self):
         text = "Der Text beleuchtet das vielschichtige Zusammenspiel in einer dynamischen Landschaft."
@@ -70,6 +83,10 @@ class GermanPatternLintTests(unittest.TestCase):
         finding = next(item for item in report["findings"] if item["kind"] == "copula_avoidance_cluster")
         self.assertEqual(finding["evidence"], {"stellt ... dar": 2})
 
+    def test_default_regex_counts_sentence_boundary_stellt_dar(self):
+        text = "Dies stellt sicher. Kurz darauf legte er dar, was passiert, und fungiert als Beispiel."
+        self.assertIn("copula_avoidance_cluster", kinds(german_pattern_lint.lint(text)))
+
     def test_formal_particles_are_reported(self):
         text = "Die Entscheidung ist ja eben wichtig."
         self.assertIn("particles_outside_locker", kinds(german_pattern_lint.lint(text, mode="formal")))
@@ -81,6 +98,21 @@ class GermanPatternLintTests(unittest.TestCase):
     def test_particle_stems_do_not_match_unrelated_words(self):
         text = "Das Ergebnis stammt aus dem Januar. Wir mussten die Haltung mehrmals ändern, ebenso die Malerei."
         self.assertNotIn("particles_outside_locker", kinds(german_pattern_lint.lint(text, mode="formal")))
+
+
+@unittest.skipUnless(SPACY_MODEL_AVAILABLE, "spaCy German model is not available")
+class GermanPatternLintPreciseTests(unittest.TestCase):
+    def test_precise_ignores_sentence_boundary_stellt_dar(self):
+        text = "Dies stellt sicher. Kurz darauf legte er dar, was passiert, und fungiert als Beispiel."
+        report = german_pattern_lint.lint(text, precise=True)
+
+        self.assertNotIn("copula_avoidance_cluster", kinds(report))
+
+    def test_precise_keeps_real_stellt_dar_cluster(self):
+        text = "Dies stellt einen Fortschritt dar und fungiert als Beispiel."
+        report = german_pattern_lint.lint(text, precise=True)
+
+        self.assertIn("copula_avoidance_cluster", kinds(report))
 
 
 if __name__ == "__main__":

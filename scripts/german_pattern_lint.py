@@ -85,9 +85,9 @@ def load_syntax_lint():
     return module
 
 
-def precise_status(precise: bool) -> dict | None:
+def precise_context(precise: bool) -> tuple[dict | None, object | None]:
     if not precise:
-        return None
+        return None, None
 
     syntax_lint = load_syntax_lint()
     if not hasattr(syntax_lint, "_HUMANIZER_PRECISE_CACHE"):
@@ -95,8 +95,13 @@ def precise_status(precise: bool) -> dict | None:
 
     nlp, reason = syntax_lint._HUMANIZER_PRECISE_CACHE
     if nlp is None:
-        return {"requested": True, "active": False, "reason": reason or "spacy_missing"}
-    return {"requested": True, "active": True}
+        return {"requested": True, "active": False, "reason": reason or "spacy_missing"}, None
+    return {"requested": True, "active": True}, nlp
+
+
+def precise_status(precise: bool) -> dict | None:
+    status, _ = precise_context(precise)
+    return status
 
 
 def marker_stem(marker: str) -> str:
@@ -147,7 +152,23 @@ def count_particle(text: str, marker: str) -> int:
     return len(re.findall(rf"\b{re.escape(marker)}\b", lowered))
 
 
+def count_stellt_dar_dependency(text: str, nlp: object) -> int:
+    doc = nlp(text)
+    count = 0
+    for token in doc:
+        lemma = token.lemma_.lower()
+        if lemma == "darstellen":
+            count += 1
+            continue
+        if lemma != "stellen" or "Fin" not in token.morph.get("VerbForm"):
+            continue
+        if any(child.dep_ == "svp" and child.text.lower() == "dar" for child in token.children):
+            count += 1
+    return count
+
+
 def lint(text: str, mode: str = "sachlich", precise: bool = False) -> dict:
+    status, nlp = precise_context(precise)
     clean_text = register_lint.strip_protected(text)
     lowered = clean_text.lower()
     findings: list[dict] = []
@@ -158,6 +179,8 @@ def lint(text: str, mode: str = "sachlich", precise: bool = False) -> dict:
 
     copula_hits = {marker: count_marker(lowered, marker) for marker in COPULA_AVOIDANCE if count_marker(lowered, marker)}
     separable_hits = len(STELLT_DAR_RE.findall(lowered))
+    if nlp is not None:
+        separable_hits = count_stellt_dar_dependency(clean_text, nlp)
     if separable_hits:
         copula_hits["stellt ... dar"] = separable_hits
     if sum(copula_hits.values()) >= 2:
@@ -182,7 +205,6 @@ def lint(text: str, mode: str = "sachlich", precise: bool = False) -> dict:
         findings.append({"pattern": 54, "kind": "colon_heading_cluster", "severity": "warning", "evidence": colon_headings})
 
     report = {"ok": not findings, "mode": mode, "findings": findings}
-    status = precise_status(precise)
     if status is not None:
         report["precise"] = status
     return report

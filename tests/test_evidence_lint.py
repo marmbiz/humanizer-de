@@ -19,6 +19,19 @@ def kinds(findings):
     return {item["kind"] for item in findings}
 
 
+def spacy_model_available():
+    try:
+        import spacy
+
+        spacy.load("de_core_news_sm")
+    except Exception:
+        return False
+    return True
+
+
+SPACY_MODEL_AVAILABLE = spacy_model_available()
+
+
 class EvidenceLintTests(unittest.TestCase):
     def test_blocks_new_number(self):
         before = "Die Wartezeit sank laut Bericht."
@@ -71,6 +84,11 @@ class EvidenceLintTests(unittest.TestCase):
         added = [item for item in findings if item["kind"] == "added_proper_name"]
         self.assertTrue(added)
         self.assertIn("BaFin", added[0]["values"])
+
+    def test_default_keeps_single_token_abstract_noun_after_verb(self):
+        before = "Der Bericht bleibt kurz."
+        after = "Der Bericht hat Relevanz."
+        self.assertIn("added_proper_name", kinds(evidence_lint.lint(before, after)))
 
     def test_hard_anchors_unaffected(self):
         before = "Die Wartezeit sank laut Bericht."
@@ -126,6 +144,33 @@ class EvidenceLintCliTests(unittest.TestCase):
         )
         self.assertEqual(code, 0)
         self.assertFalse(any(item["severity"] == "blocker" for item in report["findings"]))
+
+
+@unittest.skipUnless(SPACY_MODEL_AVAILABLE, "spaCy German model is not available")
+class EvidenceLintPreciseTests(unittest.TestCase):
+    def test_precise_filters_single_token_abstract_noun_after_verb(self):
+        before = "Der Bericht bleibt kurz."
+        after = "Der Bericht hat Relevanz."
+
+        self.assertNotIn("added_proper_name", kinds(evidence_lint.lint(before, after, precise=True)))
+
+    def test_precise_keeps_new_multiword_name(self):
+        before = "Sie trifft eine Person."
+        after = "Sie trifft Angela Merkel."
+        findings = evidence_lint.lint(before, after, precise=True)
+        added = [item for item in findings if item["kind"] == "added_proper_name"]
+
+        self.assertTrue(added)
+        self.assertIn("Angela Merkel", added[0]["values"])
+
+    def test_precise_keeps_internal_uppercase_name(self):
+        before = "Die Behörde prüft."
+        after = "Die BaFin prüft."
+        findings = evidence_lint.lint(before, after, precise=True)
+        added = [item for item in findings if item["kind"] == "added_proper_name"]
+
+        self.assertTrue(added)
+        self.assertIn("BaFin", added[0]["values"])
 
 
 if __name__ == "__main__":
