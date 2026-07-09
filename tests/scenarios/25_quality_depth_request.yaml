@@ -1,0 +1,60 @@
+{
+  "id": 25,
+  "mode": "Sachlich",
+  "input": "Die Beratungsstelle hat im Juni 2026 zwölf Rückmeldungen von Eltern ausgewertet. Häufig genannt wurden unklare Öffnungszeiten, lange Wartezeiten am Telefon und fehlende Hinweise zu Unterlagen. Das Team will die Website deshalb zuerst überarbeiten. Die Telefonzeiten bleiben vorerst unverändert, weil zwei Stellen noch nicht nachbesetzt sind. Im September prüft die Leitung, ob die Zahl der Rückfragen sinkt.",
+  "expected_behavior": [
+    "ausdrücklichen Tiefenwunsch respektieren",
+    "gründlich, aber proportional im QGIR-Rahmen überarbeiten",
+    "Faktenanker und Sachregister trotz Tiefe erhalten"
+  ],
+  "quality_risks": [
+    "gründlich als Vollrewrite missverstanden",
+    "neue Wirksamkeitszahl erfunden",
+    "Edit-Budget trotz Claim-Lock überschritten"
+  ],
+  "output_contract": [
+    "Modus",
+    "Gefundene Muster",
+    "Geänderte Stellen",
+    "Kurzaudit"
+  ],
+  "qgir_contract": {
+    "max_passes": 2,
+    "max_changed_sentence_ratio": 0.35,
+    "protected_anchors": [
+      "Juni 2026",
+      "zwölf Rückmeldungen",
+      "Eltern",
+      "Öffnungszeiten",
+      "Wartezeiten am Telefon",
+      "Unterlagen",
+      "Website",
+      "Telefonzeiten",
+      "zwei Stellen",
+      "September",
+      "Rückfragen"
+    ]
+  },
+  "sample_outputs": [
+    {
+      "name": "known-good quality-depth rewrite",
+      "passes": [
+        "Im Juni 2026 wertete die Beratungsstelle zwölf Rückmeldungen von Eltern aus. Häufig genannt wurden unklare Öffnungszeiten, lange Wartezeiten am Telefon und fehlende Hinweise zu Unterlagen. Das Team will deshalb zuerst die Website überarbeiten. Die Telefonzeiten bleiben vorerst unverändert, weil zwei Stellen noch nicht nachbesetzt sind. Im September prüft die Leitung, ob die Zahl der Rückfragen sinkt.",
+        "Im Juni 2026 wertete die Beratungsstelle zwölf Rückmeldungen von Eltern aus. Häufig genannt wurden unklare Öffnungszeiten, lange Wartezeiten am Telefon und fehlende Hinweise zu Unterlagen. Das Team will deshalb zuerst die Website überarbeiten. Vorerst bleiben die Telefonzeiten unverändert; zwei Stellen sind noch nicht nachbesetzt. Im September prüft die Leitung, ob die Zahl der Rückfragen sinkt."
+      ],
+      "expect_violations": [],
+      "expect_violations_exact": true
+    },
+    {
+      "name": "quality-depth invents impact number",
+      "passes": [
+        "Im Juni 2026 wertete die Beratungsstelle zwölf Rückmeldungen von Eltern aus. Häufig genannt wurden unklare Öffnungszeiten, lange Wartezeiten am Telefon und fehlende Hinweise zu Unterlagen. Das Team will deshalb zuerst die Website überarbeiten, weil dadurch voraussichtlich 30 Prozent der Rückfragen entfallen. Vorerst bleiben die Telefonzeiten unverändert, weil zwei Stellen noch nicht nachbesetzt sind. Im September prüft die Leitung, ob die Zahl der Rückfragen sinkt."
+      ],
+      "expect_violations": [
+        "edit_budget_exceeded",
+        "new_factual_anchor"
+      ],
+      "expect_violations_exact": true
+    }
+  ]
+}

@@ -14,6 +14,19 @@ Das Urteil trifft das Modell im Kontext und belegt es mit Stellen aus dem Text.
 - Die Rubrik rechtfertigt nie neue Fakten, Quellen, Anekdoten oder Erfahrungssignale.
   Claim-Lock und Persona-Lock bleiben maßgeblich.
 
+## Tiefenregler
+
+Default ist minimal-invasiv: Wenn der Text sauber ist, bleibt es beim Null-Edit. Die Rubrik
+erzeugt keinen Arbeitsauftrag, nur weil eine Formulierung auch anders möglich wäre.
+
+Auf ausdrücklichen Nutzerwunsch (etwa „gründlich“ oder `--quality`) darf der Skill Richtung
+Zielprofil und Rubrik iterieren. Diese zusätzliche Tiefe bleibt im QGIR-Rahmen: Pass-Limits,
+Claim-Lock, Persona-Lock, Registertreue und Proportionalität gelten unverändert.
+
+Der Regler steuert Qualitätstiefe, nie Score-Wirkung. Er ist kein Detektor-, Risiko- oder
+Score-Regler und darf nicht genutzt werden, um Text gegen Herkunfts- oder KI-Detektoren zu
+optimieren.
+
 ## Achse 1: Leserführung
 
 **Leitfrage:** Trägt jeder Absatz genau einen Gedanken, und folgt er aus dem vorigen?

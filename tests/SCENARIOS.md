@@ -37,6 +37,7 @@ python3 scripts/run_review_eval.py tests/scenarios --check-invariants
 | 22 | Formal | Juristische Wiederholungen und Paragraphenanker werden aus falschem Glättungsdrang entfernt. |
 | 23 | Locker | Bewusste Marketing-Repetition wird in generische Werbesprache geglättet. |
 | 24 | Formal | Akademische Abstrakta, Passiv und Aussagevorsicht werden als vermeintliche KI-Tells überarbeitet. |
+| 25 | Sachlich | Ein ausdrücklicher Tiefenwunsch wird als Vollrewrite oder Faktenfreibrief missverstanden. |
 
 Die Szenarien 14 bis 18 (QGIR-Contracts) existieren nur als maschinenlesbare Fixtures in `tests/scenarios/` und laufen ausschließlich über den Runner; sie haben bewusst keinen Eintrag in dieser Datei.
 
@@ -436,6 +437,26 @@ Die Auswertung wurde auf Ebene der Kursgruppen vorgenommen. Im Mittelpunkt stand
 **Relevante Muster:** bewusst keine Eingriffe wegen akademischem Passiv oder Nominalstil. Der Contract misst Ankererhalt und verhindert Register- sowie Claim-Drift.
 
 **Warum dieses Szenario zählt:** Der Fall hält die Grenze zwischen berechtigter Humanisierung und fachlicher Verwässerung. Akademische Vorsicht ist hier Substanz, kein Artefakt.
+
+## Szenario 25: Tiefenwunsch mit Claim-Lock (Sachlich)
+
+**Skill-Modus:** Sachlich
+**Nutzer-Prompt:** "Bitte gründlich überarbeiten, aber die Fakten beibehalten."
+
+**Input:**
+```
+Die Beratungsstelle hat im Juni 2026 zwölf Rückmeldungen von Eltern ausgewertet. Häufig genannt wurden unklare Öffnungszeiten, lange Wartezeiten am Telefon und fehlende Hinweise zu Unterlagen. Das Team will die Website deshalb zuerst überarbeiten. Die Telefonzeiten bleiben vorerst unverändert, weil zwei Stellen noch nicht nachbesetzt sind. Im September prüft die Leitung, ob die Zahl der Rückfragen sinkt.
+```
+
+**Erwartetes Verhalten (Pass/Fail):**
+- [ ] Der ausdrückliche Wunsch nach Tiefe erlaubt mehrere gezielte Verbesserungen Richtung Zielprofil und Rubrik.
+- [ ] Die Überarbeitung bleibt im QGIR-Rahmen: maximal zwei Pässe, begrenztes Edit-Budget, keine Volltextlogik.
+- [ ] Juni 2026, zwölf Rückmeldungen, Eltern, Website, Telefonzeiten, zwei Stellen, September und Rückfragen bleiben als Faktenanker erhalten.
+- [ ] Neue Wirkungszahlen oder Erfolgsprognosen, etwa eine erfundene Prozentreduktion der Rückfragen, sind ein Contract-Verstoß.
+
+**Relevante Muster:** bewusst kein neuer Katalog-Tell. Das Urteil kommt aus dem Tiefenregler: „gründlich“ erhöht die Qualitätstiefe, aber nicht die Erlaubnis zu neuen Fakten, Score-Optimierung oder unproportionaler Iteration.
+
+**Warum dieses Szenario zählt:** Der Fall schützt die neue `--quality`-Dokumentation vor einer gefährlichen Fehlinterpretation. Mehr Tiefe darf bessere Leserführung und sparsamere Sätze erzeugen, Claim-Lock und QGIR-Grenzen bleiben aber die härteren Regeln.
 
 ## Neue Szenarien hinzufügen
 
