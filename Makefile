@@ -24,7 +24,7 @@ bench:
 
 lt:
 	@if ! command -v languagetool >/dev/null; then \
-		echo "languagetool nicht installiert (brew install languagetool) — übersprungen"; \
+		echo "languagetool nicht installiert — optional; siehe README — übersprungen"; \
 		exit 0; \
 	fi; \
 	languagetool -l de-DE --json "$(FILE)"

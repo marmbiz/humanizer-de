@@ -222,6 +222,29 @@ class SkillStructureTests(unittest.TestCase):
         self.assertIn("Die Produktivität fiel positiv auf. Der Umsatz verdreifachte sich.", readme)
         self.assertNotIn("in\ndiesem Zeitraum", readme)
 
+    def test_readme_install_onboarding_is_explicit(self):
+        readme = read_utf8(ROOT / "README.md")
+        installation = readme.split("## Installation", 1)[1].split("## Benutzung", 1)[0]
+
+        self.assertIn("Für den Basis-Skill ist kein Python nötig", installation)
+        self.assertIn("Plugin und manuelle Skill-Kopie", installation)
+        self.assertIn("### Was dabei installiert wird", installation)
+        self.assertIn("**Nicht installiert werden:**", installation)
+        self.assertIn("### Installation prüfen (alle Wege)", installation)
+        self.assertIn("### Version und Updates", installation)
+        self.assertIn("`~/.codex/skills/` ist nur ein Legacy-Pfad", installation)
+        self.assertIn("`/reload-plugins`", installation)
+        self.assertIn("https://code.claude.com/docs/en/discover-plugins", installation)
+        self.assertIn("https://learn.chatgpt.com/docs/plugins", installation)
+        self.assertNotIn("mkdir -p ~/.codex/skills", installation)
+
+        self.assertIn("### Installationsregeln für Assistenten", readme)
+        self.assertIn("Keine Zusatzsoftware ohne Zustimmung", readme)
+        self.assertIn("`$HOME/.claude/skills/humanizer-de/`", readme)
+        self.assertIn("Aktivierung nicht behaupten", readme)
+        self.assertIn("py -m pip install -r requirements-precise.txt", readme)
+        self.assertIn("sudo apt install hunspell hunspell-de-de", readme)
+
     def test_discoverability_metadata_is_present(self):
         readme = read_utf8(ROOT / "README.md")
         skill = read_utf8(ROOT / "SKILL.md")

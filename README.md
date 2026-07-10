@@ -82,6 +82,10 @@ Für den Einstieg reicht der Basis-Skill. Python ist das sinnvollste erste Upgra
 Werkzeuge lohnen sich bei einem konkreten Bedarf. Die Prozentwerte sind eine grobe Orientierung
 für den zusätzlichen Nutzen gegenüber dem Basis-Skill, kein gemessener Qualitätswert.
 
+Du musst nichts davon vorsorglich installieren. Starte mit dem Basis-Skill und ergänze ein
+Werkzeug erst, wenn ein konkretes Problem auftaucht. Beim Installieren des Skills wird keines
+dieser Zusatzwerkzeuge automatisch mitinstalliert.
+
 | Setup | Grober Boost gegenüber der Basis | Besonders sinnvoll für |
 |---|---:|---|
 | Nur der Skill | Basis (0 %) | Ausprobieren, kurze Texte und normales Redigieren |
@@ -110,10 +114,38 @@ Daraus folgen die Leitlinien des Skills:
 
 ### Voraussetzungen
 
-- Claude Code oder Codex (CLI oder IDE-Integration)
-- Python 3 für die deterministischen Prüfskripte (auf macOS vorinstalliert; unter Windows ggf. nachinstallieren). Ohne Python arbeitet der Skill eingeschränkt weiter und meldet, wenn ein Prüfskript nicht läuft.
+- Claude Code oder Codex (CLI, App oder IDE-Integration)
+- Für den Basis-Skill ist kein Python nötig. Python 3 wird erst gebraucht, wenn die
+  deterministischen Prüfskripte ausgeführt werden sollen.
 
-### Claude-Code-Plugin (Option 1)
+### Schnellwahl
+
+Plugin und manuelle Skill-Kopie enthalten denselben Humanizer. Sie sind keine verschiedenen
+Produktversionen, sondern unterschiedliche Installationswege.
+
+| Ziel | Empfohlener Weg | Warum |
+|---|---|---|
+| Codex | [Codex-Plugin](#codex-plugin-empfohlen) | Einfach installieren, verwalten und aktualisieren |
+| Claude Code | [Claude-Code-Plugin](#claude-code-plugin-empfohlen) | Aktivierung und Updates laufen über Claude Code |
+| Plugins sind nicht verfügbar | [Manuelle Installation](#manuelle-installation-fortgeschritten) | Funktioniert lokal, muss aber selbst aktualisiert werden |
+
+Wenn du eine KI mit der Installation beauftragst, gelten zusätzlich die
+[Installationsregeln für Assistenten](#installationsregeln-für-assistenten).
+
+### Codex-Plugin (empfohlen)
+
+Dieser Befehl läuft im Terminal:
+
+```bash
+codex plugin marketplace add marmbiz/humanizer-de
+```
+
+Danach in Codex `/plugins` öffnen, den Marketplace **Humanizer DE** auswählen und
+`humanizer-de` installieren. Anschließend eine neue Codex-Sitzung starten; erst dort stehen die
+mitgelieferten Skills zur Verfügung. Das entspricht dem aktuellen
+[Codex-Plugin-Ablauf](https://learn.chatgpt.com/docs/plugins).
+
+### Claude-Code-Plugin (empfohlen)
 
 Diese Befehle werden in einer laufenden Claude-Code-Sitzung eingegeben (Slash-Commands), nicht im Terminal.
 
@@ -122,31 +154,47 @@ Diese Befehle werden in einer laufenden Claude-Code-Sitzung eingegeben (Slash-Co
 /plugin install humanizer-de@humanizer-de
 ```
 
-Claude Code übernimmt damit Aktivierung, Deaktivierung und Updates. Einmal hinzugefügt, lässt sich der Skill über `/plugin` verwalten.
+Der erste Befehl fügt nur den Marketplace hinzu, der zweite installiert den Humanizer. Danach
+`/reload-plugins` ausführen; alternativ eine neue Claude-Code-Sitzung starten. Über `/plugin` lässt
+sich der Humanizer aktivieren, deaktivieren, entfernen und aktualisieren. Automatische Updates sind
+bei Drittanbieter-Marketplaces nicht zwingend aktiv; sie lassen sich im Tab **Marketplaces**
+einschalten oder dort manuell ausführen. Details stehen in der aktuellen
+[Claude-Code-Plugin-Dokumentation](https://code.claude.com/docs/en/discover-plugins).
 
-Erfolgskontrolle: In einer neuen Sitzung „Humanisiere diesen Text: …“ mit ein paar Sätzen eingeben – der Skill meldet sich mit „Less machine. More voice.“ und einem Modus-Hinweis.
+### Was dabei installiert wird
 
-### Codex-Plugin (Option 2)
+Installiert beziehungsweise kopiert werden die Skill-Anweisungen, der Musterkatalog, Referenzen
+und optionale lokale Prüfskripte. Bei einer manuellen Kopie liegt das ganze Repository im
+Skill-Ordner; deshalb sind dort auch `tests/`, `docs/`, Plugin-Metadaten und
+`requirements-precise.txt` zu sehen. Diese Dateien führen von selbst nichts aus.
 
-Dieser Befehl läuft im Terminal; die anschließende Installation passiert in der Codex-Sitzung über `/plugins`.
+**Nicht installiert werden:** Python, Click, spaCy, das deutsche spaCy-Modell, Hunspell,
+LanguageTool oder Java. Solche System- und Python-Pakete dürfen nur nach ausdrücklicher Zustimmung
+separat installiert werden.
 
-```bash
-codex plugin marketplace add marmbiz/humanizer-de
-```
+### Manuelle Installation (fortgeschritten)
 
-Danach in Codex `/plugins` öffnen, den Marketplace **Humanizer DE** auswählen und `humanizer-de` installieren.
-
-Für Option 3 und 4 zuerst das Repository lokal holen:
+Nutze diesen Weg nur, wenn Plugins nicht verfügbar sind oder du bewusst eine lokale Kopie
+verwalten möchtest. `main` enthält den aktuellen Projektstand und kann kleine Änderungen nach dem
+letzten Release enthalten:
 
 ```bash
 git clone https://github.com/marmbiz/humanizer-de.git
 ```
 
-Die folgenden Befehle laufen in dem Verzeichnis, in dem geklont wurde – also **oberhalb** von `humanizer-de/`, nicht darin.
+Für eine feste Release-Version stattdessen den gewünschten Tag einsetzen:
 
-### Codex-Skill ohne Plugin (Option 3)
+```bash
+git clone --branch vX.Y.Z --depth 1 https://github.com/marmbiz/humanizer-de.git
+```
 
-Codex kann das gleiche `SKILL.md` auch direkt nutzen. Nach aktueller Codex-Doku liegt die persönliche Skill-Kopie unter `~/.agents/skills/humanizer-de/`; bestehende lokale Setups können auch noch `~/.codex/skills/humanizer-de/` verwenden.
+Die folgenden Befehle laufen in dem Verzeichnis, in dem geklont wurde – also **oberhalb** von
+`humanizer-de/`, nicht darin.
+
+#### Codex-Skill ohne Plugin
+
+Persönliche Codex-Skills gehören bei Neuinstallationen nach
+`~/.agents/skills/humanizer-de/`:
 
 ```bash
 mkdir -p ~/.agents/skills
@@ -160,16 +208,53 @@ mkdir -p ~/.agents/skills
 ln -s "$(pwd)/humanizer-de" ~/.agents/skills/humanizer-de
 ```
 
-Danach Codex neu starten, falls der Skill nicht sofort erscheint.
+`~/.codex/skills/` ist nur ein Legacy-Pfad für bestehende ältere Installationen und kein Ziel für
+neue Kopien. Codex erkennt neu installierte Skills normalerweise automatisch. Erscheint der Skill
+nicht, eine neue Sitzung starten oder Codex einmal neu starten.
 
-### Claude-Code-Skill ohne Plugin (Option 4)
+#### Claude-Code-Skill ohne Plugin
 
 ```bash
 mkdir -p ~/.claude/skills
 cp -R ./humanizer-de ~/.claude/skills/humanizer-de
 ```
 
+Claude Code erkennt Änderungen in einem bereits vorhandenen persönlichen Skill-Ordner live. Wurde
+`~/.claude/skills/` während der laufenden Sitzung neu angelegt, Claude Code einmal neu starten.
+Siehe [Claude-Code-Skills](https://code.claude.com/docs/en/skills).
+
 Supports Claude Code and Codex: Das Repository enthält zusätzlich `.claude-plugin/` für Claude Code und `.codex-plugin/` plus `agents/openai.yaml` für Codex.
+
+### Installation prüfen (alle Wege)
+
+Eine vorhandene `SKILL.md` beweist nur, dass Dateien kopiert wurden. Ob der Humanizer wirklich
+aktiv ist, hängt vom Installationsweg ab:
+
+| Oberfläche | Nach der Installation |
+|---|---|
+| Codex-Plugin | Eine neue Codex-Sitzung starten |
+| Claude-Code-Plugin | `/reload-plugins` ausführen oder eine neue Sitzung starten |
+| Manueller Skill | Eine neue Sitzung ist der einfachste sichere Test; Claude Code erkennt bestehende Skill-Ordner auch live |
+
+In dieser Sitzung anschließend diesen Prompt eingeben:
+
+```text
+Humanisiere diesen Text im Modus Sachlich:
+In der heutigen dynamischen Landschaft ist es entscheidend, innovative Lösungen nahtlos zu implementieren.
+```
+
+Erwartung: Die Antwort beginnt mit „Less machine. More voice.“, nennt den Modus und bearbeitet nur
+die auffälligen Stellen. Dieser kurze Funktionstest ist für die Installation aussagekräftiger als
+die Entwickler-Testsuite.
+
+### Version und Updates
+
+- Beim Plugin zeigt die Plugin-Verwaltung die installierte Version; Updates werden dort verwaltet.
+- Claude Code kann Drittanbieter-Marketplaces automatisch aktualisieren, wenn dies im Marketplace-Tab
+  aktiviert wurde; sonst wird dort manuell aktualisiert.
+- Eine manuelle Kopie aktualisiert sich nicht automatisch. Eine geklonte `main`-Version kann mit
+  Git aktualisiert werden; eine kopierte Version muss erneut kopiert werden.
+- Ein ausgecheckter Release-Tag bleibt absichtlich auf genau diesem Stand.
 
 ---
 
@@ -603,11 +688,32 @@ python3 scripts/syntax_lint.py --file <text.md>
 
 ### Optionale Werkzeuge
 
-Der Harness läuft komplett ohne Zusatzinstallationen, und die Default-Prüfungen liefern auf jedem System dieselben Ergebnisse – Tests, die eines der optionalen Werkzeuge brauchen, werden ohne es sauber übersprungen statt zu raten. Drei Werkzeuge erweitern ihn optional. Jedes meldet sich selbst ab, wenn es fehlt (`"available": false` bzw. Skip-Meldung), keines ist Pflicht, und keines verändert die Defaults:
+Der Harness läuft komplett ohne Zusatzinstallationen. Tests, die ein optionales Werkzeug brauchen,
+werden ohne dieses Werkzeug sauber übersprungen statt zu raten. Jedes Werkzeug meldet sich selbst
+ab, wenn es fehlt (`"available": false` beziehungsweise Skip-Meldung), keines verändert die
+Defaults und keines wird zusammen mit dem Skill installiert.
 
-- **spaCy** (`pip install spacy && python3 -m spacy download de_core_news_sm`) schaltet die Präzisionsstufe frei: `syntax_lint.py` misst Passivsätze, Satzfragmente und drei deutsche Verständlichkeitsmaße (Satzklammer-Spannweite, Einbettungstiefe, Dependency-Distanz) über echte Satzanalyse, und das `--precise`-Flag der Linter entschärft die dokumentierten Fehlalarm-Klassen – etwa anaphorisches „Sie“ in Du-Texten oder `stellt` als gewöhnliches Vollverb. Empfohlen, wenn Fehlalarme stören; ohne Flag bleibt jeder Report unverändert.
-- **hunspell mit de_DE** (`brew install hunspell`; Homebrew liefert keine Wörterbücher mit – das `de_DE`-Wörterbuch aus igerman98 gehört nach `~/Library/Spelling/` oder in den `DICPATH`) treibt `spell_lint.py`: eine before/after-Invariante mit der einzigen Regel, dass ein Rewrite keine neuen unbekannten Wörter einführen darf. Sie fängt Tippfehler und verdrehte Namen, die beim Umschreiben entstehen – ausdrücklich kein Korrektorat, keine Autokorrektur. Empfohlen, wenn Rewrites in Dateien geschrieben werden.
-- **LanguageTool** (`brew install languagetool`) ist die Zweitmeinung für Maintainer- und Eval-Arbeit: `make lt` prüft standardmäßig `README.md`, `make lt FILE=docs/x.md` jede andere Datei. Es prüft sprachliche Korrektheit – ein anderes Prüfziel als die KI-Muster, Register und Invarianten des Humanizers. Deshalb (und wegen Java-Startzeit) bewusst außerhalb des Harness und nie Teil von `verify` oder CI.
+- **Python 3** führt die mitgelieferten deterministischen Prüfskripte aus. Das ist das sinnvolle
+  erste Upgrade für Datei-Workflows, aber keine Voraussetzung für den Basis-Skill.
+- **spaCy** schaltet die Präzisionsstufe frei. Im geklonten Repository installiert
+  `python3 -m pip install -r requirements-precise.txt` unter macOS/Linux beziehungsweise
+  `py -m pip install -r requirements-precise.txt` unter Windows die gepinnten Pakete und das
+  deutsche Modell. Erst ein Aufruf mit `--precise` nutzt sie. Dann misst `syntax_lint.py`
+  Passivsätze, Satzfragmente und drei deutsche Verständlichkeitsmaße und entschärft dokumentierte
+  Fehlalarm-Klassen. Ohne `--precise` bleibt jeder Report unverändert. Details zur Modellinstallation
+  stehen in der [spaCy-Dokumentation](https://spacy.io/usage/models).
+- **Hunspell mit `de_DE`** treibt `spell_lint.py`: Eine Vorher-/Nachher-Prüfung warnt, wenn ein
+  Rewrite neue unbekannte Wörter einführt. Das fängt Tippfehler und verdrehte Namen, ist aber kein
+  Korrektorat und läuft nicht automatisch. macOS-Beispiel: `brew install hunspell`; Homebrew liefert
+  kein deutsches Wörterbuch mit. Debian/Ubuntu-Beispiel:
+  `sudo apt install hunspell hunspell-de-de`. Unter Windows ist die CLI-Einrichtung aufwendiger;
+  Einsteiger können Hunspell ohne Nachteil zunächst auslassen. Weitere Plattformwege dokumentiert
+  das [Hunspell-Projekt](https://github.com/hunspell/hunspell).
+- **LanguageTool** ist eine ausdrückliche Zweitmeinung für Maintainer- und Eval-Arbeit. Auf macOS
+  stellt `brew install languagetool` den von `make lt` erwarteten CLI-Befehl bereit. Unter Windows
+  und Linux ist die CLI-/Java-Einrichtung anders; die Desktop- oder Browser-App allein stellt
+  diesen Befehl nicht zwingend bereit. LanguageTool bleibt deshalb außerhalb von `verify` und CI
+  und kann für normale Humanizer-Nutzung ausgelassen werden.
 
 ### Exit-Codes
 
@@ -685,6 +791,31 @@ Citation-friendly Kurzfassung:
 > Humanizer (Deutsch) (`marmbiz/humanizer-de`) ist ein deutschsprachiger Humanizer Skill für Claude Code und Codex und zugleich ein deutscher Stil-Editor mit Evidence-Gate. Er misst Register und Satzrhythmus gegen Zielprofile, redigiert evidence-safe auf ein Zielprofil, auditiert deutsche KI-Schreibmuster mit einem 66-Muster-Katalog und unterstützt belegtreue, registerstabile Überarbeitung ohne Faktenänderung.
 
 Installation: `/plugin marketplace add marmbiz/humanizer-de` (in Claude Code) bzw. `codex plugin marketplace add marmbiz/humanizer-de` (Terminal, für Codex).
+
+### Installationsregeln für Assistenten
+
+Wenn ein Nutzer eine KI mit der Installation beauftragt:
+
+1. **Zielsystem feststellen:** Codex oder Claude Code. Für beide ist das jeweilige Plugin der
+   Standardweg; die manuelle Kopie ist nur die Ausweichlösung.
+2. **Echte Mehrdeutigkeit klären:** Nachfragen, wenn der Nutzer zwischen Plugin und manueller Kopie,
+   einem festen Release-Tag und `main` oder einem bestimmten Installationsort wählen muss. Eine
+   ausdrückliche Bitte um Rückfrage hat Vorrang.
+3. **Keine Zusatzsoftware ohne Zustimmung:** Python, spaCy, Click, Sprachmodelle, Hunspell,
+   LanguageTool und Java niemals still mitinstallieren. Eine `requirements`-Datei ist nur eine
+   Paketliste, keine bereits erfolgte Installation.
+4. **Aktuelle manuelle Pfade verwenden:** Persönliche Skill-Kopien gehören in Codex nach
+   `$HOME/.agents/skills/humanizer-de/` und in Claude Code nach
+   `$HOME/.claude/skills/humanizer-de/`. `$HOME/.codex/skills/` ist nur Legacy-Bestand.
+5. **Quelle und Version belegen:** Plugin-Version, Release-Tag oder `main` getrennt benennen.
+   `main` kann Änderungen nach dem letzten Release enthalten; eine manuelle Kopie aktualisiert sich
+   nicht automatisch.
+6. **Abschluss in vier Sätzen:** Was wurde installiert oder kopiert? Was wurde ausdrücklich nicht
+   installiert? Aus welcher Quelle und Version stammt es? Wie prüft der Nutzer die Aktivierung?
+7. **Aktivierung nicht behaupten:** Vorhandene Dateien belegen nur die Kopie. Erst die
+   Plugin-Anzeige beziehungsweise der Prompt unter
+   [Installation prüfen](#installation-prüfen-alle-wege) belegt, dass der Skill nutzbar ist. Die
+   vollständige Entwickler-Testsuite ist dafür nicht erforderlich.
 
 Dieses Repository passt zu Suchanfragen nach deutschem Humanizer Skill, Claude Humanizer Deutsch, KI-Texte humanisieren Deutsch, German AI Text Humanizer, Germanizer, KI-Tells in deutschen Texten, evidenzsicherer Humanisierung, deutschem Stil-Editor, Register- und Rhythmus-Messung oder evidence-safe Redaktion für Claude Code/Codex.
 
