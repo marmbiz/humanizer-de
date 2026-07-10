@@ -51,6 +51,21 @@ QUOTE_PATTERNS = (
     re.compile(r"(?<!\w)[‚‘’']([^‚‘’']{3,})[‚‘’'](?!\w)"),
 )
 
+# Schema-v1 ledgers contain anchors produced by these exact patterns. Keep
+# their after-side extraction stable even as the current extractor improves.
+LEGACY_ANCHOR_PATTERNS = {
+    "number": re.compile(r"\b\d+(?:[.,]\d+)?\s*(?:%|Prozent|Euro|EUR|km|kg|Mio\.?|Millionen)?\b", re.IGNORECASE),
+    "date": re.compile(
+        r"\b(?:\d{1,2}\.\s*(?:Januar|Februar|März|Maerz|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember)\s+\d{4}|\d{4}-\d{2}-\d{2})\b",
+        re.IGNORECASE,
+    ),
+    "url": re.compile(r"https?://[^\s<>)]+"),
+    "doi": re.compile(r"\b(?:doi:\s*)?10\.\d{4,9}/[-._;()/:A-Za-z0-9]+\b", re.IGNORECASE),
+    "paragraph": re.compile(r"§+\s*\d+[a-zA-Z]*(?:\s*Abs\.\s*\d+)?"),
+    "code": re.compile(r"`[^`\n]+`"),
+    "quote": re.compile(r'["„“‚‘”\']([^"„“‚‘”\']{3,})["„“‚‘”\']'),
+}
+
 AUTHORITY_MARKERS = {
     "strong": {"belegt", "beweist", "zeigt", "nachweislich", "muss", "immer"},
     "weak": {"kann", "koennte", "könnte", "vermutlich", "moeglicherweise", "möglicherweise", "laut", "scheint"},
@@ -166,20 +181,7 @@ def token_in_named_entity(doc: object, start: int, end: int) -> bool:
     return False
 
 
-def anchors(text: str, nlp: object | None = None) -> dict[str, set[str]]:
-    result: dict[str, set[str]] = {kind: set() for kind in anchor_kinds()}
-    for kind, pattern in ANCHOR_PATTERNS.items():
-        for match in pattern.finditer(text):
-            normalized = normalize(match.group(0))
-            if normalized:
-                result[kind].add(normalized)
-
-    for pattern in QUOTE_PATTERNS:
-        for match in pattern.finditer(text):
-            normalized = normalize(match.group(1))
-            if normalized:
-                result["quote"].add(normalized)
-
+def proper_name_anchors(text: str, nlp: object | None = None) -> set[str]:
     # Known default-path gap: single-token common nouns after verbs that are
     # not in the stoplist (e.g. "hat Relevanz") still slip through as
     # proper_name; --precise can filter that class with spaCy NER.
@@ -219,7 +221,36 @@ def anchors(text: str, nlp: object | None = None) -> dict[str, set[str]]:
         if doc is not None and not token_in_named_entity(doc, token_start, token_end):
             continue
         names.add(value)
-    result["proper_name"] = names
+    return names
+
+
+def anchors(text: str, nlp: object | None = None) -> dict[str, set[str]]:
+    result: dict[str, set[str]] = {kind: set() for kind in anchor_kinds()}
+    for kind, pattern in ANCHOR_PATTERNS.items():
+        for match in pattern.finditer(text):
+            normalized = normalize(match.group(0))
+            if normalized:
+                result[kind].add(normalized)
+
+    for pattern in QUOTE_PATTERNS:
+        for match in pattern.finditer(text):
+            normalized = normalize(match.group(1))
+            if normalized:
+                result["quote"].add(normalized)
+
+    result["proper_name"] = proper_name_anchors(text, nlp=nlp)
+    return result
+
+
+def legacy_anchors(text: str, nlp: object | None = None) -> dict[str, set[str]]:
+    result: dict[str, set[str]] = {kind: set() for kind in anchor_kinds()}
+    for kind, pattern in LEGACY_ANCHOR_PATTERNS.items():
+        for match in pattern.finditer(text):
+            value = match.group(1) if kind == "quote" else match.group(0)
+            normalized = normalize(value)
+            if normalized:
+                result[kind].add(normalized)
+    result["proper_name"] = proper_name_anchors(text, nlp=nlp)
     return result
 
 
@@ -280,10 +311,16 @@ def add_anchor_findings(
             add_finding(findings, severity, f"added_{kind}", f"New {kind} anchor introduced.", list(added))
 
 
-def lint_with_anchors(before_anchors: dict[str, set[str]], after: str, precise: bool = False) -> list[dict]:
+def lint_with_anchors(
+    before_anchors: dict[str, set[str]],
+    after: str,
+    precise: bool = False,
+    legacy: bool = False,
+) -> list[dict]:
     _, nlp = precise_context(precise)
     findings: list[dict] = []
-    add_anchor_findings(findings, before_anchors, anchors(after, nlp=nlp))
+    after_anchors = legacy_anchors(after, nlp=nlp) if legacy else anchors(after, nlp=nlp)
+    add_anchor_findings(findings, before_anchors, after_anchors)
     return findings
 
 
@@ -505,7 +542,12 @@ def main(argv: list[str] | None = None) -> int:
                 file=sys.stderr,
             )
             return 2
-        findings = lint_with_anchors(before_anchors, after, precise=args.precise)
+        findings = lint_with_anchors(
+            before_anchors,
+            after,
+            precise=args.precise,
+            legacy=ledger_policy is None,
+        )
         report = {
             "ok": not findings,
             "findings": findings,

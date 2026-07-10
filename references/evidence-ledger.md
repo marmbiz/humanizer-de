@@ -95,7 +95,9 @@ Schema:
 Neue Ledger enthalten die tatsaechlich verwendete Extraktions-Policy. Bei aktivem spaCy-Filter
 stehen dort zusaetzlich Modellname und Modellversion. Der Diff-Lauf bricht mit Exit 2 ab, wenn
 seine Policy nicht zur gespeicherten Policy passt. Ledger mit Schema 1 bleiben lesbar; weil ihnen
-diese Metadaten fehlen, wird ihre Policy im Report als `legacy_unknown` ausgewiesen.
+diese Metadaten fehlen, wird ihre Policy im Report als `legacy_unknown` ausgewiesen. Der After-Text
+wird dabei mit der historischen Schema-1-Ankersyntax verglichen, damit unveraenderte Texte keine
+neuen Anker allein durch spaetere Extraktorverbesserungen erhalten.
 
 Vor Pass 1:
 

@@ -325,12 +325,17 @@ class EvidenceLintCliTests(unittest.TestCase):
         self.assertIn("extraction policy does not match", proc.stderr)
 
     def test_schema_one_ledger_remains_readable(self):
-        before = "Die Quote beträgt 12 Prozent."
+        before = "Die Quote beträgt mindestens 12 Prozent. Der Bericht sagt: «Alles bleibt gleich»."
+        legacy_anchors = evidence_lint.legacy_anchors(before)
+        self.assertEqual(legacy_anchors["number"], {"12 Prozent"})
+        self.assertEqual(legacy_anchors["quote"], set())
+        self.assertNotEqual(legacy_anchors, evidence_lint.anchors(before))
+
         with tempfile.TemporaryDirectory() as tmp:
             ledger_path = Path(tmp) / "ledger.json"
             data = {
                 "schema_version": 1,
-                "anchors": evidence_lint.serializable_anchors(evidence_lint.anchors(before)),
+                "anchors": evidence_lint.serializable_anchors(legacy_anchors),
             }
             ledger_path.write_text(json.dumps(data), encoding="utf-8")
             proc = subprocess.run(
@@ -340,7 +345,9 @@ class EvidenceLintCliTests(unittest.TestCase):
             )
 
         self.assertEqual(proc.returncode, 0)
-        self.assertEqual(json.loads(proc.stdout)["ledger_extraction_policy"], "legacy_unknown")
+        report = json.loads(proc.stdout)
+        self.assertEqual(report["findings"], [])
+        self.assertEqual(report["ledger_extraction_policy"], "legacy_unknown")
 
 
 @unittest.skipUnless(SPACY_MODEL_AVAILABLE, "spaCy German model is not available")
