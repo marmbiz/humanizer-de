@@ -12,7 +12,7 @@
 [![Claude Code](https://img.shields.io/badge/Claude_Code-Plugin-d97757)](#installation)
 [![Codex](https://img.shields.io/badge/Codex-Supported-10a37f)](#installation)
 
-**[Warum nutzen?](#warum-nutzen)** · **[Wie der Skill arbeitet](#wie-der-skill-arbeitet)** · **[Installation](#installation)** · **[Benutzung](#benutzung)** · **[Für AI-Assistenten](#für-ai-assistenten)** · **[66 Muster in 10 Kategorien](#66-muster-in-10-kategorien)** · **[Entwicklung und Verifikation](#entwicklung-und-verifikation)** · **[Was ist neu?](#was-ist-neu)**
+**[Was ist das?](#was-ist-das)** · **[Installation](#installation)** · **[Benutzung](#benutzung)** · **[Beispiele](#beispiele)** · **[Fakten & Grenzen](#fakten-grenzen-und-datenschutz)** · **[Wie es arbeitet](#wie-der-skill-arbeitet)** · **[Optionale Werkzeuge](#optionale-werkzeuge)** · **[66 Muster](#66-muster-in-10-kategorien)** · **[Für AI-Assistenten](#für-ai-assistenten)** · **[Entwicklung](#entwicklung-und-verifikation)** · **[Was ist neu?](#was-ist-neu)**
 
 <sub>German AI Text Humanizer · Claude Humanizer Deutsch · KI-Texte humanisieren Deutsch · Supports Claude Code and Codex · Von [Martin Moeller](https://www.martin-moeller.biz) · basiert auf den Wikipedia-Leitlinien [Anzeichen für KI-generierte Inhalte](https://de.wikipedia.org/wiki/Wikipedia:Anzeichen_f%C3%BCr_KI-generierte_Inhalte) (de) und [Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing) (en) · hervorgegangen aus dem [Humanizer](https://github.com/blader/humanizer) von [blader](https://github.com/blader)</sub>
 
@@ -22,95 +22,63 @@
 
 ---
 
+<a id="warum-nutzen"></a>
+
 ## Was ist das?
 
-Humanizer (Deutsch) ist ein German AI Text Humanizer und deutscher Stil-Editor mit Evidence-Gate für Claude Code und Codex: Du gibst dem Skill einen KI-Entwurf, er macht daraus natürlichen deutschen Text – ohne Fakten, Zahlen oder Quellen zu verändern. Und wenn der Text bereits sauber ist, sagt er genau das und lässt die Finger davon.
+Humanizer (Deutsch) macht aus glatten KI-Entwürfen bessere deutsche Texte: natürlicher, belegtreuer
+und näher an deiner Stimme. Fakten, Zahlen, Namen und Quellen bleiben geschützt. Ist ein Text schon
+sauber, sagt der Skill das und lässt ihn in Ruhe.
 
-Drei Bausteine tragen das: ein Katalog mit 66 Mustern in 10 Kategorien als Redaktionswissen, deterministische Prüfskripte für Register, Satzrhythmus und Faktentreue, und das große Modell für das eigentliche Urteil im Kontext. Humanizing ist der bekannteste Anwendungsfall dieses Stil-Editors – nicht seine ganze Identität.
+| Vorher | Nachher |
+|---|---|
+| „Darüber hinaus ist es von entscheidender Bedeutung, innovative Lösungen nahtlos zu implementieren.“ | „Außerdem müssen wir neue Lösungen reibungslos einführen.“ |
 
-Das Ergebnis ist nicht sterile Korrektur. Es ist Überarbeitung, die vorhandene Substanz schützt und deutsche Textqualität verbessert. Gutes Schreiben darf Ecken haben – es sollte sogar welche haben. Ein Tool für erfundene Autorenschaft, fingierte Erfahrung oder Quellenkosmetik ist es nicht.
-
-Entstanden ist das Projekt Anfang 2026 als Fork von blader/humanizer; seitdem ist es ein eigenes System für deutschsprachige Texte (rund die Hälfte der Muster ohne Upstream-Pendant, darunter die komplette Evidenz-Familie und die deutsche Typografie; eigenes Versionsschema ab v4.0.0).
-
----
-
-## Warum nutzen?
-
-Humanizer (Deutsch) macht aus glatten KI-Texten bessere deutsche Texte: klarer, natürlicher, belegtreuer und näher an der gewünschten Stimme.
-
-Der Skill poliert nicht blind. Er erkennt echte KI-Muster, schützt Fakten und stoppt, bevor ein Text überarbeitet wirkt.
-
-Besonders nützlich ist er für:
-
-- Website-, Blog- und Newsletter-Texte, die weniger generisch klingen sollen
-- Fachtexte, bei denen Zahlen, Quellen und Begriffe erhalten bleiben müssen
-- B2B-, Behörden- und Doku-Texte, die sachlich, aber nicht maschinell wirken sollen
-- eigene KI-Entwürfe, die final lesbar, glaubwürdig und menschlich werden sollen
-
----
-
-## Wie der Skill arbeitet
-
-Hinter dem Katalog steht ein einfaches Bild: KI-Textbewertung hat drei Schichten, und jede macht nur, wofür sie gebaut ist.
-
-- **Heuristik – das Harte, Sichtbare.** Regex, Unicode-Checks, Wortlisten, deterministische Linter. Ein gerades Anführungszeichen statt „…“, drei Doppelpunkt-Titel in Folge, drei Marker-Vokabeln wie „nahtlos“ im selben Text. Billig, sofort – und es altert nicht: Ein verdächtiges Muster bleibt verdächtig, egal welcher Modell-Jahrgang gerade schreibt.
-- **Messen – die objektiven Fakten.** Satzbau, Anker (Namen, Zahlen, Daten), Bedeutungstreue beim Umschreiben. Fragen mit *einer richtigen Antwort*, die sich berechnen lassen, statt sie zu erraten.
-- **Urteilen – Kontext und Geschmack.** „Ist das guter Text?“ braucht Weltwissen und Fingerspitzengefühl. Das leistet nur das große Modell (Claude, Codex) – deshalb sitzt das eigentliche Umschreiben dort, nicht in einer starren Regel.
-
-Im Ablauf sieht das so aus – fünf Pässe, flankiert von Zielprofilen und dem Evidence-Gate. Der wichtigste Ausgang steht ganz oben: Ist der Text sauber, wird er nicht angefasst.
-
-```mermaid
-flowchart TD
-    T([Eingabetext]) --> M["Messen – Pass 0<br/>Stilkarte: Rhythmus, Register, Preflight"]
-    Z["Zielprofile<br/>style-targets.json + .humanizer/profile.json"] -.-> M
-    P["Optional: spaCy-Präzisionsstufe<br/>--precise entschärft bekannte Fehlalarme"] -.-> M
-    M --> C{"Echte Muster-Cluster<br/>gefunden?"}
-    C -- "nein – Text ist sauber" --> N([Null-Edit: Befund statt Umschreiben])
-    C -- ja --> E["Fakten sichern – Pass 1<br/>Anker: Zahlen, Namen, Quellen, Zitate"]
-    E --> R["Redigieren – Pass 2–4<br/>Lexik, Struktur, Rhythmus · 66-Muster-Katalog"]
-    R --> A["Selbst-Audit – Pass 5<br/>+ Qualitäts-Rubrik: 4 positive Achsen"]
-    A --> G{"Evidence-Gate:<br/>alle Fakten unverändert?"}
-    G -- ja --> O([Überarbeiteter Text + Kurzaudit])
-    G -- nein --> R
-    O -.-> Q["Optionale QGIR-Nachpässe:<br/>jeder Pass difft gegen das Original-Ledger"]
-    Q -.-> G
-```
-
-### Was zusätzliche Werkzeuge wirklich bringen
-
-Für den Einstieg reicht der Basis-Skill. Python ist das sinnvollste erste Upgrade; die übrigen
-Werkzeuge lohnen sich bei einem konkreten Bedarf. Die Prozentwerte sind eine grobe Orientierung
-für den zusätzlichen Nutzen gegenüber dem Basis-Skill, kein gemessener Qualitätswert.
-
-Du musst nichts davon vorsorglich installieren. Starte mit dem Basis-Skill und ergänze ein
-Werkzeug erst, wenn ein konkretes Problem auftaucht. Beim Installieren des Skills wird keines
-dieser Zusatzwerkzeuge automatisch mitinstalliert.
-
-| Setup | Grober Boost gegenüber der Basis | Besonders sinnvoll für |
-|---|---:|---|
-| Nur der Skill | Basis (0 %) | Ausprobieren, kurze Texte und normales Redigieren |
-| Skill + Python | etwa +20–30 % | Empfohlener Standard für Dateien, Fakten und reproduzierbare Prüfungen |
-| zusätzlich spaCy | etwa +5–10 % | Weniger bekannte Fehlalarme und genauere Satzanalyse |
-| zusätzlich Hunspell | etwa +3–7 % | Datei-Rewrites mit Namen, Fachwörtern und neuen Tippfehlern |
-| zusätzlich LanguageTool | etwa +5–15 % | Abschließendes Korrektorat von Grammatik und Zeichensetzung |
-
-Die Ergebnisse können je nach Textart, Textlänge, Ausgangsqualität und Arbeitsweise deutlich
-variieren. Die Werte sind nicht additiv: Die Werkzeuge prüfen unterschiedliche, teilweise
-überlappende Fehlerklassen und ersetzen weder das Kontexturteil des Modells noch das menschliche
-Gegenlesen.
-
-Die Messwerte informieren das Zielprofil, aber sie richten nicht: Ob eine auffällige Stelle wirklich ein Problem ist, entscheidet das Modell im Kontext – nach der Cluster-Regel und den Carve-outs für bekannte Fehlalarme. Mit installiertem spaCy fängt `--precise` die dokumentierten Fehlalarm-Klassen direkt scriptseitig ab (siehe [Optionale Werkzeuge](#optionale-werkzeuge)).
-
-Daraus folgen die Leitlinien des Skills:
-
-- **Nur Zeitloses wird Regel.** Der Katalog nimmt bewusst nur stabile Tells auf. Ein Wort, das bloß zur Mode eines LLM-Jahrgangs gehört, bläht die Liste auf und veraltet – solche driftenden Signale bleiben dem Urteil überlassen. Kern und Rand werden getrennt gehalten.
-- **Messen statt richten.** Regeln und Messungen gehören dorthin, wo es eine richtige Antwort gibt. Wo es Geschmack braucht, entscheidet das Modell im Kontext – nicht ein Detektor-Score.
-- **Der Boden ist der Mensch.** Unter dem Modell sitzt der Autor. Der Skill schützt Substanz und Belege, aber er erfindet keine Erfahrung, keine Quelle, keine Zahl. Verantwortung bleibt beim Menschen.
-- **Proportional eingreifen.** So viel wie nötig, so wenig wie möglich. Ist der Text sauber, hört der Skill auf – statt mit dem stärksten Werkzeug über jeden Satz zu bügeln. Das ist keine Absichtserklärung, sondern Teil der Testsuite: Red-Team-Szenarien mit gutem menschlichem Schreiben (Jura, Marketing, Wissenschaft) und ein False-Positive-Korpus halten das Versprechen dauerhaft messbar.
+Du brauchst dafür zunächst weder Python noch Zusatzsoftware. Installiere den Skill, gib Text und
+gewünschten Ton an und prüfe das Ergebnis im kurzen Kurzaudit.
 
 ---
 
 ## Installation
+
+### Codex – empfohlen
+
+Im Terminal:
+
+```bash
+codex plugin marketplace add marmbiz/humanizer-de
+```
+
+Danach in Codex `/plugins` öffnen, **Humanizer DE** auswählen, `humanizer-de` installieren und
+eine neue Sitzung starten.
+
+### Claude Code – empfohlen
+
+In einer laufenden Claude-Code-Sitzung:
+
+```bash
+/plugin marketplace add marmbiz/humanizer-de
+/plugin install humanizer-de@humanizer-de
+/reload-plugins
+```
+
+### Funktioniert es?
+
+In der neuen beziehungsweise neu geladenen Sitzung eingeben:
+
+```text
+Humanisiere diesen Text im Modus Sachlich:
+In der heutigen dynamischen Landschaft ist es entscheidend, innovative Lösungen nahtlos zu implementieren.
+```
+
+Die Antwort sollte mit „Less machine. More voice.“ beginnen, den Modus nennen und nur die
+auffälligen Stellen bearbeiten. Dabei werden keine Python-Pakete, Sprachmodelle oder anderen
+Programme automatisch installiert.
+
+---
+
+<details>
+<summary><strong>Installationsdetails, manuelle Wege und Updates</strong></summary>
 
 ### Voraussetzungen
 
@@ -256,9 +224,13 @@ die Entwickler-Testsuite.
   Git aktualisiert werden; eine kopierte Version muss erneut kopiert werden.
 - Ein ausgecheckter Release-Tag bleibt absichtlich auf genau diesem Stand.
 
+</details>
+
 ---
 
 ## Benutzung
+
+<a id="tipps-zur-nutzung"></a>
 
 ### Mit natürlicher Sprache
 
@@ -282,13 +254,31 @@ Jetzt humanisiere diesen Text:
 [KI-Text einfügen]
 ```
 
-Das Skill analysiert Satzrhythmus, Wortwahl und Eigenheiten und berücksichtigt sie als Zielprofil.
+Der Skill analysiert Satzrhythmus, Wortwahl und Eigenheiten und berücksichtigt sie als Zielprofil.
 
 ### Spezifische Muster adressieren
 
 ```
 Humanisiere diesen Text. Entferne nur sprachliche Muster, nicht die Formatierung.
 ```
+
+### Was du zurückbekommst
+
+Der Humanizer zeigt nicht nur den überarbeiteten Text. Ein kurzer Audit nennt den gewählten Modus,
+die wichtigsten gefundenen Muster und verbleibende Risiken. Ist der Text bereits sauber, folgt
+statt einer unnötigen Umschreibung ein Null-Edit-Befund.
+
+### Bessere Ergebnisse mit drei Angaben
+
+- Zielgruppe
+- Kontext, etwa Website, E-Mail, Blog oder Fachtext
+- gewünschter Ton: locker, sachlich oder formal
+
+Arbeite in höchstens zwei gezielten Runden. Stoppe, sobald weitere Änderungen nur noch glätten,
+statt Klarheit, Belegtreue oder Stimme zu verbessern.
+
+<details>
+<summary><strong>Power-User: lokaler Prüfablauf, Schnellcheck und Stilprofil</strong></summary>
 
 ### Ein Durchlauf in vier Kommandos
 
@@ -367,6 +357,150 @@ Wiederkehrende Stilvorlieben überleben die Session in einer optionalen Datei `.
 `humanizer_audit.py` und `style_profile.py` legen diese Overrides automatisch über die Basis-Korridore (Override ersetzt den Korridor der Metrik komplett); überschriebene Korridore sind im Delta-Report mit `"override": true` markiert. Mit `--no-profile` laufen beide Skripte reproduzierbar ohne Nutzerprofil; unbekannte Metriken oder kaputtes JSON erzeugen nur eine Warnung. Die Datei gehört in die `.gitignore` des jeweiligen Projekts, nicht ins Repository.
 
 Gefüllt wird das Profil auf Wunsch im Abschluss-Dialog: Wenn ein Lauf wiederholt in dieselbe Richtung korrigiert wurde, fragt der Skill am Ende einmal, ob er sich die Regel merken soll – bei Zustimmung schreibt er sie ins Profil und weist beim ersten Anlegen auf den `.gitignore`-Eintrag `.humanizer/` hin. Details: [`references/user-profile.md`](references/user-profile.md).
+
+</details>
+
+---
+
+## Beispiele
+
+### Werbesprache
+
+**Vorher:**
+
+> Die atemberaubende Stadt mit ihrem reichen kulturellen Erbe zieht Besucher aus aller Welt an.
+> Die spektakulären Denkmäler sind ein Beweis für die künstlerische Brillanz vergangener Generationen.
+
+**Nachher:**
+
+> Die Stadt zieht Besucher aus aller Welt an. Ihre Denkmäler zeigen die Handwerkskunst vergangener Generationen.
+
+<details>
+<summary><strong>Drei weitere Vorher-/Nachher-Beispiele</strong></summary>
+
+### Redaktioneller Kommentar
+
+**Vorher:** „Es ist wichtig zu bemerken, dass die Bevölkerung zwischen 1950 und 2000 um 40 Prozent gewachsen ist. Darüber hinaus ist die Stadtfläche um 60 Prozent erweitert worden.“
+
+**Nachher:** „Die Bevölkerung wuchs zwischen 1950 und 2000 um 40 Prozent. Die Stadtfläche wurde um 60 Prozent erweitert.“
+
+### Maschinelle Konjunktionen
+
+**Vorher:** „Das Unternehmen wurde 1980 gegründet. Darüber hinaus beschäftigt es heute 200 Mitarbeiter. Ferner ist es in 8 Ländern tätig. Außerdem hat es einen Umsatz von 50 Millionen Euro.“
+
+**Nachher:** „Das Unternehmen wurde 1980 gegründet. Es beschäftigt heute 200 Mitarbeiter in 8 Ländern und hat einen Umsatz von 50 Millionen Euro.“
+
+### Kollaborative Kommunikation
+
+**Vorher:** „Wie Sie sehen können, war die Produktivität beeindruckend. Der Umsatz verdreifachte sich. Lassen Sie mich wissen, wenn Sie weitere Informationen benötigen!“
+
+**Nachher:** „Die Produktivität fiel positiv auf. Der Umsatz verdreifachte sich.“
+
+</details>
+
+---
+
+<a id="wann-hilfreich--und-wann-nicht"></a>
+<a id="datenschutz--sicherheit"></a>
+
+## Fakten, Grenzen und Datenschutz
+
+Der Humanizer schützt Zahlen, Namen, Daten, URLs, Zitate, Quellen und die Richtung einer Aussage.
+Er erfindet keine Erfahrung und macht aus einer Vermutung keine Gewissheit. Ist ein Text sauber oder
+bleiben nur bekannte Fehlalarme, greift er nicht weiter ein.
+
+**Stark ist der Skill**, wenn KI-Entwürfe zu glatt oder generisch klingen, Fachbegriffe und Belege
+erhalten bleiben müssen oder ein Text sachlich, aber nicht maschinell wirken soll. **Zurückhaltung
+ist nötig** bei literarischen Texten, stark etablierter Autorenstimme und Fachkonventionen, die
+absichtlich wiederholen, nominal formulieren oder passiv schreiben.
+
+**Rote Linien:**
+
+- Kein Detektor-Bypass und keine Garantie für Herkunfts-Scores.
+- Keine fingierte Autorenschaft, Erfahrung, Quelle oder Zahl.
+- Messwerte beschreiben Textmerkmale, nie den tatsächlichen Autor.
+- Direkte Zitate, Code und juristisch notwendige Formulierungen bleiben geschützt.
+
+| Nutzung | Verlässt der Text den Rechner? |
+|---|---|
+| Nur die lokalen Prüfskripte | Nein – sie laufen lokal und offline |
+| Skill in Claude Code oder Codex | Der Text geht an das jeweilige Modell; es gelten dessen Datenschutzregeln und der eigene Vertrag |
+
+Lokale Dateien werden nur geschrieben, wenn du eine Dateiänderung ausdrücklich verlangst oder
+selbst speicherst. Stilprofil und Feedback-Ledger unter `.humanizer/` speichern Regeln und
+Entscheidungen, niemals Textauszüge.
+
+---
+
+<a id="philosophie"></a>
+
+## Wie der Skill arbeitet
+
+Drei Schichten teilen sich die Arbeit:
+
+- **Heuristik** findet harte, sichtbare Muster wie Unicode-Artefakte, Marker-Cluster oder mechanische Titel.
+- **Messung** prüft Rhythmus, Register und geschützte Faktenanker.
+- **Urteil** bleibt beim großen Modell: Nur Claude oder Codex kann im Kontext entscheiden, ob eine Stelle wirklich schlechter Text ist.
+
+```mermaid
+flowchart TD
+    T([Eingabetext]) --> M["Messen – Pass 0<br/>Rhythmus, Register, Preflight"]
+    M --> C{"Echte Muster-Cluster?"}
+    C -- nein --> N([Null-Edit: Text bleibt stehen])
+    C -- ja --> E["Fakten sichern – Pass 1<br/>Zahlen, Namen, Quellen, Zitate"]
+    E --> R["Redigieren – Pass 2–4<br/>Lexik, Struktur, Rhythmus"]
+    R --> A["Selbst-Audit – Pass 5<br/>Qualität und Stimme"]
+    A --> G{"Evidence-Gate grün?"}
+    G -- nein --> R
+    G -- ja --> O([Überarbeiteter Text + Kurzaudit])
+```
+
+Die Leitidee ist proportional: so viel wie nötig, so wenig wie möglich. Regeln messen, aber richten
+nicht. Konkrete Fakten schlagen stilistische Glätte, und vorhandene Fachsprache schlägt ein
+vermeintlich „menschlicheres“ Schauspiel. Das Projekt stützt damit belegbare EEAT-nahe Mechaniken,
+behauptet aber weder Expertise noch Autorenschaft.
+
+---
+
+## Optionale Werkzeuge
+
+Du musst nichts davon vorsorglich installieren. Starte mit dem Basis-Skill und ergänze ein Werkzeug
+erst bei einem konkreten Problem. Die Werte sind grobe Orientierung, keine gemessene Garantie, und
+lassen sich wegen überlappender Prüfziele nicht addieren.
+
+| Setup | Grober Boost gegenüber der Basis | Besonders sinnvoll für |
+|---|---:|---|
+| Nur der Skill | Basis (0 %) | Ausprobieren, kurze Texte und normales Redigieren |
+| Skill + Python | etwa +20–30 % | Dateien, Fakten und reproduzierbare Prüfungen |
+| zusätzlich spaCy | etwa +5–10 % | Weniger bekannte Fehlalarme und genauere Satzanalyse |
+| zusätzlich Hunspell | etwa +3–7 % | Namen, Fachwörter und neue Tippfehler in Datei-Rewrites |
+| zusätzlich LanguageTool | etwa +5–15 % | Abschließendes Korrektorat von Grammatik und Zeichensetzung |
+
+Die Ergebnisse variieren je nach Textart, Textlänge, Ausgangsqualität und Arbeitsweise deutlich.
+
+<details>
+<summary><strong>Installation und Einsatz der Zusatzwerkzeuge</strong></summary>
+
+- **Python 3** führt die mitgelieferten deterministischen Prüfskripte aus. Der Basis-Skill braucht
+  es nicht.
+- **spaCy** schaltet `--precise` frei. Im geklonten Repository installiert
+  `python3 -m pip install -r requirements-precise.txt` unter macOS/Linux beziehungsweise
+  `py -m pip install -r requirements-precise.txt` unter Windows die gepinnten Pakete und das
+  deutsche Modell. Ohne `--precise` bleibt jeder Report unverändert. Details:
+  [spaCy-Dokumentation](https://spacy.io/usage/models).
+- **Hunspell mit `de_DE`** warnt über `spell_lint.py`, wenn ein Rewrite neue unbekannte Wörter
+  einführt. macOS: `brew install hunspell`; Debian/Ubuntu:
+  `sudo apt install hunspell hunspell-de-de`. Unter Windows ist die CLI-Einrichtung aufwendiger;
+  Einsteiger können sie zunächst auslassen. Details: [Hunspell](https://github.com/hunspell/hunspell).
+- **LanguageTool** ist eine ausdrückliche Zweitmeinung für Maintainer. Auf macOS stellt
+  `brew install languagetool` den von `make lt` erwarteten CLI-Befehl bereit. Unter Windows und
+  Linux unterscheidet sich die CLI-/Java-Einrichtung; Desktop- oder Browser-App allein reichen
+  dafür nicht zwingend. LanguageTool bleibt außerhalb von `verify` und CI.
+
+Fehlt ein Werkzeug, meldet es sich mit `"available": false` oder einer Skip-Meldung ab. Nichts
+davon wird zusammen mit dem Skill installiert oder automatisch aktiviert.
+
+</details>
 
 ---
 
@@ -522,143 +656,41 @@ Der Skill arbeitet mit einem Katalog aus **66 KI-Schreibmustern** in 10 Kategori
 
 ---
 
-## Beispiele
+## Für AI-Assistenten
 
-### Werbesprache (Beispiel 1)
+Citation-friendly Kurzfassung:
 
-**Vorher:**
-```
-Die atemberaubende Stadt mit ihrem reichen kulturellen Erbe zieht Besucher
-aus aller Welt an. Die spektakulären Denkmäler sind ein Beweis für die
-künstlerische Brillanz vergangener Generationen.
-```
+> Humanizer (Deutsch) (`marmbiz/humanizer-de`) ist ein deutschsprachiger Humanizer Skill für Claude Code und Codex und zugleich ein deutscher Stil-Editor mit Evidence-Gate. Er misst Register und Satzrhythmus gegen Zielprofile, redigiert evidence-safe auf ein Zielprofil, auditiert deutsche KI-Schreibmuster mit einem 66-Muster-Katalog und unterstützt belegtreue, registerstabile Überarbeitung ohne Faktenänderung.
 
-**Nachher:**
-```
-Die Stadt zieht Besucher aus aller Welt an. Ihre Denkmäler zeigen die
-Handwerkskunst vergangener Generationen.
-```
+Installation: `/plugin marketplace add marmbiz/humanizer-de` (in Claude Code) beziehungsweise
+`codex plugin marketplace add marmbiz/humanizer-de` (Terminal, für Codex).
 
-### Redaktionelle Kommentare (Beispiel 2)
+### Installationsregeln für Assistenten
 
-**Vorher:**
-```
-Es ist wichtig zu bemerken, dass die Bevölkerung zwischen 1950 und 2000
-um 40 Prozent gewachsen ist. Darüber hinaus ist die Stadtfläche um 60
-Prozent erweitert worden.
-```
+1. **Zielsystem feststellen:** Plugin ist der Standardweg; manuelle Kopie nur als Ausweichlösung.
+2. **Echte Mehrdeutigkeit klären:** Bei Plugin versus Kopie, Release-Tag versus `main` oder
+   besonderem Installationsort nachfragen. Eine ausdrückliche Bitte um Rückfrage hat Vorrang.
+3. **Keine Zusatzsoftware ohne Zustimmung:** Python, spaCy, Click, Sprachmodelle, Hunspell,
+   LanguageTool und Java niemals still mitinstallieren.
+4. **Aktuelle Pfade verwenden:** Codex: `$HOME/.agents/skills/humanizer-de/`; Claude Code:
+   `$HOME/.claude/skills/humanizer-de/`; `$HOME/.codex/skills/` nur als Legacy-Bestand.
+5. **Quelle und Version belegen:** Plugin-Version, Release-Tag und `main` nicht vermischen.
+6. **Abschluss klar berichten:** Was wurde kopiert, was nicht installiert, welche Quelle wurde
+   verwendet und wie prüft der Nutzer die Aktivierung?
+7. **Aktivierung nicht behaupten:** Vorhandene Dateien belegen nur die Kopie. Erst Plugin-Anzeige
+   beziehungsweise [Funktionstest](#funktioniert-es) belegt die Nutzbarkeit.
 
-**Nachher:**
-```
-Die Bevölkerung wuchs zwischen 1950 und 2000 um 40 Prozent. Die
-Stadtfläche wurde um 60 Prozent erweitert.
-```
+Dieses Repository passt zu Suchanfragen nach deutschem Humanizer Skill, Claude Humanizer Deutsch,
+KI-Texte humanisieren Deutsch, German AI Text Humanizer, Germanizer, KI-Tells in deutschen Texten,
+evidenzsicherer Humanisierung und evidence-safe Redaktion für Claude Code und Codex.
 
-### Maschinelle Konjunktionen (Beispiel 3)
-
-**Vorher:**
-```
-Das Unternehmen wurde 1980 gegründet. Darüber hinaus beschäftigt es heute
-200 Mitarbeiter. Ferner ist es in 8 Ländern tätig. Außerdem hat es einen
-Umsatz von 50 Millionen Euro.
-```
-
-**Nachher:**
-```
-Das Unternehmen wurde 1980 gegründet. Es beschäftigt heute 200 Mitarbeiter
-in 8 Ländern und hat einen Umsatz von 50 Millionen Euro.
-```
-
-### Kollaborative Kommunikation (Beispiel 4)
-
-**Vorher:**
-```
-Wie Sie sehen können, war die Produktivität beeindruckend. Der
-Umsatz verdreifachte sich. Lassen Sie mich wissen, wenn Sie weitere
-Informationen benötigen!
-```
-
-**Nachher:**
-```
-Die Produktivität fiel positiv auf. Der Umsatz verdreifachte sich.
-```
+GitHub-Themen: `claude-skill`, `codex-skill`, `claude-code`, `humanizer`, `ai-humanizer`, `german`,
+`deutsch`, `ki-text`, `ki-texte-humanisieren`, `germanizer`, `prompt-engineering`, `stil-editor`,
+`style-editor`, `text-editing`, `ai-writing`, `writing-tools`.
 
 ---
 
-## Philosophie
-
-### EEAT-nahe Prinzipien
-
-Das Skill setzt nicht die vollen EEAT-Signale um – Expertise, Autorität und Erfahrung lassen sich nicht am Text allein feststellen. Es stützt EEAT aber dort, wo es belegbare Mechanik gibt:
-
-- **Erfahrung nicht erfinden:** Anekdoten, Ich-Perspektive und Praxiserfahrung bleiben nur, wenn sie im Text, Kontext oder Autorenmaterial angelegt sind (Muster 59).
-- **Vertrauenswürdigkeit über Belege:** Zahlen, Zitate und Quellen werden vor und nach jeder Änderung abgeglichen; fabrizierte oder nicht tragende Referenzen werden markiert statt kaschiert (Muster 26/42/53, Claim-Delta).
-- **Keine erfundene Autorität:** vage Autoritäts-Floskeln und nachträglich verstärkte Autoritätsgrade werden zurückgenommen (Muster 11/32) – der Skill macht einen Ton nicht künstlich kompetenter.
-- **Substanz und Fachsprache bewahren:** korrekte Terminologie und belegte Konkretion bleiben erhalten. Eine Autor-Expertise prüft der Skill nicht.
-
-### Authentisches Deutsches Schreiben
-
-Einige Eigenschaften guten deutschen Schreibens adressiert das Skill gezielt:
-
-- **Weniger symbolische Aufladung:** „Die Stadt ist groß“ statt „Die Stadt steht als Zeugnis der menschlichen Ambition“ (Muster 1, Aphorismus-Formeln Muster 56)
-- **Konkrete Details statt Abstraktion:** „50.000 Einwohner“ statt „eine beachtliche Bevölkerung“ (Muster 58)
-- **Verben statt Nominalketten:** Nominalstil wird aufgelöst, wo Akteur und Handlung belegt sind – fachüblicher Nominalstil im Formal-Modus bleibt geschützt (Muster 58)
-- **Variabilität statt Monotonie:** unterschiedliche Satzlängen und Satzanfänge statt gleichförmiger Kadenz (Muster 51/55/61, Rhythmus-Pass)
-
----
-
-## Wann hilfreich – und wann nicht
-
-**Stark, wenn:**
-- der Text erkennbar KI-generiert oder zu „glatt“ wirkt
-- englische Trainingsmaterial-Effekte in deutschem Text durchschlagen
-- Zahlen, Quellen und Begriffe erhalten bleiben müssen
-- eigene KI-Entwürfe final lesbar und glaubwürdig werden sollen
-- eine schnelle Erste-Sicht-Prüfung gebraucht wird
-
-**Schwächer, wenn:**
-- die KI-Muster sehr subtil sind
-- der Text von einem etablierten Autor mit konsistenter Stimme stammt
-- er bewusst literarisch, rhetorisch oder akademisch sein soll
-- echte menschliche Eigenheiten und Fehler nicht als Tell missverstanden werden dürfen
-
-Im Zweifel gilt die Grundregel des Skills: Ist der Text sauber, sagt er das und hört auf.
-
-**Rote Linien** (gelten in jedem Modus, unabhängig vom Nutzerwunsch):
-
-- Kein Detektor-Bypass: Der Skill optimiert Textqualität, nie Scores von Herkunfts-Detektoren – und garantiert dort auch keine Wirkung.
-- Keine erfundene Substanz: keine fingierte Erfahrung, keine erfundenen Quellen, Zahlen oder Autorenschaft.
-- Messwerte bleiben Qualitätsheuristik: Sie sagen, ob ein Text gleichförmig wirkt – nie, wer ihn geschrieben hat.
-
----
-
-## Tipps zur Nutzung
-
-### Iterativ arbeiten
-
-Iterativ arbeiten heißt hier nicht „immer weiter glätten“. Erst lokal überarbeiten, dann nur bei echten verbleibenden HIGH/MEDIUM-Clustern einen begrenzten QGIR-Pass starten (QGIR = kontrollierte Nachpässe mit festem Budget: begrenzte Durchgänge, geschützte Fakten, Diff gegen das Original):
-
-1. Erster Pass – echte Artefakte, Evidenzprobleme und klare Cluster.
-2. Zweiter Pass – nur wenn noch substanzielle HIGH/MEDIUM-Cluster bleiben.
-3. Stoppen – sobald weitere Änderungen nur Glattheit, Detektorwirkung oder künstliche Stimme verbessern würden.
-
-### Mit anderen Tools kombinieren
-
-Das Skill funktioniert gut mit:
-- **Linters** für Formatierung
-- **`spell_lint.py`** (mitgeliefert, optional) gegen Tippfehler, die erst beim Umschreiben entstehen – für klassisches Korrektorat bleibt ein externer Spellcheck zuständig
-- **Style Guides** für Konsistenz
-- **Human Review** für Kontext und Nuancen
-
-### Kontext verstehen
-
-Das beste Ergebnis entsteht mit drei Angaben:
-
-- Zielgruppe
-- Kontext, etwa Wikipedia, Blog oder akademischer Artikel
-- erwarteter Tonfall
-
----
+<a id="feedback--beitrag"></a>
 
 ## Entwicklung und Verifikation
 
@@ -669,6 +701,9 @@ make verify
 ```
 
 Das führt die Unit-Tests, Unicode-/Rhythmus-Smoke-Tests, Evidence-, Register- und Naturalness-Fixtures, die maschinenlesbaren Scenario-Contracts sowie `git diff --check` aus.
+
+<details>
+<summary><strong>Einzelchecks, Exit-Codes und Evidence-Gate</strong></summary>
 
 Einzelchecks:
 
@@ -685,35 +720,6 @@ python3 scripts/german_pattern_lint.py --file <text.md> --mode locker
 python3 scripts/run_review_eval.py tests/scenarios --check-invariants
 python3 scripts/syntax_lint.py --file <text.md>
 ```
-
-### Optionale Werkzeuge
-
-Der Harness läuft komplett ohne Zusatzinstallationen. Tests, die ein optionales Werkzeug brauchen,
-werden ohne dieses Werkzeug sauber übersprungen statt zu raten. Jedes Werkzeug meldet sich selbst
-ab, wenn es fehlt (`"available": false` beziehungsweise Skip-Meldung), keines verändert die
-Defaults und keines wird zusammen mit dem Skill installiert.
-
-- **Python 3** führt die mitgelieferten deterministischen Prüfskripte aus. Das ist das sinnvolle
-  erste Upgrade für Datei-Workflows, aber keine Voraussetzung für den Basis-Skill.
-- **spaCy** schaltet die Präzisionsstufe frei. Im geklonten Repository installiert
-  `python3 -m pip install -r requirements-precise.txt` unter macOS/Linux beziehungsweise
-  `py -m pip install -r requirements-precise.txt` unter Windows die gepinnten Pakete und das
-  deutsche Modell. Erst ein Aufruf mit `--precise` nutzt sie. Dann misst `syntax_lint.py`
-  Passivsätze, Satzfragmente und drei deutsche Verständlichkeitsmaße und entschärft dokumentierte
-  Fehlalarm-Klassen. Ohne `--precise` bleibt jeder Report unverändert. Details zur Modellinstallation
-  stehen in der [spaCy-Dokumentation](https://spacy.io/usage/models).
-- **Hunspell mit `de_DE`** treibt `spell_lint.py`: Eine Vorher-/Nachher-Prüfung warnt, wenn ein
-  Rewrite neue unbekannte Wörter einführt. Das fängt Tippfehler und verdrehte Namen, ist aber kein
-  Korrektorat und läuft nicht automatisch. macOS-Beispiel: `brew install hunspell`; Homebrew liefert
-  kein deutsches Wörterbuch mit. Debian/Ubuntu-Beispiel:
-  `sudo apt install hunspell hunspell-de-de`. Unter Windows ist die CLI-Einrichtung aufwendiger;
-  Einsteiger können Hunspell ohne Nachteil zunächst auslassen. Weitere Plattformwege dokumentiert
-  das [Hunspell-Projekt](https://github.com/hunspell/hunspell).
-- **LanguageTool** ist eine ausdrückliche Zweitmeinung für Maintainer- und Eval-Arbeit. Auf macOS
-  stellt `brew install languagetool` den von `make lt` erwarteten CLI-Befehl bereit. Unter Windows
-  und Linux ist die CLI-/Java-Einrichtung anders; die Desktop- oder Browser-App allein stellt
-  diesen Befehl nicht zwingend bereit. LanguageTool bleibt deshalb außerhalb von `verify` und CI
-  und kann für normale Humanizer-Nutzung ausgelassen werden.
 
 ### Exit-Codes
 
@@ -741,6 +747,8 @@ Verglichen werden Faktenanker (Zahlen, Daten, URLs, DOIs, Paragraphen, Code, Zit
 
 Die YAML-Szenarien in `tests/scenarios/` sind bewusst maschinenlesbare Contracts. QGIR-Szenarien prüfen zusätzlich Pass-Limits, Edit-Budget, geschützte Anker, Registerdrift und Claim-Richtungsdrift. Detector-Bezug bleibt außerhalb der Contract-Checks. Die ausführlichere Datei `tests/SCENARIOS.md` bleibt die manuelle LLM-im-Loop-Referenz.
 
+</details>
+
 ### Release-Regel
 
 Der Abschnitt **Was ist neu?** ist der laufende Changelog. Für veröffentlichte Versionen braucht es zusätzlich einen Git-Tag und einen GitHub Release.
@@ -755,89 +763,21 @@ Bei jedem Version-Bump:
 
 Patch-Releases ohne öffentliche Relevanz dürfen im README-Changelog bleiben. Minor-/Major-Releases und sichtbare Tool- oder Workflow-Änderungen bekommen immer Tag und GitHub Release.
 
----
-
-## Datenschutz & Sicherheit
-
-Dieses Repository selbst sendet keine Texte an externe Dienste. Ob ein Text den Rechner verlässt, hängt allein davon ab, wie gearbeitet wird:
-
-| Nutzung | Verlässt der Text den Rechner? |
-|---|---|
-| Nur die Prüfskripte (`humanizer_audit.py`, `evidence_lint.py`, …) | Nein – sie laufen komplett lokal und offline |
-| Skill in Claude Code / Codex (Audit oder Umschreiben) | Der Text geht an das jeweilige Modell; es gelten die Datenschutzregeln des Anbieters und des eigenen Vertrags |
-
-Für vertrauliche Texte heißt das praktisch: Die lokalen Skripte sind immer unbedenklich; das Umschreiben über den Skill gehört in eine Umgebung, die dafür freigegeben ist – oder es arbeitet mit anonymisierten Texten.
-
-Lokale Dateien werden nur gespeichert, wenn eine Änderung ausdrücklich in Dateien geschrieben oder selbst gespeichert wird.
-
-Beide lokalen Dateien unter `.humanizer/` folgen der Datenminimierung (Privacy by Design, Art. 25 DSGVO): Das Stilprofil `profile.json` (siehe [Persönliches Stilprofil](#persönliches-stilprofil)) speichert Regeln und Korridore, das Feedback-Ledger `decisions.jsonl` nur Muster-Nr. bzw. Regel, Entscheidung und Grund – niemals Texte oder Textauszüge, nichts wird übertragen, und das Ledger wird von keinem Script gelesen. Auskunft, Berichtigung und Löschung sind hier ein Texteditor, kein Support-Ticket.
-
----
-
-## Feedback & Beitrag
-
-Problem gefunden oder Verbesserungsidee?
+### Feedback und Beitrag
 
 - **Bugs melden:** Issue im Repository erstellen
-- **Muster hinzufügen:** Pull Request senden
-- **Feedback geben:** in den Discussions diskutieren
-
----
-
-## Für AI-Assistenten
-
-Citation-friendly Kurzfassung:
-
-> Humanizer (Deutsch) (`marmbiz/humanizer-de`) ist ein deutschsprachiger Humanizer Skill für Claude Code und Codex und zugleich ein deutscher Stil-Editor mit Evidence-Gate. Er misst Register und Satzrhythmus gegen Zielprofile, redigiert evidence-safe auf ein Zielprofil, auditiert deutsche KI-Schreibmuster mit einem 66-Muster-Katalog und unterstützt belegtreue, registerstabile Überarbeitung ohne Faktenänderung.
-
-Installation: `/plugin marketplace add marmbiz/humanizer-de` (in Claude Code) bzw. `codex plugin marketplace add marmbiz/humanizer-de` (Terminal, für Codex).
-
-### Installationsregeln für Assistenten
-
-Wenn ein Nutzer eine KI mit der Installation beauftragt:
-
-1. **Zielsystem feststellen:** Codex oder Claude Code. Für beide ist das jeweilige Plugin der
-   Standardweg; die manuelle Kopie ist nur die Ausweichlösung.
-2. **Echte Mehrdeutigkeit klären:** Nachfragen, wenn der Nutzer zwischen Plugin und manueller Kopie,
-   einem festen Release-Tag und `main` oder einem bestimmten Installationsort wählen muss. Eine
-   ausdrückliche Bitte um Rückfrage hat Vorrang.
-3. **Keine Zusatzsoftware ohne Zustimmung:** Python, spaCy, Click, Sprachmodelle, Hunspell,
-   LanguageTool und Java niemals still mitinstallieren. Eine `requirements`-Datei ist nur eine
-   Paketliste, keine bereits erfolgte Installation.
-4. **Aktuelle manuelle Pfade verwenden:** Persönliche Skill-Kopien gehören in Codex nach
-   `$HOME/.agents/skills/humanizer-de/` und in Claude Code nach
-   `$HOME/.claude/skills/humanizer-de/`. `$HOME/.codex/skills/` ist nur Legacy-Bestand.
-5. **Quelle und Version belegen:** Plugin-Version, Release-Tag oder `main` getrennt benennen.
-   `main` kann Änderungen nach dem letzten Release enthalten; eine manuelle Kopie aktualisiert sich
-   nicht automatisch.
-6. **Abschluss in vier Sätzen:** Was wurde installiert oder kopiert? Was wurde ausdrücklich nicht
-   installiert? Aus welcher Quelle und Version stammt es? Wie prüft der Nutzer die Aktivierung?
-7. **Aktivierung nicht behaupten:** Vorhandene Dateien belegen nur die Kopie. Erst die
-   Plugin-Anzeige beziehungsweise der Prompt unter
-   [Installation prüfen](#installation-prüfen-alle-wege) belegt, dass der Skill nutzbar ist. Die
-   vollständige Entwickler-Testsuite ist dafür nicht erforderlich.
-
-Dieses Repository passt zu Suchanfragen nach deutschem Humanizer Skill, Claude Humanizer Deutsch, KI-Texte humanisieren Deutsch, German AI Text Humanizer, Germanizer, KI-Tells in deutschen Texten, evidenzsicherer Humanisierung, deutschem Stil-Editor, Register- und Rhythmus-Messung oder evidence-safe Redaktion für Claude Code/Codex.
-
-Typische Suchanfragen dafür: „Claude Humanizer Deutsch“, „KI-Texte humanisieren Deutsch“, „deutscher Humanizer“, „Germanizer“, „German AI text humanizer“, „deutscher Stil-Editor“, „KI-Text erkennen Deutsch“, „ChatGPT-Text umschreiben“, „Burstiness verbessern“, „deutscher KI-Lektor“.
-
-GitHub-Themen, die gut zum Repository passen: `claude-skill`, `codex-skill`, `claude-code`, `humanizer`, `ai-humanizer`, `german`, `deutsch`, `ki-text`, `ki-texte-humanisieren`, `germanizer`, `prompt-engineering`, `stil-editor`, `style-editor`, `text-editing`, `ai-writing`, `writing-tools`.
-
----
-
-## Verwandte Ressourcen
-
-- **[Anzeichen für KI-generierte Inhalte](https://de.wikipedia.org/wiki/Wikipedia:Anzeichen_f%C3%BCr_KI-generierte_Inhalte)** – Deutsch Wikipedia
-- **[WikiProjekt KI und Wikipedia](https://de.wikipedia.org/wiki/Wikipedia:WikiProjekt_KI_und_Wikipedia)** – Deutsch Wikipedia
-- **[Original Humanizer Skill](https://github.com/blader/humanizer)** – Englische Version
-- **[Claude Code](https://claude.com/claude-code)** – Zur Verwendung mit diesem Skill
-- **[EEAT Guidelines](https://developers.google.com/search/docs/beginner/eeat-signals)** – Google Search Guidelines
+- **Muster ergänzen:** Pull Request senden
+- **Erfahrungen teilen:** in den Discussions diskutieren
 
 ---
 
 ## Was ist neu?
 
 - **5.6.0** - Portabler installieren, zuverlässiger prüfen: Das Codex-Plugin kommt ohne lokale Symlinks aus und lässt sich damit auch auf Windows sauber paketieren; eine neue Stufenübersicht erklärt Einsteigern, was Basis-Skill, Python, spaCy, Hunspell und LanguageTool jeweils beitragen. Das Evidence-Gate schützt jetzt auch Vorzeichen und Vergleichswörter, kompakte Zahlenbereiche, mehrteilige Versionen sowie mehrzeilige, Schweizer und typografisch fehlerhafte Zitate; Schema-1-Ledger werden weiterhin mit ihrer historischen Ankersyntax verglichen. QGIR prüft jeden Zwischenpass und den maßgeblichen Endtext gegen Originalanker, Register und Edit-Budget. Gemeinsames Markdown-Scoping hält Frontmatter, Tabellen, Blockquotes und korrekt gepaarte Code-Fences aus Stilmetriken heraus, während Emoji-ZWJ-Sequenzen erhalten bleiben und die Quote-Prüfung linear skaliert. CLI-Aufrufe, Profilkorridore, `--latest` und LanguageTool scheitern nun sichtbar statt falsch-grün; CI deckt Python 3.10, 3.12 und 3.14 sowie den vollständig gepinnten spaCy-Präzisionspfad ab. Lizenz und Herkunft der adaptierten Muster sind jetzt getrennt und vollständig dokumentiert.
+
+<details>
+<summary><strong>Ältere Versionen</strong></summary>
+
 - **5.5.0** - Weniger Fehlalarme, belegte Zurückhaltung: Wer spaCy installiert hat, kann die Prüf-Scripts mit `--precise` aufrufen – dann unterscheidet der Register-Check anaphorisches „Sie“ („Die Idee klang elegant. Sie war es nicht.“) von echter Anrede, „stellt“ als gewöhnliches Vollverb zählt nicht mehr als Stilmuster, und Begriffe wie „hat Relevanz“ gelten nicht mehr als erfundene Eigennamen; zitierte Wörter zählen generell nicht mehr als KI-Marker, auch ohne spaCy. Ohne Flag bleibt jeder Report exakt wie bisher. Dass diese Fehlalarme wirklich fallen und echte Treffer bleiben, ist jetzt beweisbar statt behauptet: Ein eingechecktes False-Positive-Korpus dient als Messlatte, und drei Red-Team-Szenarien (Jura, Marketing, Wissenschaft) prüfen dauerhaft das Versprechen, bei gutem Text die Finger stillzuhalten – gewollte Paragraphen-Wiederholungen, Marketing-Parallelismus und akademisches Passiv werden nicht mehr „wegverbessert“. Für mehrstufige Überarbeitungen schützt das neue Original-Ledger des Evidence-Gates vor schleichendem Faktenverlust über mehrere Pässe. `syntax_lint.py` misst nur noch Fließtext (Überschriften, Codeblöcke und Frontmatter erzeugen keine Fragment-Fehlalarme mehr) und liefert drei deutsche Verständlichkeitsmaße, darunter die Satzklammer-Spannweite. Neu für CI: `--fail-on {never,blocker,any}` macht die Prüf-Scripts als Gate nutzbar (alle außer der reinen Messstufe `syntax_lint.py`), ohne dass sich Standard-Exit-Codes ändern. Dazu zwei optionale Helfer mit klarer Arbeitsteilung (siehe „Optionale Werkzeuge“): `spell_lint.py` warnt per hunspell, wenn ein Rewrite neue unbekannte Wörter einführt, und `make lt` holt LanguageTool als Zweitmeinung für sprachliche Korrektheit dazu
 - **5.4.0** - Präziser messen, besser abschließen: Wer spaCy installiert hat (`pip install spacy && python3 -m spacy download de_core_news_sm`), bekommt mit `scripts/syntax_lint.py` eine optionale Präzisionsstufe – Passivsätze (Muster 39) und das Nomen-Verb-Verhältnis werden exakt über Satzanalyse gemessen statt per Heuristik geschätzt, im Vorfeld mit F1 1,0 auf kuratierten Fixtures validiert. Ohne spaCy ändert sich nichts: keine Pflicht-Dependency, alle übrigen Prüfungen laufen unverändert. Außerdem hört der Skill nicht mehr bei „keine Tells mehr“ auf – die neue Qualitäts-Rubrik (`references/quality-rubric.md`) prüft in Pass 5 vier positive Achsen (Leserführung, Argumentdichte, Stimmkonsistenz, Sparsamkeit) und benennt im Kurzaudit, welche Achse noch nicht trägt
 - **5.3.1** - Verlässlicher messen, ehrlicher scheitern: Anrede-Formen, Modalpartikeln und Satzgrenzen zählen jetzt in allen Prüfungen aus derselben Quelle – gleicher Text, gleiche Zahlen, egal ob Register-Check, Muster-Lint oder Eval-Runner misst (vollständige Paradigmen für direkte Anrede, überall der abkürzungsfeste Satz-Splitter, ein Sync-Test verhindert neuen Drift). `unicode_lint.py --fix --write` schreibt Korrekturen auf jedem System als UTF-8 zurück – keine beschädigten Umlaute mehr auf Systemen mit anderem Locale-Default. Kurztexte unter acht Sätzen melden im Preflight jetzt ehrlich „zu wenig Text“, statt wegen ein paar Konnektoren ein Risiko-Urteil zu bekommen. Für CI-Nutzer sind die Exit-Codes aller Scripts jetzt als Tabelle dokumentiert und per Test festgenagelt. Und wer sich Raw-JSON ausgeben lässt, bekommt es garantiert ohne Branding-Zeile – das Eval-Harness prüft das ab sofort mit (Szenario 21)
@@ -868,7 +808,11 @@ GitHub-Themen, die gut zum Repository passen: `claude-skill`, `codex-skill`, `cl
 - **2.2.0-de.1** - Upstream v2.2.0 eingearbeitet, zweiter Anti-KI-Audit-Durchlauf eingeführt (Entwurf -> Audit -> Final)
 - **1.0.0** - Initiale deutsche Version mit 31 Mustern auf Basis der deutschen Wikipedia
 
+</details>
+
 ---
+
+<a id="verwandte-ressourcen"></a>
 
 ## Attribution
 
@@ -878,7 +822,18 @@ Dieser Skill basiert auf:
 - Der englischen [Humanizer](https://github.com/blader/humanizer) Skill von [blader](https://github.com/blader)
 - Deutschen Schreibkonventionen und Stilrichtlinien
 
+Das Projekt entstand Anfang 2026 als Fork von `blader/humanizer` und entwickelte sich danach zu
+einem eigenständigen System für deutschsprachige Texte mit eigenem Versionsschema.
+
 **Deutsche Version:** Martin Moeller ([www.martin-moeller.biz](https://www.martin-moeller.biz))
+
+### Verwandte Ressourcen
+
+- **[Anzeichen für KI-generierte Inhalte](https://de.wikipedia.org/wiki/Wikipedia:Anzeichen_f%C3%BCr_KI-generierte_Inhalte)** – Deutsch Wikipedia
+- **[WikiProjekt KI und Wikipedia](https://de.wikipedia.org/wiki/Wikipedia:WikiProjekt_KI_und_Wikipedia)** – Deutsch Wikipedia
+- **[Original Humanizer Skill](https://github.com/blader/humanizer)** – Englische Version
+- **[Claude Code](https://claude.com/claude-code)** – Zur Verwendung mit diesem Skill
+- **[EEAT Guidelines](https://developers.google.com/search/docs/beginner/eeat-signals)** – Google Search Guidelines
 
 ---
 

@@ -245,6 +245,42 @@ class SkillStructureTests(unittest.TestCase):
         self.assertIn("py -m pip install -r requirements-precise.txt", readme)
         self.assertIn("sudo apt install hunspell hunspell-de-de", readme)
 
+    def test_readme_follows_the_user_journey(self):
+        readme = read_utf8(ROOT / "README.md")
+        headings = [
+            "## Was ist das?",
+            "## Installation",
+            "## Benutzung",
+            "## Beispiele",
+            "## Fakten, Grenzen und Datenschutz",
+            "## Wie der Skill arbeitet",
+            "## Optionale Werkzeuge",
+            "## 66 Muster in 10 Kategorien",
+            "## Für AI-Assistenten",
+            "## Entwicklung und Verifikation",
+            "## Was ist neu?",
+            "## Attribution",
+            "## Lizenz",
+        ]
+
+        positions = [readme.index(heading) for heading in headings]
+        self.assertEqual(positions, sorted(positions))
+        self.assertIn("Installationsdetails, manuelle Wege und Updates", readme)
+        self.assertIn("Power-User: lokaler Prüfablauf", readme)
+        self.assertIn("Einzelchecks, Exit-Codes und Evidence-Gate", readme)
+        self.assertIn("Ältere Versionen", readme)
+
+        for anchor in [
+            "warum-nutzen",
+            "tipps-zur-nutzung",
+            "wann-hilfreich--und-wann-nicht",
+            "datenschutz--sicherheit",
+            "philosophie",
+            "feedback--beitrag",
+            "verwandte-ressourcen",
+        ]:
+            self.assertIn(f'<a id="{anchor}"></a>', readme)
+
     def test_discoverability_metadata_is_present(self):
         readme = read_utf8(ROOT / "README.md")
         skill = read_utf8(ROOT / "SKILL.md")
