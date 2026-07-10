@@ -78,30 +78,22 @@ flowchart TD
 
 ### Was zusätzliche Werkzeuge wirklich bringen
 
-Eine Prozent- oder Balkengrafik wäre hier irreführend: Es gibt noch keinen End-to-End-Benchmark,
-der jedem Werkzeug einen belastbaren Qualitätsgewinn zuordnet. Die Werkzeuge lösen außerdem
-verschiedene Probleme; ihre Wirkung lässt sich deshalb nicht sinnvoll addieren. Aussagekräftiger
-ist diese Stufenansicht:
+Für den Einstieg reicht der Basis-Skill. Python ist das sinnvollste erste Upgrade; die übrigen
+Werkzeuge lohnen sich bei einem konkreten Bedarf. Die Prozentwerte sind eine grobe Orientierung
+für den zusätzlichen Nutzen gegenüber dem Basis-Skill, kein gemessener Qualitätswert.
 
-```mermaid
-flowchart LR
-    B["Basis-Skill<br/>Kontext, Stilurteil, gezielte Überarbeitung"] --> P["Python-Prüfungen<br/>Faktenanker, Rhythmus, Register, Unicode"]
-    P -. "gezielte Präzision" .-> S["spaCy<br/>Satzanalyse + weniger bekannte Fehlalarme"]
-    P -. "optionale Rewrite-Sicherung" .-> H["Hunspell<br/>neue unbekannte Wörter und verdrehte Namen"]
-    B -. "optionale sprachliche Zweitmeinung" .-> L["LanguageTool<br/>Grammatik, Rechtschreibung, Zeichensetzung"]
-```
+| Setup | Grober Boost gegenüber der Basis | Besonders sinnvoll für |
+|---|---:|---|
+| Nur der Skill | Basis (0 %) | Ausprobieren, kurze Texte und normales Redigieren |
+| Skill + Python | etwa +20–30 % | Empfohlener Standard für Dateien, Fakten und reproduzierbare Prüfungen |
+| zusätzlich spaCy | etwa +5–10 % | Weniger bekannte Fehlalarme und genauere Satzanalyse |
+| zusätzlich Hunspell | etwa +3–7 % | Datei-Rewrites mit Namen, Fachwörtern und neuen Tippfehlern |
+| zusätzlich LanguageTool | etwa +5–15 % | Abschließendes Korrektorat von Grammatik und Zeichensetzung |
 
-Die Pfeile bedeuten **zusätzliche Absicherung**, keinen gemessenen Prozent-Boost. Für den Einstieg
-reicht der Basis-Skill. Python ist das sinnvollste erste Upgrade; die übrigen Werkzeuge lohnen sich
-erst bei einem konkreten Bedarf.
-
-| Setup | Besonders sinnvoll für |
-|---|---|
-| Nur der Skill | Ausprobieren, kurze Texte und normales Redigieren |
-| Skill + Python | Empfohlener Standard für Dateien, Fakten und reproduzierbare Prüfungen |
-| zusätzlich spaCy | Weniger bekannte Fehlalarme und genauere Satzanalyse |
-| zusätzlich Hunspell | Datei-Rewrites mit Namen, Fachwörtern und neuen Tippfehlern |
-| zusätzlich LanguageTool | Abschließendes Korrektorat von Grammatik und Zeichensetzung |
+Die Ergebnisse können je nach Textart, Textlänge, Ausgangsqualität und Arbeitsweise deutlich
+variieren. Die Werte sind nicht additiv: Die Werkzeuge prüfen unterschiedliche, teilweise
+überlappende Fehlerklassen und ersetzen weder das Kontexturteil des Modells noch das menschliche
+Gegenlesen.
 
 Die Messwerte informieren das Zielprofil, aber sie richten nicht: Ob eine auffällige Stelle wirklich ein Problem ist, entscheidet das Modell im Kontext – nach der Cluster-Regel und den Carve-outs für bekannte Fehlalarme. Mit installiertem spaCy fängt `--precise` die dokumentierten Fehlalarm-Klassen direkt scriptseitig ab (siehe [Optionale Werkzeuge](#optionale-werkzeuge)).
 
@@ -714,7 +706,8 @@ GitHub-Themen, die gut zum Repository passen: `claude-skill`, `codex-skill`, `cl
 
 ## Was ist neu?
 
-- **5.6.0** - Portabler installieren, zuverlässiger prüfen: Das Codex-Plugin kommt ohne lokale Symlinks aus und lässt sich damit auch auf Windows sauber paketieren; eine neue Stufenübersicht erklärt Einsteigern, was Basis-Skill, Python, spaCy, Hunspell und LanguageTool jeweils beitragen, ohne ungemessene Prozentversprechen. Das Evidence-Gate schützt jetzt auch Vorzeichen und Vergleichswörter, kompakte Zahlenbereiche, mehrteilige Versionen sowie mehrzeilige, Schweizer und typografisch fehlerhafte Zitate; Schema-1-Ledger werden weiterhin mit ihrer historischen Ankersyntax verglichen. QGIR prüft jeden Zwischenpass und den maßgeblichen Endtext gegen Originalanker, Register und Edit-Budget. Gemeinsames Markdown-Scoping hält Frontmatter, Tabellen, Blockquotes und korrekt gepaarte Code-Fences aus Stilmetriken heraus, während Emoji-ZWJ-Sequenzen erhalten bleiben und die Quote-Prüfung linear skaliert. CLI-Aufrufe, Profilkorridore, `--latest` und LanguageTool scheitern nun sichtbar statt falsch-grün; CI deckt Python 3.10, 3.12 und 3.14 sowie den vollständig gepinnten spaCy-Präzisionspfad ab. Lizenz und Herkunft der adaptierten Muster sind jetzt getrennt und vollständig dokumentiert.
+- **Unreleased** - Werkzeugübersicht vereinfacht: Die zusätzliche Mermaid-Grafik wurde durch eine kompakte Tabelle mit ausdrücklich unverbindlichen Boost-Spannen ersetzt; ein Hinweis erklärt, warum die Werte je nach Text und Arbeitsweise variieren und nicht addiert werden sollten.
+- **5.6.0** - Portabler installieren, zuverlässiger prüfen: Das Codex-Plugin kommt ohne lokale Symlinks aus und lässt sich damit auch auf Windows sauber paketieren; eine neue Stufenübersicht erklärt Einsteigern, was Basis-Skill, Python, spaCy, Hunspell und LanguageTool jeweils beitragen. Das Evidence-Gate schützt jetzt auch Vorzeichen und Vergleichswörter, kompakte Zahlenbereiche, mehrteilige Versionen sowie mehrzeilige, Schweizer und typografisch fehlerhafte Zitate; Schema-1-Ledger werden weiterhin mit ihrer historischen Ankersyntax verglichen. QGIR prüft jeden Zwischenpass und den maßgeblichen Endtext gegen Originalanker, Register und Edit-Budget. Gemeinsames Markdown-Scoping hält Frontmatter, Tabellen, Blockquotes und korrekt gepaarte Code-Fences aus Stilmetriken heraus, während Emoji-ZWJ-Sequenzen erhalten bleiben und die Quote-Prüfung linear skaliert. CLI-Aufrufe, Profilkorridore, `--latest` und LanguageTool scheitern nun sichtbar statt falsch-grün; CI deckt Python 3.10, 3.12 und 3.14 sowie den vollständig gepinnten spaCy-Präzisionspfad ab. Lizenz und Herkunft der adaptierten Muster sind jetzt getrennt und vollständig dokumentiert.
 - **5.5.0** - Weniger Fehlalarme, belegte Zurückhaltung: Wer spaCy installiert hat, kann die Prüf-Scripts mit `--precise` aufrufen – dann unterscheidet der Register-Check anaphorisches „Sie“ („Die Idee klang elegant. Sie war es nicht.“) von echter Anrede, „stellt“ als gewöhnliches Vollverb zählt nicht mehr als Stilmuster, und Begriffe wie „hat Relevanz“ gelten nicht mehr als erfundene Eigennamen; zitierte Wörter zählen generell nicht mehr als KI-Marker, auch ohne spaCy. Ohne Flag bleibt jeder Report exakt wie bisher. Dass diese Fehlalarme wirklich fallen und echte Treffer bleiben, ist jetzt beweisbar statt behauptet: Ein eingechecktes False-Positive-Korpus dient als Messlatte, und drei Red-Team-Szenarien (Jura, Marketing, Wissenschaft) prüfen dauerhaft das Versprechen, bei gutem Text die Finger stillzuhalten – gewollte Paragraphen-Wiederholungen, Marketing-Parallelismus und akademisches Passiv werden nicht mehr „wegverbessert“. Für mehrstufige Überarbeitungen schützt das neue Original-Ledger des Evidence-Gates vor schleichendem Faktenverlust über mehrere Pässe. `syntax_lint.py` misst nur noch Fließtext (Überschriften, Codeblöcke und Frontmatter erzeugen keine Fragment-Fehlalarme mehr) und liefert drei deutsche Verständlichkeitsmaße, darunter die Satzklammer-Spannweite. Neu für CI: `--fail-on {never,blocker,any}` macht die Prüf-Scripts als Gate nutzbar (alle außer der reinen Messstufe `syntax_lint.py`), ohne dass sich Standard-Exit-Codes ändern. Dazu zwei optionale Helfer mit klarer Arbeitsteilung (siehe „Optionale Werkzeuge“): `spell_lint.py` warnt per hunspell, wenn ein Rewrite neue unbekannte Wörter einführt, und `make lt` holt LanguageTool als Zweitmeinung für sprachliche Korrektheit dazu
 - **5.4.0** - Präziser messen, besser abschließen: Wer spaCy installiert hat (`pip install spacy && python3 -m spacy download de_core_news_sm`), bekommt mit `scripts/syntax_lint.py` eine optionale Präzisionsstufe – Passivsätze (Muster 39) und das Nomen-Verb-Verhältnis werden exakt über Satzanalyse gemessen statt per Heuristik geschätzt, im Vorfeld mit F1 1,0 auf kuratierten Fixtures validiert. Ohne spaCy ändert sich nichts: keine Pflicht-Dependency, alle übrigen Prüfungen laufen unverändert. Außerdem hört der Skill nicht mehr bei „keine Tells mehr“ auf – die neue Qualitäts-Rubrik (`references/quality-rubric.md`) prüft in Pass 5 vier positive Achsen (Leserführung, Argumentdichte, Stimmkonsistenz, Sparsamkeit) und benennt im Kurzaudit, welche Achse noch nicht trägt
 - **5.3.1** - Verlässlicher messen, ehrlicher scheitern: Anrede-Formen, Modalpartikeln und Satzgrenzen zählen jetzt in allen Prüfungen aus derselben Quelle – gleicher Text, gleiche Zahlen, egal ob Register-Check, Muster-Lint oder Eval-Runner misst (vollständige Paradigmen für direkte Anrede, überall der abkürzungsfeste Satz-Splitter, ein Sync-Test verhindert neuen Drift). `unicode_lint.py --fix --write` schreibt Korrekturen auf jedem System als UTF-8 zurück – keine beschädigten Umlaute mehr auf Systemen mit anderem Locale-Default. Kurztexte unter acht Sätzen melden im Preflight jetzt ehrlich „zu wenig Text“, statt wegen ein paar Konnektoren ein Risiko-Urteil zu bekommen. Für CI-Nutzer sind die Exit-Codes aller Scripts jetzt als Tabelle dokumentiert und per Test festgenagelt. Und wer sich Raw-JSON ausgeben lässt, bekommt es garantiert ohne Branding-Zeile – das Eval-Harness prüft das ab sofort mit (Szenario 21)
