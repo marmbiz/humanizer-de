@@ -59,6 +59,8 @@ class SkillStructureTests(unittest.TestCase):
         self.assertIn("name: humanizer-de", wrapper_text)
         self.assertIn("../../SKILL.md", wrapper_text)
         self.assertIn("Plugin-Root", wrapper_text)
+        self.assertEqual({path.name for path in skill_wrapper.iterdir()}, {"SKILL.md"})
+        self.assertFalse(any(path.is_symlink() for path in skill_wrapper.rglob("*")))
 
     def test_description_is_narrow(self):
         text = (ROOT / "SKILL.md").read_text()
