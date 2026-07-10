@@ -36,15 +36,15 @@ ANCHOR_PATTERNS = {
 }
 
 QUOTE_PATTERNS = (
-    re.compile(r"„([^„“\n]{3,})“"),
-    re.compile(r"‚([^‚‘\n]{3,})‘"),
-    re.compile(r"“([^“”\n]{3,})”"),
-    re.compile(r"«([^«»\n]{3,})»"),
-    re.compile(r"»([^«»\n]{3,})«"),
-    re.compile(r"‹([^‹›\n]{3,})›"),
-    re.compile(r"›([^‹›\n]{3,})‹"),
-    re.compile(r'"([^"\n]{3,})"'),
-    re.compile(r"(?<!\w)'([^'\n]{3,})'(?!\w)"),
+    re.compile(r"„([^„“]{3,})“"),
+    re.compile(r"‚([^‚‘]{3,})‘"),
+    re.compile(r"“([^“”]{3,})”"),
+    re.compile(r"«([^«»]{3,})»"),
+    re.compile(r"»([^«»]{3,})«"),
+    re.compile(r"‹([^‹›]{3,})›"),
+    re.compile(r"›([^‹›]{3,})‹"),
+    re.compile(r'"([^"]{3,})"'),
+    re.compile(r"(?<!\w)'([^']{3,})'(?!\w)"),
 )
 
 AUTHORITY_MARKERS = {

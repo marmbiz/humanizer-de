@@ -54,6 +54,20 @@ class EvidenceLintTests(unittest.TestCase):
         self.assertIn("removed_quote", found)
         self.assertIn("added_quote", found)
 
+    def test_multiline_quotes_are_protected(self):
+        cases = (
+            ("„erste Zeile\nzweite Zeile“", "„erste Zeile\ngeänderte Zeile“"),
+            ("«erste Zeile\nzweite Zeile»", "«erste Zeile\ngeänderte Zeile»"),
+            ('"erste Zeile\nzweite Zeile"', '"erste Zeile\ngeänderte Zeile"'),
+            ("'erste Zeile\nzweite Zeile'", "'erste Zeile\ngeänderte Zeile'"),
+        )
+
+        for before, after in cases:
+            with self.subTest(before=before):
+                found = kinds(evidence_lint.lint(before, after))
+                self.assertIn("removed_quote", found)
+                self.assertIn("added_quote", found)
+
     def test_apostrophes_in_contractions_are_not_quote_anchors(self):
         text = "Wenn's heute klappt, gibt's morgen mehr."
 
