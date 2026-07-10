@@ -52,9 +52,13 @@ class SkillStructureTests(unittest.TestCase):
         self.assertIn("allow_implicit_invocation: true", agent_yaml)
 
         skill_wrapper = ROOT / "skills" / "humanizer-de"
-        self.assertTrue((skill_wrapper / "SKILL.md").is_symlink())
-        self.assertTrue((skill_wrapper / "references").is_symlink())
-        self.assertTrue((skill_wrapper / "scripts").is_symlink())
+        wrapper_file = skill_wrapper / "SKILL.md"
+        wrapper_text = wrapper_file.read_text()
+        self.assertTrue(wrapper_file.is_file())
+        self.assertFalse(wrapper_file.is_symlink())
+        self.assertIn("name: humanizer-de", wrapper_text)
+        self.assertIn("../../SKILL.md", wrapper_text)
+        self.assertIn("Plugin-Root", wrapper_text)
 
     def test_description_is_narrow(self):
         text = (ROOT / "SKILL.md").read_text()
