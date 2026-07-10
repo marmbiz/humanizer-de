@@ -7,7 +7,7 @@
 
 [![Version](https://img.shields.io/github/v/tag/marmbiz/humanizer-de?label=Version&color=c4501f)](https://github.com/marmbiz/humanizer-de/tags)
 [![Tests](https://github.com/marmbiz/humanizer-de/actions/workflows/tests.yml/badge.svg)](https://github.com/marmbiz/humanizer-de/actions/workflows/tests.yml)
-[![Lizenz](https://img.shields.io/badge/Lizenz-MIT-1f6feb)](LICENSE)
+[![Lizenz](https://img.shields.io/badge/Lizenz-MIT_%2B_CC_BY--SA_4.0-1f6feb)](NOTICE)
 [![Muster](https://img.shields.io/badge/Muster-66_in_10_Kategorien-2da44e)](#66-muster-in-10-kategorien)
 [![Claude Code](https://img.shields.io/badge/Claude_Code-Plugin-d97757)](#installation)
 [![Codex](https://img.shields.io/badge/Codex-Supported-10a37f)](#installation)
@@ -721,7 +721,7 @@ GitHub-Themen, die gut zum Repository passen: `claude-skill`, `codex-skill`, `cl
 
 ## Attribution
 
-Dieses Skill basiert auf:
+Dieser Skill basiert auf:
 
 - Der Wikipedia-Seite [Anzeichen für KI-generierte Inhalte](https://de.wikipedia.org/wiki/Wikipedia:Anzeichen_f%C3%BCr_KI-generierte_Inhalte) der Deutschen Wikipedia
 - Der englischen [Humanizer](https://github.com/blader/humanizer) Skill von [blader](https://github.com/blader)
@@ -733,10 +733,13 @@ Dieses Skill basiert auf:
 
 ## Lizenz
 
-MIT License - Frei nutzbar, modifizierbar und verteilbar.
+Projektcode und eigenständiges Projektmaterial stehen unter der [MIT License](LICENSE).
+Der adaptierte Musterkatalog in `references/patterns.md` und die entsprechenden
+Katalogbeschreibungen und Tabellen in diesem README stehen unter
+[CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
 
-Basiert auf dem Original [Humanizer](https://github.com/blader/humanizer) (MIT) und
-[Wikipedia: Anzeichen für KI-generierte Inhalte](https://de.wikipedia.org/wiki/Wikipedia:Anzeichen_f%C3%BCr_KI-generierte_Inhalte) (CC BY-SA 4.0).
+Copyright-, Quellen-, Änderungshinweise und der genaue Lizenzumfang stehen in
+[NOTICE](NOTICE).
 
 ---
 

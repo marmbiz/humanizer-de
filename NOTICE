@@ -1,0 +1,38 @@
+# Third-party and adapted material
+
+## Original Humanizer
+
+Parts of this project derive from the Humanizer skill by Siqi Chen (blader):
+
+https://github.com/blader/humanizer
+
+Copyright (c) 2025 Siqi Chen. The upstream work is licensed under the MIT
+License. Its copyright and license notice are preserved in LICENSE. The German
+adaptation restructures and expands the upstream workflow, pattern catalog,
+tests, and tooling.
+
+## Wikipedia-derived pattern material
+
+`references/patterns.md` and the corresponding pattern-catalog descriptions
+and tables in `README.md` adapt material from these Wikipedia project pages:
+
+- German: "Anzeichen für KI-generierte Inhalte"
+  https://de.wikipedia.org/wiki/Wikipedia:Anzeichen_f%C3%BCr_KI-generierte_Inhalte
+  Contributors and revision history:
+  https://de.wikipedia.org/w/index.php?title=Wikipedia:Anzeichen_f%C3%BCr_KI-generierte_Inhalte&action=history
+- English: "Signs of AI writing"
+  https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing
+  Contributors and revision history:
+  https://en.wikipedia.org/w/index.php?title=Wikipedia:Signs_of_AI_writing&action=history
+
+Those adapted portions are licensed under the Creative Commons
+Attribution-ShareAlike 4.0 International license (CC BY-SA 4.0):
+
+https://creativecommons.org/licenses/by-sa/4.0/
+
+Changes include translation into German, selection, reorganization,
+consolidation, expansion, and project-specific examples and guidance. The
+Wikipedia authors and the Wikimedia Foundation do not endorse this project.
+
+All other project code and original material are licensed under the MIT
+License unless a file contains a more specific notice.
