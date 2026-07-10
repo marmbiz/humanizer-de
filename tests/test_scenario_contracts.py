@@ -109,6 +109,28 @@ class ScenarioContractTests(unittest.TestCase):
         self.assertIn("missing_protected_anchor", violations)
         self.assertIn("register_shift", violations)
 
+    def test_qgir_checks_authoritative_text_alongside_pass_trace(self):
+        scenario = {
+            "mode": "Sachlich",
+            "input": "Sie erhalten die Freigabe am Freitag.",
+            "qgir_contract": {
+                "max_passes": 2,
+                "max_changed_sentence_ratio": 0.2,
+                "protected_anchors": ["Freitag"],
+                "required_address": "Sie",
+            },
+        }
+        sample = {
+            "passes": ["Sie erhalten die Freigabe am Freitag."],
+            "text": "Du erhältst die Freigabe bald.",
+        }
+
+        violations = run_review_eval.qgir_violations(scenario, sample)
+
+        self.assertIn("missing_protected_anchor", violations)
+        self.assertIn("register_shift", violations)
+        self.assertIn("edit_budget_exceeded", violations)
+
     def test_strict_mode_fails_on_unexpected_violation(self):
         scenario = {
             "id": 99, "mode": "Sachlich",

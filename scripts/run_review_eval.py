@@ -216,7 +216,10 @@ def qgir_violations(scenario: dict, sample: dict) -> list[str]:
         elif len(passes) > max_passes:
             violations.append("qgir_too_many_passes")
 
-    outputs = passes if valid_pass_trace and passes else [sample_output(sample)]
+    outputs = list(passes) if valid_pass_trace else []
+    authoritative_output = sample_output(sample)
+    if not outputs or authoritative_output != outputs[-1]:
+        outputs.append(authoritative_output)
     max_changed_ratio = contract.get("max_changed_sentence_ratio")
     for output in outputs:
         violations.extend(content_invariant_violations(scenario, output))
