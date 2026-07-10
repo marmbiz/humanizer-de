@@ -86,6 +86,19 @@ class EvidenceLintTests(unittest.TestCase):
                 self.assertIn("removed_number", found)
                 self.assertIn("added_number", found)
 
+    def test_number_anchor_protects_range_endpoints_and_version_components(self):
+        cases = (
+            ("Die Spanne reicht von 12-13 Prozent.", "Die Spanne reicht von 12-14 Prozent."),
+            ("Version 5.5.0 ist freigegeben.", "Version 5.5.1 ist freigegeben."),
+            ("Version v5.5.0 ist freigegeben.", "Version v5.5.1 ist freigegeben."),
+        )
+
+        for before, after in cases:
+            with self.subTest(before=before, after=after):
+                found = kinds(evidence_lint.lint(before, after))
+                self.assertIn("removed_number", found)
+                self.assertIn("added_number", found)
+
     def test_allows_sentence_split_with_same_anchor(self):
         before = "Die API liefert Status 200 und ein leeres Array."
         after = "Die API liefert Status 200. Sie gibt ein leeres Array zurück."

@@ -18,9 +18,9 @@ LEGACY_LEDGER_SCHEMA_VERSIONS = {1}
 
 ANCHOR_PATTERNS = {
     "number": re.compile(
-        r"(?<![\w.,+\-−])"
-        r"(?:(?:mindestens|höchstens|hoechstens|mehr\s+als|weniger\s+als|über|ueber|unter|bis\s+zu)\s+|[+\-−]\s*)?"
-        r"\d+(?:[.,]\d+)?"
+        r"(?<![\w.,])"
+        r"(?:(?:mindestens|höchstens|hoechstens|mehr\s+als|weniger\s+als|über|ueber|unter|bis\s+zu)\s+|[+\-−]\s*|[vV])?"
+        r"\d+(?:[.,]\d+)*"
         r"(?:\s*(?:%|Prozent|€|Euro|EUR|km|kg|Mio\.?|Millionen))?"
         r"(?!\w)",
         re.IGNORECASE,
