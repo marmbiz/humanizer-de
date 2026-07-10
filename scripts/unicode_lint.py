@@ -37,6 +37,34 @@ def is_hidden_char(char: str) -> bool:
     return any(start <= code <= end for start, end in HIDDEN_RANGES)
 
 
+def is_emoji_codepoint(char: str) -> bool:
+    code = ord(char)
+    return (
+        0x1F000 <= code <= 0x1FAFF
+        or 0x2600 <= code <= 0x27BF
+        or 0x2300 <= code <= 0x23FF
+        or 0x2B00 <= code <= 0x2BFF
+        or code in {0x00A9, 0x00AE, 0x203C, 0x2049, 0x3030, 0x303D, 0x3297, 0x3299}
+    )
+
+
+def is_emoji_zwj(text: str, index: int) -> bool:
+    if text[index] != "\u200d":
+        return False
+
+    left = index - 1
+    while left >= 0 and text[left] in {"\ufe0e", "\ufe0f"}:
+        left -= 1
+    right = index + 1
+    while right < len(text) and text[right] in {"\ufe0e", "\ufe0f"}:
+        right += 1
+    return left >= 0 and right < len(text) and is_emoji_codepoint(text[left]) and is_emoji_codepoint(text[right])
+
+
+def is_hidden_at(text: str, index: int) -> bool:
+    return is_hidden_char(text[index]) and not is_emoji_zwj(text, index)
+
+
 def codepoint(char: str) -> str:
     return f"U+{ord(char):04X}"
 
@@ -116,90 +144,146 @@ def looks_like_german_apostrophe(text: str, index: int) -> bool:
     return bool(next_char and next_char.isalpha())
 
 
+def scan_quotes(text: str, in_range) -> tuple[list[dict], dict[int, str], set[str]]:
+    findings: list[dict] = []
+    replacements: dict[int, str] = {}
+    quote_styles: set[str] = set()
+    double_openers: list[int] = []
+    single_openers: list[int] = []
+    english_double_openers: list[int] = []
+
+    for index, char in enumerate(text):
+        if in_range(index):
+            continue
+        if char in {
+            OPEN_DE,
+            CLOSE_DE,
+            WRONG_CLOSE_DE,
+            OPEN_DE_SINGLE,
+            CLOSE_DE_SINGLE,
+            WRONG_CLOSE_SINGLE,
+            ASCII_QUOTE,
+            "\u00ab",
+            "\u00bb",
+        }:
+            quote_styles.add(char)
+
+        if char == OPEN_DE:
+            double_openers.append(index)
+        elif char == OPEN_DE_SINGLE:
+            single_openers.append(index)
+        elif char == CLOSE_DE:
+            if double_openers:
+                double_openers.pop()
+            else:
+                english_double_openers.append(index)
+        elif char == CLOSE_DE_SINGLE:
+            if single_openers:
+                single_openers.pop()
+        elif char == WRONG_CLOSE_DE:
+            if double_openers:
+                double_openers.pop()
+                replacements[index] = CLOSE_DE
+                add_finding(
+                    findings,
+                    46,
+                    "wrong_german_closing_quote",
+                    index,
+                    char,
+                    "Use U+201C after U+201E, not U+201D.",
+                )
+            elif english_double_openers:
+                opener = english_double_openers.pop()
+                add_finding(
+                    findings,
+                    46,
+                    "english_curly_quotes",
+                    opener,
+                    OPEN_EN,
+                    "English curly quote pair in German prose; review German quote style.",
+                )
+            else:
+                add_finding(
+                    findings,
+                    46,
+                    "stray_wrong_german_closing_quote",
+                    index,
+                    char,
+                    "Wrong German closing quote without matching U+201E opener.",
+                )
+        elif char == WRONG_CLOSE_SINGLE:
+            if single_openers:
+                single_openers.pop()
+                replacements[index] = CLOSE_DE_SINGLE
+                add_finding(
+                    findings,
+                    46,
+                    "wrong_single_german_closing_quote",
+                    index,
+                    char,
+                    "Use U+2018 after U+201A, not U+2019.",
+                )
+            elif not looks_like_german_apostrophe(text, index):
+                add_finding(
+                    findings,
+                    46,
+                    "stray_wrong_single_german_closing_quote",
+                    index,
+                    char,
+                    "Wrong single German closing quote without matching U+201A opener.",
+                )
+        elif char == ASCII_QUOTE:
+            double_index = double_openers[-1] if double_openers else -1
+            single_index = single_openers[-1] if single_openers else -1
+            if double_index > single_index:
+                double_openers.pop()
+                add_finding(
+                    findings,
+                    46,
+                    "ascii_german_closing_quote",
+                    index,
+                    char,
+                    "Use U+201C after U+201E, not ASCII quote.",
+                )
+            elif single_index >= 0:
+                single_openers.pop()
+                add_finding(
+                    findings,
+                    46,
+                    "ascii_single_german_closing_quote",
+                    index,
+                    char,
+                    "Use U+2018 after U+201A, not ASCII quote.",
+                )
+
+            add_finding(findings, 46, "straight_quote", index, char, "Straight ASCII quote in prose; review German quote style.")
+
+    for index in double_openers:
+        add_finding(findings, 46, "unclosed_german_quote", index, OPEN_DE, "Opening German quote has no closing quote.")
+    for index in single_openers:
+        add_finding(
+            findings,
+            46,
+            "unclosed_single_german_quote",
+            index,
+            OPEN_DE_SINGLE,
+            "Opening single German quote has no closing quote.",
+        )
+
+    return findings, replacements, quote_styles
+
+
 def lint(text: str) -> list[dict]:
     findings: list[dict] = []
     ranges = protected_ranges(text)
     in_range = range_checker(ranges)
-    paired_quote_indices: set[int] = set()
 
     for index, char in enumerate(text):
-        if is_hidden_char(char):
+        if is_hidden_at(text, index):
             add_finding(findings, 43, "hidden_unicode", index, char, "Remove hidden Unicode character.")
 
-    quote_styles = set()
-    for index, char in enumerate(text):
-        if in_range(index):
-            continue
-        if char in {OPEN_DE, CLOSE_DE, WRONG_CLOSE_DE, OPEN_DE_SINGLE, CLOSE_DE_SINGLE, WRONG_CLOSE_SINGLE, ASCII_QUOTE, "\u00ab", "\u00bb"}:
-            quote_styles.add(char)
-
-    for index, char in enumerate(text):
-        if char != OPEN_DE or in_range(index):
-            continue
-        closing_index = None
-        closing_char = ""
-        for probe in range(index + 1, len(text)):
-            if in_range(probe):
-                continue
-            if text[probe] in {CLOSE_DE, WRONG_CLOSE_DE, ASCII_QUOTE}:
-                closing_index = probe
-                closing_char = text[probe]
-                break
-        if closing_index is None:
-            add_finding(findings, 46, "unclosed_german_quote", index, char, "Opening German quote has no closing quote.")
-        else:
-            paired_quote_indices.update({index, closing_index})
-            if closing_char == WRONG_CLOSE_DE:
-                add_finding(findings, 46, "wrong_german_closing_quote", closing_index, closing_char, "Use U+201C after U+201E, not U+201D.")
-            elif closing_char == ASCII_QUOTE:
-                add_finding(findings, 46, "ascii_german_closing_quote", closing_index, closing_char, "Use U+201C after U+201E, not ASCII quote.")
-
-    for index, char in enumerate(text):
-        if char != OPEN_DE_SINGLE or in_range(index):
-            continue
-        closing_index = None
-        closing_char = ""
-        for probe in range(index + 1, len(text)):
-            if in_range(probe):
-                continue
-            if text[probe] in {CLOSE_DE_SINGLE, WRONG_CLOSE_SINGLE, ASCII_QUOTE}:
-                closing_index = probe
-                closing_char = text[probe]
-                break
-        if closing_index is None:
-            add_finding(findings, 46, "unclosed_single_german_quote", index, char, "Opening single German quote has no closing quote.")
-        else:
-            paired_quote_indices.update({index, closing_index})
-            if closing_char == WRONG_CLOSE_SINGLE:
-                add_finding(findings, 46, "wrong_single_german_closing_quote", closing_index, closing_char, "Use U+2018 after U+201A, not U+2019.")
-            elif closing_char == ASCII_QUOTE:
-                add_finding(findings, 46, "ascii_single_german_closing_quote", closing_index, closing_char, "Use U+2018 after U+201A, not ASCII quote.")
-
-    for index, char in enumerate(text):
-        if char != OPEN_EN or index in paired_quote_indices or in_range(index):
-            continue
-        closing_index = None
-        for probe in range(index + 1, len(text)):
-            if in_range(probe):
-                continue
-            if text[probe] == WRONG_CLOSE_DE:
-                closing_index = probe
-                break
-        if closing_index is not None:
-            paired_quote_indices.update({index, closing_index})
-            add_finding(findings, 46, "english_curly_quotes", index, char, "English curly quote pair in German prose; review German quote style.")
-
-    for index, char in enumerate(text):
-        if index in paired_quote_indices or in_range(index):
-            continue
-        if char == WRONG_CLOSE_DE:
-            add_finding(findings, 46, "stray_wrong_german_closing_quote", index, char, "Wrong German closing quote without matching U+201E opener.")
-        elif char == WRONG_CLOSE_SINGLE and not looks_like_german_apostrophe(text, index):
-            add_finding(findings, 46, "stray_wrong_single_german_closing_quote", index, char, "Wrong single German closing quote without matching U+201A opener.")
-
-    for index, char in enumerate(text):
-        if char == ASCII_QUOTE and not in_range(index):
-            add_finding(findings, 46, "straight_quote", index, char, "Straight ASCII quote in prose; review German quote style.")
+    quote_findings, _, quote_styles = scan_quotes(text, in_range)
+    findings.extend(quote_findings)
 
     style_families = 0
     if quote_styles & {OPEN_DE, CLOSE_DE, WRONG_CLOSE_DE}:
@@ -225,40 +309,18 @@ def lint(text: str) -> list[dict]:
 
 
 def fix(text: str) -> str:
-    ranges = protected_ranges(text)
-    in_range = range_checker(ranges)
     chars = []
     for index, char in enumerate(text):
-        if is_hidden_char(char):
+        if is_hidden_at(text, index):
             continue
         chars.append(char)
     cleaned = "".join(chars)
     ranges = protected_ranges(cleaned)
     in_range = range_checker(ranges)
     chars = list(cleaned)
-
-    for index, char in enumerate(chars):
-        if char != OPEN_DE or in_range(index):
-            continue
-        for probe in range(index + 1, len(chars)):
-            if in_range(probe):
-                continue
-            if chars[probe] == WRONG_CLOSE_DE:
-                chars[probe] = CLOSE_DE
-                break
-            if chars[probe] in {CLOSE_DE, ASCII_QUOTE}:
-                break
-    for index, char in enumerate(chars):
-        if char != OPEN_DE_SINGLE or in_range(index):
-            continue
-        for probe in range(index + 1, len(chars)):
-            if in_range(probe):
-                continue
-            if chars[probe] == WRONG_CLOSE_SINGLE:
-                chars[probe] = CLOSE_DE_SINGLE
-                break
-            if chars[probe] in {CLOSE_DE_SINGLE, ASCII_QUOTE}:
-                break
+    _, replacements, _ = scan_quotes(cleaned, in_range)
+    for index, replacement in replacements.items():
+        chars[index] = replacement
     return "".join(chars)
 
 
@@ -270,7 +332,10 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--fix", action="store_true", help="Apply safe fixes in output.")
     parser.add_argument("--write", action="store_true", help="Write fixed text back to --file. Requires --fix.")
     parser.add_argument("--fail-on", choices=["never", "blocker", "any"], default="any")
-    return parser.parse_args(argv)
+    args = parser.parse_args(argv)
+    if args.write and (not args.fix or not args.file):
+        parser.error("--write requires --fix and --file")
+    return args
 
 
 def exit_code(findings: list[dict], fail_on: str) -> int:
@@ -283,9 +348,6 @@ def exit_code(findings: list[dict], fail_on: str) -> int:
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv or sys.argv[1:])
-    if args.write and (not args.fix or not args.file):
-        raise SystemExit("--write requires --fix and --file")
-
     text = args.text if args.text is not None else args.file.read_text(encoding="utf-8")
     findings = lint(text)
     fixed_text = fix(text) if args.fix else text

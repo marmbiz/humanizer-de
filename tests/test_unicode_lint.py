@@ -1,5 +1,7 @@
 import importlib.util
 import random
+import subprocess
+import sys
 import time
 import unittest
 from pathlib import Path
@@ -22,6 +24,18 @@ class UnicodeLintTests(unittest.TestCase):
         self.assertTrue(any(item["pattern"] == 43 for item in findings))
         self.assertEqual(unicode_lint.fix(text), "AlphaBeta")
 
+    def test_emoji_zwj_sequence_is_preserved(self):
+        for text in ("👩‍💻", "👩🏽‍💻", "❤️‍🔥"):
+            with self.subTest(text=text):
+                self.assertEqual(unicode_lint.lint(text), [])
+                self.assertEqual(unicode_lint.fix(text), text)
+
+    def test_zwj_between_letters_is_still_removed(self):
+        text = "Alpha\u200dBeta"
+
+        self.assertTrue(any(item["kind"] == "hidden_unicode" for item in unicode_lint.lint(text)))
+        self.assertEqual(unicode_lint.fix(text), "AlphaBeta")
+
     def test_non_breaking_space_is_not_flagged(self):
         text = f"5{chr(0x00A0)}km"
         self.assertEqual(unicode_lint.lint(text), [])
@@ -38,6 +52,13 @@ class UnicodeLintTests(unittest.TestCase):
         fixed = unicode_lint.fix(text)
         self.assertTrue(any(item["kind"] == "wrong_german_closing_quote" for item in unicode_lint.lint(text)))
         self.assertEqual(ord(fixed[-1]), 0x201C)
+
+    def test_one_closer_cannot_close_two_openers(self):
+        text = "„a „b“"
+        findings = unicode_lint.lint(text)
+
+        unclosed = [item for item in findings if item["kind"] == "unclosed_german_quote"]
+        self.assertEqual([item["index"] for item in unclosed], [0])
 
     def test_nested_single_german_quotes_are_valid(self):
         text = chr(0x201E) + "Er sagte: " + chr(0x201A) + "Hallo" + chr(0x2018) + chr(0x201C)
@@ -140,6 +161,26 @@ class UnicodeLintTests(unittest.TestCase):
         unicode_lint.lint(text)
         elapsed = time.process_time() - start
         self.assertLess(elapsed, 1.0, f"lint() brauchte {elapsed:.2f} s CPU-Zeit")
+
+    def test_many_unmatched_openers_are_processed_linearly(self):
+        text = "„" * 4000
+        start = time.process_time()
+        findings = unicode_lint.lint(text)
+        elapsed = time.process_time() - start
+
+        self.assertEqual(len(findings), 4000)
+        self.assertTrue(all(item["kind"] == "unclosed_german_quote" for item in findings))
+        self.assertLess(elapsed, 1.0, f"lint() brauchte {elapsed:.2f} s CPU-Zeit")
+
+    def test_invalid_write_combination_is_usage_error(self):
+        proc = subprocess.run(
+            [sys.executable, str(SCRIPT), "--text", "Test", "--write"],
+            capture_output=True,
+            text=True,
+        )
+
+        self.assertEqual(proc.returncode, 2)
+        self.assertIn("--write requires --fix and --file", proc.stderr)
 
 
 if __name__ == "__main__":
