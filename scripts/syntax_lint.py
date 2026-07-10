@@ -274,7 +274,7 @@ def lint(text: str, nlp: Any | None = None) -> dict:
 
 def parse_args(argv: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Report optional spaCy-backed syntax metrics.")
-    source = parser.add_mutually_exclusive_group()
+    source = parser.add_mutually_exclusive_group(required=True)
     source.add_argument("--text")
     source.add_argument("--file", type=Path)
     return parser.parse_args(argv)

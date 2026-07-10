@@ -90,10 +90,12 @@ def load_text(value: str | None, path: Path | None) -> str:
 
 def parse_args(argv: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Compare before/after passages for new hunspell-unknown words.")
-    parser.add_argument("--before", help="Before passage as inline text.")
-    parser.add_argument("--after", help="After passage as inline text.")
-    parser.add_argument("--before-file", type=Path, help="Read before passage from file.")
-    parser.add_argument("--after-file", type=Path, help="Read after passage from file.")
+    before = parser.add_mutually_exclusive_group(required=True)
+    before.add_argument("--before", help="Before passage as inline text.")
+    before.add_argument("--before-file", type=Path, help="Read before passage from file.")
+    after = parser.add_mutually_exclusive_group(required=True)
+    after.add_argument("--after", help="After passage as inline text.")
+    after.add_argument("--after-file", type=Path, help="Read after passage from file.")
     parser.add_argument("--fail-on", choices=["never", "blocker", "any"], default="never")
     return parser.parse_args(argv)
 

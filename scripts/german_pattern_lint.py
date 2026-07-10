@@ -220,14 +220,20 @@ def check_fixture(path: Path, precise: bool = False) -> dict:
 
 def parse_args(argv: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Report German naturalness pattern clusters.")
-    source = parser.add_mutually_exclusive_group()
+    source = parser.add_mutually_exclusive_group(required=True)
     source.add_argument("--text")
     source.add_argument("--file", type=Path)
     source.add_argument("--fixture", type=Path)
     parser.add_argument("--mode", choices=["locker", "sachlich", "formal"], default="sachlich")
     parser.add_argument("--precise", action="store_true", help="spaCy-gestützte Verfeinerung, wenn installiert; sonst wirkungslos")
     parser.add_argument("--fail-on", choices=["never", "blocker", "any"], default="never")
-    return parser.parse_args(argv)
+    args = parser.parse_args(argv)
+    if args.fixture:
+        if not args.fixture.exists():
+            parser.error(f"fixture path does not exist: {args.fixture}")
+        if args.fixture.is_dir() and not any(args.fixture.glob("*.json")):
+            parser.error(f"fixture directory contains no JSON files: {args.fixture}")
+    return args
 
 
 def exit_code(findings: list[dict], fail_on: str) -> int:
