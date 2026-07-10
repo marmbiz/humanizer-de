@@ -75,7 +75,10 @@ Schema:
 
 ```json
 {
-  "schema_version": 1,
+  "schema_version": 2,
+  "extraction_policy": {
+    "mode": "default"
+  },
   "anchors": {
     "number": ["12 Prozent"],
     "date": [],
@@ -88,6 +91,11 @@ Schema:
   }
 }
 ```
+
+Neue Ledger enthalten die tatsaechlich verwendete Extraktions-Policy. Bei aktivem spaCy-Filter
+stehen dort zusaetzlich Modellname und Modellversion. Der Diff-Lauf bricht mit Exit 2 ab, wenn
+seine Policy nicht zur gespeicherten Policy passt. Ledger mit Schema 1 bleiben lesbar; weil ihnen
+diese Metadaten fehlen, wird ihre Policy im Report als `legacy_unknown` ausgewiesen.
 
 Vor Pass 1:
 
@@ -102,7 +110,9 @@ python3 scripts/evidence_lint.py --ledger /tmp/qgir-ledger.json --after-file /tm
 ```
 
 Mit `--precise` wirkt der spaCy-Filter im Write-Modus auf die Before-Anker im Ledger und im
-Ledger-Diff nur auf die After-Anker. Das Ledger selbst bleibt die Original-Quelle.
+Ledger-Diff nur auf die After-Anker. Das Ledger selbst bleibt die Original-Quelle. Deshalb muss
+`--precise` fuer beide Laeufe unter derselben Modellversion tatsaechlich aktiv sein; ein lautloser
+Fallback auf die Default-Policy wird nicht mit einem spaCy-Ledger verglichen.
 
 Report im Paar-Modus:
 

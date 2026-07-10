@@ -13,10 +13,18 @@ from pathlib import Path
 
 SYNTAX_SCRIPT = Path(__file__).resolve().parent / "syntax_lint.py"
 _SYNTAX_LINT = None
-LEDGER_SCHEMA_VERSION = 1
+LEDGER_SCHEMA_VERSION = 2
+LEGACY_LEDGER_SCHEMA_VERSIONS = {1}
 
 ANCHOR_PATTERNS = {
-    "number": re.compile(r"\b\d+(?:[.,]\d+)?\s*(?:%|Prozent|Euro|EUR|km|kg|Mio\.?|Millionen)?\b", re.IGNORECASE),
+    "number": re.compile(
+        r"(?<![\w.,+\-−])"
+        r"(?:(?:mindestens|höchstens|hoechstens|mehr\s+als|weniger\s+als|über|ueber|unter|bis\s+zu)\s+|[+\-−]\s*)?"
+        r"\d+(?:[.,]\d+)?"
+        r"(?:\s*(?:%|Prozent|€|Euro|EUR|km|kg|Mio\.?|Millionen))?"
+        r"(?!\w)",
+        re.IGNORECASE,
+    ),
     "date": re.compile(
         r"\b(?:\d{1,2}\.\s*(?:Januar|Februar|März|Maerz|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember)\s+\d{4}|\d{4}-\d{2}-\d{2})\b",
         re.IGNORECASE,
@@ -25,8 +33,19 @@ ANCHOR_PATTERNS = {
     "doi": re.compile(r"\b(?:doi:\s*)?10\.\d{4,9}/[-._;()/:A-Za-z0-9]+\b", re.IGNORECASE),
     "paragraph": re.compile(r"§+\s*\d+[a-zA-Z]*(?:\s*Abs\.\s*\d+)?"),
     "code": re.compile(r"`[^`\n]+`"),
-    "quote": re.compile(r"[\"„“‚‘”']([^\"„“‚‘”']{3,})[\"„“‚‘”']"),
 }
+
+QUOTE_PATTERNS = (
+    re.compile(r"„([^„“\n]{3,})“"),
+    re.compile(r"‚([^‚‘\n]{3,})‘"),
+    re.compile(r"“([^“”\n]{3,})”"),
+    re.compile(r"«([^«»\n]{3,})»"),
+    re.compile(r"»([^«»\n]{3,})«"),
+    re.compile(r"‹([^‹›\n]{3,})›"),
+    re.compile(r"›([^‹›\n]{3,})‹"),
+    re.compile(r'"([^"\n]{3,})"'),
+    re.compile(r"(?<!\w)'([^'\n]{3,})'(?!\w)"),
+)
 
 AUTHORITY_MARKERS = {
     "strong": {"belegt", "beweist", "zeigt", "nachweislich", "muss", "immer"},
@@ -133,12 +152,7 @@ def normalize(value: str) -> str:
 
 
 def name_key(value: str) -> str:
-    key = value.casefold()
-    if key.endswith("es") and len(key) > 5:
-        return key[:-2]
-    if key.endswith("s") and len(key) > 4:
-        return key[:-1]
-    return key
+    return value.casefold()
 
 
 def token_in_named_entity(doc: object, start: int, end: int) -> bool:
@@ -149,13 +163,18 @@ def token_in_named_entity(doc: object, start: int, end: int) -> bool:
 
 
 def anchors(text: str, nlp: object | None = None) -> dict[str, set[str]]:
-    result: dict[str, set[str]] = {kind: set() for kind in ANCHOR_PATTERNS}
+    result: dict[str, set[str]] = {kind: set() for kind in anchor_kinds()}
     for kind, pattern in ANCHOR_PATTERNS.items():
         for match in pattern.finditer(text):
-            value = match.group(1) if kind == "quote" else match.group(0)
-            normalized = normalize(value)
+            normalized = normalize(match.group(0))
             if normalized:
                 result[kind].add(normalized)
+
+    for pattern in QUOTE_PATTERNS:
+        for match in pattern.finditer(text):
+            normalized = normalize(match.group(1))
+            if normalized:
+                result["quote"].add(normalized)
 
     # Known default-path gap: single-token common nouns after verbs that are
     # not in the stoplist (e.g. "hat Relevanz") still slip through as
@@ -222,7 +241,7 @@ def add_finding(findings: list[dict], severity: str, kind: str, message: str, va
 
 
 def anchor_kinds() -> tuple[str, ...]:
-    return tuple(ANCHOR_PATTERNS) + ("proper_name",)
+    return tuple(ANCHOR_PATTERNS) + ("quote", "proper_name")
 
 
 def serializable_anchors(anchor_map: dict[str, set[str]]) -> dict[str, list[str]]:
@@ -241,8 +260,8 @@ def add_anchor_findings(
     hard_kinds = {"number", "date", "url", "doi", "paragraph", "code", "quote"}
     for kind in sorted(anchor_kinds()):
         if kind == "proper_name":
-            # Compare case-variant-insensitively (Problem <-> Problems), but
-            # report the original surface forms.
+            # Compare capitalization-insensitively, but report the original
+            # surface forms. Suffix stripping would hide real name changes.
             before_keys = {name_key(value) for value in before_anchors.get(kind, set())}
             after_keys = {name_key(value) for value in after_anchors.get(kind, set())}
             removed = {value for value in before_anchors.get(kind, set()) if name_key(value) not in after_keys}
@@ -301,15 +320,32 @@ def load_text(value: str | None, path: Path | None) -> str:
     return value or ""
 
 
-def write_ledger(text: str, path: Path, precise: bool = False) -> dict[str, set[str]]:
+def extraction_policy(precise: bool) -> tuple[dict[str, str], object | None]:
     _, nlp = precise_context(precise)
+    if nlp is None:
+        return {"mode": "default"}, None
+
+    meta = getattr(nlp, "meta", {})
+    return {
+        "mode": "spacy_ner",
+        "model": str(meta.get("name") or "unknown"),
+        "model_version": str(meta.get("version") or "unknown"),
+    }, nlp
+
+
+def write_ledger(text: str, path: Path, precise: bool = False) -> dict[str, set[str]]:
+    policy, nlp = extraction_policy(precise)
     before_anchors = anchors(text, nlp=nlp)
-    data = {"schema_version": LEDGER_SCHEMA_VERSION, "anchors": serializable_anchors(before_anchors)}
+    data = {
+        "schema_version": LEDGER_SCHEMA_VERSION,
+        "extraction_policy": policy,
+        "anchors": serializable_anchors(before_anchors),
+    }
     path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     return before_anchors
 
 
-def load_ledger(path: Path) -> dict[str, set[str]]:
+def load_ledger_document(path: Path) -> tuple[dict[str, set[str]], dict[str, str] | None]:
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
     except OSError as exc:
@@ -319,8 +355,18 @@ def load_ledger(path: Path) -> dict[str, set[str]]:
 
     if not isinstance(data, dict):
         raise ValueError(f"{path}: ledger must be a JSON object")
-    if data.get("schema_version") != LEDGER_SCHEMA_VERSION:
+    schema_version = data.get("schema_version")
+    if schema_version not in LEGACY_LEDGER_SCHEMA_VERSIONS | {LEDGER_SCHEMA_VERSION}:
         raise ValueError(f"{path}: unsupported schema_version {data.get('schema_version')!r}")
+    policy = data.get("extraction_policy")
+    if schema_version == LEDGER_SCHEMA_VERSION:
+        if not isinstance(policy, dict) or policy.get("mode") not in {"default", "spacy_ner"}:
+            raise ValueError(f"{path}: missing or invalid 'extraction_policy' object")
+        expected_keys = {"mode"} if policy["mode"] == "default" else {"mode", "model", "model_version"}
+        if set(policy) != expected_keys or not all(isinstance(value, str) for value in policy.values()):
+            raise ValueError(f"{path}: invalid 'extraction_policy' fields")
+    else:
+        policy = None
     ledger_anchors = data.get("anchors")
     if not isinstance(ledger_anchors, dict):
         raise ValueError(f"{path}: missing or invalid 'anchors' object")
@@ -335,7 +381,12 @@ def load_ledger(path: Path) -> dict[str, set[str]]:
         if not isinstance(values, list) or not all(isinstance(value, str) for value in values):
             raise ValueError(f"{path}: ledger anchors.{kind} must be a list of strings")
         result[kind] = set(values)
-    return result
+    return result, policy
+
+
+def load_ledger(path: Path) -> dict[str, set[str]]:
+    ledger_anchors, _ = load_ledger_document(path)
+    return ledger_anchors
 
 
 def check_fixture(path: Path, precise: bool = False) -> list[dict]:
@@ -351,6 +402,8 @@ def check_fixture(path: Path, precise: bool = False) -> list[dict]:
 
 def check_fixtures(path: Path, precise: bool = False) -> list[dict]:
     files = sorted(path.glob("*.json")) if path.is_dir() else [path]
+    if not files or not all(file_path.is_file() for file_path in files):
+        raise ValueError(f"{path}: no JSON fixture files found")
     return [item for file_path in files for item in check_fixture(file_path, precise=precise)]
 
 
@@ -366,12 +419,31 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--precise", action="store_true", help="spaCy-gestützte Verfeinerung, wenn installiert; sonst wirkungslos")
     parser.add_argument("--fail-on", choices=["never", "blocker", "any"], default="blocker")
     args = parser.parse_args(argv)
+    if args.before is not None and args.before_file is not None:
+        parser.error("--before and --before-file are mutually exclusive")
+    if args.after is not None and args.after_file is not None:
+        parser.error("--after and --after-file are mutually exclusive")
     if args.ledger and (args.before is not None or args.before_file is not None):
         parser.error("--ledger cannot be combined with --before or --before-file")
     if args.ledger and args.write_ledger:
         parser.error("--ledger cannot be combined with --write-ledger")
     if args.fixture and (args.ledger or args.write_ledger):
         parser.error("--fixture cannot be combined with --ledger or --write-ledger")
+    has_before = args.before is not None or args.before_file is not None
+    has_after = args.after is not None or args.after_file is not None
+    if args.fixture:
+        if has_before or has_after:
+            parser.error("--fixture cannot be combined with before/after arguments")
+    elif args.write_ledger:
+        if not has_before:
+            parser.error("--write-ledger requires --before or --before-file")
+        if has_after:
+            parser.error("--write-ledger cannot be combined with --after or --after-file")
+    elif args.ledger:
+        if not has_after:
+            parser.error("--ledger requires --after or --after-file")
+    elif not has_before or not has_after:
+        parser.error("pair mode requires one before source and one after source")
     return args
 
 
@@ -386,7 +458,11 @@ def exit_code(findings: list[dict], fail_on: str) -> int:
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv or sys.argv[1:])
     if args.fixture:
-        results = check_fixtures(args.fixture, precise=args.precise)
+        try:
+            results = check_fixtures(args.fixture, precise=args.precise)
+        except (OSError, ValueError, json.JSONDecodeError, KeyError) as exc:
+            print(f"error: {exc}", file=sys.stderr)
+            return 2
         report = {"ok": all(item["ok"] for item in results), "results": results}
         status = precise_status(args.precise)
         if status is not None:
@@ -413,15 +489,24 @@ def main(argv: list[str] | None = None) -> int:
     after = load_text(args.after, args.after_file)
     if args.ledger:
         try:
-            before_anchors = load_ledger(args.ledger)
+            before_anchors, ledger_policy = load_ledger_document(args.ledger)
         except ValueError as exc:
             print(f"error: {exc}", file=sys.stderr)
+            return 2
+        current_policy, _ = extraction_policy(args.precise)
+        if ledger_policy is not None and ledger_policy != current_policy:
+            print(
+                "error: ledger extraction policy does not match this diff run "
+                f"(ledger={ledger_policy!r}, current={current_policy!r})",
+                file=sys.stderr,
+            )
             return 2
         findings = lint_with_anchors(before_anchors, after, precise=args.precise)
         report = {
             "ok": not findings,
             "findings": findings,
             "ledger": str(args.ledger),
+            "ledger_extraction_policy": ledger_policy or "legacy_unknown",
         }
         if args.precise:
             report["precise_scope"] = "after_anchors"

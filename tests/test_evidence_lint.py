@@ -45,6 +45,33 @@ class EvidenceLintTests(unittest.TestCase):
         self.assertIn("removed_quote", found)
         self.assertIn("added_quote", found)
 
+    def test_swiss_guillemets_are_protected_quotes(self):
+        before = "Im Bericht steht: «unter zwei Minuten Wartezeit»."
+        after = "Im Bericht steht: «unter drei Minuten Wartezeit»."
+
+        found = kinds(evidence_lint.lint(before, after))
+
+        self.assertIn("removed_quote", found)
+        self.assertIn("added_quote", found)
+
+    def test_apostrophes_in_contractions_are_not_quote_anchors(self):
+        text = "Wenn's heute klappt, gibt's morgen mehr."
+
+        self.assertEqual(evidence_lint.anchors(text)["quote"], set())
+
+    def test_number_anchor_keeps_sign_unit_and_comparator(self):
+        cases = (
+            ("Die Marge beträgt -5 Prozent.", "Die Marge beträgt 5 Prozent."),
+            ("Die Quote liegt bei 12%.", "Die Quote liegt bei 12."),
+            ("Es sind mindestens 12 Fälle.", "Es sind höchstens 12 Fälle."),
+        )
+
+        for before, after in cases:
+            with self.subTest(before=before, after=after):
+                found = kinds(evidence_lint.lint(before, after))
+                self.assertIn("removed_number", found)
+                self.assertIn("added_number", found)
+
     def test_allows_sentence_split_with_same_anchor(self):
         before = "Die API liefert Status 200 und ein leeres Array."
         after = "Die API liefert Status 200. Sie gibt ein leeres Array zurück."
@@ -68,6 +95,15 @@ class EvidenceLintTests(unittest.TestCase):
         found = kinds(evidence_lint.lint(before, after))
         self.assertNotIn("removed_proper_name", found)
         self.assertNotIn("added_proper_name", found)
+
+    def test_name_suffix_is_not_silently_stripped(self):
+        before = "Wir arbeiten mit Mercedes."
+        after = "Wir arbeiten mit Merced."
+
+        found = kinds(evidence_lint.lint(before, after))
+
+        self.assertIn("removed_proper_name", found)
+        self.assertIn("added_proper_name", found)
 
     def test_real_entities_still_flagged(self):
         before = "Der Konzern veröffentlichte Zahlen."
@@ -122,9 +158,12 @@ class EvidenceLintTests(unittest.TestCase):
             ledger_path = Path(tmp) / "ledger.json"
             expected = evidence_lint.write_ledger(before, ledger_path)
             loaded = evidence_lint.load_ledger(ledger_path)
+            document = json.loads(ledger_path.read_text(encoding="utf-8"))
 
         self.assertEqual(loaded, expected)
         self.assertEqual(loaded, evidence_lint.anchors(before))
+        self.assertEqual(document["schema_version"], 2)
+        self.assertEqual(document["extraction_policy"], {"mode": "default"})
 
     def test_ledger_catches_multi_pass_number_drift_against_original(self):
         original = "Die Fehlerquote sank laut Bericht um 12 Prozent."
@@ -197,6 +236,62 @@ class EvidenceLintCliTests(unittest.TestCase):
 
         self.assertEqual(proc.returncode, 2)
         self.assertIn("--ledger cannot be combined with --before or --before-file", proc.stderr)
+
+    def test_no_input_is_usage_error(self):
+        proc = subprocess.run([sys.executable, str(SCRIPT)], capture_output=True, text=True)
+
+        self.assertEqual(proc.returncode, 2)
+        self.assertIn("pair mode requires", proc.stderr)
+
+    def test_empty_fixture_directory_is_usage_error(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            proc = subprocess.run(
+                [sys.executable, str(SCRIPT), "--fixture", tmp],
+                capture_output=True,
+                text=True,
+            )
+
+        self.assertEqual(proc.returncode, 2)
+        self.assertIn("no JSON fixture files found", proc.stderr)
+
+    def test_ledger_mode_rejects_extraction_policy_mismatch(self):
+        before = "Wir arbeiten mit Mercedes."
+        with tempfile.TemporaryDirectory() as tmp:
+            ledger_path = Path(tmp) / "ledger.json"
+            evidence_lint.write_ledger(before, ledger_path)
+            data = json.loads(ledger_path.read_text(encoding="utf-8"))
+            data["extraction_policy"] = {
+                "mode": "spacy_ner",
+                "model": "core_news_sm",
+                "model_version": "test",
+            }
+            ledger_path.write_text(json.dumps(data), encoding="utf-8")
+            proc = subprocess.run(
+                [sys.executable, str(SCRIPT), "--ledger", str(ledger_path), "--after", before],
+                capture_output=True,
+                text=True,
+            )
+
+        self.assertEqual(proc.returncode, 2)
+        self.assertIn("extraction policy does not match", proc.stderr)
+
+    def test_schema_one_ledger_remains_readable(self):
+        before = "Die Quote beträgt 12 Prozent."
+        with tempfile.TemporaryDirectory() as tmp:
+            ledger_path = Path(tmp) / "ledger.json"
+            data = {
+                "schema_version": 1,
+                "anchors": evidence_lint.serializable_anchors(evidence_lint.anchors(before)),
+            }
+            ledger_path.write_text(json.dumps(data), encoding="utf-8")
+            proc = subprocess.run(
+                [sys.executable, str(SCRIPT), "--ledger", str(ledger_path), "--after", before],
+                capture_output=True,
+                text=True,
+            )
+
+        self.assertEqual(proc.returncode, 0)
+        self.assertEqual(json.loads(proc.stdout)["ledger_extraction_policy"], "legacy_unknown")
 
 
 @unittest.skipUnless(SPACY_MODEL_AVAILABLE, "spaCy German model is not available")
