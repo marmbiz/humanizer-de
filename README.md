@@ -76,6 +76,33 @@ flowchart TD
     Q -.-> G
 ```
 
+### Was zusätzliche Werkzeuge wirklich bringen
+
+Eine Prozent- oder Balkengrafik wäre hier irreführend: Es gibt noch keinen End-to-End-Benchmark,
+der jedem Werkzeug einen belastbaren Qualitätsgewinn zuordnet. Die Werkzeuge lösen außerdem
+verschiedene Probleme; ihre Wirkung lässt sich deshalb nicht sinnvoll addieren. Aussagekräftiger
+ist diese Stufenansicht:
+
+```mermaid
+flowchart LR
+    B["Basis-Skill<br/>Kontext, Stilurteil, gezielte Überarbeitung"] --> P["Python-Prüfungen<br/>Faktenanker, Rhythmus, Register, Unicode"]
+    P -. "gezielte Präzision" .-> S["spaCy<br/>Satzanalyse + weniger bekannte Fehlalarme"]
+    P -. "optionale Rewrite-Sicherung" .-> H["Hunspell<br/>neue unbekannte Wörter und verdrehte Namen"]
+    B -. "optionale sprachliche Zweitmeinung" .-> L["LanguageTool<br/>Grammatik, Rechtschreibung, Zeichensetzung"]
+```
+
+Die Pfeile bedeuten **zusätzliche Absicherung**, keinen gemessenen Prozent-Boost. Für den Einstieg
+reicht der Basis-Skill. Python ist das sinnvollste erste Upgrade; die übrigen Werkzeuge lohnen sich
+erst bei einem konkreten Bedarf.
+
+| Setup | Besonders sinnvoll für |
+|---|---|
+| Nur der Skill | Ausprobieren, kurze Texte und normales Redigieren |
+| Skill + Python | Empfohlener Standard für Dateien, Fakten und reproduzierbare Prüfungen |
+| zusätzlich spaCy | Weniger bekannte Fehlalarme und genauere Satzanalyse |
+| zusätzlich Hunspell | Datei-Rewrites mit Namen, Fachwörtern und neuen Tippfehlern |
+| zusätzlich LanguageTool | Abschließendes Korrektorat von Grammatik und Zeichensetzung |
+
 Die Messwerte informieren das Zielprofil, aber sie richten nicht: Ob eine auffällige Stelle wirklich ein Problem ist, entscheidet das Modell im Kontext – nach der Cluster-Regel und den Carve-outs für bekannte Fehlalarme. Mit installiertem spaCy fängt `--precise` die dokumentierten Fehlalarm-Klassen direkt scriptseitig ab (siehe [Optionale Werkzeuge](#optionale-werkzeuge)).
 
 Daraus folgen die Leitlinien des Skills:
