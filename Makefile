@@ -23,4 +23,8 @@ bench:
 	python3 scripts/bench.py --check
 
 lt:
-	@command -v languagetool >/dev/null && languagetool -l de-DE --json $(FILE) || echo "languagetool nicht installiert (brew install languagetool) — übersprungen"
+	@if ! command -v languagetool >/dev/null; then \
+		echo "languagetool nicht installiert (brew install languagetool) — übersprungen"; \
+		exit 0; \
+	fi; \
+	languagetool -l de-DE --json "$(FILE)"
