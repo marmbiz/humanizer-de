@@ -16,6 +16,13 @@ import sys
 from pathlib import Path
 
 
+SCRIPT_DIR = Path(__file__).resolve().parent
+if str(SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIR))
+
+import text_scope
+
+
 SUBJUNCTIONS = {
     "weil",
     "obwohl",
@@ -133,30 +140,15 @@ MONTHS = (
 WORD_RE = re.compile(r"[A-Za-zÄÖÜäöüß0-9]+(?:[-'][A-Za-zÄÖÜäöüß0-9]+)?")
 CLAUSE_PUNCT_RE = re.compile(r"[,;:()]")
 DOT = "<RH_DOT>"
+SENTENCE_BREAK = "<RH_SENTENCE_BREAK>"
 
 
 def protected_ranges(text: str) -> list[tuple[int, int]]:
-    ranges: list[tuple[int, int]] = []
-    patterns = [
-        r"```.*?```",
-        r"`[^`\n]+`",
-        r"https?://[^\s<>)]+",
-        r"\b[\w.-]+@[\w.-]+\.[A-Za-z]{2,}\b",
-    ]
-    for pattern in patterns:
-        for match in re.finditer(pattern, text, re.DOTALL):
-            ranges.append(match.span())
-    ranges.sort()
-    return ranges
+    return text_scope.protected_ranges(text, scope=text_scope.AUTHORED_PROSE)
 
 
 def strip_protected(text: str) -> str:
-    chars = list(text)
-    for start, end in protected_ranges(text):
-        for index in range(start, end):
-            if chars[index] != "\n":
-                chars[index] = " "
-    return "".join(chars)
+    return text_scope.mask_text(text, scope=text_scope.AUTHORED_PROSE)
 
 
 def is_markdown_heading(line: str) -> bool:
@@ -198,16 +190,16 @@ def is_html_block_line(line: str) -> bool:
     return bool(re.match(r"^<[A-Za-z][^>]*>.*</[A-Za-z][^>]*>\s*$", stripped))
 
 
-def split_blocks(text: str) -> tuple[list[str], list[str]]:
+def split_typed_blocks(text: str) -> tuple[list[str], list[tuple[str, str]]]:
     headings: list[str] = []
-    blocks: list[str] = []
+    blocks: list[tuple[str, str]] = []
     current: list[str] = []
 
     def flush_current() -> None:
         if current:
             block = " ".join(part.strip() for part in current if part.strip()).strip()
             if block:
-                blocks.append(block)
+                blocks.append(("paragraph", block))
             current.clear()
 
     for line in text.splitlines():
@@ -220,7 +212,7 @@ def split_blocks(text: str) -> tuple[list[str], list[str]]:
             continue
         if is_list_item(line):
             flush_current()
-            blocks.append(re.sub(r"^\s*(?:[-*+]|\d+[.)])\s+", "", line).strip())
+            blocks.append(("list_item", re.sub(r"^\s*(?:[-*+]|\d+[.)])\s+", "", line).strip()))
             continue
         if not line.strip():
             flush_current()
@@ -228,6 +220,11 @@ def split_blocks(text: str) -> tuple[list[str], list[str]]:
         current.append(line)
     flush_current()
     return headings, blocks
+
+
+def split_blocks(text: str) -> tuple[list[str], list[str]]:
+    headings, typed_blocks = split_typed_blocks(text)
+    return headings, [block for _, block in typed_blocks]
 
 
 def protect_sentence_periods(text: str) -> str:
@@ -256,7 +253,12 @@ def restore_sentence_periods(text: str) -> str:
 def split_sentences(text: str) -> list[str]:
     """Split on .!? after masking common abbreviations and simple dates."""
     masked = protect_sentence_periods(text)
-    parts = re.split(r"(?<=[.!?])\s+", masked.strip())
+    masked = re.sub(
+        r"([.!?][\"'„“‚‘”’«»‹›]*)\s+",
+        lambda match: match.group(1) + SENTENCE_BREAK,
+        masked.strip(),
+    )
+    parts = masked.split(SENTENCE_BREAK)
     sentences = [restore_sentence_periods(part).strip() for part in parts if restore_sentence_periods(part).strip()]
     return sentences
 
@@ -453,8 +455,10 @@ def apply_scope(suspicions: list[dict], scope: str, mode: str) -> tuple[list[dic
 
 def analyze(text: str, file: str | None = None, scope: str = "user_text", mode: str = "sachlich") -> dict:
     clean_text = strip_protected(text)
-    headings, blocks = split_blocks(clean_text)
-    paragraph_reports = [paragraph_report(index + 1, block) for index, block in enumerate(blocks)]
+    headings, typed_blocks = split_typed_blocks(clean_text)
+    blocks = [block for _, block in typed_blocks]
+    paragraph_blocks = [block for kind, block in typed_blocks if kind == "paragraph"]
+    paragraph_reports = [paragraph_report(index + 1, block) for index, block in enumerate(paragraph_blocks)]
     all_sentences = [sentence for block in blocks for sentence in split_sentences(block)]
     lengths = sentence_lengths(all_sentences)
     length_mean = mean(lengths)

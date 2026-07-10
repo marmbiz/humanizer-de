@@ -12,15 +12,22 @@ import sys
 from pathlib import Path
 
 
-SYNTAX_SCRIPT = Path(__file__).resolve().parent / "syntax_lint.py"
+SCRIPT_DIR = Path(__file__).resolve().parent
+if str(SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIR))
+
+import text_scope
+
+
+SYNTAX_SCRIPT = SCRIPT_DIR / "syntax_lint.py"
 _SYNTAX_LINT = None
 
 MODAL_PARTICLES = {"ja", "doch", "eben", "halt", "wohl", "mal", "schon", "ohnehin"}
 DU_FORMS = ("du", "dir", "dich", "dein", "deine", "deinen", "deinem", "deiner", "deines")
 SIE_FORMS = ("Sie", "Ihnen", "Ihr", "Ihre", "Ihren", "Ihrem", "Ihrer", "Ihres")
+WIR_FORMS = ("wir", "uns", "unser", "unsere", "unseren", "unserem", "unserer", "unseres")
 SIE_FORMS_RE = re.compile(rf"\b(?:{'|'.join(re.escape(form) for form in SIE_FORMS)})\b")
 EMOJI_RE = re.compile("[\U0001F300-\U0001FAFF]")
-BLOCKQUOTE_LINE_RE = re.compile(r"(?m)^[ \t]*>.*(?:\n|$)")
 
 
 def load_syntax_lint():
@@ -59,31 +66,16 @@ def precise_status(precise: bool) -> dict | None:
 
 
 def protected_ranges(text: str) -> list[tuple[int, int]]:
-    ranges: list[tuple[int, int]] = []
-    patterns = [
-        r"```.*?```",
-        r"`[^`\n]+`",
-        r"https?://[^\s<>)]+",
-        r"\b[\w.-]+@[\w.-]+\.[A-Za-z]{2,}\b",
-    ]
-    for pattern in patterns:
-        for match in re.finditer(pattern, text, re.DOTALL):
-            ranges.append(match.span())
-    ranges.sort()
-    return ranges
+    return text_scope.protected_ranges(text)
 
 
-def strip_protected(text: str) -> str:
-    chars = list(text)
-    for start, end in protected_ranges(text):
-        for index in range(start, end):
-            if chars[index] != "\n":
-                chars[index] = " "
-    return "".join(chars)
+def strip_protected(text: str, exclude_blockquotes: bool = False) -> str:
+    scope = text_scope.AUTHORED_PROSE if exclude_blockquotes else text_scope.DOCUMENT_PROSE
+    return text_scope.mask_text(text, scope=scope)
 
 
 def blockquote_ranges(text: str) -> list[tuple[int, int]]:
-    return [match.span() for match in BLOCKQUOTE_LINE_RE.finditer(text)]
+    return text_scope.blockquote_ranges(text)
 
 
 def is_in_ranges(start: int, end: int, ranges: Iterable[tuple[int, int]]) -> bool:
@@ -165,12 +157,14 @@ def sie_formal_count(text: str, nlp: object | None = None) -> int:
     return count
 
 
-def features(text: str, nlp: object | None = None) -> dict:
-    clean_text = strip_protected(text)
+def features(text: str, nlp: object | None = None, exclude_blockquotes: bool | None = None) -> dict:
+    if exclude_blockquotes is None:
+        exclude_blockquotes = nlp is not None
+    clean_text = strip_protected(text, exclude_blockquotes=exclude_blockquotes)
     return {
         "du_count": count_words(clean_text, DU_FORMS),
         "sie_formal_count": sie_formal_count(clean_text, nlp=nlp),
-        "wir_count": count_words(clean_text, {"wir", "uns", "unser", "unsere", "unseren"}),
+        "wir_count": count_words(clean_text, WIR_FORMS),
         "man_count": count_words(clean_text, {"man"}),
         "modal_particle_count": count_words(clean_text, MODAL_PARTICLES),
         "emoji_count": len(EMOJI_RE.findall(clean_text)),

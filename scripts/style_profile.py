@@ -129,8 +129,11 @@ def type_token_ratio(words: list[str]) -> float:
 def profile(text: str, source: str) -> dict:
     rhythm_report = rhythm_lint.analyze(text, file=source)
     document = rhythm_report["document"]
-    register_features = register_lint.features(text)
-    words = rhythm_lint.tokens(rhythm_lint.strip_protected(text))
+    clean_text = rhythm_lint.strip_protected(text)
+    _, blocks = rhythm_lint.split_blocks(clean_text)
+    prose_text = "\n".join(blocks)
+    register_features = register_lint.features(prose_text, exclude_blockquotes=True)
+    words = rhythm_lint.tokens(prose_text)
     word_count = len(words)
 
     metrics = {
@@ -151,7 +154,7 @@ def profile(text: str, source: str) -> dict:
         "particle_count": register_features["modal_particle_count"],
         "emoji_count": register_features["emoji_count"],
         "rhetorical_questions": register_features["rhetorical_questions"],
-        "nominal_style_ratio": nominal_style_ratio(text, word_count),
+        "nominal_style_ratio": nominal_style_ratio(prose_text, word_count),
         "type_token_ratio": type_token_ratio(words),
     }
 
