@@ -1,5 +1,7 @@
 import importlib.util
 import json
+import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -63,6 +65,49 @@ class ScenarioContractTests(unittest.TestCase):
             "und mehrere hypothetische Vorteile, die im Ausgangstext nicht belegt sind."
         )
         self.assertGreater(run_review_eval.changed_sentence_ratio(before, after), 0.35)
+
+    def test_qgir_checks_every_pass_against_original(self):
+        scenario = {
+            "mode": "Sachlich",
+            "input": "Die Fehlerquote liegt laut Bericht bei 12 Prozent.",
+            "qgir_contract": {
+                "max_passes": 2,
+                "protected_anchors": ["12 Prozent"],
+            },
+        }
+        sample = {
+            "passes": [
+                "Die Fehlerquote liegt laut Bericht bei 12 Prozent; zusätzlich werden 30 Prozent genannt.",
+                "Laut Bericht liegt die Fehlerquote weiterhin bei 12 Prozent.",
+            ]
+        }
+
+        violations = run_review_eval.qgir_violations(scenario, sample)
+
+        self.assertIn("new_factual_anchor", violations)
+        self.assertNotIn("full_text_output", violations)
+
+    def test_qgir_checks_protected_anchors_and_register_on_intermediate_passes(self):
+        scenario = {
+            "mode": "Sachlich",
+            "input": "Sie erhalten die Freigabe am Freitag.",
+            "qgir_contract": {
+                "max_passes": 2,
+                "protected_anchors": ["Freitag"],
+                "required_address": "Sie",
+            },
+        }
+        sample = {
+            "passes": [
+                "Du erhältst die Freigabe bald.",
+                "Sie erhalten die Freigabe am Freitag.",
+            ]
+        }
+
+        violations = run_review_eval.qgir_violations(scenario, sample)
+
+        self.assertIn("missing_protected_anchor", violations)
+        self.assertIn("register_shift", violations)
 
     def test_strict_mode_fails_on_unexpected_violation(self):
         scenario = {
@@ -145,6 +190,41 @@ class ScenarioContractTests(unittest.TestCase):
             result = run_review_eval.check_scenario(path, check_invariants=False)
         self.assertTrue(result["ok"])
         self.assertEqual(result["sample_results"], [])
+
+    def test_scenario_without_samples_is_rejected(self):
+        scenario = {
+            "id": 96,
+            "mode": "Sachlich",
+            "input": "Ein Satz.",
+            "expected_behavior": [],
+            "quality_risks": [],
+            "output_contract": [],
+            "sample_outputs": [],
+        }
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            path = Path(tmp_dir) / "96_empty.yaml"
+            path.write_text(json.dumps(scenario), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "non-empty"):
+                run_review_eval.check_scenario(path)
+
+    def test_missing_and_empty_scenario_paths_are_errors(self):
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            empty = Path(tmp_dir) / "empty"
+            empty.mkdir()
+            missing = Path(tmp_dir) / "missing"
+            with self.assertRaisesRegex(ValueError, "no scenario files"):
+                run_review_eval.scenario_files(empty)
+            with self.assertRaisesRegex(ValueError, "does not exist"):
+                run_review_eval.scenario_files(missing)
+
+            proc = subprocess.run(
+                [sys.executable, str(SCRIPT), str(empty), "--check-invariants"],
+                capture_output=True,
+                text=True,
+            )
+
+        self.assertEqual(proc.returncode, 2)
+        self.assertIn("no scenario files found", proc.stderr)
 
     def test_style_profile_contract_flags_out_of_range_and_required_metric(self):
         scenario = {

@@ -36,7 +36,7 @@ style_profile_spec = importlib.util.spec_from_file_location("style_profile", STY
 style_profile = importlib.util.module_from_spec(style_profile_spec)
 style_profile_spec.loader.exec_module(style_profile)
 
-REQUIRED_KEYS = {"id", "mode", "input", "expected_behavior", "quality_risks", "output_contract"}
+REQUIRED_KEYS = {"id", "mode", "input", "expected_behavior", "quality_risks", "output_contract", "sample_outputs"}
 PRELUDE_RE = re.compile(r"less machine\.\s*more voice\.", re.IGNORECASE)
 PERSONAL_EXPERIENCE_RE = re.compile(
     r"\b(?:Als ich|ich habe erlebt|ein Kunde erzählte|aus meiner Praxis|letzte Woche)\b",
@@ -117,22 +117,22 @@ def sample_output(sample: dict) -> str:
 
 def load_scenario(path: Path) -> dict:
     data = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(data, dict):
+        raise ValueError(f"{path}: scenario must be a JSON object")
     missing = REQUIRED_KEYS - set(data)
     if missing:
         raise ValueError(f"{path}: missing keys {sorted(missing)}")
+    samples = data["sample_outputs"]
+    if not isinstance(samples, list) or not samples:
+        raise ValueError(f"{path}: 'sample_outputs' must be a non-empty list")
+    if not all(isinstance(sample, dict) for sample in samples):
+        raise ValueError(f"{path}: every sample output must be an object")
     return data
 
 
-def invariant_violations(scenario: dict, output: str) -> list[str]:
+def content_invariant_violations(scenario: dict, output: str) -> list[str]:
     violations: list[str] = []
     input_text = scenario["input"]
-    output_norm = normalize(output)
-    input_norm = normalize(input_text)
-
-    if input_norm and input_norm in output_norm:
-        violations.append("full_text_output")
-    elif len(words(output)) >= max(80, int(len(words(input_text)) * 0.8)):
-        violations.append("possible_full_text_output")
 
     evidence_findings = [] if scenario.get("machine_output") else evidence_lint.lint(input_text, output)
     if any(
@@ -148,7 +148,7 @@ def invariant_violations(scenario: dict, output: str) -> list[str]:
     if PERSONAL_EXPERIENCE_RE.search(output) and not PERSONAL_EXPERIENCE_RE.search(input_text):
         violations.append("invented_experience")
 
-    if scenario["mode"] == "Formal" and re.search(r"\b(?:du|dir|dich|ja|doch|halt|spannend\?)\b", output, re.IGNORECASE):
+    if scenario.get("mode") == "Formal" and re.search(r"\b(?:du|dir|dich|ja|doch|halt|spannend\?)\b", output, re.IGNORECASE):
         violations.append("formal_register_break")
 
     for risky_phrase in scenario.get("risk_phrases", []):
@@ -162,26 +162,23 @@ def invariant_violations(scenario: dict, output: str) -> list[str]:
     return sorted(set(violations))
 
 
-def qgir_violations(scenario: dict, sample: dict) -> list[str]:
-    contract = scenario.get("qgir_contract")
-    if not contract:
-        return []
-
-    violations: list[str] = []
-    passes, valid_pass_trace = qgir_pass_trace(sample)
-    output = sample_output(sample)
+def invariant_violations(scenario: dict, output: str) -> list[str]:
+    violations = content_invariant_violations(scenario, output)
     input_text = scenario["input"]
+    output_norm = normalize(output)
+    input_norm = normalize(input_text)
 
-    max_passes = contract.get("max_passes")
-    if max_passes is not None:
-        if not valid_pass_trace:
-            violations.append("qgir_missing_pass_trace")
-        elif len(passes) > max_passes:
-            violations.append("qgir_too_many_passes")
+    if input_norm and input_norm in output_norm:
+        violations.append("full_text_output")
+    elif len(words(output)) >= max(80, int(len(words(input_text)) * 0.8)):
+        violations.append("possible_full_text_output")
 
-    max_changed_ratio = contract.get("max_changed_sentence_ratio")
-    if max_changed_ratio is not None and changed_sentence_ratio(input_text, output) > float(max_changed_ratio):
-        violations.append("edit_budget_exceeded")
+    return sorted(set(violations))
+
+
+def qgir_output_violations(scenario: dict, output: str) -> list[str]:
+    contract = scenario["qgir_contract"]
+    violations: list[str] = []
 
     for anchor in contract.get("protected_anchors", []):
         if anchor not in output:
@@ -189,6 +186,7 @@ def qgir_violations(scenario: dict, sample: dict) -> list[str]:
             break
 
     required_address = contract.get("required_address")
+    input_text = scenario["input"]
     if required_address == "Sie" and (DU_RE.search(output) or (SIE_RE.search(input_text) and not SIE_RE.search(output))):
         violations.append("register_shift")
     elif required_address == "du" and (SIE_RE.search(output) or (DU_RE.search(input_text) and not DU_RE.search(output))):
@@ -198,6 +196,33 @@ def qgir_violations(scenario: dict, sample: dict) -> list[str]:
         if re.search(rf"\b{re.escape(marker)}\b", output, re.IGNORECASE):
             violations.append("register_shift")
             break
+
+    return sorted(set(violations))
+
+
+def qgir_violations(scenario: dict, sample: dict) -> list[str]:
+    contract = scenario.get("qgir_contract")
+    if not contract:
+        return []
+
+    violations: list[str] = []
+    passes, valid_pass_trace = qgir_pass_trace(sample)
+    input_text = scenario["input"]
+
+    max_passes = contract.get("max_passes")
+    if max_passes is not None:
+        if not valid_pass_trace:
+            violations.append("qgir_missing_pass_trace")
+        elif len(passes) > max_passes:
+            violations.append("qgir_too_many_passes")
+
+    outputs = passes if valid_pass_trace and passes else [sample_output(sample)]
+    max_changed_ratio = contract.get("max_changed_sentence_ratio")
+    for output in outputs:
+        violations.extend(content_invariant_violations(scenario, output))
+        violations.extend(qgir_output_violations(scenario, output))
+        if max_changed_ratio is not None and changed_sentence_ratio(input_text, output) > float(max_changed_ratio):
+            violations.append("edit_budget_exceeded")
 
     return sorted(set(violations))
 
@@ -259,7 +284,14 @@ def check_scenario(path: Path, check_invariants: bool = True) -> dict:
 def scenario_files(path: Path) -> list[Path]:
     if path.is_file():
         return [path]
-    return sorted(list(path.glob("*.yaml")) + list(path.glob("*.yml")) + list(path.glob("*.json")))
+    if not path.exists():
+        raise ValueError(f"{path}: scenario path does not exist")
+    if not path.is_dir():
+        raise ValueError(f"{path}: scenario path is neither a file nor a directory")
+    files = sorted(list(path.glob("*.yaml")) + list(path.glob("*.yml")) + list(path.glob("*.json")))
+    if not files:
+        raise ValueError(f"{path}: no scenario files found")
+    return files
 
 
 def parse_args(argv: list[str]) -> argparse.Namespace:
@@ -275,7 +307,12 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv or sys.argv[1:])
-    results = [check_scenario(path, check_invariants=args.check_invariants) for path in scenario_files(args.path)]
+    try:
+        files = scenario_files(args.path)
+        results = [check_scenario(path, check_invariants=args.check_invariants) for path in files]
+    except (OSError, ValueError, json.JSONDecodeError) as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 2
     ok = all(item["ok"] for item in results)
     print(
         json.dumps(
