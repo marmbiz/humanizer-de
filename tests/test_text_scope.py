@@ -68,6 +68,30 @@ class TextScopeTests(unittest.TestCase):
             style_profile.profile(base, "base")["meta"]["word_count"],
         )
 
+    def test_fenced_code_closes_only_with_its_opening_delimiter(self):
+        base = "Sachliche Prosa bleibt bestehen."
+        cases = (
+            base + "\n\n```text\nDu bist ja gemeint.\n~~~\nSie prüfen doch alles.\n```\n",
+            base + "\n\n~~~text\nDu bist ja gemeint.\n```\nSie prüfen doch alles.\n~~~\n",
+        )
+
+        for text in cases:
+            with self.subTest(text=text):
+                self.assertEqual(register_lint.features(text), register_lint.features(base))
+                self.assertEqual(rhythm_lint.analyze(text)["document"], rhythm_lint.analyze(base)["document"])
+                self.assertEqual(
+                    style_profile.profile(text, "fenced")["metrics"],
+                    style_profile.profile(base, "base")["metrics"],
+                )
+
+    def test_fenced_code_accepts_longer_closer_and_masks_unclosed_block(self):
+        closed = "Vorher.\n\n```text\nDu bist ja gemeint.\n````\n\nNachher."
+        unclosed = "Vorher.\n\n~~~text\nDu bist ja gemeint."
+
+        self.assertIn("Nachher.", text_scope.mask_text(closed))
+        self.assertNotIn("Du bist", text_scope.mask_text(closed))
+        self.assertNotIn("Du bist", text_scope.mask_text(unclosed))
+
     def test_authored_scope_excludes_every_blockquote_feature(self):
         quoted = "> Du prüfst ja unsere Datei. Senden Sie uns Ihre Fassung? 👩‍💻\n"
         text = "Sachliche eigene Prosa.\n\n" + quoted

@@ -16,9 +16,10 @@ FRONTMATTER_RE = re.compile(
     r"\A(?:\ufeff)?---[ \t]*\r?\n.*?\r?\n(?:---|\.\.\.)[ \t]*(?=\r?\n|\Z)",
     re.DOTALL,
 )
+FENCE_OPEN_LINE_RE = re.compile(r"^[ \t]{0,3}(?P<fence>`{3,}|~{3,})(?P<info>.*)$")
+FENCE_CLOSE_LINE_RE = re.compile(r"^[ \t]{0,3}(?P<fence>`+|~+)[ \t]*$")
 
 STRUCTURAL_PATTERNS = (
-    re.compile(r"(?:```|~~~).*?(?:```|~~~)", re.DOTALL),
     re.compile(r"`[^`\n]+`"),
     re.compile(r"https?://[^\s<>)]+"),
     re.compile(r"\b[\w.-]+@[\w.-]+\.[A-Za-z]{2,}\b"),
@@ -44,6 +45,35 @@ def blockquote_ranges(text: str) -> list[tuple[int, int]]:
     return [match.span() for match in BLOCKQUOTE_LINE_RE.finditer(text)]
 
 
+def fenced_code_ranges(text: str) -> list[tuple[int, int]]:
+    ranges: list[tuple[int, int]] = []
+    open_fence: tuple[int, str, int] | None = None
+    offset = 0
+
+    for line in text.splitlines(keepends=True):
+        body = line.rstrip("\r\n")
+        if open_fence is None:
+            match = FENCE_OPEN_LINE_RE.fullmatch(body)
+            if match:
+                fence = match.group("fence")
+                info = match.group("info")
+                if fence[0] != "`" or "`" not in info:
+                    open_fence = (offset, fence[0], len(fence))
+        else:
+            start, delimiter, minimum_length = open_fence
+            match = FENCE_CLOSE_LINE_RE.fullmatch(body)
+            if match:
+                fence = match.group("fence")
+                if fence[0] == delimiter and len(fence) >= minimum_length:
+                    ranges.append((start, offset + len(line)))
+                    open_fence = None
+        offset += len(line)
+
+    if open_fence is not None:
+        ranges.append((open_fence[0], len(text)))
+    return ranges
+
+
 def protected_ranges(text: str, scope: str = DOCUMENT_PROSE) -> list[tuple[int, int]]:
     if scope not in SCOPES:
         raise ValueError(f"unknown text scope: {scope}")
@@ -52,6 +82,7 @@ def protected_ranges(text: str, scope: str = DOCUMENT_PROSE) -> list[tuple[int, 
     frontmatter = FRONTMATTER_RE.search(text)
     if frontmatter:
         ranges.append(frontmatter.span())
+    ranges.extend(fenced_code_ranges(text))
     for pattern in STRUCTURAL_PATTERNS:
         ranges.extend(match.span() for match in pattern.finditer(text))
     if scope == AUTHORED_PROSE:
