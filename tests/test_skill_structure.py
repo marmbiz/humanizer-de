@@ -122,6 +122,13 @@ class SkillStructureTests(unittest.TestCase):
         self.assertIn("GitHub Release", warp_text)
         self.assertIn("Tag `vX.Y.Z`", warp_text)
 
+    def test_precision_requirements_pin_spacy_runtime_imports(self):
+        requirements = (ROOT / "requirements-precise.txt").read_text()
+
+        self.assertRegex(requirements, r"(?m)^click==\d")
+        self.assertRegex(requirements, r"(?m)^spacy==\d")
+        self.assertIn("de_core_news_sm-3.8.0", requirements)
+
     def test_p0_docs_define_research_and_coverage_boundaries(self):
         research = (ROOT / "docs" / "naturalness-research-brief.md").read_text()
         coverage = (ROOT / "docs" / "coverage-matrix.md").read_text()
