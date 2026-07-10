@@ -73,6 +73,28 @@ class EvidenceLintTests(unittest.TestCase):
 
         self.assertEqual(evidence_lint.anchors(text)["quote"], set())
 
+    def test_malformed_quote_pairs_still_protect_quoted_content(self):
+        cases = (
+            ("Im Bericht steht: „Der Wagen war rot”.", "Im Bericht steht: „Der Wagen war blau”."),
+            ('Im Bericht steht: „Der Wagen war rot".', 'Im Bericht steht: „Der Wagen war blau".'),
+            ("Im Bericht steht: ‚Der Wagen war rot’.", "Im Bericht steht: ‚Der Wagen war blau’."),
+        )
+
+        for before, after in cases:
+            with self.subTest(before=before, after=after):
+                found = kinds(evidence_lint.lint(before, after))
+                self.assertIn("removed_quote", found)
+                self.assertIn("added_quote", found)
+
+    def test_repairing_only_a_malformed_quote_closer_keeps_anchor(self):
+        before = "Im Bericht steht: „Der Wagen war rot”."
+        after = "Im Bericht steht: „Der Wagen war rot“."
+
+        found = kinds(evidence_lint.lint(before, after))
+
+        self.assertNotIn("removed_quote", found)
+        self.assertNotIn("added_quote", found)
+
     def test_number_anchor_keeps_sign_unit_and_comparator(self):
         cases = (
             ("Die Marge beträgt -5 Prozent.", "Die Marge beträgt 5 Prozent."),

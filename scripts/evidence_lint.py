@@ -45,6 +45,10 @@ QUOTE_PATTERNS = (
     re.compile(r"›([^‹›]{3,})‹"),
     re.compile(r'"([^"]{3,})"'),
     re.compile(r"(?<!\w)'([^']{3,})'(?!\w)"),
+    # Preserve quoted content even when Unicode lint still needs to repair a
+    # mismatched closer. Valid pairs above remain the preferred extraction.
+    re.compile(r'["„“”«»‹›]([^"„“”«»‹›]{3,})["„“”«»‹›]'),
+    re.compile(r"(?<!\w)[‚‘’']([^‚‘’']{3,})[‚‘’'](?!\w)"),
 )
 
 AUTHORITY_MARKERS = {
