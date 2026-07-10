@@ -201,6 +201,45 @@ class UserProfileTests(unittest.TestCase):
         self.assertEqual(overrides, {"sachlich": {"particle_count": {"max": 1}}})
         self.assertEqual(len(warnings), 3)
 
+    def test_missing_or_unsupported_schema_is_ignored(self):
+        payloads = (
+            {"overrides": {"sachlich": {"particle_count": {"max": 99}}}},
+            {"schema_version": 2, "overrides": {"sachlich": {"particle_count": {"max": 99}}}},
+            {"schema_version": True, "overrides": {"sachlich": {"particle_count": {"max": 99}}}},
+        )
+        for payload in payloads:
+            with self.subTest(payload=payload), tempfile.TemporaryDirectory() as tmp:
+                path = self.write_profile(tmp, payload)
+                overrides, warnings = style_profile.load_user_profile(path, style_profile.load_targets())
+
+            self.assertEqual(overrides, {})
+            self.assertEqual(len(warnings), 1)
+            self.assertIn("schema_version must be 1", warnings[0])
+
+    def test_invalid_numeric_corridors_cannot_override_targets(self):
+        payload = {
+            "schema_version": 1,
+            "overrides": {
+                "sachlich": {
+                    "particle_count": {"min": 5, "max": 1},
+                    "emoji_count": {"max": float("nan")},
+                    "repeated_openers": {"max": float("inf")},
+                }
+            },
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            path = self.write_profile(tmp, payload)
+            overrides, warnings = style_profile.load_user_profile(path, style_profile.load_targets())
+
+        self.assertEqual(overrides, {})
+        self.assertEqual(len(warnings), 3)
+        targets = style_profile.merge_targets(style_profile.load_targets(), overrides)
+        report = style_profile.delta(
+            {"particle_count": 999},
+            {"particle_count": targets["sachlich"]["particle_count"]},
+        )
+        self.assertFalse(report["particle_count"]["in_range"])
+
     def test_merge_override_replaces_whole_corridor(self):
         base = {"sachlich": {"stddev_mean_ratio": {"min": 0.4}, "particle_count": {"max": 0}}}
         merged = style_profile.merge_targets(base, {"sachlich": {"stddev_mean_ratio": {"max": 2.0}}})

@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import sys
 from pathlib import Path
 
@@ -25,6 +26,7 @@ import rhythm_lint
 
 TARGETS_PATH = SCRIPT_DIR.parent / "references" / "style-targets.json"
 USER_PROFILE_PATH = Path(".humanizer") / "profile.json"
+USER_PROFILE_SCHEMA_VERSION = 1
 
 KNOWN_METRICS = frozenset(
     {
@@ -52,7 +54,13 @@ def valid_corridor(corridor: object) -> bool:
         return False
     if not set(corridor) <= {"min", "max"}:
         return False
-    return all(isinstance(value, (int, float)) and not isinstance(value, bool) for value in corridor.values())
+    if not all(
+        (isinstance(value, int) and not isinstance(value, bool))
+        or (isinstance(value, float) and math.isfinite(value))
+        for value in corridor.values()
+    ):
+        return False
+    return not ("min" in corridor and "max" in corridor and corridor["min"] > corridor["max"])
 
 
 def load_user_profile(path: Path, targets: dict) -> tuple[dict, list[str]]:
@@ -65,6 +73,15 @@ def load_user_profile(path: Path, targets: dict) -> tuple[dict, list[str]]:
         return {}, [f"user profile {path} ignored: {error}"]
     if not isinstance(data, dict):
         return {}, [f"user profile {path} ignored: top level must be an object"]
+    schema_version = data.get("schema_version")
+    if (
+        not isinstance(schema_version, int)
+        or isinstance(schema_version, bool)
+        or schema_version != USER_PROFILE_SCHEMA_VERSION
+    ):
+        return {}, [
+            f"user profile {path} ignored: schema_version must be {USER_PROFILE_SCHEMA_VERSION}"
+        ]
 
     warnings: list[str] = []
     overrides: dict = {}
@@ -83,7 +100,10 @@ def load_user_profile(path: Path, targets: dict) -> tuple[dict, list[str]]:
                 warnings.append(f"user profile: unknown metric '{target_name}.{metric}' ignored")
                 continue
             if not valid_corridor(corridor):
-                warnings.append(f"user profile: invalid corridor for '{target_name}.{metric}' ignored (need min/max numbers)")
+                warnings.append(
+                    f"user profile: invalid corridor for '{target_name}.{metric}' ignored "
+                    "(need finite min/max numbers with min <= max)"
+                )
                 continue
             overrides.setdefault(target_name, {})[metric] = corridor
     return overrides, warnings
