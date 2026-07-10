@@ -9,9 +9,13 @@ EXPECTED_VERSION = "5.6.0"
 EXPECTED_PATTERN_COUNT = 66
 
 
+def read_utf8(path: Path) -> str:
+    return path.read_text(encoding="utf-8")
+
+
 class SkillStructureTests(unittest.TestCase):
     def test_skill_is_sop_router(self):
-        text = (ROOT / "SKILL.md").read_text()
+        text = read_utf8(ROOT / "SKILL.md")
         self.assertRegex(text, rf"version:\s+['\"]?{re.escape(EXPECTED_VERSION)}['\"]?")
         self.assertIn("<!-- SLOW_UPDATE_START -->", text)
         self.assertIn("<!-- FAST_UPDATE_START -->", text)
@@ -37,7 +41,7 @@ class SkillStructureTests(unittest.TestCase):
         self.assertLessEqual(len(re.findall(r"\S+", body)), 2000)
 
     def test_skill_frontmatter_is_hybrid_safe(self):
-        text = (ROOT / "SKILL.md").read_text()
+        text = read_utf8(ROOT / "SKILL.md")
         frontmatter = text.split("---", 2)[1]
 
         self.assertIn("name: humanizer-de", frontmatter)
@@ -46,14 +50,14 @@ class SkillStructureTests(unittest.TestCase):
         self.assertNotIn("allowed_tools:", frontmatter)
         self.assertNotRegex(frontmatter, r"(?m)^name:\s+Humanizer \(Deutsch\)$")
 
-        agent_yaml = (ROOT / "agents" / "openai.yaml").read_text()
+        agent_yaml = read_utf8(ROOT / "agents" / "openai.yaml")
         self.assertIn('display_name: "Humanizer (Deutsch)"', agent_yaml)
         self.assertIn("$humanizer-de", agent_yaml)
         self.assertIn("allow_implicit_invocation: true", agent_yaml)
 
         skill_wrapper = ROOT / "skills" / "humanizer-de"
         wrapper_file = skill_wrapper / "SKILL.md"
-        wrapper_text = wrapper_file.read_text()
+        wrapper_text = read_utf8(wrapper_file)
         self.assertTrue(wrapper_file.is_file())
         self.assertFalse(wrapper_file.is_symlink())
         self.assertIn("name: humanizer-de", wrapper_text)
@@ -63,7 +67,7 @@ class SkillStructureTests(unittest.TestCase):
         self.assertFalse(any(path.is_symlink() for path in skill_wrapper.rglob("*")))
 
     def test_description_is_narrow(self):
-        text = (ROOT / "SKILL.md").read_text()
+        text = read_utf8(ROOT / "SKILL.md")
         match = re.search(r"^description:\s*(.+)$", text, re.MULTILINE)
         self.assertIsNotNone(match)
         description = match.group(1)
@@ -71,26 +75,26 @@ class SkillStructureTests(unittest.TestCase):
         self.assertIn("deutschen Text humanisieren", description)
 
     def test_output_prelude_has_suppression_clause(self):
-        text = (ROOT / "SKILL.md").read_text()
+        text = read_utf8(ROOT / "SKILL.md")
 
         self.assertIn("Less machine. More voice.", text)
         self.assertIn("Weglassen bei Raw-JSON", text)
 
     def test_release_metadata_stays_in_sync(self):
-        skill_text = (ROOT / "SKILL.md").read_text()
-        plugin = json.loads((ROOT / ".claude-plugin" / "plugin.json").read_text())
-        codex_plugin = json.loads((ROOT / ".codex-plugin" / "plugin.json").read_text())
+        skill_text = read_utf8(ROOT / "SKILL.md")
+        plugin = json.loads(read_utf8(ROOT / ".claude-plugin" / "plugin.json"))
+        codex_plugin = json.loads(read_utf8(ROOT / ".codex-plugin" / "plugin.json"))
         codex_marketplace = json.loads(
-            (ROOT / ".agents" / "plugins" / "marketplace.json").read_text()
+            read_utf8(ROOT / ".agents" / "plugins" / "marketplace.json")
         )
-        marketplace = json.loads((ROOT / ".claude-plugin" / "marketplace.json").read_text())
+        marketplace = json.loads(read_utf8(ROOT / ".claude-plugin" / "marketplace.json"))
         marketplace_plugin = marketplace["plugins"][0]
         codex_marketplace_plugin = codex_marketplace["plugins"][0]
-        readme_text = (ROOT / "README.md").read_text()
-        patterns_text = (ROOT / "references" / "patterns.md").read_text()
-        decision_text = (ROOT / "references" / "decision-tables.md").read_text()
-        coverage_text = (ROOT / "docs" / "coverage-matrix.md").read_text()
-        warp_text = (ROOT / "WARP.md").read_text()
+        readme_text = read_utf8(ROOT / "README.md")
+        patterns_text = read_utf8(ROOT / "references" / "patterns.md")
+        decision_text = read_utf8(ROOT / "references" / "decision-tables.md")
+        coverage_text = read_utf8(ROOT / "docs" / "coverage-matrix.md")
+        warp_text = read_utf8(ROOT / "WARP.md")
 
         self.assertRegex(skill_text, rf"version:\s+['\"]?{re.escape(EXPECTED_VERSION)}['\"]?")
         self.assertEqual(plugin["version"], EXPECTED_VERSION)
@@ -114,7 +118,7 @@ class SkillStructureTests(unittest.TestCase):
         self.assertIn("Supports Claude Code and Codex", plugin["description"])
         self.assertIn("Supports Claude Code and Codex", codex_plugin["description"])
         self.assertIn("Supports Claude Code and Codex", marketplace_plugin["description"])
-        self.assertIn("Claude/Codex", (ROOT / "agents" / "openai.yaml").read_text())
+        self.assertIn("Claude/Codex", read_utf8(ROOT / "agents" / "openai.yaml"))
         self.assertNotIn("65 Muster", plugin["description"])
         self.assertNotIn("65 Muster", codex_plugin["description"])
         self.assertNotIn("65 Muster", marketplace_plugin["description"])
@@ -123,15 +127,15 @@ class SkillStructureTests(unittest.TestCase):
         self.assertIn("Tag `vX.Y.Z`", warp_text)
 
     def test_precision_requirements_pin_spacy_runtime_imports(self):
-        requirements = (ROOT / "requirements-precise.txt").read_text()
+        requirements = read_utf8(ROOT / "requirements-precise.txt")
 
         self.assertRegex(requirements, r"(?m)^click==\d")
         self.assertRegex(requirements, r"(?m)^spacy==\d")
         self.assertIn("de_core_news_sm-3.8.0", requirements)
 
     def test_p0_docs_define_research_and_coverage_boundaries(self):
-        research = (ROOT / "docs" / "naturalness-research-brief.md").read_text()
-        coverage = (ROOT / "docs" / "coverage-matrix.md").read_text()
+        research = read_utf8(ROOT / "docs" / "naturalness-research-brief.md")
+        coverage = read_utf8(ROOT / "docs" / "coverage-matrix.md")
 
         self.assertIn("Status: P0 research safeguard", research)
         self.assertIn("Repo heuristic", research)
@@ -149,10 +153,10 @@ class SkillStructureTests(unittest.TestCase):
         self.assertIn("Maximize entropy", research)
 
     def test_naturalness_guidance_blocks_unsafe_persona_and_entropy_moves(self):
-        skill = (ROOT / "SKILL.md").read_text()
-        naturalness = (ROOT / "references" / "de-naturalness.md").read_text()
-        profiles = (ROOT / "references" / "register-profiles.md").read_text()
-        research = (ROOT / "docs" / "naturalness-research-brief.md").read_text()
+        skill = read_utf8(ROOT / "SKILL.md")
+        naturalness = read_utf8(ROOT / "references" / "de-naturalness.md")
+        profiles = read_utf8(ROOT / "references" / "register-profiles.md")
+        research = read_utf8(ROOT / "docs" / "naturalness-research-brief.md")
 
         self.assertIn("Deixis nur stabilisieren, nicht erfinden", skill)
         self.assertIn("Keine künstlichen Fragmente, Regelbrüche oder Partikel einsetzen", skill)
@@ -174,22 +178,22 @@ class SkillStructureTests(unittest.TestCase):
         rubric = (ROOT / "references" / "quality-rubric.md")
         self.assertTrue(rubric.exists())
 
-        rubric_text = rubric.read_text()
+        rubric_text = read_utf8(rubric)
         self.assertIn("Leserführung", rubric_text)
         self.assertIn("Argumentdichte", rubric_text)
         self.assertIn("Stimmkonsistenz", rubric_text)
         self.assertIn("Sparsamkeit", rubric_text)
         self.assertIn("Urteilsraster, kein Linter", rubric_text)
 
-        skill = (ROOT / "SKILL.md").read_text()
+        skill = read_utf8(ROOT / "SKILL.md")
         pass_5 = re.search(r"\*\*Pass 5\b[\s\S]*?(?=\n\n\*\*|\Z)", skill)
         self.assertIsNotNone(pass_5)
         self.assertIn("references/quality-rubric.md", pass_5.group(0))
 
     def test_ai_involvement_audit_stays_roadmap_not_active_skill(self):
-        skill = (ROOT / "SKILL.md").read_text()
-        readme = (ROOT / "README.md").read_text()
-        research = (ROOT / "docs" / "naturalness-research-brief.md").read_text()
+        skill = read_utf8(ROOT / "SKILL.md")
+        readme = read_utf8(ROOT / "README.md")
+        research = read_utf8(ROOT / "docs" / "naturalness-research-brief.md")
 
         self.assertNotIn("references/ai-involvement-audit.md", skill)
         self.assertNotIn("Hinweisdichte", skill)
@@ -209,7 +213,7 @@ class SkillStructureTests(unittest.TestCase):
         self.assertIn("not authorship proof or uncalibrated percentages", research)
 
     def test_readme_examples_preserve_claim_boundaries(self):
-        readme = (ROOT / "README.md").read_text()
+        readme = read_utf8(ROOT / "README.md")
 
         self.assertIn("berücksichtigt sie als Zielprofil", readme)
         self.assertNotIn("wendet sie auf das Rewrite an", readme)
@@ -219,11 +223,11 @@ class SkillStructureTests(unittest.TestCase):
         self.assertNotIn("in\ndiesem Zeitraum", readme)
 
     def test_discoverability_metadata_is_present(self):
-        readme = (ROOT / "README.md").read_text()
-        skill = (ROOT / "SKILL.md").read_text()
-        agent_yaml = (ROOT / "agents" / "openai.yaml").read_text()
-        plugin = json.loads((ROOT / ".claude-plugin" / "plugin.json").read_text())
-        codex_plugin = json.loads((ROOT / ".codex-plugin" / "plugin.json").read_text())
+        readme = read_utf8(ROOT / "README.md")
+        skill = read_utf8(ROOT / "SKILL.md")
+        agent_yaml = read_utf8(ROOT / "agents" / "openai.yaml")
+        plugin = json.loads(read_utf8(ROOT / ".claude-plugin" / "plugin.json"))
+        codex_plugin = json.loads(read_utf8(ROOT / ".codex-plugin" / "plugin.json"))
 
         for phrase in [
             "German AI Text Humanizer",
