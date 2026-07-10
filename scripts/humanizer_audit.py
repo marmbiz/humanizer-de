@@ -37,6 +37,23 @@ RHYTHM_KEYS = (
     "colon_heading_count",
     "paragraph_sentence_counts_uniform",
 )
+LATEST_EXCLUDED_DIRS = {
+    ".git",
+    ".hg",
+    ".svn",
+    ".cache",
+    ".mypy_cache",
+    ".pytest_cache",
+    ".ruff_cache",
+    ".tox",
+    ".venv",
+    "__pycache__",
+    "build",
+    "dist",
+    "node_modules",
+    "site",
+    "venv",
+}
 
 
 def parse_args(argv: list[str]) -> argparse.Namespace:
@@ -55,9 +72,16 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
 def latest_markdown_file(directory: Path) -> Path:
     if not directory.is_dir():
         raise ValueError("--latest requires a directory")
-    candidates = [path for path in directory.rglob("*.md") if path.is_file()]
+    candidates = []
+    for path in directory.rglob("*.md"):
+        if not path.is_file() or path.is_symlink():
+            continue
+        relative_parts = path.relative_to(directory).parts
+        if any(part.startswith(".") or part in LATEST_EXCLUDED_DIRS for part in relative_parts):
+            continue
+        candidates.append(path)
     if not candidates:
-        raise ValueError(f"No *.md files found under {directory}")
+        raise ValueError(f"No eligible *.md files found under {directory}")
     return max(candidates, key=lambda path: (path.stat().st_mtime, str(path)))
 
 
@@ -442,7 +466,8 @@ def main(argv: list[str] | None = None) -> int:
     try:
         path = input_path(args)
     except ValueError as error:
-        raise SystemExit(str(error))
+        print(f"error: {error}", file=sys.stderr)
+        return 2
 
     report = analyze_file(
         path,

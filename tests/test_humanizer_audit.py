@@ -4,7 +4,7 @@ import json
 import os
 import tempfile
 import unittest
-from contextlib import redirect_stdout
+from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 from unittest import mock
 
@@ -277,6 +277,46 @@ class HumanizerAuditTests(unittest.TestCase):
 
         self.assertEqual(exit_code, 0)
         self.assertEqual(report["file"], str(newest_path))
+
+    def test_latest_ignores_hidden_and_generated_markdown(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            draft = root / "draft.md"
+            hidden_dir = root / ".cache"
+            hidden_dir.mkdir()
+            cached = hidden_dir / "README.md"
+            build_dir = root / "build"
+            build_dir.mkdir()
+            generated = build_dir / "report.md"
+            hidden_file = root / ".notes.md"
+
+            draft.write_text("Entwurf.", encoding="utf-8")
+            cached.write_text("Cache.", encoding="utf-8")
+            generated.write_text("Generiert.", encoding="utf-8")
+            hidden_file.write_text("Versteckt.", encoding="utf-8")
+            os.utime(draft, (1_700_000_000, 1_700_000_000))
+            os.utime(cached, (1_700_000_300, 1_700_000_300))
+            os.utime(generated, (1_700_000_200, 1_700_000_200))
+            os.utime(hidden_file, (1_700_000_100, 1_700_000_100))
+
+            exit_code, report = run_json(["--latest", str(root)])
+
+        self.assertEqual(exit_code, 0)
+        self.assertEqual(report["file"], str(draft))
+
+    def test_latest_with_only_generated_files_is_usage_error(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            cache = Path(tmp) / ".cache"
+            cache.mkdir()
+            (cache / "README.md").write_text("Cache.", encoding="utf-8")
+            stdout = io.StringIO()
+            stderr = io.StringIO()
+            with redirect_stdout(stdout), redirect_stderr(stderr):
+                exit_code = humanizer_audit.main(["--latest", tmp])
+
+        self.assertEqual(exit_code, 2)
+        self.assertEqual(stdout.getvalue(), "")
+        self.assertIn("No eligible *.md files found", stderr.getvalue())
 
 
 if __name__ == "__main__":
