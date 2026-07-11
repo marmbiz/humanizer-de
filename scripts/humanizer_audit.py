@@ -20,6 +20,7 @@ import rhythm_lint
 import style_profile
 import syntax_lint
 import unicode_lint
+from cli_output import print_json
 
 
 SOURCES = ("unicode", "rhythm", "german_pattern", "register")
@@ -479,7 +480,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.format == "md":
         print(format_markdown(report))
     else:
-        print(json.dumps(report, ensure_ascii=False, indent=2))
+        print_json(report)
     return exit_code(report, args.fail_on)
 
 

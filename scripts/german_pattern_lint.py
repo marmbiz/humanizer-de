@@ -12,12 +12,19 @@ import sys
 from pathlib import Path
 
 
-REGISTER_SCRIPT = Path(__file__).resolve().parent / "register_lint.py"
+SCRIPT_DIR = Path(__file__).resolve().parent
+if str(SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIR))
+
+from cli_output import print_json
+
+
+REGISTER_SCRIPT = SCRIPT_DIR / "register_lint.py"
 register_spec = importlib.util.spec_from_file_location("register_lint", REGISTER_SCRIPT)
 register_lint = importlib.util.module_from_spec(register_spec)
 register_spec.loader.exec_module(register_lint)
 
-SYNTAX_SCRIPT = Path(__file__).resolve().parent / "syntax_lint.py"
+SYNTAX_SCRIPT = SCRIPT_DIR / "syntax_lint.py"
 _SYNTAX_LINT = None
 
 
@@ -249,12 +256,12 @@ def main(argv: list[str] | None = None) -> int:
     if args.fixture:
         files = sorted(args.fixture.glob("*.json")) if args.fixture.is_dir() else [args.fixture]
         results = [check_fixture(file_path, precise=args.precise) for file_path in files]
-        print(json.dumps({"ok": all(item["ok"] for item in results), "results": results}, ensure_ascii=False, indent=2))
+        print_json({"ok": all(item["ok"] for item in results), "results": results})
         return 0 if all(item["ok"] for item in results) else 1
 
     text = args.file.read_text(encoding="utf-8") if args.file else args.text or ""
     report = lint(text, mode=args.mode, precise=args.precise)
-    print(json.dumps(report, ensure_ascii=False, indent=2))
+    print_json(report)
     return exit_code(report["findings"], args.fail_on)
 
 

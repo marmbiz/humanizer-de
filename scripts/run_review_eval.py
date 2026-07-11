@@ -16,6 +16,12 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
+SCRIPT_DIR = ROOT / "scripts"
+if str(SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIR))
+
+from cli_output import print_json
+
 EVIDENCE_SCRIPT = ROOT / "scripts" / "evidence_lint.py"
 spec = importlib.util.spec_from_file_location("evidence_lint", EVIDENCE_SCRIPT)
 evidence_lint = importlib.util.module_from_spec(spec)
@@ -317,12 +323,8 @@ def main(argv: list[str] | None = None) -> int:
         print(f"error: {exc}", file=sys.stderr)
         return 2
     ok = all(item["ok"] for item in results)
-    print(
-        json.dumps(
-            {"ok": ok, "count": len(results), "checked_invariants": args.check_invariants, "results": results},
-            ensure_ascii=False,
-            indent=2,
-        )
+    print_json(
+        {"ok": ok, "count": len(results), "checked_invariants": args.check_invariants, "results": results}
     )
     return 0 if ok else 1
 

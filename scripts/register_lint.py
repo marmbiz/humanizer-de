@@ -17,6 +17,7 @@ if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
 import text_scope
+from cli_output import print_json
 
 
 SYNTAX_SCRIPT = SCRIPT_DIR / "syntax_lint.py"
@@ -249,12 +250,12 @@ def main(argv: list[str] | None = None) -> int:
     if args.fixture:
         files = sorted(args.fixture.glob("*.json")) if args.fixture.is_dir() else [args.fixture]
         results = [check_fixture(file_path, precise=args.precise) for file_path in files]
-        print(json.dumps({"ok": all(item["ok"] for item in results), "results": results}, ensure_ascii=False, indent=2))
+        print_json({"ok": all(item["ok"] for item in results), "results": results})
         return 0 if all(item["ok"] for item in results) else 1
 
     text = args.file.read_text(encoding="utf-8") if args.file else args.text or ""
     report = lint(text, mode=args.mode, expected_address=args.expected_address, precise=args.precise)
-    print(json.dumps(report, ensure_ascii=False, indent=2))
+    print_json(report)
     return exit_code(report["findings"], args.fail_on)
 
 

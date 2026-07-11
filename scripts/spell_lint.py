@@ -12,6 +12,13 @@ import sys
 from pathlib import Path
 
 
+SCRIPT_DIR = Path(__file__).resolve().parent
+if str(SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIR))
+
+from cli_output import print_json
+
+
 DICTIONARY = "de_DE"
 WORD_RE = re.compile(r"[^\W\d_]+(?:[-'][^\W\d_]+)*", re.UNICODE)
 
@@ -116,7 +123,7 @@ def main(argv: list[str] | None = None) -> int:
     before = load_text(args.before, args.before_file)
     after = load_text(args.after, args.after_file)
     report = lint(before, after)
-    print(json.dumps(report, ensure_ascii=False, indent=2))
+    print_json(report)
     return exit_code(report, args.fail_on)
 
 

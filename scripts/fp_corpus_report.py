@@ -14,6 +14,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 CORPUS_DIR = ROOT / "tests" / "fp_corpus"
 SCRIPT_DIR = ROOT / "scripts"
+if str(SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIR))
+
+from cli_output import print_json
 
 
 def load_module(name: str):
@@ -80,7 +84,7 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv or sys.argv[1:])
-    print(json.dumps(build_report(args.corpus_dir, precise=args.precise), ensure_ascii=False, indent=2, sort_keys=True))
+    print_json(build_report(args.corpus_dir, precise=args.precise), sort_keys=True)
     return 0
 
 

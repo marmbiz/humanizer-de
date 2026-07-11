@@ -11,7 +11,14 @@ import sys
 from pathlib import Path
 
 
-SYNTAX_SCRIPT = Path(__file__).resolve().parent / "syntax_lint.py"
+SCRIPT_DIR = Path(__file__).resolve().parent
+if str(SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIR))
+
+from cli_output import print_json
+
+
+SYNTAX_SCRIPT = SCRIPT_DIR / "syntax_lint.py"
 _SYNTAX_LINT = None
 LEDGER_SCHEMA_VERSION = 2
 LEGACY_LEDGER_SCHEMA_VERSIONS = {1}
@@ -508,7 +515,7 @@ def main(argv: list[str] | None = None) -> int:
         status = precise_status(args.precise)
         if status is not None:
             report["precise"] = status
-        print(json.dumps(report, ensure_ascii=False, indent=2))
+        print_json(report)
         return 0 if all(item["ok"] for item in results) else 1
 
     if args.write_ledger:
@@ -524,7 +531,7 @@ def main(argv: list[str] | None = None) -> int:
         status = precise_status(args.precise)
         if status is not None:
             report["precise"] = status
-        print(json.dumps(report, ensure_ascii=False, indent=2))
+        print_json(report)
         return 0
 
     after = load_text(args.after, args.after_file)
@@ -563,7 +570,7 @@ def main(argv: list[str] | None = None) -> int:
     status = precise_status(args.precise)
     if status is not None:
         report["precise"] = status
-    print(json.dumps(report, ensure_ascii=False, indent=2))
+    print_json(report)
     return exit_code(findings, args.fail_on)
 
 

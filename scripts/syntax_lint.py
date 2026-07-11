@@ -13,6 +13,11 @@ from typing import Any
 
 MODEL = "de_core_news_sm"
 SCRIPT_DIR = Path(__file__).resolve().parent
+if str(SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIR))
+
+from cli_output import print_json
+
 NOUN_POS = {"NOUN", "PROPN"}
 VERB_POS = {"VERB", "AUX"}
 FINITE_VERB_POS = {"VERB", "AUX"}
@@ -283,7 +288,7 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(sys.argv[1:] if argv is None else argv)
     text = args.file.read_text(encoding="utf-8") if args.file else args.text or ""
-    print(json.dumps(lint(text), ensure_ascii=False, indent=2))
+    print_json(lint(text))
     return 0
 
 

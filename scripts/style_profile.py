@@ -22,6 +22,7 @@ if str(SCRIPT_DIR) not in sys.path:
 import german_pattern_lint
 import register_lint
 import rhythm_lint
+from cli_output import print_json
 
 
 TARGETS_PATH = SCRIPT_DIR.parent / "references" / "style-targets.json"
@@ -230,7 +231,7 @@ def main(argv: list[str] | None = None) -> int:
     report = profile(text, source)
     if corridors is not None:
         report["delta"] = delta(report["metrics"], corridors, overridden)
-    print(json.dumps(report, ensure_ascii=False, indent=2))
+    print_json(report)
     return 0
 
 
