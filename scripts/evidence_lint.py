@@ -74,8 +74,43 @@ LEGACY_ANCHOR_PATTERNS = {
 }
 
 AUTHORITY_MARKERS = {
-    "strong": {"belegt", "beweist", "zeigt", "nachweislich", "muss", "immer"},
-    "weak": {"kann", "koennte", "könnte", "vermutlich", "moeglicherweise", "möglicherweise", "laut", "scheint"},
+    "strong": {
+        "belegt",
+        "beweist",
+        "zeigt",
+        "nachweislich",
+        "muss",
+        "immer",
+        "zweifellos",
+        "zweifelsfrei",
+        "spricht klar dafür",
+        "spricht klar dafuer",
+        "spricht eindeutig dafür",
+        "spricht eindeutig dafuer",
+    },
+    "weak": {
+        "kann",
+        "koennte",
+        "könnte",
+        "vermutlich",
+        "moeglicherweise",
+        "möglicherweise",
+        "laut",
+        "scheint",
+        "nicht sicher",
+        "unsicher",
+        "unklar",
+        "fraglich",
+        "womöglich",
+        "womoeglich",
+        "eventuell",
+        "dürfte",
+        "duerfte",
+        "unter umständen",
+        "unter umstaenden",
+        "ich vermute",
+        "ich glaube",
+    },
 }
 DIRECTION_MARKERS = {
     "increase": {

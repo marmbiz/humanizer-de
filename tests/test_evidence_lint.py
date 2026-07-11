@@ -197,6 +197,51 @@ class EvidenceLintTests(unittest.TestCase):
         after = "Die Fehlerquote stieg um 12 Prozent."
         self.assertIn("claim_direction_changed", kinds(evidence_lint.lint(before, after)))
 
+    def test_blocks_new_strong_phrase_and_removed_uncertainty(self):
+        before = "Die Ursache ist unklar."
+        after = "Die Ursache ist zweifelsfrei belegt."
+
+        found = kinds(evidence_lint.lint(before, after))
+
+        self.assertIn("authority_strengthened", found)
+        self.assertIn("hedge_removed", found)
+
+    def test_existing_authority_markers_remain_protected(self):
+        before = "Das könnte die Ursache sein."
+        after = "Die Ursache ist belegt."
+
+        found = kinds(evidence_lint.lint(before, after))
+
+        self.assertIn("authority_strengthened", found)
+        self.assertIn("hedge_removed", found)
+
+    def test_bare_klar_is_not_an_authority_marker(self):
+        before = "Der Absatz ist kurz."
+        after = "Der Absatz ist klar formuliert."
+
+        found = kinds(evidence_lint.lint(before, after))
+
+        self.assertNotIn("authority_strengthened", found)
+        self.assertNotIn("hedge_removed", found)
+
+    def test_retained_uncertainty_does_not_trigger_authority_findings(self):
+        before = "Die Ursache ist unklar."
+        after = "Die Ursache bleibt unklar."
+
+        found = kinds(evidence_lint.lint(before, after))
+
+        self.assertNotIn("authority_strengthened", found)
+        self.assertNotIn("hedge_removed", found)
+
+    def test_removed_hedge_without_stronger_claim_is_not_flagged(self):
+        before = "Das könnte die Ursache sein."
+        after = "Die Ursache war es."
+
+        found = kinds(evidence_lint.lint(before, after))
+
+        self.assertNotIn("authority_strengthened", found)
+        self.assertNotIn("hedge_removed", found)
+
     def test_write_and_load_ledger_roundtrip_preserves_anchors(self):
         before = (
             "Die Wartezeit sank am 3. Mai 2024 um 12 Prozent. "
