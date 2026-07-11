@@ -12,11 +12,16 @@ MAKE = shutil.which("make")
 
 @unittest.skipUnless(MAKE, "make is not available")
 class LanguageToolTargetTests(unittest.TestCase):
-    def run_lt(self, path: str, filename: str = "README.md") -> subprocess.CompletedProcess:
+    def run_lt(
+        self,
+        path: str,
+        filename: str = "README.md",
+        languagetool: str = "languagetool",
+    ) -> subprocess.CompletedProcess:
         env = os.environ.copy()
-        env["PATH"] = path
+        env["PATH"] = os.pathsep.join(part for part in (path, env.get("PATH")) if part)
         return subprocess.run(
-            [MAKE, "-s", "lt", f"FILE={filename}"],
+            [MAKE, "-s", "lt", f"FILE={filename}", f"LANGUAGETOOL={languagetool}"],
             cwd=ROOT,
             env=env,
             text=True,
@@ -32,7 +37,7 @@ class LanguageToolTargetTests(unittest.TestCase):
 
     def test_lt_skips_cleanly_only_when_languagetool_is_missing(self):
         with tempfile.TemporaryDirectory() as directory:
-            result = self.run_lt(directory)
+            result = self.run_lt(directory, languagetool="humanizer-languagetool-missing")
 
         self.assertEqual(result.returncode, 0)
         self.assertIn("nicht installiert", result.stdout)

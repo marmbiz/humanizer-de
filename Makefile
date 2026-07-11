@@ -1,5 +1,6 @@
 FILE ?= README.md
 PYTHON ?= $(if $(wildcard .venv/bin/python),.venv/bin/python,python3)
+LANGUAGETOOL ?= languagetool
 
 .PHONY: test lint eval-contracts verify bench doctor doctor-full lt
 
@@ -30,8 +31,8 @@ doctor-full:
 	$(PYTHON) scripts/doctor.py --require-full
 
 lt:
-	@if ! command -v languagetool >/dev/null; then \
+	@if ! command -v "$(LANGUAGETOOL)" >/dev/null; then \
 		echo "languagetool nicht installiert — optional; siehe README — übersprungen"; \
 		exit 0; \
 	fi; \
-	languagetool -l de-DE --json "$(FILE)"
+	"$(LANGUAGETOOL)" -l de-DE --json "$(FILE)"
