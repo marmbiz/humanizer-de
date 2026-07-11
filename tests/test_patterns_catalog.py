@@ -13,7 +13,7 @@ SHORT_REFERENCE_ROW_RE = re.compile(r"^\|\s*(\d+)\s*\|\s*(.*?)\s*\|\s*(HIGH|MEDI
 
 
 def read_catalog():
-    return CATALOG_PATH.read_text()
+    return CATALOG_PATH.read_text(encoding="utf-8")
 
 
 def parse_pattern_headings(text):
@@ -70,7 +70,7 @@ class PatternCatalogTests(unittest.TestCase):
         self.assertEqual(len(ids), EXPECTED_PATTERN_COUNT)
 
     def test_category_counts_match_actual(self):
-        text = (ROOT / "references" / "patterns.md").read_text()
+        text = (ROOT / "references" / "patterns.md").read_text(encoding="utf-8")
         catalog = text.split("## Die 66 Muster", 1)[1]
 
         declared = {}

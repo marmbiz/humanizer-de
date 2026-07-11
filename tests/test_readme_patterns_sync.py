@@ -14,13 +14,13 @@ CATEGORY_BLOCK_RE = re.compile(
 
 
 def readme_catalog_section():
-    text = (ROOT / "README.md").read_text()
+    text = (ROOT / "README.md").read_text(encoding="utf-8")
     section = text.split("## 66 Muster in 10 Kategorien", 1)[1]
     return re.split(r"\n## ", section, maxsplit=1)[0]
 
 
 def pattern_headings():
-    text = (ROOT / "references" / "patterns.md").read_text()
+    text = (ROOT / "references" / "patterns.md").read_text(encoding="utf-8")
     entries = {}
     for line in text.splitlines():
         match = PATTERN_HEADING_RE.fullmatch(line)

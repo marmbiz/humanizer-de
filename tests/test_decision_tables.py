@@ -7,7 +7,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 class DecisionTableTests(unittest.TestCase):
     def test_overlap_tables_cover_required_patterns(self):
-        text = (ROOT / "references" / "decision-tables.md").read_text()
+        text = (ROOT / "references" / "decision-tables.md").read_text(encoding="utf-8")
         for pattern_id in ("11", "25", "26", "42", "53", "5", "6", "34", "44", "58", "59", "60", "61", "62", "64", "65"):
             self.assertIn(f"| {pattern_id} |", text)
         self.assertIn("## Evidenz: 11 / 25 / 26 / 42 / 53", text)
@@ -16,7 +16,7 @@ class DecisionTableTests(unittest.TestCase):
         self.assertIn("## Evidenz zweiter Ordnung: 59", text)
 
     def test_v40_rows_are_present(self):
-        text = (ROOT / "references" / "decision-tables.md").read_text()
+        text = (ROOT / "references" / "decision-tables.md").read_text(encoding="utf-8")
         self.assertIn("Hypernym/Nominalstil ersetzt eine im Text belegte Konkretion", text)
         self.assertIn("Rotierende Bezeichnungen fuer denselben Referenten", text)
         self.assertIn("Anekdote/Ich-Erfahrung ohne Traeger im Autorenkontext", text)
@@ -38,7 +38,7 @@ class DecisionTableTests(unittest.TestCase):
         self.assertIn("Einzelner bewusst gesetzter Gedankenstrich", text)
 
     def test_mode_matrix_is_present(self):
-        text = (ROOT / "references" / "decision-tables.md").read_text()
+        text = (ROOT / "references" / "decision-tables.md").read_text(encoding="utf-8")
         self.assertIn("## Modusmatrix", text)
         self.assertIn("Formal", text)
         self.assertIn("Muster 45", text)
