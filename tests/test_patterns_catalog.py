@@ -203,6 +203,14 @@ class PatternCatalogTests(unittest.TestCase):
         self.assertIn(chr(0x2019) + " (U+2019", section)
         self.assertIn(chr(0x0027) + " (U+0027", section)
 
+    def test_pattern_64_states_evidence_boundary(self):
+        pattern_64 = extract_pattern_section(64)
+        normalized_64 = " ".join(pattern_64.split())
+
+        self.assertIn("englische Wissenschaftssprache", normalized_64)
+        self.assertIn("nicht abschließend geklärt", normalized_64)
+        self.assertIn("Erst ab 3+ Markern", normalized_64)
+
 
 if __name__ == "__main__":
     unittest.main()

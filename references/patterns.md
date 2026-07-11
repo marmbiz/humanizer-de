@@ -376,12 +376,20 @@ Häufige Indikatoren:
 #### 64. KI-Marker-Vokabular [MEDIUM]
 <!-- haltbarkeit: jahrgang stand=2026-07 -->
 **Kategorie:** Sprache und Tonfall
-**Problem:** Bestimmte Wörter kommen in deutschem Post-2023-KI-Text deutlich häufiger vor als in menschlichem Gebrauchstext — unabhängig davon, ob die Aussage stimmt. Einzeln sind sie unauffällig; ihr gemeinsames Auftreten ist das Signal. Adaptiert aus blader/humanizer Muster #7 ("Overused AI Vocabulary").
+**Problem:** Für englische Wissenschaftssprache ist die Überrepräsentation bestimmter Wörter in
+LLM-beeinflussten Texten empirisch belegt. Die folgenden deutschen Marker sind eine funktionale,
+noch nicht gegen einen breiten deutschen Gebrauchstext-Korpus validierte Übertragung. Einzeln sind
+sie unauffällig; ihr gemeinsames Auftreten ist das Signal. Adaptiert aus blader/humanizer Muster #7
+("Overused AI Vocabulary").
 Häufige Indikatoren (Ko-Okkurrenz zählt):
 - Verben: "beleuchten", "eintauchen", "unterstreichen", "aufzeigen", "entfesseln", "revolutionieren", "prägen" (figurativ)
 - Adjektive: "spannend", "entscheidend", "maßgeblich", "nahtlos", "robust" (außerhalb der Technik), "vielschichtig", "facettenreich", "dynamisch", "ganzheitlich", "maßgeschneidert", "essenziell", "lebendig" (für Abstrakta)
 - Abstrakta: "die (digitale/mediale/...) Landschaft" (figurativ), "das Zusammenspiel", "die Reise" (figurativ), "der Meilenstein", "das Spannungsfeld"
-**Warum LLMs das tun:** Diese Wörter sind die deutschen Gegenstücke zu "delve", "tapestry", "showcase", "landscape" — RLHF-geprägte Vorzugsvokabeln, die Gewicht signalisieren sollen und in KI-Trainingszyklen selbstverstärkend häufiger werden.
+**Warum LLMs das tun:** Diese Wörter funktionieren ähnlich wie die englischen Marker "delve",
+"tapestry", "showcase" oder "landscape": Sie signalisieren Gewicht und gehobenes Register. Warum
+LLMs einzelne Wörter überrepräsentieren, ist nicht abschließend geklärt; RLHF ist eine untersuchte
+Teilursache, aber keine bewiesene Einzelerklärung. Marker können zudem in menschliche Sprache
+diffundieren und verlieren dadurch mit der Zeit an Trennschärfe.
 **Abgrenzung:** Muster 2 = Werbesprache/Superlative ("atemberaubend"). Muster 58 = Hypernym ersetzt eine belegte Konkretion. Muster 64 = die Frequenz-Marker selbst, auch wenn der Satz informativ ist.
 **Kein Problem, wenn:** das Wort fachlich gebunden ist ("robuste Statistik", "dynamisches Routing", "Meilenstein" im Projektplan) oder einzeln steht. Erst ab 3+ Markern im selben Text als Cluster behandeln.
 **Lösung:** Durch das gewöhnliche Wort ersetzen ("beleuchten" → "untersuchen"/"beschreiben", "spannend" → streichen oder konkret begründen, "die digitale Landschaft" → das gemeinte konkrete Feld benennen).
