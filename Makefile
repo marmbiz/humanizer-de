@@ -1,26 +1,33 @@
 FILE ?= README.md
+PYTHON ?= $(if $(wildcard .venv/bin/python),.venv/bin/python,python3)
 
-.PHONY: test lint eval-contracts verify bench lt
+.PHONY: test lint eval-contracts verify bench doctor doctor-full lt
 
 test:
-	python3 -m unittest discover -s tests -v
+	$(PYTHON) -m unittest discover -s tests -v
 
 lint:
-	python3 scripts/unicode_lint.py --text "AB" > /dev/null
-	python3 scripts/unicode_lint.py --file SKILL.md > /dev/null
-	python3 scripts/rhythm_lint.py --text "Kurzer Test. Noch ein Satz." --scope user_text --mode sachlich > /dev/null
-	python3 scripts/evidence_lint.py --fixture tests/corpus/evidence > /dev/null
-	python3 scripts/register_lint.py --fixture tests/corpus/register > /dev/null
-	python3 scripts/german_pattern_lint.py --fixture tests/corpus/de-naturalness > /dev/null
+	$(PYTHON) scripts/unicode_lint.py --text "AB" > /dev/null
+	$(PYTHON) scripts/unicode_lint.py --file SKILL.md > /dev/null
+	$(PYTHON) scripts/rhythm_lint.py --text "Kurzer Test. Noch ein Satz." --scope user_text --mode sachlich > /dev/null
+	$(PYTHON) scripts/evidence_lint.py --fixture tests/corpus/evidence > /dev/null
+	$(PYTHON) scripts/register_lint.py --fixture tests/corpus/register > /dev/null
+	$(PYTHON) scripts/german_pattern_lint.py --fixture tests/corpus/de-naturalness > /dev/null
 
 eval-contracts:
-	python3 scripts/run_review_eval.py tests/scenarios --check-invariants > /dev/null
+	$(PYTHON) scripts/run_review_eval.py tests/scenarios --check-invariants > /dev/null
 
 verify: test lint eval-contracts
 	git diff --check
 
 bench:
 	python3 scripts/bench.py --check
+
+doctor:
+	$(PYTHON) scripts/doctor.py
+
+doctor-full:
+	$(PYTHON) scripts/doctor.py --require-full
 
 lt:
 	@if ! command -v languagetool >/dev/null; then \

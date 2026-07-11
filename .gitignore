@@ -17,3 +17,4 @@ Thumbs.db
 *.bak
 __pycache__/
 *.pyc
+.venv/

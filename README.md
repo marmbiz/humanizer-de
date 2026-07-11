@@ -478,15 +478,42 @@ lassen sich wegen überlappender Prüfziele nicht addieren.
 
 Die Ergebnisse variieren je nach Textart, Textlänge, Ausgangsqualität und Arbeitsweise deutlich.
 
+Den lokalen Status prüft ein textfreier Doctor-Check:
+
+```bash
+make doctor                 # verständliche Übersicht
+python3 scripts/doctor.py --json
+py scripts/doctor.py --json # Windows ohne make
+make doctor-full            # Exit 1, falls ein Zusatzwerkzeug fehlt
+```
+
+Er liest keine Nutzertexte oder Inhaltsdateien. Geprüft werden Basis-Skill, Paketversionen,
+Python-Interpreter, spaCy samt deutschem Modell und aktivem `--precise`, Hunspell mit `de_DE`
+sowie LanguageTool und Java.
+
 <details>
 <summary><strong>Installation und Einsatz der Zusatzwerkzeuge</strong></summary>
 
 - **Python 3** führt die mitgelieferten deterministischen Prüfskripte aus. Der Basis-Skill braucht
   es nicht.
-- **spaCy** schaltet `--precise` frei. Im geklonten Repository installiert
-  `python3 -m pip install -r requirements-precise.txt` unter macOS/Linux beziehungsweise
-  `py -m pip install -r requirements-precise.txt` unter Windows die gepinnten Pakete und das
-  deutsche Modell. Ohne `--precise` bleibt jeder Report unverändert. Details:
+- **spaCy** schaltet `--precise` frei. Empfohlen ist eine projektlokale Umgebung mit einer von
+  spaCy unterstützten Python-Version; CI und die folgenden Befehle verwenden Python 3.12:
+
+  ```bash
+  # macOS/Linux
+  python3.12 -m venv .venv
+  .venv/bin/python -m pip install -r requirements-precise.txt
+
+  # Windows
+  py -3.12 -m venv .venv
+  .venv\Scripts\python.exe -m pip install -r requirements-precise.txt
+  # Alternativ in einer bereits kompatiblen Python-Umgebung:
+  py -m pip install -r requirements-precise.txt
+  ```
+
+  Der Skill bevorzugt diesen `.venv`-Interpreter und ergänzt den Sammelcheck um `--precise`.
+  Das vermeidet Konflikte mit systemverwaltetem Python und mit Python-Versionen, für die der
+  gepinnte spaCy-Build nicht verfügbar ist. Ohne `--precise` bleibt jeder Report unverändert. Details:
   [spaCy-Dokumentation](https://spacy.io/usage/models).
 - **Hunspell mit `de_DE`** warnt über `spell_lint.py`, wenn ein Rewrite neue unbekannte Wörter
   einführt. macOS: `brew install hunspell`; Debian/Ubuntu:
@@ -708,6 +735,7 @@ Das führt die Unit-Tests, Unicode-/Rhythmus-Smoke-Tests, Evidence-, Register- u
 Einzelchecks:
 
 ```bash
+python3 scripts/doctor.py --json
 python3 scripts/humanizer_audit.py --file <text.md> --mode sachlich
 python3 scripts/humanizer_audit.py --latest <dir> --mode sachlich --format md
 python3 scripts/unicode_lint.py --file <text.md>
@@ -728,6 +756,7 @@ Alle Scripts folgen der Konvention `0` = ok, `1` = Findings gemäß Fail-Schwell
 
 | Script | Exit `1` bei |
 |---|---|
+| `doctor.py` | defektem Basis-Skill; mit `--require-full` auch bei fehlendem Zusatzwerkzeug |
 | `unicode_lint.py` | jedem Finding |
 | `register_lint.py`, `evidence_lint.py` | nur Blockern; Warnings blocken nicht |
 | `rhythm_lint.py`, `german_pattern_lint.py`, `humanizer_audit.py`, `syntax_lint.py`, `spell_lint.py` | nie; Messen ist kein Urteil, der JSON-Report ist die Schnittstelle |

@@ -36,6 +36,8 @@ class SkillStructureTests(unittest.TestCase):
         self.assertIn("references/qgir.md", text)
         self.assertIn("scripts/unicode_lint.py", text)
         self.assertIn("scripts/rhythm_lint.py", text)
+        self.assertIn(".venv/bin/python", text)
+        self.assertIn("make lt FILE=<datei>", text)
 
         body = text.split("---", 2)[-1]
         self.assertLessEqual(len(re.findall(r"\S+", body)), 2000)
@@ -243,6 +245,9 @@ class SkillStructureTests(unittest.TestCase):
         self.assertIn("`$HOME/.claude/skills/humanizer-de/`", readme)
         self.assertIn("Aktivierung nicht behaupten", readme)
         self.assertIn("py -m pip install -r requirements-precise.txt", readme)
+        self.assertIn("python3.12 -m venv .venv", readme)
+        self.assertIn("make doctor-full", readme)
+        self.assertIn("py scripts/doctor.py --json", readme)
         self.assertIn("sudo apt install hunspell hunspell-de-de", readme)
 
     def test_readme_follows_the_user_journey(self):
