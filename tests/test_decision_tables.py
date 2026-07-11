@@ -43,6 +43,16 @@ class DecisionTableTests(unittest.TestCase):
         self.assertIn("Formal", text)
         self.assertIn("Muster 45", text)
 
+    def test_contrast_and_explainer_overlaps_are_routed(self):
+        text = (ROOT / "references" / "decision-tables.md").read_text(encoding="utf-8")
+
+        self.assertIn("## Kontrastformeln: 7 / 8 / 16 / 56", text)
+        self.assertIn("Sachliche Korrektur", text)
+        self.assertIn("8, nicht 16", text)
+        self.assertIn("## Explainer-Signposts: 5 / 33 / 34 / 35 / 44 / 54 / 57", text)
+        self.assertIn("Konkrete, inhaltstragende Explainer-Sektion", text)
+        self.assertIn("5, nicht 33", text)
+
 
 if __name__ == "__main__":
     unittest.main()

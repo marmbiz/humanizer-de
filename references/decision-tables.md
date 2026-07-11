@@ -65,6 +65,28 @@ Nutze diese Tabellen vor `references/patterns.md`, wenn Befunde ueberlappen. Sie
 | Relativsatz traegt echte, im Hauptsatz nicht enthaltene Information | nicht 66 | Stehen lassen oder als eigenstaendigen Satz formulieren |
 | Gekennzeichnetes Zitat oder belegte konkrete Aussage | nicht 56 | Stehen lassen |
 
+## Kontrastformeln: 7 / 8 / 16 / 56
+
+| Situation | Muster | Aktion |
+|---|---:|---|
+| Wiederholte oder funktionsarme Pointe „nicht (nur) X, sondern Y", „kein X. Sondern Y." | 8 | Kontrastschema auf die konkrete Aussage zurückführen |
+| Sachliche Korrektur („nicht Montag, sondern Dienstag") oder einzelne begründete Antithese | nicht 8 | Stehen lassen |
+| Dash-Cluster ohne Kontrastschema | 16 | Satzbau nach Ersetzungshierarchie lösen |
+| Kontrastformel mit einem einzelnen Dash, sonst kein Dash-Cluster | 8, nicht 16 | Einmal nach dem primären Mechanismus behandeln |
+| Konzessive Dichotomie „Trotz X … Y" | 7 | Aussage konkret statt symmetrisch führen |
+| Aphoristische Metapher „kein Werkzeug, sondern ein Spiegel" | 56 | Durch die gemeinte konkrete Behauptung ersetzen |
+
+## Explainer-Signposts: 5 / 33 / 34 / 35 / 44 / 54 / 57
+
+| Situation | Muster | Aktion |
+|---|---:|---|
+| „Warum das wichtig ist:" / „Das große Bild:" als Fließtext-Ankündigung | 33 | Label streichen und Aussage direkt beginnen |
+| Generischer Einzeiler direkt nach einer Überschrift oder einem solchen Label | 34 | Entfernen oder in den nächsten Absatz integrieren |
+| „Warum ist das wichtig?" mit sofortiger eigener Antwort | 35 | Frage entfernen und Antwort direkt formulieren |
+| Konkrete, inhaltstragende Explainer-Sektion | nicht 33/34/35 | Stehen lassen |
+| „Kurz gesagt" fasst im Absatz nur Vorheriges zusammen | 5, nicht 33 | Zusammenfassung streichen oder mit neuer Substanz verbinden |
+| Substanzlose Standardsektion, Doppelpunkt-Titel oder Inline-Label-Liste | 44 / 54 / 57 | Nach dem jeweiligen Strukturmechanismus behandeln |
+
 ## Evidenz zweiter Ordnung: 59
 
 | Situation | Muster | Aktion |

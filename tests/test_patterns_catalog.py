@@ -162,6 +162,13 @@ class PatternCatalogTests(unittest.TestCase):
                 f"haltbarkeit-Attribut von Muster {pattern_id} steht nicht direkt unter dem Heading",
             )
 
+    def test_pattern_8_keeps_factual_correction_boundary(self):
+        pattern_8 = extract_pattern_section(8)
+        normalized_8 = " ".join(pattern_8.split())
+
+        self.assertIn("kein X. Sondern Y.", normalized_8)
+        self.assertIn("nicht Montag, sondern Dienstag", normalized_8)
+
     def test_pattern_16_broadens_dash_rule_without_banning_word_hyphens(self):
         section = extract_pattern_section(16)
 

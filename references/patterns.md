@@ -237,6 +237,7 @@ Häufige Indikatoren:
 Häufige Indikatoren:
 - "nicht nur... sondern auch"
 - "weder... noch... sondern"
+- Pointierte Varianten: "kein X. Sondern Y." oder "nicht X, nicht Y, sondern Z"
 - Symmetrische Satzstrukturen
 - Abgehackte Verneinungen am Satzende: "kein Raten.", "keine Kompromisse.", "kein Aufwand."
 
@@ -251,6 +252,10 @@ Häufige Indikatoren:
 ❌ Schlecht (abgehackte Verneinung): "Die Optionen kommen aus dem gewählten Element, kein Raten."
 
 ✓ Besser: "Die Optionen kommen aus dem gewählten Element, ohne dass der Nutzer raten muss."
+
+**Kein Problem, wenn:** Die Konstruktion eine sachliche Korrektur ausdrückt ("nicht Montag,
+sondern Dienstag") oder als einzelne, inhaltlich begründete Antithese im Text steht. Erst eine
+funktionsarme Pointe oder Wiederholung des Schemas behandeln.
 
 #### 9. Trikolon und schematische Aufzählungen (Regel der Drei) [MEDIUM]
 <!-- haltbarkeit: kern -->
@@ -766,7 +771,7 @@ Häufige Indikatoren:
 #### 33. Signposting und Ankündigungen [MEDIUM]
 <!-- haltbarkeit: kern -->
 
-**Wendungen, auf die Sie achten sollten:** "Schauen wir uns an", "Lassen Sie uns erkunden", "Hier ist, was Sie wissen müssen", "Die Sache ist die", "Was als Nächstes passiert", "Ohne weitere Umschweife", "Jetzt werfen wir einen Blick auf", "Kommen wir zu", "Tauchen wir ein"
+**Wendungen, auf die Sie achten sollten:** "Schauen wir uns an", "Lassen Sie uns erkunden", "Hier ist, was Sie wissen müssen", "Die Sache ist die", "Was als Nächstes passiert", "Ohne weitere Umschweife", "Jetzt werfen wir einen Blick auf", "Kommen wir zu", "Tauchen wir ein", "Warum das wichtig ist:" oder "Das große Bild:" als Fließtext-Label
 
 **Problem:** LLMs kündigen an, was sie gleich tun werden, statt es einfach zu tun. Diese Wendungen bremsen den Leser mit Meta-Kommentar zur Textstruktur. Sie stammen aus dem Chatbot-Dialog-Training, wo das Modell seine eigene Antwort kommentiert, bevor es Inhalt liefert. Unterscheidet sich von Muster 18 (Kollaborative Kommunikation), das Chatbot-Höflichkeitsfloskeln abdeckt; dieses Muster betrifft Meta-Struktur-Vorspanne, die Inhalt ankündigen ohne ihn zu liefern.
 
