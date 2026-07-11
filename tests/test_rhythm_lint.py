@@ -26,6 +26,22 @@ def run_cli(argv):
 
 
 class RhythmLintTests(unittest.TestCase):
+    def test_sentence_split_does_not_mask_words_ending_like_abbreviations(self):
+        text = "Das ist ein Haus. Danach geht es nach Mallorca. Anschließend folgt der Schluss."
+
+        self.assertEqual(
+            rhythm_lint.split_sentences(text),
+            ["Das ist ein Haus.", "Danach geht es nach Mallorca.", "Anschließend folgt der Schluss."],
+        )
+
+    def test_sentence_split_keeps_real_abbreviations(self):
+        text = "Das gilt z. B. für Berlin. Siehe S. 12. Danach folgt mehr."
+
+        self.assertEqual(
+            rhythm_lint.split_sentences(text),
+            ["Das gilt z. B. für Berlin.", "Siehe S. 12.", "Danach folgt mehr."],
+        )
+
     def test_sir_cluster_flags_pattern_55(self):
         # SIR fires only when high ratio AND (low variance OR repeated openers).
         # All 8 sentences subjektinitial + identical 2-token opener = cluster condition met.

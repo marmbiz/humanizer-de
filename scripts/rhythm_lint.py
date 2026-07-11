@@ -21,6 +21,7 @@ if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
 import text_scope
+from cli_output import print_json
 
 
 SUBJUNCTIONS = {
@@ -117,7 +118,6 @@ ABBREVIATIONS = (
     "Dr.",
     "Prof.",
     "Nr.",
-    "S.",
     "vgl.",
 )
 
@@ -136,6 +136,16 @@ MONTHS = (
     "November",
     "Dezember",
 )
+
+ABBREVIATION_RE = re.compile(
+    rf"(?<!\w)(?:{'|'.join(re.escape(abbreviation) for abbreviation in ABBREVIATIONS)})",
+    re.IGNORECASE,
+)
+PAGE_ABBREVIATION_RE = re.compile(r"(?<!\w)S\.(?=\s*\d)")
+MONTH_DATE_RE = re.compile(
+    rf"\b(\d{{1,2}})\.\s+(?=(?:{'|'.join(re.escape(month) for month in MONTHS)})\b)"
+)
+DECIMAL_RE = re.compile(r"\b(\d+)\.(\d+)\b")
 
 WORD_RE = re.compile(r"[A-Za-zÄÖÜäöüß0-9]+(?:[-'][A-Za-zÄÖÜäöüß0-9]+)?")
 CLAUSE_PUNCT_RE = re.compile(r"[,;:()]")
@@ -228,21 +238,19 @@ def split_blocks(text: str) -> tuple[list[str], list[str]]:
 
 
 def protect_sentence_periods(text: str) -> str:
-    masked = text
-    for abbreviation in ABBREVIATIONS:
-        masked = re.sub(
-            re.escape(abbreviation),
-            lambda match: match.group(0).replace(".", DOT),
-            masked,
-            flags=re.IGNORECASE,
-        )
-    month_pattern = "|".join(re.escape(month) for month in MONTHS)
-    masked = re.sub(
-        rf"\b(\d{{1,2}})\.\s+(?=(?:{month_pattern})\b)",
+    masked = ABBREVIATION_RE.sub(
+        lambda match: match.group(0).replace(".", DOT),
+        text,
+    )
+    masked = PAGE_ABBREVIATION_RE.sub(
+        lambda match: match.group(0).replace(".", DOT),
+        masked,
+    )
+    masked = MONTH_DATE_RE.sub(
         lambda match: match.group(1) + DOT + " ",
         masked,
     )
-    masked = re.sub(r"\b(\d+)\.(\d+)\b", lambda match: match.group(1) + DOT + match.group(2), masked)
+    masked = DECIMAL_RE.sub(lambda match: match.group(1) + DOT + match.group(2), masked)
     return masked
 
 
@@ -487,8 +495,8 @@ def analyze(text: str, file: str | None = None, scope: str = "user_text", mode: 
             confidence="high",
         )
     # SIR fires only as part of a cluster: high ratio AND (low variance OR repeated openers).
-    # Standalone SIR > 0.75 fires on ~95% of human German blog posts (empirically validated
-    # against 21 posts, median 0.887) — not a valid KI discriminator on its own.
+    # Standalone SIR > 0.75 fired on ~95% of a 21-post human sample and is not a valid
+    # KI discriminator on its own. Revalidate the historical median after splitter changes.
     sir_cluster = subject_ratio > 0.85 and (length_ratio < 0.6 or len(opener_repeats) >= 2)
     if sentence_count >= 8 and sir_cluster:
         add_suspicion(
@@ -600,7 +608,7 @@ def main(argv: list[str] | None = None) -> int:
     report = analyze(text, file=file_name, scope=args.scope, mode=args.mode)
     if not args.include_paragraphs:
         report = compact_cli_report(report)
-    print(json.dumps(report, ensure_ascii=False, indent=2))
+    print_json(report)
     return exit_code(report["suspicions"], args.fail_on)
 
 
