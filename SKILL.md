@@ -148,7 +148,7 @@ Format:
 1. **Modus:** eine Zeile.
 2. **Gefundene Muster:** maximal 6 konkrete Bullet Points mit kurzem Zitat.
 3. **Geänderte Stellen:** Vorher/Nachher-Paare nur für bearbeitete Passagen.
-4. **Kurzaudit:** maximal 3 verbleibende Tells oder „Keine gefunden.“
+4. **Kurzaudit:** maximal 3 verbleibende Tells oder „Keine gefunden.“; optional „Trägt bereits:“ mit der stärksten Rubrik-Achse.
 5. **Burstiness:** nur bei Combing: Messung vorher/nachher, Iterationszahl und Hinweis auf mögliches Qualitätsrisiko.
 6. **Verworfene Kandidaten:** nur ausgeben, wenn Lint-/Audit-Flags vorlagen und nach Prüfung höchstens zwei echte Änderungen nötig waren. Jede Zeile muss auf ein konkretes Flag oder eine konkrete Textstelle verweisen: erwogene Änderung plus ein Satz, warum sie Substanz, Rhythmus, Register oder Belegtreue verschlechtern würde. Ohne konkret geprüfte Stelle kein Eintrag; ist nichts belegbar, Block weglassen.
 
