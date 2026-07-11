@@ -22,3 +22,19 @@ def json_for_stdout(payload: Any, *, indent: int = 2, sort_keys: bool = False) -
 
 def print_json(payload: Any, *, indent: int = 2, sort_keys: bool = False) -> None:
     print(json_for_stdout(payload, indent=indent, sort_keys=sort_keys))
+
+
+def text_for_stdout(value: str) -> str:
+    """Escape characters that the active stdout encoding cannot represent."""
+    encoding = getattr(sys.stdout, "encoding", None) or "utf-8"
+    try:
+        value.encode(encoding)
+    except LookupError:
+        return value.encode("ascii", errors="backslashreplace").decode("ascii")
+    except UnicodeEncodeError:
+        return value.encode(encoding, errors="backslashreplace").decode(encoding)
+    return value
+
+
+def print_text(value: str) -> None:
+    print(text_for_stdout(value))

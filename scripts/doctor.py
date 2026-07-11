@@ -19,7 +19,7 @@ SCRIPT_DIR = ROOT / "scripts"
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
-from cli_output import print_json
+from cli_output import print_json, print_text
 
 
 SUCCESS_STATUSES = {"ok", "available", "active"}
@@ -63,7 +63,7 @@ def run_command(
             capture_output=True,
             text=True,
             encoding="utf-8",
-            errors="replace",
+            errors="backslashreplace",
             timeout=timeout,
             check=False,
         )
@@ -248,7 +248,8 @@ def hunspell_checks() -> list[dict[str, Any]]:
     version_result, version_error = run_command([binary, "--version"])
     version_line = ""
     if version_result is not None:
-        version_line = (version_result.stdout or version_result.stderr).splitlines()[0]
+        version_output = version_result.stdout or version_result.stderr or ""
+        version_line = next(iter(version_output.splitlines()), "")
     version_match = re.search(r"Hunspell\s+([0-9.]+)", version_line)
     version = version_match.group(1) if version_match else None
     hunspell_status = "available" if version_result is not None and version_result.returncode == 0 else "error"
@@ -285,7 +286,12 @@ def java_binary() -> str | None:
     candidates = []
     java_home = os.environ.get("JAVA_HOME")
     if java_home:
-        candidates.append(Path(java_home) / "bin" / "java")
+        candidates.extend(
+            [
+                Path(java_home) / "bin" / "java",
+                Path(java_home) / "bin" / "java.exe",
+            ]
+        )
     candidates.extend(
         [
             Path("/opt/homebrew/opt/openjdk@17/bin/java"),
@@ -406,7 +412,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.json:
         print_json(report)
     else:
-        print(format_report(report))
+        print_text(format_report(report))
     if not report["ok"]:
         return 1
     if args.require_full and not report["full"]:

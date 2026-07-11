@@ -1,6 +1,8 @@
 import importlib.util
 import io
 import json
+import os
+import subprocess
 import tempfile
 import unittest
 from contextlib import redirect_stdout
@@ -14,6 +16,7 @@ SCRIPT = ROOT / "scripts" / "doctor.py"
 spec = importlib.util.spec_from_file_location("doctor", SCRIPT)
 doctor = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(doctor)
+import cli_output
 
 
 class DoctorTests(unittest.TestCase):
@@ -87,6 +90,45 @@ class DoctorTests(unittest.TestCase):
             python.touch()
 
             self.assertEqual(doctor.select_python(root), python)
+
+    def test_java_home_supports_windows_executable(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            java = Path(tmp) / "bin" / "java.exe"
+            java.parent.mkdir(parents=True)
+            java.touch()
+
+            with mock.patch.dict(os.environ, {"JAVA_HOME": tmp}):
+                with mock.patch.object(doctor.shutil, "which", return_value=None):
+                    self.assertEqual(doctor.java_binary(), str(java))
+
+    def test_empty_hunspell_version_output_does_not_crash(self):
+        version_result = subprocess.CompletedProcess(["hunspell", "--version"], 0, "", "")
+        dictionary_result = subprocess.CompletedProcess(["hunspell"], 0, "", "")
+        with mock.patch.object(doctor.shutil, "which", return_value="hunspell"):
+            with mock.patch.object(
+                doctor,
+                "run_command",
+                side_effect=[(version_result, None), (dictionary_result, None)],
+            ):
+                checks = doctor.hunspell_checks()
+
+        self.assertEqual(checks[0]["status"], "available")
+        self.assertNotIn("version", checks[0])
+        self.assertEqual(checks[1]["status"], "available")
+
+    def test_command_decoding_preserves_unrepresentable_bytes(self):
+        completed = subprocess.CompletedProcess(["tool"], 0, "", "")
+        with mock.patch.object(doctor.subprocess, "run", return_value=completed) as run:
+            doctor.run_command(["tool"])
+
+        self.assertEqual(run.call_args.kwargs["errors"], "backslashreplace")
+
+    def test_human_output_escapes_for_legacy_stdout_encoding(self):
+        class LegacyStdout:
+            encoding = "cp1252"
+
+        with mock.patch.object(cli_output.sys, "stdout", LegacyStdout()):
+            self.assertEqual(cli_output.text_for_stdout("A\u200bB"), "A\\u200bB")
 
     def test_human_report_has_clear_summary(self):
         output = doctor.format_report(self.report)
