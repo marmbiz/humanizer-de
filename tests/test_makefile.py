@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 MAKE = shutil.which("make")
 
 
-@unittest.skipUnless(MAKE, "make is not available")
+@unittest.skipUnless(os.name != "nt" and MAKE, "POSIX make is not available")
 class LanguageToolTargetTests(unittest.TestCase):
     def run_lt(
         self,
