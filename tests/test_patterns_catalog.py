@@ -170,6 +170,14 @@ class PatternCatalogTests(unittest.TestCase):
         self.assertIn("Der Tell verschwindet nicht, wenn nur das Glyph gewechselt wird", section)
         self.assertIn("Bindestrich in Komposita, Namen, URLs, IDs", section)
 
+    def test_pattern_18_keeps_real_dialog_boundary(self):
+        pattern_18 = extract_pattern_section(18)
+        normalized_18 = " ".join(pattern_18.split())
+
+        self.assertIn("Du hast völlig recht", normalized_18)
+        self.assertIn("Dialog-, Support-, Coaching- oder Interviewantwort", normalized_18)
+        self.assertIn('Ein einzelnes "Genau" oder "Absolut"', normalized_18)
+
     def test_pattern_26_is_factual_reliability_gate(self):
         section = extract_pattern_section(26)
 

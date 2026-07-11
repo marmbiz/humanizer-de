@@ -531,6 +531,8 @@ Häufige Indikatoren:
 Häufige Indikatoren:
 - "Ich hoffe, das hilft"
 - "Natürlich!"
+- Unmotivierte Zustimmung vor der Sache: "Du hast völlig recht", "Sie haben völlig recht"
+- Austauschbares Lob am Einstieg: "Gute Frage", "Starker Punkt", "Was für eine großartige Frage"
 - "Lassen Sie mich wissen"
 - "Bitte fragen Sie, wenn..."
 - "Wie Sie sehen können..."
@@ -540,6 +542,11 @@ Häufige Indikatoren:
 Vollständig löschen. Beim eigentlichen Inhalt anfangen.
 
 In deutschen Texten stehen diese Residuen oft als wörtliche Übersetzungen englischer Formeln: "Ich hoffe, das hilft" ("I hope this helps"), "Lassen Sie uns eintauchen" ("let's dive in"). Der übersetzte Duktus bleibt auch dann ein Tell, wenn der Satz grammatisch sauberes Deutsch ist.
+
+**Kein Problem, wenn:** Eine echte Dialog-, Support-, Coaching- oder Interviewantwort konkret auf
+den vorherigen Inhalt reagiert und die Zustimmung selbst Information trägt ("Da hast du recht, der
+Termin kollidiert – lass uns auf Dienstag ausweichen"). Ein einzelnes "Genau" oder "Absolut" ist
+ohne weiteren Chatbot-Vorspann kein Befund.
 
 **Warum LLMs das tun:** Trainiert, höflich und engagiert zu sein.
 
