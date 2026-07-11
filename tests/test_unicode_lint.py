@@ -1,4 +1,6 @@
 import importlib.util
+import json
+import os
 import random
 import subprocess
 import sys
@@ -101,6 +103,10 @@ class UnicodeLintTests(unittest.TestCase):
         text = '`"code"`'
         self.assertEqual(unicode_lint.lint(text), [])
 
+    def test_tilde_fenced_code_is_protected_from_quote_findings(self):
+        text = '~~~python\nprint("x")\n~~~'
+        self.assertEqual(unicode_lint.lint(text), [])
+
     def test_yaml_frontmatter_quotes_are_protected(self):
         text = '---\ntitle: "Mein Beitrag"\n---\n\nProsa ohne Quotes.'
         self.assertFalse(any(item["kind"] == "straight_quote" for item in unicode_lint.lint(text)))
@@ -181,6 +187,20 @@ class UnicodeLintTests(unittest.TestCase):
 
         self.assertEqual(proc.returncode, 2)
         self.assertIn("--write requires --fix and --file", proc.stderr)
+
+    def test_cli_json_falls_back_to_ascii_when_stdout_cannot_encode_a_finding(self):
+        env = os.environ.copy()
+        env["PYTHONIOENCODING"] = "cp1252"
+        proc = subprocess.run(
+            [sys.executable, str(SCRIPT), "--text", "a\u200bb"],
+            capture_output=True,
+            text=True,
+            env=env,
+        )
+
+        self.assertEqual(proc.returncode, 1)
+        report = json.loads(proc.stdout)
+        self.assertEqual(report["findings"][0]["codepoint"], "U+200B")
 
 
 if __name__ == "__main__":

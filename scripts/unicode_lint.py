@@ -12,6 +12,14 @@ from bisect import bisect_right
 from pathlib import Path
 
 
+SCRIPT_DIR = Path(__file__).resolve().parent
+if str(SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIR))
+
+from cli_output import print_json
+import text_scope
+
+
 HIDDEN_RANGES = (
     (0x200B, 0x200D),
     (0x2060, 0x2064),
@@ -70,22 +78,10 @@ def codepoint(char: str) -> str:
 
 
 def protected_ranges(text: str) -> list[tuple[int, int]]:
-    ranges: list[tuple[int, int]] = []
-    patterns = [
-        (r"```.*?```", 0),
-        (r"`[^`\n]+`", 0),
-        (r"https?://[^\s<>)]+", 0),
-        (r"\b[\w.-]+@[\w.-]+\.[A-Za-z]{2,}\b", 0),
-        (r"\A---[ \t]*\r?\n.*?\r?\n---[ \t]*(?:\r?\n|\Z)", 0),
-        (r"(?m)^\|.*\|[ \t]*$", 0),
-        (r"\]\([^()\s]+[ \t]+(\"[^\"\n]*\")\)", 1),
-        (r"<[A-Za-z/!][^<>\n]*>", 0),
-    ]
-    for pattern, group in patterns:
-        for match in re.finditer(pattern, text, re.DOTALL):
-            ranges.append(match.span(group))
-    ranges.sort()
-    return ranges
+    ranges = text_scope.protected_ranges(text, scope=text_scope.DOCUMENT_PROSE)
+    link_title_re = re.compile(r"\]\([^()\s]+[ \t]+(\"[^\"\n]*\")\)")
+    ranges.extend(match.span(1) for match in link_title_re.finditer(text))
+    return merge_ranges(ranges)
 
 
 def merge_ranges(ranges: list[tuple[int, int]]) -> list[tuple[int, int]]:
@@ -363,7 +359,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.fix and not args.write:
         result["fixed_text"] = fixed_text
 
-    print(json.dumps(result, ensure_ascii=False, indent=2))
+    print_json(result)
     return exit_code(findings, args.fail_on)
 
 
