@@ -153,10 +153,6 @@ DOT = "<RH_DOT>"
 SENTENCE_BREAK = "<RH_SENTENCE_BREAK>"
 
 
-def protected_ranges(text: str) -> list[tuple[int, int]]:
-    return text_scope.protected_ranges(text, scope=text_scope.AUTHORED_PROSE)
-
-
 def strip_protected(text: str) -> str:
     return text_scope.mask_text(text, scope=text_scope.AUTHORED_PROSE)
 

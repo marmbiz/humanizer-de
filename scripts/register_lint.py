@@ -66,10 +66,6 @@ def precise_status(precise: bool) -> dict | None:
     return status
 
 
-def protected_ranges(text: str) -> list[tuple[int, int]]:
-    return text_scope.protected_ranges(text)
-
-
 def strip_protected(text: str, exclude_blockquotes: bool = False) -> str:
     scope = text_scope.AUTHORED_PROSE if exclude_blockquotes else text_scope.DOCUMENT_PROSE
     return text_scope.mask_text(text, scope=scope)
