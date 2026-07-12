@@ -108,8 +108,8 @@ class SkillStructureTests(unittest.TestCase):
         self.assertEqual(codex_marketplace_plugin["policy"]["installation"], "AVAILABLE")
         self.assertIn("codex plugin marketplace add marmbiz/humanizer-de", readme_text)
         self.assertIn(f"- **{EXPECTED_VERSION}**", readme_text)
-        self.assertIn(f"v{EXPECTED_VERSION}", patterns_text)
-        self.assertIn(f"v{EXPECTED_VERSION}", decision_text)
+        self.assertIn(f"v{EXPECTED_VERSION}", patterns_text.splitlines()[2])
+        self.assertIn(f"v{EXPECTED_VERSION}", decision_text.splitlines()[2])
         self.assertIn(f"v{EXPECTED_VERSION}", coverage_text)
 
         expected_pattern_label = f"{EXPECTED_PATTERN_COUNT} Muster"
