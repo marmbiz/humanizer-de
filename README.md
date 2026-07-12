@@ -727,7 +727,7 @@ Für lokale Release-Prüfung:
 make verify
 ```
 
-Das führt die Unit-Tests, Unicode-/Rhythmus-Smoke-Tests, Evidence-, Register- und Naturalness-Fixtures, die maschinenlesbaren Scenario-Contracts sowie `git diff --check` aus.
+Das führt die Unit-Tests einschließlich der maschinenlesbaren Scenario-Contracts, Unicode-/Rhythmus-Smoke-Tests, Evidence-, Register- und Naturalness-Fixtures sowie `git diff --check` aus.
 
 <details>
 <summary><strong>Einzelchecks, Exit-Codes und Evidence-Gate</strong></summary>

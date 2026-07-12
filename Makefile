@@ -18,7 +18,7 @@ lint:
 eval-contracts:
 	$(PYTHON) scripts/run_review_eval.py tests/scenarios --check-invariants > /dev/null
 
-verify: test lint eval-contracts
+verify: test lint
 	git diff --check
 
 bench:

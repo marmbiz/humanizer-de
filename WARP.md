@@ -118,7 +118,6 @@ python3 scripts/rhythm_lint.py --text "Kurzer Test. Noch ein Satz." --scope user
 python3 scripts/evidence_lint.py --fixture tests/corpus/evidence
 python3 scripts/register_lint.py --fixture tests/corpus/register
 python3 scripts/german_pattern_lint.py --fixture tests/corpus/de-naturalness
-python3 scripts/run_review_eval.py tests/scenarios --check-invariants
 git diff --check
 ```
 
