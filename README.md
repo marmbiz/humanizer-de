@@ -78,6 +78,21 @@ Programme automatisch installiert.
 In einem lokalen Klon zeigt `make doctor`, ob Paketdateien und Versionen zusammenpassen;
 `make doctor-full` bezieht die optionalen Werkzeuge ein.
 
+### Ausprobieren ohne Installation
+
+Die deterministischen Prüfskripte laufen auch ohne installierten Skill – zwei Befehle,
+Python 3 genügt, keine Zusatzpakete:
+
+```bash
+git clone --depth 1 https://github.com/marmbiz/humanizer-de.git && cd humanizer-de
+python3 scripts/humanizer_audit.py --file tests/corpus/case_01_input.md --mode sachlich --format md
+```
+
+Der Report zeigt an einem mitgelieferten Beispieltext, wie der Sammelcheck Preflight-Risiko,
+Rhythmusdaten und Befunde meldet (hier: ein verstecktes Unicode-Zeichen und ein falsches
+schließendes Anführungszeichen). Statt des Beispiels lässt sich direkt eine eigene Datei angeben.
+Das testet die Messwerkzeuge; die eigentliche Überarbeitung übernimmt der Skill im Agenten.
+
 ---
 
 <details>
@@ -85,7 +100,8 @@ In einem lokalen Klon zeigt `make doctor`, ob Paketdateien und Versionen zusamme
 
 ### Voraussetzungen
 
-- Claude Code oder Codex (CLI, App oder IDE-Integration)
+- Claude Code oder Codex (CLI, App oder IDE-Integration); Cursor und andere Tools mit
+  Agent-Skills-Unterstützung funktionieren über die [manuelle Installation](#cursor-und-andere-agent-skills-tools)
 - Für den Basis-Skill ist kein Python nötig. Python 3 wird erst gebraucht, wenn die
   deterministischen Prüfskripte ausgeführt werden sollen.
 
@@ -99,6 +115,7 @@ Produktversionen, sondern unterschiedliche Installationswege.
 | Codex | [Codex-Plugin](#codex-plugin-empfohlen) | Einfach installieren, verwalten und aktualisieren |
 | Claude Code | [Claude-Code-Plugin](#claude-code-plugin-empfohlen) | Aktivierung und Updates laufen über Claude Code |
 | Plugins sind nicht verfügbar | [Manuelle Installation](#manuelle-installation-fortgeschritten) | Funktioniert lokal, muss aber selbst aktualisiert werden |
+| Cursor | [Manuelle Installation](#cursor-und-andere-agent-skills-tools) | Cursor lädt Agent Skills aus `~/.agents/skills/` und `~/.cursor/skills/` |
 
 Wenn du eine KI mit der Installation beauftragst, gelten zusätzlich die
 [Installationsregeln für Assistenten](#installationsregeln-für-assistenten).
@@ -193,6 +210,23 @@ cp -R ./humanizer-de ~/.claude/skills/humanizer-de
 Claude Code erkennt Änderungen in einem bereits vorhandenen persönlichen Skill-Ordner live. Wurde
 `~/.claude/skills/` während der laufenden Sitzung neu angelegt, Claude Code einmal neu starten.
 Siehe [Claude-Code-Skills](https://code.claude.com/docs/en/skills).
+
+#### Cursor und andere Agent-Skills-Tools
+
+Cursor unterstützt den Agent-Skills-Standard nativ und lädt persönliche Skills unter anderem aus
+`~/.agents/skills/` – demselben Verzeichnis wie Codex. Wer den Codex-Weg oben eingerichtet hat,
+findet den Skill in Cursor also bereits. Alternativ ausdrücklich für Cursor:
+
+```bash
+mkdir -p ~/.cursor/skills
+cp -R ./humanizer-de ~/.cursor/skills/humanizer-de
+```
+
+Projektbezogen liest Cursor zusätzlich `.cursor/skills/` und `.agents/skills/` im Projektordner;
+ein `.cursorrules`-Umweg ist nicht nötig. Details:
+[Cursor-Dokumentation zu Skills](https://cursor.com/docs/context/skills). Getestet und gepflegt
+wird der Skill mit Claude Code und Codex; in Cursor hängt das Ergebnis vom dort gewählten Modell
+ab. Dasselbe Prinzip gilt für weitere Tools, die den Agent-Skills-Standard umsetzen.
 
 Supports Claude Code and Codex: Das Repository enthält zusätzlich `.claude-plugin/` für Claude Code und `.codex-plugin/` plus `agents/openai.yaml` für Codex.
 
@@ -340,6 +374,23 @@ Der Sammelcheck ruft Unicode-, Rhythmus-, Naturalness- und Register-Prüfung in 
 Der Report enthält außerdem ein Preflight-Risiko (`low`, `medium`, `high`, `insufficient_text`). Es beschreibt, ob der Text messbar zu gleichförmig wirkt: etwa durch sehr ähnliche Satzlängen, kaum kurze oder lange Sätze, wiederholte Satzanfänge, viele mechanische Übergänge oder Naturalness-Cluster. Das ist eine Qualitätsheuristik, keine Aussage zur Autorenschaft.
 
 Bei hohem Risiko empfiehlt der Skill nach der normalen Überarbeitung einen kontrollierten Nachkamm: das **Combing-Gate**. Dabei dürfen höchstens zwei gezielte Rhythmusänderungen passieren, zum Beispiel ein kürzerer Satz, ein anderer Satzanfang oder ein besser verteilter Absatz. Neue Fakten, künstliche Ich-Signale, Füllwörter oder Satzfragmente bleiben tabu. Der Report weist ausdrücklich darauf hin, dass Textqualität, Präzision oder Lesbarkeit durch solchen Rhythmus-Feinschliff auch schlechter werden können. Auch das Combing-Gate ist kein Detektor-Bypass und garantiert keine Score-Änderung.
+
+Weil der Sammelcheck reines JSON auf stdout liefert, lässt er sich als deterministisches Werkzeug
+in eigene Pipelines und Agenten-Frameworks (etwa LangChain, CrewAI oder n8n) einhängen:
+
+```python
+import json, subprocess
+
+def humanizer_audit(path, mode="sachlich"):
+    report = subprocess.run(
+        ["python3", "scripts/humanizer_audit.py", "--file", path, "--mode", mode],
+        capture_output=True, text=True, check=True,
+    )
+    return json.loads(report.stdout)
+```
+
+Das deckt den Audit-Teil ab. Die Pässe des Skills – Rewrite, Claim-Lock, Selbst-Audit – laufen
+weiter im LLM-Agenten und sind bewusst nicht als API nachgebaut.
 
 ### Persönliches Stilprofil
 
