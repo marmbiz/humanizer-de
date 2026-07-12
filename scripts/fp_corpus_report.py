@@ -61,16 +61,30 @@ def evidence_findings(path: Path, precise: bool) -> dict[str, int]:
     return dict(sorted(counter.items()))
 
 
+def report_path(path: Path, corpus_dir: Path) -> str:
+    try:
+        return path.relative_to(ROOT).as_posix()
+    except ValueError:
+        return path.relative_to(corpus_dir).as_posix()
+
+
 def build_report(corpus_dir: Path = CORPUS_DIR, precise: bool = False) -> dict[str, dict[str, int]]:
+    corpus_dir = corpus_dir.resolve()
+    if not corpus_dir.is_dir():
+        raise ValueError(f"corpus directory does not exist: {corpus_dir}")
+
+    markdown_paths = sorted(corpus_dir.glob("*.md"))
+    evidence_paths = sorted(path for path in corpus_dir.glob("*.json") if path.name != "baseline.json")
+    if not markdown_paths and not evidence_paths:
+        raise ValueError(f"corpus directory contains no Markdown or JSON fixtures: {corpus_dir}")
+
     report: dict[str, dict[str, int]] = {}
 
-    for path in sorted(corpus_dir.glob("*.md")):
-        report[path.relative_to(ROOT).as_posix()] = markdown_findings(path, precise=precise)
+    for path in markdown_paths:
+        report[report_path(path, corpus_dir)] = markdown_findings(path, precise=precise)
 
-    for path in sorted(corpus_dir.glob("*.json")):
-        if path.name == "baseline.json":
-            continue
-        report[path.relative_to(ROOT).as_posix()] = evidence_findings(path, precise=precise)
+    for path in evidence_paths:
+        report[report_path(path, corpus_dir)] = evidence_findings(path, precise=precise)
 
     return dict(sorted(report.items()))
 
@@ -84,7 +98,12 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv or sys.argv[1:])
-    print_json(build_report(args.corpus_dir, precise=args.precise), sort_keys=True)
+    try:
+        report = build_report(args.corpus_dir, precise=args.precise)
+    except ValueError as error:
+        print(f"error: {error}", file=sys.stderr)
+        return 2
+    print_json(report, sort_keys=True)
     return 0
 
 
