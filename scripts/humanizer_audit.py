@@ -64,7 +64,17 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     source.add_argument("--latest", type=Path, help="Directory whose newest recursive *.md file should be audited.")
     parser.add_argument("--mode", choices=["locker", "sachlich", "formal"], default=None)
     parser.add_argument("--format", choices=["json", "md"], default="json")
-    parser.add_argument("--no-profile", action="store_true", help="Ignore any user profile (.humanizer/profile.json); use base targets only.")
+    user_profile = parser.add_mutually_exclusive_group()
+    user_profile.add_argument(
+        "--profile",
+        type=Path,
+        help="User profile JSON with corridor overrides (default: .humanizer/profile.json).",
+    )
+    user_profile.add_argument(
+        "--no-profile",
+        action="store_true",
+        help="Ignore any user profile (.humanizer/profile.json); use base targets only.",
+    )
     parser.add_argument("--precise", action="store_true", help="spaCy-gestützte Verfeinerung, wenn installiert; sonst wirkungslos")
     parser.add_argument("--fail-on", choices=["never", "blocker", "any"], default="never")
     return parser.parse_args(argv)
@@ -310,7 +320,14 @@ def dedupe_findings(findings: list[dict]) -> list[dict]:
     return compact
 
 
-def style_profile_section(text: str, path: Path, mode: str, mode_explicit: bool, use_profile: bool = True) -> dict:
+def style_profile_section(
+    text: str,
+    path: Path,
+    mode: str,
+    mode_explicit: bool,
+    use_profile: bool = True,
+    profile_path: Path = style_profile.USER_PROFILE_PATH,
+) -> dict:
     profile_report = style_profile.profile(text, str(path))
     section = {
         "word_count": profile_report["meta"]["word_count"],
@@ -321,7 +338,7 @@ def style_profile_section(text: str, path: Path, mode: str, mode_explicit: bool,
         targets = style_profile.load_targets()
         overridden: frozenset = frozenset()
         if use_profile:
-            overrides, warnings = style_profile.load_user_profile(style_profile.USER_PROFILE_PATH, targets)
+            overrides, warnings = style_profile.load_user_profile(profile_path, targets)
             for warning in warnings:
                 print(f"warning: {warning}", file=sys.stderr)
             targets = style_profile.merge_targets(targets, overrides)
@@ -337,6 +354,7 @@ def analyze_file(
     mode_explicit: bool = False,
     use_profile: bool = True,
     precise: bool = False,
+    profile_path: Path = style_profile.USER_PROFILE_PATH,
 ) -> dict:
     text = path.read_text(encoding="utf-8")
 
@@ -379,7 +397,14 @@ def analyze_file(
             "preflight": preflight,
             "counts": counts,
         },
-        "style_profile": style_profile_section(text, path, mode, mode_explicit, use_profile),
+        "style_profile": style_profile_section(
+            text,
+            path,
+            mode,
+            mode_explicit,
+            use_profile,
+            profile_path,
+        ),
         "findings": findings,
     }
     if precise:
@@ -464,6 +489,10 @@ def exit_code(report: dict, fail_on: str) -> int:
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv or sys.argv[1:])
+    if args.profile is not None and not args.profile.is_file():
+        print(f"error: --profile requires an existing file: {args.profile}", file=sys.stderr)
+        return 2
+    profile_path = args.profile if args.profile is not None else style_profile.USER_PROFILE_PATH
     try:
         path = input_path(args)
     except ValueError as error:
@@ -475,6 +504,7 @@ def main(argv: list[str] | None = None) -> int:
         args.mode or "sachlich",
         mode_explicit=args.mode is not None,
         use_profile=not args.no_profile,
+        profile_path=profile_path,
         precise=args.precise,
     )
     if args.format == "md":

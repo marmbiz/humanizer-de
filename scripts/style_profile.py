@@ -195,18 +195,26 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     source.add_argument("--file", type=Path, help="UTF-8 text file to profile.")
     source.add_argument("--text", help="Text to profile.")
     parser.add_argument("--target", help="Profile name from references/style-targets.json; adds a delta section.")
-    parser.add_argument(
+    user_profile = parser.add_mutually_exclusive_group()
+    user_profile.add_argument(
         "--profile",
         type=Path,
-        default=USER_PROFILE_PATH,
         help="User profile JSON with corridor overrides (default: .humanizer/profile.json).",
     )
-    parser.add_argument("--no-profile", action="store_true", help="Ignore any user profile; use base targets only.")
+    user_profile.add_argument(
+        "--no-profile",
+        action="store_true",
+        help="Ignore any user profile; use base targets only.",
+    )
     return parser.parse_args(argv)
 
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv or sys.argv[1:])
+    if args.profile is not None and not args.profile.is_file():
+        print(f"error: --profile requires an existing file: {args.profile}", file=sys.stderr)
+        return 2
+    profile_path = args.profile if args.profile is not None else USER_PROFILE_PATH
     corridors = None
     overridden: frozenset = frozenset()
     if args.target:
@@ -216,7 +224,7 @@ def main(argv: list[str] | None = None) -> int:
             print(f"error: unknown target profile '{args.target}' (known: {known})", file=sys.stderr)
             return 2
         if not args.no_profile:
-            overrides, warnings = load_user_profile(args.profile, targets)
+            overrides, warnings = load_user_profile(profile_path, targets)
             for warning in warnings:
                 print(f"warning: {warning}", file=sys.stderr)
             targets = merge_targets(targets, overrides)

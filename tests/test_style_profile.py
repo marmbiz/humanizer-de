@@ -258,7 +258,9 @@ class UserProfileTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             path = self.write_profile(tmp, payload)
             _, with_profile = run_json(["--text", UNIFORM_TEXT, "--target", "sachlich", "--profile", str(path)])
-            _, without_profile = run_json(["--text", UNIFORM_TEXT, "--target", "sachlich", "--profile", str(path), "--no-profile"])
+            _, without_profile = run_json(
+                ["--text", UNIFORM_TEXT, "--target", "sachlich", "--no-profile"]
+            )
 
         self.assertEqual(with_profile["delta"]["particle_count"]["range"], {"max": 99})
         self.assertTrue(with_profile["delta"]["particle_count"]["override"])
@@ -277,6 +279,29 @@ class UserProfileTests(unittest.TestCase):
         self.assertIn("warning:", stderr.getvalue())
         report = json.loads(stdout.getvalue())
         self.assertEqual(report["delta"]["particle_count"]["range"], {"max": 0})
+
+    def test_cli_explicit_missing_profile_is_usage_error(self):
+        missing = Path("/nonexistent/explicit-profile.json")
+        stdout = io.StringIO()
+        stderr = io.StringIO()
+        with redirect_stdout(stdout), redirect_stderr(stderr):
+            exit_code = style_profile.main(
+                ["--text", UNIFORM_TEXT, "--target", "sachlich", "--profile", str(missing)]
+            )
+
+        self.assertEqual(exit_code, 2)
+        self.assertEqual(stdout.getvalue(), "")
+        self.assertIn(f"--profile requires an existing file: {missing}", stderr.getvalue())
+
+    def test_cli_profile_and_no_profile_conflict(self):
+        stderr = io.StringIO()
+        with redirect_stderr(stderr), self.assertRaises(SystemExit) as raised:
+            style_profile.parse_args(
+                ["--text", UNIFORM_TEXT, "--profile", "profile.json", "--no-profile"]
+            )
+
+        self.assertEqual(raised.exception.code, 2)
+        self.assertIn("not allowed with argument --profile", stderr.getvalue())
 
 
 class StyleProfileContrastTests(unittest.TestCase):

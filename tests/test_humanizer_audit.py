@@ -257,6 +257,100 @@ class HumanizerAuditTests(unittest.TestCase):
             self.assertEqual(item["value"], style["metrics"][name])
             self.assertIsInstance(item["in_range"], bool)
 
+    def test_explicit_profile_overrides_style_corridor(self):
+        payload = {
+            "schema_version": 1,
+            "overrides": {"sachlich": {"particle_count": {"max": 99}}},
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "text.md"
+            profile_path = Path(tmp) / "profile.json"
+            path.write_text("Das ist ja schon wichtig.", encoding="utf-8")
+            profile_path.write_text(json.dumps(payload), encoding="utf-8")
+
+            exit_code, report = run_json(
+                ["--file", str(path), "--mode", "sachlich", "--profile", str(profile_path)]
+            )
+
+        self.assertEqual(exit_code, 0)
+        particle_delta = report["style_profile"]["delta"]["particle_count"]
+        self.assertEqual(particle_delta["range"], {"max": 99})
+        self.assertTrue(particle_delta["override"])
+
+    def test_explicit_missing_profile_is_usage_error(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "text.md"
+            missing = Path(tmp) / "missing-profile.json"
+            path.write_text("Das Team prüft die Datei.", encoding="utf-8")
+            stdout = io.StringIO()
+            stderr = io.StringIO()
+            with redirect_stdout(stdout), redirect_stderr(stderr):
+                exit_code = humanizer_audit.main(
+                    ["--file", str(path), "--profile", str(missing)]
+                )
+
+        self.assertEqual(exit_code, 2)
+        self.assertEqual(stdout.getvalue(), "")
+        self.assertIn(f"--profile requires an existing file: {missing}", stderr.getvalue())
+
+    def test_missing_default_profile_remains_silent(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            path = root / "text.md"
+            path.write_text("Das Team prüft die Datei.", encoding="utf-8")
+            stderr = io.StringIO()
+            previous_cwd = Path.cwd()
+            try:
+                os.chdir(root)
+                with redirect_stderr(stderr):
+                    exit_code, report = run_json(
+                        ["--file", str(path), "--mode", "sachlich"]
+                    )
+            finally:
+                os.chdir(previous_cwd)
+
+        self.assertEqual(exit_code, 0)
+        self.assertEqual(stderr.getvalue(), "")
+        self.assertNotIn("override", report["style_profile"]["delta"]["particle_count"])
+
+    def test_no_profile_ignores_default_profile(self):
+        payload = {
+            "schema_version": 1,
+            "overrides": {"sachlich": {"particle_count": {"max": 99}}},
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            path = root / "text.md"
+            profile_dir = root / ".humanizer"
+            profile_dir.mkdir()
+            path.write_text("Das ist ja schon wichtig.", encoding="utf-8")
+            (profile_dir / "profile.json").write_text(json.dumps(payload), encoding="utf-8")
+            previous_cwd = Path.cwd()
+            try:
+                os.chdir(root)
+                _, with_profile = run_json(["--file", str(path), "--mode", "sachlich"])
+                exit_code, without_profile = run_json(
+                    ["--file", str(path), "--mode", "sachlich", "--no-profile"]
+                )
+            finally:
+                os.chdir(previous_cwd)
+
+        self.assertEqual(exit_code, 0)
+        self.assertTrue(with_profile["style_profile"]["delta"]["particle_count"]["override"])
+        without_delta = without_profile["style_profile"]["delta"]["particle_count"]
+        self.assertEqual(without_delta["range"], {"max": 0})
+        self.assertNotIn("override", without_delta)
+
+    def test_profile_and_no_profile_conflict(self):
+        stderr = io.StringIO()
+        with redirect_stderr(stderr), self.assertRaises(SystemExit) as raised:
+            humanizer_audit.parse_args(
+                ["--file", "text.md", "--profile", "profile.json", "--no-profile"]
+            )
+
+        self.assertEqual(raised.exception.code, 2)
+        self.assertIn("not allowed with argument --profile", stderr.getvalue())
+
     def test_latest_picks_newest_markdown_file_recursively(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

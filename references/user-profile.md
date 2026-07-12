@@ -30,8 +30,8 @@ im Arbeitsverzeichnis. Die Datei ist optional; fehlt sie, gelten die Basis-Korri
 Overrides über die Basis-Korridore. Konfliktregel: **Override ersetzt den Korridor der
 Metrik komplett** (kein Tiefen-Merge von `min`/`max`). Überschriebene Korridore tragen im
 Delta-Report `"override": true`; das Markdown-Format zeigt sie als `profile_overrides=…`.
-`--no-profile` erzwingt die Basis-Korridore (für reproduzierbare Läufe); `style_profile.py
---profile <pfad>` liest einen abweichenden Ort.
+`--no-profile` erzwingt die Basis-Korridore (für reproduzierbare Läufe); `--profile <pfad>`
+liest bei beiden Skripten einen abweichenden Ort (explizit fehlender Pfad ist ein Fehler).
 
 ## Abschluss-Dialog
 
