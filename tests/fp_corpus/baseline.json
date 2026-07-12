@@ -16,7 +16,6 @@
     "abstraction_cluster": 1
   },
   "tests/fp_corpus/f_blockquote_sie_address.md": {
-    "low sentence-length variance": 1,
     "mixed_address": 1
   }
 }
