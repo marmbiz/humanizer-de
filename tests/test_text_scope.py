@@ -68,6 +68,16 @@ class TextScopeTests(unittest.TestCase):
             style_profile.profile(base, "base")["meta"]["word_count"],
         )
 
+    def test_typographic_scope_keeps_html_text_but_masks_tag_syntax(self):
+        text = '<p class="intro">Er sagte "Hallo".</p>'
+
+        document = text_scope.mask_text(text, scope=text_scope.DOCUMENT_PROSE)
+        typography = text_scope.mask_text(text, scope=text_scope.TYPOGRAPHIC_PROSE)
+
+        self.assertNotIn("Er sagte", document)
+        self.assertIn('Er sagte "Hallo".', typography)
+        self.assertNotIn('class="intro"', typography)
+
     def test_fenced_code_closes_only_with_its_opening_delimiter(self):
         base = "Sachliche Prosa bleibt bestehen."
         cases = (

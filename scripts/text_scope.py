@@ -8,7 +8,8 @@ import re
 
 DOCUMENT_PROSE = "document_prose"
 AUTHORED_PROSE = "authored_prose"
-SCOPES = {DOCUMENT_PROSE, AUTHORED_PROSE}
+TYPOGRAPHIC_PROSE = "typographic_prose"
+SCOPES = {DOCUMENT_PROSE, AUTHORED_PROSE, TYPOGRAPHIC_PROSE}
 
 BLOCKQUOTE_LINE_RE = re.compile(r"(?m)^[ \t]{0,3}>.*(?:\n|$)")
 TABLE_LINE_RE = re.compile(r"(?m)^[ \t]*\|.*\|[ \t]*(?:\n|$)")
@@ -19,15 +20,18 @@ FRONTMATTER_RE = re.compile(
 FENCE_OPEN_LINE_RE = re.compile(r"^[ \t]{0,3}(?P<fence>`{3,}|~{3,})(?P<info>.*)$")
 FENCE_CLOSE_LINE_RE = re.compile(r"^[ \t]{0,3}(?P<fence>`+|~+)[ \t]*$")
 
-STRUCTURAL_PATTERNS = (
+TECHNICAL_PATTERNS = (
     re.compile(r"`[^`\n]+`"),
     re.compile(r"https?://[^\s<>)]+"),
     re.compile(r"\b[\w.-]+@[\w.-]+\.[A-Za-z]{2,}\b"),
     re.compile(r"<!--[\s\S]*?-->"),
     TABLE_LINE_RE,
+    re.compile(r"<[A-Za-z/!][^<>\n]*>"),
+)
+
+STRUCTURAL_BLOCK_PATTERNS = (
     re.compile(r"(?m)^[ \t]*</?[A-Za-z][^>\n]*>[ \t]*(?:\n|$)"),
     re.compile(r"(?m)^[ \t]*<[A-Za-z][^>\n]*>.*</[A-Za-z][^>\n]*>[ \t]*(?:\n|$)"),
-    re.compile(r"<[A-Za-z/!][^<>\n]*>"),
 )
 
 
@@ -83,8 +87,11 @@ def protected_ranges(text: str, scope: str = DOCUMENT_PROSE) -> list[tuple[int, 
     if frontmatter:
         ranges.append(frontmatter.span())
     ranges.extend(fenced_code_ranges(text))
-    for pattern in STRUCTURAL_PATTERNS:
+    for pattern in TECHNICAL_PATTERNS:
         ranges.extend(match.span() for match in pattern.finditer(text))
+    if scope in {DOCUMENT_PROSE, AUTHORED_PROSE}:
+        for pattern in STRUCTURAL_BLOCK_PATTERNS:
+            ranges.extend(match.span() for match in pattern.finditer(text))
     if scope == AUTHORED_PROSE:
         ranges.extend(blockquote_ranges(text))
     return merge_ranges(ranges)

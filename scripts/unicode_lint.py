@@ -78,7 +78,7 @@ def codepoint(char: str) -> str:
 
 
 def protected_ranges(text: str) -> list[tuple[int, int]]:
-    ranges = text_scope.protected_ranges(text, scope=text_scope.DOCUMENT_PROSE)
+    ranges = text_scope.protected_ranges(text, scope=text_scope.TYPOGRAPHIC_PROSE)
     link_title_re = re.compile(r"\]\([^()\s]+[ \t]+(\"[^\"\n]*\")\)")
     ranges.extend(match.span(1) for match in link_title_re.finditer(text))
     return merge_ranges(ranges)
