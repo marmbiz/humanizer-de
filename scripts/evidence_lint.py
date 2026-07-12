@@ -304,6 +304,11 @@ def authority_profile(text: str) -> dict[str, set[str]]:
     }
 
 
+def authority_level(profile: dict[str, set[str]]) -> int:
+    """Return the assertion level; hedges are evaluated separately."""
+    return 1 if profile["strong"] else 0
+
+
 def direction_profile(text: str) -> set[str]:
     lowered = text.lower()
     result: set[str] = set()
@@ -373,7 +378,7 @@ def lint(before: str, after: str, precise: bool = False) -> list[dict]:
 
     before_auth = authority_profile(before)
     after_auth = authority_profile(after)
-    stronger = after_auth["strong"] - before_auth["strong"]
+    stronger = after_auth["strong"] if authority_level(after_auth) > authority_level(before_auth) else set()
     weaker_removed = before_auth["weak"] - after_auth["weak"]
     if stronger:
         add_finding(findings, "blocker", "authority_strengthened", "Authority marker was strengthened.", list(stronger))

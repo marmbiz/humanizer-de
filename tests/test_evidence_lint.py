@@ -215,6 +215,25 @@ class EvidenceLintTests(unittest.TestCase):
         self.assertIn("authority_strengthened", found)
         self.assertIn("hedge_removed", found)
 
+    def test_strong_synonym_change_does_not_raise_authority_level(self):
+        cases = (
+            ("Die Studie zeigt den Effekt.", "Die Studie belegt den Effekt."),
+            ("Das spricht klar dafür.", "Das spricht eindeutig dafür."),
+        )
+
+        for before, after in cases:
+            with self.subTest(before=before, after=after):
+                self.assertNotIn("authority_strengthened", kinds(evidence_lint.lint(before, after)))
+
+    def test_removed_hedge_remains_visible_during_strong_synonym_change(self):
+        before = "Die Studie zeigt möglicherweise den Effekt."
+        after = "Die Studie belegt den Effekt."
+
+        found = kinds(evidence_lint.lint(before, after))
+
+        self.assertNotIn("authority_strengthened", found)
+        self.assertIn("hedge_removed", found)
+
     def test_bare_klar_is_not_an_authority_marker(self):
         before = "Der Absatz ist kurz."
         after = "Der Absatz ist klar formuliert."
