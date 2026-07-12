@@ -75,6 +75,9 @@ Die Antwort sollte mit „Less machine. More voice.“ beginnen, den Modus nenne
 auffälligen Stellen bearbeiten. Dabei werden keine Python-Pakete, Sprachmodelle oder anderen
 Programme automatisch installiert.
 
+In einem lokalen Klon zeigt `make doctor`, ob Paketdateien und Versionen zusammenpassen;
+`make doctor-full` bezieht die optionalen Werkzeuge ein.
+
 ---
 
 <details>
@@ -354,7 +357,7 @@ Wiederkehrende Stilvorlieben überleben die Session in einer optionalen Datei `.
 }
 ```
 
-`humanizer_audit.py` und `style_profile.py` legen diese Overrides automatisch über die Basis-Korridore (Override ersetzt den Korridor der Metrik komplett); überschriebene Korridore sind im Delta-Report mit `"override": true` markiert. Mit `--no-profile` laufen beide Skripte reproduzierbar ohne Nutzerprofil; unbekannte Metriken oder kaputtes JSON erzeugen nur eine Warnung. Die Datei gehört in die `.gitignore` des jeweiligen Projekts, nicht ins Repository.
+`humanizer_audit.py` und `style_profile.py` legen diese Overrides automatisch über die Basis-Korridore (Override ersetzt den Korridor der Metrik komplett); überschriebene Korridore sind im Delta-Report mit `"override": true` markiert. Mit `--profile <datei.json>` wählen beide Skripte ein anderes Profil ausdrücklich aus; fehlt der angegebene Pfad, endet der Aufruf mit einem Fehler. Mit `--no-profile` laufen sie reproduzierbar ohne Nutzerprofil. Unbekannte Metriken oder kaputtes JSON erzeugen nur eine Warnung. Die Datei gehört in die `.gitignore` des jeweiligen Projekts, nicht ins Repository.
 
 Gefüllt wird das Profil auf Wunsch im Abschluss-Dialog: Wenn ein Lauf wiederholt in dieselbe Richtung korrigiert wurde, fragt der Skill am Ende einmal, ob er sich die Regel merken soll – bei Zustimmung schreibt er sie ins Profil und weist beim ersten Anlegen auf den `.gitignore`-Eintrag `.humanizer/` hin. Details: [`references/user-profile.md`](references/user-profile.md).
 
@@ -737,6 +740,7 @@ Einzelchecks:
 ```bash
 python3 scripts/doctor.py --json
 python3 scripts/humanizer_audit.py --file <text.md> --mode sachlich
+python3 scripts/humanizer_audit.py --file <text.md> --mode sachlich --profile <profil.json>
 python3 scripts/humanizer_audit.py --latest <dir> --mode sachlich --format md
 python3 scripts/unicode_lint.py --file <text.md>
 python3 scripts/rhythm_lint.py --file <text.md> --scope user_text --mode sachlich
@@ -801,6 +805,8 @@ Patch-Releases ohne öffentliche Relevanz dürfen im README-Changelog bleiben. M
 ---
 
 ## Was ist neu?
+
+- **5.7.0** - Installation und Audits genauer prüfen: `make doctor` und `make doctor-full` prüfen Paketdateien, Versions-Sync und optionale Werkzeuge, auch unter Windows. Eine Ein-Seiten-Checkliste bündelt die zehn häufigsten Tells; das Kurzaudit nennt zusätzlich eine tragende Qualitätsachse. Die Autoritäts-Tell-Prüfung erfasst stärkere Formulierungen, vergleicht das Autoritätsniveau mit der Evidenz und berücksichtigt Prosa in HTML-Elementen. Satzgrenzen nach abkürzungsähnlichen Wörtern werden korrekt erkannt. UTF-8-feste Tests, encoding-sichere CLI-JSON-Ausgabe und die volle Unit-Suite in der Windows-CI härten plattformübergreifende Läufe. Der FP-Korpus-Report akzeptiert relative und externe Korpuspfade und meldet leere oder fehlende Korpora sichtbar. `humanizer_audit.py` unterstützt `--profile`; ein ausdrücklich angegebener, fehlender Profilpfad ist ein Fehler. `make verify` führt die Szenario-Contracts nur noch einmal aus.
 
 - **5.6.0** - Portabler installieren, zuverlässiger prüfen: Das Codex-Plugin kommt ohne lokale Symlinks aus und lässt sich damit auch auf Windows sauber paketieren; eine neue Stufenübersicht erklärt Einsteigern, was Basis-Skill, Python, spaCy, Hunspell und LanguageTool jeweils beitragen. Das Evidence-Gate schützt jetzt auch Vorzeichen und Vergleichswörter, kompakte Zahlenbereiche, mehrteilige Versionen sowie mehrzeilige, Schweizer und typografisch fehlerhafte Zitate; Schema-1-Ledger werden weiterhin mit ihrer historischen Ankersyntax verglichen. QGIR prüft jeden Zwischenpass und den maßgeblichen Endtext gegen Originalanker, Register und Edit-Budget. Gemeinsames Markdown-Scoping hält Frontmatter, Tabellen, Blockquotes und korrekt gepaarte Code-Fences aus Stilmetriken heraus, während Emoji-ZWJ-Sequenzen erhalten bleiben und die Quote-Prüfung linear skaliert. CLI-Aufrufe, Profilkorridore, `--latest` und LanguageTool scheitern nun sichtbar statt falsch-grün; CI deckt Python 3.10, 3.12 und 3.14 sowie den vollständig gepinnten spaCy-Präzisionspfad ab. Lizenz und Herkunft der adaptierten Muster sind jetzt getrennt und vollständig dokumentiert.
 
