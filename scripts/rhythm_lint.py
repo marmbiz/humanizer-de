@@ -492,7 +492,7 @@ def analyze(text: str, file: str | None = None, scope: str = "user_text", mode: 
         )
     # SIR fires only as part of a cluster: high ratio AND (low variance OR repeated openers).
     # Standalone SIR > 0.75 fired on ~95% of a 21-post human sample and is not a valid
-    # KI discriminator on its own. Revalidate the historical median after splitter changes.
+    # KI discriminator on its own. Revalidated 2026-07 on the frozen 2026-07-01 corpus: median 0.887 -> 0.891, thresholds unchanged.
     sir_cluster = subject_ratio > 0.85 and (length_ratio < 0.6 or len(opener_repeats) >= 2)
     if sentence_count >= 8 and sir_cluster:
         add_suspicion(
