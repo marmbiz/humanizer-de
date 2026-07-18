@@ -5,10 +5,15 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "register_lint.py"
+STYLE_PROFILE_SCRIPT = ROOT / "scripts" / "style_profile.py"
 
 spec = importlib.util.spec_from_file_location("register_lint", SCRIPT)
 register_lint = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(register_lint)
+
+style_profile_spec = importlib.util.spec_from_file_location("style_profile", STYLE_PROFILE_SCRIPT)
+style_profile = importlib.util.module_from_spec(style_profile_spec)
+style_profile_spec.loader.exec_module(style_profile)
 
 
 def kinds(report):
@@ -36,6 +41,45 @@ class RegisterLintTests(unittest.TestCase):
     def test_formal_voice_intrusion_is_blocker(self):
         report = register_lint.lint("Die Studie zeigt den Effekt. Klingt spannend?", mode="formal")
         self.assertIn("formal_voice_intrusion", kinds(report))
+
+    def test_bmp_emojis_trigger_formal_voice_intrusion(self):
+        texts = (
+            "Die Prüfung wurde abgeschlossen. ✅",
+            "Die Auswertung enthält einen Warnhinweis. ⚠️",
+            "Die Freigabe wurde abgelehnt. ❌",
+            "Die Untersuchung betrifft die Herzgesundheit. ❤️",
+            "Das Ergebnis wurde bestätigt. ✓",
+            "Das Ergebnis wurde verworfen. ✗",
+        )
+
+        for text in texts:
+            with self.subTest(text=text):
+                self.assertGreaterEqual(register_lint.features(text)["emoji_count"], 1)
+                report = register_lint.lint(text, mode="formal")
+                self.assertFalse(report["ok"])
+                self.assertIn("formal_voice_intrusion", kinds(report))
+
+    def test_non_emoji_symbols_do_not_trigger_formal_voice_intrusion(self):
+        texts = (
+            "Der Inhalt ist urheberrechtlich geschützt ©.",
+            "Die Marke ist registriert ®.",
+            "Der Ablauf führt von links nach rechts →.",
+            "Die Befehlstaste wird mit ⌘ bezeichnet.",
+        )
+
+        for text in texts:
+            with self.subTest(text=text):
+                self.assertEqual(register_lint.features(text)["emoji_count"], 0)
+                report = register_lint.lint(text, mode="formal")
+                self.assertNotIn("formal_voice_intrusion", kinds(report))
+
+    def test_style_profile_emoji_count_matches_register_features(self):
+        text = "Die Freigabe wurde erteilt. ✅ Die Warnung bleibt bestehen. ⚠️"
+
+        register_count = register_lint.features(text)["emoji_count"]
+        profile_count = style_profile.profile(text, "emoji-parity")["metrics"]["emoji_count"]
+
+        self.assertEqual(profile_count, register_count)
 
     def test_particles_outside_locker_are_reported(self):
         report = register_lint.lint("Das ist ja schon wichtig.", mode="sachlich")

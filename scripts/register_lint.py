@@ -28,7 +28,7 @@ DU_FORMS = ("du", "dir", "dich", "dein", "deine", "deinen", "deinem", "deiner", 
 SIE_FORMS = ("Sie", "Ihnen", "Ihr", "Ihre", "Ihren", "Ihrem", "Ihrer", "Ihres")
 WIR_FORMS = ("wir", "uns", "unser", "unsere", "unseren", "unserem", "unserer", "unseres")
 SIE_FORMS_RE = re.compile(rf"\b(?:{'|'.join(re.escape(form) for form in SIE_FORMS)})\b")
-EMOJI_RE = re.compile("[\U0001F300-\U0001FAFF]")
+EMOJI_RE = re.compile("[\u2600-\u27BF\U0001F300-\U0001FAFF]")
 
 
 def load_syntax_lint():
