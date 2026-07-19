@@ -72,6 +72,8 @@ NEGATION_PARALLELISM_RES = (
     re.compile(r"\b[Kk]eine?[nmrs]?\b[^,.;:!?\n]{1,45},\s*[Kk]eine?[nmrs]?\b"),
     re.compile(r"\b[Nn]icht\b[^,.;:!?\n]{1,45},\s*[Nn]icht\b"),
 )
+BOLD_SPAN_RE = re.compile(r"\*\*[^*\n]{1,80}\*\*")
+BOLD_OVERDOSE_THRESHOLD = 5
 STELLT_DAR_RE = re.compile(
     r"\bstell(?:t|te|ten|en)\b(?:\s+\S+){0,6}?\s+dar\b"
     r"|\bdarstell(?:t|te|ten|en)\b"
@@ -233,6 +235,22 @@ def lint(text: str, mode: str = "sachlich", precise: bool = False) -> dict:
                 "kind": "negation_parallelism",
                 "severity": "warning",
                 "evidence": evidence,
+            }
+        )
+
+    bold_span_count = sum(
+        1
+        for match in BOLD_SPAN_RE.finditer(clean_text)
+        if (match.start() == 0 or clean_text[match.start() - 1] != "*")
+        and (match.end() == len(clean_text) or clean_text[match.end()] != "*")
+    )
+    if bold_span_count >= BOLD_OVERDOSE_THRESHOLD:
+        findings.append(
+            {
+                "pattern": 13,
+                "kind": "bold_overdose",
+                "severity": "warning",
+                "evidence": {"count": bold_span_count},
             }
         )
 

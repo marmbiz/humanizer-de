@@ -115,6 +115,18 @@ class GermanPatternLintTests(unittest.TestCase):
         text = "Im Beispiel steht: „Kein Server, keine Datenbank.“"
         self.assertNotIn("negation_parallelism", kinds(german_pattern_lint.lint(text)))
 
+    def test_bold_overdose(self):
+        text = "**Alpha:** eins. **Beta:** zwei. **Gamma:** drei. **Delta:** vier. **Epsilon:** fünf."
+        self.assertIn("bold_overdose", kinds(german_pattern_lint.lint(text)))
+
+    def test_bold_overdose_ignores_four_spans(self):
+        text = "**Alpha:** eins. **Beta:** zwei. **Gamma:** drei. **Delta:** vier."
+        self.assertNotIn("bold_overdose", kinds(german_pattern_lint.lint(text)))
+
+    def test_bold_overdose_ignores_single_span(self):
+        text = "Dieser Hinweis ist **wichtig** für die Auswertung."
+        self.assertNotIn("bold_overdose", kinds(german_pattern_lint.lint(text)))
+
 
 @unittest.skipUnless(SPACY_MODEL_AVAILABLE, "spaCy German model is not available")
 class GermanPatternLintPreciseTests(unittest.TestCase):
