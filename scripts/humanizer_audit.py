@@ -161,7 +161,7 @@ def preflight_assessment(
     stddev_ratio = document.get("stddev_mean_ratio", 0.0)
     subject_ratio = document.get("subject_initial_ratio", 0.0)
     opener_count = len(document.get("repeated_openers", []))
-    connector_count = document.get("connector_density", 0)
+    connector_count = max(document.get("connector_density_by_paragraph", []), default=0)
     buckets = document.get("sentence_length_buckets", {}).get("ratios", {})
     short_ratio = buckets.get("short_lt_12", 0.0)
     long_ratio = buckets.get("long_gt_28", 0.0)
@@ -182,7 +182,12 @@ def preflight_assessment(
     if not short_sample and document.get("paragraph_sentence_counts_uniform"):
         score += add_driver(drivers, "uniform_paragraphs", "paragraph sentence counts are near-uniform", 1)
     if not short_sample and connector_count > 1:
-        score += add_driver(drivers, "mechanical_connectors", f"connector_density={connector_count}", 1)
+        score += add_driver(
+            drivers,
+            "mechanical_connectors",
+            f"max_connector_density_per_paragraph={connector_count}",
+            1,
+        )
 
     weighted_kinds = {
         "ai_marker_cluster": 2,

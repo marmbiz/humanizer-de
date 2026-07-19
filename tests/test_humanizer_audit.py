@@ -161,6 +161,50 @@ class HumanizerAuditTests(unittest.TestCase):
             )
         )
 
+    def test_mechanical_connectors_ignore_two_spread_across_paragraphs(self):
+        text = (
+            "Das Team prüft heute den Entwurf. Außerdem klärt es offene Fragen. "
+            "Die Redaktion notiert jeden Befund. Am Abend endet die Sitzung.\n\n"
+            "Die Gruppe beginnt am nächsten Morgen. Zudem ordnet sie die Rückmeldungen. "
+            "Ein Kollege prüft alle Verweise. Danach geht die Fassung ins Lektorat."
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "text.md"
+            path.write_text(text, encoding="utf-8")
+
+            exit_code, report = run_json(["--file", str(path)])
+
+        self.assertEqual(exit_code, 0)
+        self.assertEqual(report["summary"]["rhythm"]["connector_density"], 2)
+        self.assertFalse(
+            any(
+                item["kind"] == "mechanical_connectors"
+                for item in report["summary"]["preflight"]["drivers"]
+            )
+        )
+
+    def test_mechanical_connectors_flag_two_in_same_paragraph(self):
+        text = (
+            "Das Team prüft heute den Entwurf. Außerdem klärt es offene Fragen. "
+            "Zudem ordnet es die Rückmeldungen. Die Redaktion notiert jeden Befund. "
+            "Am Abend endet die Sitzung. Die Gruppe beginnt am nächsten Morgen. "
+            "Ein Kollege prüft alle Verweise. Danach geht die Fassung ins Lektorat."
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "text.md"
+            path.write_text(text, encoding="utf-8")
+
+            exit_code, report = run_json(["--file", str(path)])
+
+        self.assertEqual(exit_code, 0)
+        driver = next(
+            item
+            for item in report["summary"]["preflight"]["drivers"]
+            if item["kind"] == "mechanical_connectors"
+        )
+        self.assertEqual(driver["detail"], "max_connector_density_per_paragraph=2")
+        self.assertEqual(driver["weight"], 1)
+
     def test_markdown_format_is_compact_and_grouped(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "text.md"
