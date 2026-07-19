@@ -1,6 +1,6 @@
 # Deutsch-spezifische Naturalness Rule Cards
 
-Diese Karten operationalisieren die spaeten Muster 54, 55, 58, 60, 63, 64 und 65 sowie registerbezogene Naturalness-Gates. Sie ersetzen keine Cluster-Regel.
+Diese Karten operationalisieren die Muster 7, 8, 13, 54, 55, 58, 60, 63, 64 und 65 sowie registerbezogene Naturalness-Gates. Sie ersetzen keine Cluster-Regel.
 
 ## Deixis und Sprecherposition
 
@@ -22,6 +22,27 @@ Diese Karten operationalisieren die spaeten Muster 54, 55, 58, 60, 63, 64 und 65
 - Schlechter Reflex: jedes abstrakte Substantiv in Umgangssprache übersetzen.
 - Sicherer Eingriff: nominalisierte Vorgänge in Verben zurückführen, wenn Akteur und Handlung im Text stehen: "die Analyse durchführen" -> "analysieren"; "die Nutzung von" -> "nutzen".
 - Nicht anfassen: feste Fachbegriffe, Rechtsbegriffe, wissenschaftliche Terminologie oder bewusst verdichtete Überschriften.
+
+## 7 Dichotomie-Zuspitzung
+
+- Signal: Sätze oder Absatzschlüsse als „nicht X, sondern Y“-Zuspitzung, gehäuft oder als wiederkehrende Pointe. Kein Detektor — bewusst nur Urteil, weil die Konstruktion normales Deutsch ist.
+- Schlechter Reflex: jede „nicht X, sondern Y“-Konstruktion umschreiben.
+- Sicherer Eingriff: nur die gehäufte oder pointierende Wiederholung auflösen und als normale Aussage führen; eine einzelne Gegenüberstellung stehen lassen.
+- Nicht anfassen: echte Sachkorrektur („nicht Montag, sondern Dienstag“), einzelner sachlicher Kontrast.
+
+## 8 Negative Parallelismen
+
+- Signal: gepaarte Verneinungsreihen „kein X, kein Y (, nur Z)“ oder „nicht X, nicht Y“ als Rhythmus- oder Pointenmittel. `german_pattern_lint` meldet `negation_parallelism`.
+- Schlechter Reflex: jede Verneinung tilgen.
+- Sicherer Eingriff: die parallele Reihung in eine normale Aussage auflösen; eine Verneinung genügt meist.
+- Nicht anfassen: einzelne Verneinung, „nicht X, sondern Y“-Sachkorrektur, belegte Aufzählung.
+
+## 13 Übermäßige Fettschrift
+
+- Signal: viele `**fett**`-Spannen, oft als Label-Lead-ins vor Listenpunkten. `german_pattern_lint` meldet `bold_overdose` ab fünf Spannen.
+- Schlechter Reflex: alle Fettungen entfernen.
+- Sicherer Eingriff: Fett auf wenige wirklich tragende Stellen reduzieren; Label-Lead-ins in Fließtext oder eine normale Liste auflösen.
+- Nicht anfassen: einzelne bewusste Hervorhebung; Fett in Code oder Tabellen (zählt der Linter ohnehin nicht).
 
 ## 54 Doppelpunkt-Titel
 
