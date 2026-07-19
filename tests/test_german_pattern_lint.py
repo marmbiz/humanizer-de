@@ -99,6 +99,22 @@ class GermanPatternLintTests(unittest.TestCase):
         text = "Das Ergebnis stammt aus dem Januar. Wir mussten die Haltung mehrmals ändern, ebenso die Malerei."
         self.assertNotIn("particles_outside_locker", kinds(german_pattern_lint.lint(text, mode="formal")))
 
+    def test_negation_parallelism(self):
+        text = "Kein Server, keine Datenbank. Kein Dashboard nötig."
+        self.assertIn("negation_parallelism", kinds(german_pattern_lint.lint(text)))
+
+    def test_negation_parallelism_ignores_factual_correction(self):
+        text = "Ich will nicht Tee, sondern Kaffee."
+        self.assertNotIn("negation_parallelism", kinds(german_pattern_lint.lint(text)))
+
+    def test_negation_parallelism_ignores_single_negation(self):
+        text = "Keine Sorge, das passt schon."
+        self.assertNotIn("negation_parallelism", kinds(german_pattern_lint.lint(text)))
+
+    def test_negation_parallelism_ignores_quoted_example(self):
+        text = "Im Beispiel steht: „Kein Server, keine Datenbank.“"
+        self.assertNotIn("negation_parallelism", kinds(german_pattern_lint.lint(text)))
+
 
 @unittest.skipUnless(SPACY_MODEL_AVAILABLE, "spaCy German model is not available")
 class GermanPatternLintPreciseTests(unittest.TestCase):

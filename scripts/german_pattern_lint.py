@@ -68,6 +68,10 @@ ABSTRACTA = (
     "prozesse",
 )
 PARTICLES = tuple(sorted(register_lint.MODAL_PARTICLES))
+NEGATION_PARALLELISM_RES = (
+    re.compile(r"\b[Kk]eine?[nmrs]?\b[^,.;:!?\n]{1,45},\s*[Kk]eine?[nmrs]?\b"),
+    re.compile(r"\b[Nn]icht\b[^,.;:!?\n]{1,45},\s*[Nn]icht\b"),
+)
 STELLT_DAR_RE = re.compile(
     r"\bstell(?:t|te|ten|en)\b(?:\s+\S+){0,6}?\s+dar\b"
     r"|\bdarstell(?:t|te|ten|en)\b"
@@ -210,6 +214,27 @@ def lint(text: str, mode: str = "sachlich", precise: bool = False) -> dict:
     ]
     if len(colon_headings) >= 2:
         findings.append({"pattern": 54, "kind": "colon_heading_cluster", "severity": "warning", "evidence": colon_headings})
+
+    mention_spans = mention_ranges(clean_text.lower())
+    negation_matches = sorted(
+        (
+            match.start(),
+            match.group().strip(),
+        )
+        for pattern in NEGATION_PARALLELISM_RES
+        for match in pattern.finditer(clean_text)
+        if not in_mention(match.start(), mention_spans)
+    )
+    evidence = [matched_text for _, matched_text in negation_matches]
+    if evidence:
+        findings.append(
+            {
+                "pattern": 8,
+                "kind": "negation_parallelism",
+                "severity": "warning",
+                "evidence": evidence,
+            }
+        )
 
     report = {"ok": not findings, "mode": mode, "findings": findings}
     if status is not None:
