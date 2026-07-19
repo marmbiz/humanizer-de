@@ -4,7 +4,7 @@ description: 'Deutscher Stil-Editor für Claude Code/Codex: Register messen, Rhy
 allowed-tools: [Read, Write, Edit, Grep, Glob, Bash]
 metadata:
   display_name: Humanizer (Deutsch)
-  version: 5.7.1
+  version: 5.7.2
   author: Martin Moeller
   maintainer_website: https://www.martin-moeller.biz
   based_on: 'Deutsche Wikipedia: Anzeichen für KI-generierte Inhalte, Erkennung KI-Einsatz, Schnelltest KI'
