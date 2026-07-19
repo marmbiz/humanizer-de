@@ -68,6 +68,35 @@ class SkillStructureTests(unittest.TestCase):
         self.assertEqual({path.name for path in skill_wrapper.iterdir()}, {"SKILL.md"})
         self.assertFalse(any(path.is_symlink() for path in skill_wrapper.rglob("*")))
 
+    def test_skill_frontmatter_survives_yaml_parsing(self):
+        # Regression for PR #1 (ueberBrot): an unquoted plain scalar containing
+        # ": " (e.g. description: Fokus: ...) is invalid YAML and made
+        # YAML-based skill installers report "No valid skills found".
+        frontmatters = {
+            path: read_utf8(path).split("---", 2)[1]
+            for path in (ROOT / "SKILL.md", ROOT / "skills" / "humanizer-de" / "SKILL.md")
+        }
+
+        plain_scalar = re.compile(r"(?m)^(\s*)([A-Za-z][\w-]*):[ \t]+(?!['\"|>#\[{])(.+\S)[ \t]*$")
+        for path, frontmatter in frontmatters.items():
+            for match in plain_scalar.finditer(frontmatter):
+                self.assertNotIn(
+                    ": ",
+                    match.group(3),
+                    f"{path.name}: unquoted frontmatter value of '{match.group(2)}' "
+                    "contains ': ' and breaks YAML parsing - quote the value",
+                )
+
+        try:
+            import yaml
+        except ImportError:
+            self.skipTest("PyYAML not installed; plain-scalar guard above covers the regression")
+        for path, frontmatter in frontmatters.items():
+            data = yaml.safe_load(frontmatter)
+            self.assertIsInstance(data, dict, path.name)
+            self.assertIsInstance(data.get("name"), str, path.name)
+            self.assertTrue(str(data.get("description", "")).strip(), path.name)
+
     def test_description_is_narrow(self):
         text = read_utf8(ROOT / "SKILL.md")
         match = re.search(r"^description:\s*(.+)$", text, re.MULTILINE)
