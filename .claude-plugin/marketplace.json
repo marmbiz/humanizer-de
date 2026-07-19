@@ -9,7 +9,7 @@
     {
       "name": "humanizer-de",
       "source": "./",
-      "version": "5.7.2",
+      "version": "5.8.0",
       "description": "Deutscher Stil-Editor für Claude Code/Codex: misst Register und Rhythmus, redigiert evidence-safe auf ein Zielprofil und auditiert/entfernt KI-Schreibmuster. German AI Text Humanizer / deutscher Humanizer Skill: KI-Schreibmuster in deutschen Texten auditieren und belegtreu überarbeiten. Supports Claude Code and Codex. 66 Muster in 10 Kategorien für deutschsprachige Texte. Kern: Evidence-Gate und messbares Register.",
       "author": {
         "name": "Martin Moeller",
