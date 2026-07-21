@@ -640,10 +640,12 @@ Häufige Indikatoren:
 - "gehe zu [[Suche Nr. 42]]"
 - Unvollständige Template-Tags
 - `{{cite book|author=` ohne Schließ-`}}`
-- `oaicite:0` oder `oaicite:ref` Tags (ChatGPT-Artefakt)
-- `contentReference[oaicite:0]` Spans
-- `turn0search0` Referenzen (Copilot-Artefakt)
-- `grok_card`-Spans (Grok-Artefakt)
+- **ChatGPT:** `oaicite:0`-/`oaicite:ref`-Tags, `contentReference[oaicite:0]`-Spans, `oai_citation`, `turn0search0`/`citeturn0search0` (von Private-Use-Area-Unicode umschlossen; Varianten: `citeturn0news0`, `citeturn1file0`, `iturn0image0`), `+1`-Suffixe an Quellennamen (`Wikipedia+1`, `ISO+3`), JSON-Anhang `({"attribution":{"attributableIndex":"X-Y"}})`
+- **Gemini:** `[cite: 1]` bzw. `[cite: 3, 12, 13]`, `[span_1][start_span]`/`[span_1][end_span]`
+- **Grok:** `grok_card`-Spans (`<grok-card data-id=...>`), `grok_render_citation_card_json`
+- **DeepSeek:** Linsenklammern mit Dagger, z. B. `【85†L261-269】`
+- **Perplexity:** `[attached_file:1]`, `[web:1]`, `ppl-ai-file-upload` in Zitat-URLs
+- **Anbieter unklar:** `:::writing{variant="document" id="12345"}`
 - Markdown-Formatierung in Word- oder PDF-Dokumenten
 
 **Warum LLMs das tun:** Wikitext-Syntax wurde nicht korrekt generiert. KI-Tools fügen interne Referenz-Tags ein, die im Export nicht bereinigt werden.
