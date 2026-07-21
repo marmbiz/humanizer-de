@@ -643,6 +643,7 @@ Häufige Indikatoren:
 - `oaicite:0` oder `oaicite:ref` Tags (ChatGPT-Artefakt)
 - `contentReference[oaicite:0]` Spans
 - `turn0search0` Referenzen (Copilot-Artefakt)
+- `grok_card`-Spans (Grok-Artefakt)
 - Markdown-Formatierung in Word- oder PDF-Dokumenten
 
 **Warum LLMs das tun:** Wikitext-Syntax wurde nicht korrekt generiert. KI-Tools fügen interne Referenz-Tags ein, die im Export nicht bereinigt werden.
@@ -1058,6 +1059,9 @@ Häufige Indikatoren:
 **Warum LLMs das tun:** Anweisungen wie "schreib menschlich/persönlich" werden mit erfundener Ich-Evidenz beantwortet, weil persönliche Texte im Training Anekdoten enthalten.
 **Abgrenzung:** Muster 18 = Chatbot-Höflichkeit. Muster 53 = Spekulation über Dritte. Muster 59 = erfundene Erfahrung des angeblichen Autors selbst.
 **Kein Problem, wenn:** der Autor real existiert und die Erfahrung plausibel seine eigene ist (Schreibprobe, Autorenkontext, explizite Nutzerangabe) – dann nicht anfassen.
+**Zwei Prüffragen:**
+- Portabilitäts-Test: Lässt sich die Anekdote unverändert in einen beliebigen anderen Artikel verpflanzen? Echte Erfahrung ist an Ort, Zeit und Thema gebunden ("Der Sommer, in dem ich neunzehn war..."); eine überall einsetzbare Anekdote ("Viele kennen das Gefühl...") trägt nichts.
+- Einsatz-Test: Riskiert der Autor irgendwo etwas – eine überprüfbare Angabe, ein Eingeständnis, eine angreifbare Position? Ein Text, der nirgends falsch liegen kann, hat keinen Träger.
 **Lösung:** Anekdote entfernen oder durch belegbare Beobachtung ersetzen. Beim eigenen Rewriting im Locker-Modus: Stimme nur aus der Schreibprobe oder explizit gelieferten Fakten speisen, nie generieren.
 ❌ Schlecht: "Ehrlich gesagt: Als ich letzte Woche ein Kundenprojekt migrierte, ist mir genau das passiert. Keine Sorge, die Lösung ist einfach."
 ✓ Besser: "Der Fehler tritt typischerweise bei Migrationen auf. Die Lösung: ..."
