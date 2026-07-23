@@ -127,6 +127,25 @@ class GermanPatternLintTests(unittest.TestCase):
         text = "Dieser Hinweis ist **wichtig** für die Auswertung."
         self.assertNotIn("bold_overdose", kinds(german_pattern_lint.lint(text)))
 
+    def test_address_validation_candidate_is_info_advisory(self):
+        report = german_pattern_lint.lint("Du bist nicht zu sensibel.")
+        finding = next(
+            item for item in report["findings"] if item["kind"] == "address_validation_candidate"
+        )
+
+        self.assertEqual(finding["pattern"], 72)
+        self.assertEqual(finding["severity"], "info")
+        self.assertTrue(finding["advisory"])
+        self.assertEqual(
+            finding["message"],
+            "Kandidat für unbelegte Adressaten-Validierung: Kontext prüfen "
+            "(Beratungsauftrag? Zitat? Sachklärung?)",
+        )
+
+    def test_address_validation_candidate_ignores_quoted_use_mention(self):
+        text = 'Der Satz „Du bist nicht zu sensibel“ ist hier nur ein Beispiel.'
+        self.assertNotIn("address_validation_candidate", kinds(german_pattern_lint.lint(text)))
+
 
 @unittest.skipUnless(SPACY_MODEL_AVAILABLE, "spaCy German model is not available")
 class GermanPatternLintPreciseTests(unittest.TestCase):

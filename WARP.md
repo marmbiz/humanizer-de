@@ -1,4 +1,4 @@
-# WARP - Humanizer (Deutsch) Entwicklerleitfaden (v5.9.0)
+# WARP - Humanizer (Deutsch) Entwicklerleitfaden (v5.10.0)
 
 WARP = Workflow, Architecture, References, Principles.
 
@@ -10,7 +10,7 @@ WARP = Workflow, Architecture, References, Principles.
 humanizer-de/
 ├── SKILL.md                         # SOP, Trigger, Ablauf, Toolroutine
 ├── references/
-│   ├── patterns.md                  # vollständiger 69-Musterkatalog
+│   ├── patterns.md                  # vollständiger 72-Musterkatalog
 │   ├── decision-tables.md           # Overlap- und Moduslogik
 │   ├── qgir.md                      # Quality-Guided Iterative Revision
 │   ├── evidence-ledger.md           # Claim-Delta und Faktenanker
@@ -124,7 +124,7 @@ git diff --check
 Zusätzlich manuell prüfen:
 
 - `SKILL.md`, `README.md`, `WARP.md`, `references/patterns.md`, `references/decision-tables.md`, `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `.codex-plugin/plugin.json`, `.agents/plugins/marketplace.json` und `agents/openai.yaml` bleiben synchron.
-- `references/patterns.md` enthält exakt die Muster 1-69 ohne Lücken.
+- `references/patterns.md` enthält exakt die Muster 1-72 ohne Lücken.
 - `SKILL.md` verlinkt `references/patterns.md`, `references/decision-tables.md`, `references/qgir.md`, `references/evidence-ledger.md`, `references/register-profiles.md`, `references/de-naturalness.md`, `scripts/unicode_lint.py` und `scripts/rhythm_lint.py`.
 - Die installierte Kopie unter `~/.agents/skills/humanizer-de` oder dem lokalen Legacy-Pfad `~/.codex/skills/humanizer-de` wird erst nach grünen Tests synchronisiert.
 

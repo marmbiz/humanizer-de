@@ -83,6 +83,22 @@ class HumanizerAuditTests(unittest.TestCase):
         self.assertEqual(sum(report["summary"]["counts"].values()), 0)
         self.assertEqual(report["summary"]["preflight"]["risk"], "insufficient_text")
 
+    def test_address_validation_candidate_stays_info_advisory(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "candidate.md"
+            path.write_text("Du bist nicht zu sensibel.", encoding="utf-8")
+
+            exit_code, report = run_json(["--file", str(path)])
+
+        finding = next(
+            item for item in report["findings"] if item["kind"] == "address_validation_candidate"
+        )
+        self.assertEqual(exit_code, 0)
+        self.assertEqual(finding["pattern"], 72)
+        self.assertEqual(finding["severity"], "info")
+        self.assertTrue(finding["advisory"])
+        self.assertIn("Kandidat für unbelegte Adressaten-Validierung", finding["summary"])
+
     def test_without_precise_keeps_default_report_shape(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "clean.md"

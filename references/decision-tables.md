@@ -1,6 +1,6 @@
 # Humanizer-de Decision Tables
 
-Nutze diese Tabellen vor `references/patterns.md`, wenn Befunde ueberlappen. Sie sind die verbindliche Kurzlogik fuer v5.9.0.
+Nutze diese Tabellen vor `references/patterns.md`, wenn Befunde ueberlappen. Sie sind die verbindliche Kurzlogik fuer v5.10.0.
 
 ## QGIR: Moduswahl
 
@@ -65,6 +65,10 @@ Nutze diese Tabellen vor `references/patterns.md`, wenn Befunde ueberlappen. Sie
 | Relativsatz traegt echte, im Hauptsatz nicht enthaltene Information | nicht 66 | Stehen lassen oder als eigenstaendigen Satz formulieren |
 | Gekennzeichnetes Zitat oder belegte konkrete Aussage | nicht 56 | Stehen lassen |
 
+Der Slot-Test ist eine Diagnose, keine Muster-Zuordnung: Wirkt ein Satz wie eine Schablone, die
+Substantive themenfremd ersetzen. Funktioniert der Satz unverändert, anschließend Muster 2, 12,
+56, 58 oder 64 prüfen.
+
 ## Kontrastformeln: 7 / 8 / 16 / 56
 
 | Situation | Muster | Aktion |
@@ -87,6 +91,16 @@ Nutze diese Tabellen vor `references/patterns.md`, wenn Befunde ueberlappen. Sie
 | „Kurz gesagt" fasst im Absatz nur Vorheriges zusammen | 5, nicht 33 | Zusammenfassung streichen oder mit neuer Substanz verbinden |
 | Substanzlose Standardsektion, Doppelpunkt-Titel oder Inline-Label-Liste | 44 / 54 / 57 | Nach dem jeweiligen Strukturmechanismus behandeln |
 
+## Retroaktive Scheinnuance: 32 / 33 / 41 / 66 / 71
+
+| Situation | Muster | Aktion |
+|---|---:|---|
+| Nachsatz kündigt Präzision an, bringt aber keine neue Bedingung, Teilmenge, Ursache, Kennzahl, Ausnahme oder Gegenposition | 71 | Neuigkeits- und Löschtest anwenden; echte Präzision liefern oder Nachsatz streichen |
+| Autoritätsfloskel rahmt eine angeblich tiefere Sicht („In Wirklichkeit ...") | 32, nicht 71 | Rahmung streichen und Aussage direkt stellen |
+| Ankündigung beschreibt den kommenden Aufbau | 33, nicht 71 | Meta-Ankündigung streichen; Muster 71 blickt auf eine bereits gemachte Aussage zurück |
+| Sicherheitsgrad ist falsch kalibriert | 41 | Anspruch verengen oder Unsicherheit konkret benennen; Muster 71 kann korrekt kalibriert und trotzdem leer sein |
+| Funktionsleerer Relativsatz-Nachklapp hängt im selben Satz | 66, nicht 71 | Nachklapp per Löschtest entfernen |
+
 ## Syntaktische Ankündigung, Komparativ-Rahmung und Locker-Architektur: 67 / 68 / 69
 
 | Situation | Muster | Aktion |
@@ -108,6 +122,24 @@ Nutze diese Tabellen vor `references/patterns.md`, wenn Befunde ueberlappen. Sie
 |---|---:|---|
 | Anekdote/Ich-Erfahrung ohne Traeger im Autorenkontext | 59 | Entfernen oder durch belegbare Beobachtung ersetzen |
 | Erfahrung plausibel vom realen Autor (Schreibprobe/Nutzerangabe) | nicht 59 | Stehen lassen |
+
+## Zuschreibung und Erleben: 18 / 53 / 59 / 72
+
+| Situation | Muster | Aktion |
+|---|---:|---|
+| Austauschbare Höflichkeits- oder Hilfsgeste | 18 | Floskel entfernen und beim Inhalt beginnen |
+| Unbelegte Spekulation über Dritte | 53 | Spekulation entfernen oder Lücke markieren |
+| Erfundene Erfahrung des angeblichen Autors | 59 | Persona-Lock anwenden; Erfahrung entfernen oder belegen |
+| Unbelegte Diagnose über Gefühle, Selbstbild oder Vorgeschichte des Adressaten | 72 | Diagnose streichen und belegbaren Sachkern nennen |
+| Adressat hat das Gefühl selbst genannt oder Beratung/Coaching ist belegt der Auftrag | nicht 72 | Ohne Verstärkung aufgreifen; Kontext erhalten |
+
+## Akteursrolle: 39 / 70
+
+| Situation | Muster | Aktion |
+|---|---:|---|
+| Passiv oder fehlendes Subjekt verschleiert den Akteur | 39 | Belegten Akteur einsetzen; im Formal-Modus Fachkonvention beachten |
+| Aktiver Satz besetzt eine Entscheidungs- oder Verantwortungsrolle mit einem ungeeigneten Abstraktum | 70 | Belegten Akteur einsetzen und Abstraktum als Grundlage, Anlass oder Maßstab führen |
+| Fachübliche Metonymie oder technisches Funktionssubjekt („Die Studie zeigt", „Das System speichert") | kein Befund | Stehen lassen |
 
 ## Format und Markdown: 13 / 14 / 16 / 23 / 57
 

@@ -5,8 +5,8 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-EXPECTED_VERSION = "5.9.0"
-EXPECTED_PATTERN_COUNT = 69
+EXPECTED_VERSION = "5.10.0"
+EXPECTED_PATTERN_COUNT = 72
 
 
 def read_utf8(path: Path) -> str:
@@ -179,7 +179,7 @@ class SkillStructureTests(unittest.TestCase):
         self.assertIn("deterministic linters", coverage)
         self.assertIn("Scenario contracts", coverage)
         self.assertIn("Disallowed Coverage Claims", coverage)
-        self.assertIn("All 69 patterns are deterministically detected", coverage)
+        self.assertIn("All 72 patterns are deterministically detected", coverage)
         self.assertIn("Unsourced Idea Intake", research)
         self.assertIn("Maximize entropy", research)
 
@@ -289,7 +289,7 @@ class SkillStructureTests(unittest.TestCase):
             "## Fakten, Grenzen und Datenschutz",
             "## Wie der Skill arbeitet",
             "## Optionale Werkzeuge",
-            "## 69 Muster in 10 Kategorien",
+            "## 72 Muster in 10 Kategorien",
             "## Für AI-Assistenten",
             "## Entwicklung und Verifikation",
             "## Was ist neu?",

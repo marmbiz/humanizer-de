@@ -4,7 +4,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-EXPECTED_PATTERN_COUNT = 69
+EXPECTED_PATTERN_COUNT = 72
 PATTERN_HEADING_RE = re.compile(r"^#### (\d{1,2})\. (.+?) \[(HIGH|MEDIUM|LOW)\]$")
 README_ROW_RE = re.compile(r"^\| (\d+) \| (.+?) \| (HIGH|MEDIUM|LOW) \|$")
 CATEGORY_BLOCK_RE = re.compile(
@@ -15,7 +15,7 @@ CATEGORY_BLOCK_RE = re.compile(
 
 def readme_catalog_section():
     text = (ROOT / "README.md").read_text(encoding="utf-8")
-    section = text.split("## 69 Muster in 10 Kategorien", 1)[1]
+    section = text.split("## 72 Muster in 10 Kategorien", 1)[1]
     return re.split(r"\n## ", section, maxsplit=1)[0]
 
 
@@ -56,7 +56,7 @@ class ReadmePatternsSyncTests(unittest.TestCase):
         self.assertEqual(
             sorted(rows),
             list(range(1, EXPECTED_PATTERN_COUNT + 1)),
-            "README-Katalog enthält nicht genau die Muster 1..69",
+            "README-Katalog enthält nicht genau die Muster 1..72",
         )
         for pattern_id in range(1, EXPECTED_PATTERN_COUNT + 1):
             readme_title, readme_severity = rows[pattern_id]

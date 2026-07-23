@@ -80,6 +80,20 @@ STELLT_DAR_RE = re.compile(
     r"|\bdargestellt\b"
     r"|\bdarzustellen\b"
 )
+ADDRESS_VALIDATION_RE = re.compile(
+    r"\b(?:du\s+bist\s+nicht\s+(?:zu\s+|einfach\s+nur\s+)?"
+    r"(?:sensibel|empfindlich|emotional|bedürftig|anspruchsvoll|schwierig|schwach|faul|anstrengend)"
+    r"|du\s+(?:überreagierst\s+nicht|reagierst\s+nicht\s+über|fühlst\s+nicht\s+falsch)"
+    r"|deine\s+gefühle\s+sind\s+(?:völlig\s+)?(?:berechtigt|valide|verständlich)"
+    r"|deine\s+reaktion(?:en)?\s+(?:ist|sind)\s+(?:völlig\s+)?(?:berechtigt|valide|verständlich)"
+    r"|du\s+wurdest\s+(?:nur\s+)?(?:zu\s+lange\s+)?"
+    r"(?:nicht\s+ernst\s+genommen|kleingehalten|emotional\s+vernachlässigt))\b",
+    re.IGNORECASE,
+)
+ADDRESS_VALIDATION_MESSAGE = (
+    "Kandidat für unbelegte Adressaten-Validierung: Kontext prüfen "
+    "(Beratungsauftrag? Zitat? Sachklärung?)"
+)
 
 
 def load_syntax_lint():
@@ -251,6 +265,23 @@ def lint(text: str, mode: str = "sachlich", precise: bool = False) -> dict:
                 "kind": "bold_overdose",
                 "severity": "warning",
                 "evidence": {"count": bold_span_count},
+            }
+        )
+
+    address_validation_matches = [
+        match.group().strip()
+        for match in ADDRESS_VALIDATION_RE.finditer(clean_text)
+        if not in_mention(match.start(), mention_spans)
+    ]
+    if address_validation_matches:
+        findings.append(
+            {
+                "pattern": 72,
+                "kind": "address_validation_candidate",
+                "severity": "info",
+                "advisory": True,
+                "message": ADDRESS_VALIDATION_MESSAGE,
+                "evidence": address_validation_matches,
             }
         )
 

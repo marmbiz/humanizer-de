@@ -1,7 +1,7 @@
 # Die 10 häufigsten deutschen KI-Tells
 
 Kompakte Checkliste zum schnellen Gegenlesen, auch ohne installierten Skill nutzbar. Der
-vollständige Katalog mit 69 Mustern, Beispielen und Abgrenzungen steht in
+vollständige Katalog mit 72 Mustern, Beispielen und Abgrenzungen steht in
 [references/patterns.md](../references/patterns.md).
 
 **Grundregel: Cluster zählen, nicht Einzelsignale.** Ein einzelner Gedankenstrich, ein

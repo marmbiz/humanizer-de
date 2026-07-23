@@ -1,6 +1,6 @@
 # Humanizer-de Pattern Catalog
 
-Vollstaendiger Musterkatalog fuer Humanizer (Deutsch) v5.9.0. Nur bei konkreter Musterdiagnose, Audit oder Grenzfaellen laden.
+Vollstaendiger Musterkatalog fuer Humanizer (Deutsch) v5.10.0. Nur bei konkreter Musterdiagnose, Audit oder Grenzfaellen laden.
 
 ## Kurzreferenz
 
@@ -29,7 +29,7 @@ Vollstaendiger Musterkatalog fuer Humanizer (Deutsch) v5.9.0. Nur bei konkreter 
 | 21 | Platzhaltertext | HIGH | "[Name einfügen]", "[Datum hier]", "TODO:" |
 | 22 | Links zu Suchanfragen statt Referenzen | HIGH | "https://www.google.com/search?q=..." |
 | 23 | Markdown statt Wikitext | MEDIUM | `# Überschrift` statt `== Überschrift ==` |
-| 24 | Fehlerhafter Wikitext und KI-Tool-Artefakte | MEDIUM | Unvollständige Template-Tags, oaicite, contentReference |
+| 24 | Fehlerhafter Wikitext und KI-Tool-/Prozessartefakte | MEDIUM | Unvollständige Template-Tags, oaicite, contentReference |
 | 25 | Defekte Links | MEDIUM | 404-Fehler, Links zu nicht-existenten Artikeln |
 | 26 | Zitatfabrikation und unverifizierbare Referenzen | HIGH | Erfundene Quellen, ungültige DOIs/ISBNs, halluzinierte Publikationen, echte Quelle belegt nichts |
 | 27 | Inkorrekte Referenzen-Format | MEDIUM | Englisches Datumsformat, falsche Reihenfolge |
@@ -75,6 +75,9 @@ Vollstaendiger Musterkatalog fuer Humanizer (Deutsch) v5.9.0. Nur bei konkreter 
 | 67 | Ankündigungs-Spaltsatz | MEDIUM | "Was mich überrascht hat, war ...", "Was dabei auffiel: ..."; Häufung vor Pointen |
 | 68 | Komparativ-Rahmung | MEDIUM | "weniger X als vielmehr Y", "eher X als Y", "mehr X als Y" als Beschreibungsersatz |
 | 69 | Struktureller Register-Kollaps | MEDIUM | lockere Marker über durchgeformter Schriftsprache; vollständige Satz- und Absatzarchitektur im Nähe-Register |
+| 70 | Verantwortungsverschleierung durch falsche Agency | MEDIUM | "Die Strategie entschied", "Die Kennzahl erzwang": abstraktes Subjekt übernimmt zurechenbare Handlung |
+| 71 | Retroaktive Scheinnuance | MEDIUM | "Genauer gesagt ...", "Fairerweise ...": angekündigte Präzisierung wiederholt die Aussage nur weicher |
+| 72 | Pseudo-therapeutische Validierung | HIGH | "Du bist nicht zu sensibel", "Deine Gefühle sind valide": unbelegte Diagnose über den Adressaten |
 
 ## Statistische Detektoren (GPTZero u. a.)
 
@@ -95,7 +98,7 @@ Die menschenlesbaren Labels dieser Tools ("Robotic Formality", "Mechanical Preci
 
 Der einzige substanzwahrende Hebel gegen niedrige Burstiness ist Muster 55 (Satzrhythmus spreizen). Niedrige Perplexity bei korrekter Fachsprache ist nicht "reparierbar", ohne den Text zu verschlechtern – und das ist nicht Aufgabe dieses Skills. Siehe SKILL.md-Leitplanke zu statistischen Detektoren.
 
-## Die 69 Muster
+## Die 72 Muster
 
 ### Sprache und Tonfall (19 Muster)
 
@@ -328,13 +331,14 @@ Keine Quelle erfinden. Entweder: echte Quelle einfügen wenn bekannt, Zuschreibu
 
 #### 12. Falsche Erweiterung ("von... bis") [MEDIUM]
 <!-- haltbarkeit: kern -->
-**Problem:** "Von X bis Y" figurativ verwendet, wo es nicht passt.
+**Problem:** "Von X bis Y" figurativ verwendet, wo es nicht passt. Die "Ob du X oder Y bist"-Alternative ist dieselbe falsche Spannweite in Anrede-Form; Test: Lassen sich X und Y themenfremd austauschen, ohne dass die Satzlogik bricht?
 
 Häufige Indikatoren:
 - "von traditionellen bis modernen"
 - "von klein bis groß"
 - "von arm bis reich"
 - Übertragene Verwendung von Bereichsbeschreibungen
+- "Ob du X oder Y bist ..." mit themenfremd austauschbaren Alternativen als Totalabdeckung
 
 **Warum LLMs das tun:** Stylistische Marker aus Fachtext-Training.
 
@@ -694,7 +698,7 @@ Häufige Indikatoren:
 
 **Lösung:** Konvertieren zu Wikitext.
 
-#### 24. Fehlerhafter Wikitext und KI-Tool-Artefakte [MEDIUM]
+#### 24. Fehlerhafter Wikitext und KI-Tool-/Prozessartefakte [MEDIUM]
 <!-- haltbarkeit: jahrgang stand=2026-07 -->
 **Problem:** Wikitext-Syntax ist ungültig oder unvollständig. Zusätzlich hinterlassen KI-Tools technische Artefakte im Text.
 
@@ -709,6 +713,9 @@ Häufige Indikatoren:
 - **Perplexity:** `[attached_file:1]`, `[web:1]`, `ppl-ai-file-upload` in Zitat-URLs
 - **Anbieter unklar:** `:::writing{variant="document" id="12345"}`
 - Markdown-Formatierung in Word- oder PDF-Dokumenten
+- Publizierte interne Reasoning-Spur, z. B. "Ich muss das Schritt für Schritt durchdenken", "Zuerst prüfe ich, was der Nutzer wirklich will": interner Arbeitsmonolog in der veröffentlichten Antwort
+
+**Abgrenzung:** Selbstgerichtete Deliberation über Prompt, Nutzerabsicht oder Antwortstrategie = Muster 24. Lesergerichtete Erklärung eines fachlichen Prüfschritts = kein Befund. Ankündigung der Textstruktur = Muster 33. Rückblickender Editierbericht = Muster 31.
 
 **Warum LLMs das tun:** Wikitext-Syntax wurde nicht korrekt generiert. KI-Tools fügen interne Referenz-Tags ein, die im Export nicht bereinigt werden.
 
@@ -816,7 +823,7 @@ Häufige Indikatoren:
 
 **Lösung:** Entfernen oder in neutrale Form umwandeln ("Absatz über X hinzugefügt").
 
-### Rhetorik und Struktur (12 Muster)
+### Rhetorik und Struktur (13 Muster)
 
 #### 32. Persuasive Autoritäts-Floskeln [MEDIUM]
 <!-- haltbarkeit: kern -->
@@ -1037,7 +1044,36 @@ Häufige Indikatoren:
 
 ✓ Besser: "Die Ladezeit hat mich beim Test überrascht. Den Ausschlag gab am Ende der Support."
 
-### Argumentation und Evidenz (5 Muster)
+#### 71. Retroaktive Scheinnuance [MEDIUM]
+<!-- haltbarkeit: kern -->
+
+**Kategorie:** Rhetorik und Struktur
+
+**Problem:** Auf eine pauschale Aussage folgt eine angekündigte Präzisierung ("Genauer gesagt", "Fairerweise muss man sagen", "Eigentlich ist es komplizierter"), die dieselbe Aussage nur weicher wiederholt. Es kommt weder Bedingung noch Ausnahme, weder Mechanismus noch Zahl. Der Text simuliert Differenziertheit.
+
+Häufige Indikatoren:
+- "Genauer gesagt", "präziser gesagt" ohne anschließende Präzision
+- "Fairerweise muss man sagen ..." plus Wiederholung in Hedge-Form
+- "Eigentlich ist es komplizierter": danach bleibt es genau so einfach
+- Nachsatz aus vager Lexik: "in vielerlei Hinsicht", "irgendwie", "nicht ganz"
+
+**Warum LLMs das tun:** Differenzierung wird in Trainingsdaten belohnt; die Marker der Differenzierung sind billiger zu erzeugen als ihr Inhalt. Das Modell liefert die Geste und spart sich die Substanz.
+
+**Prüfung (Neuigkeits- und Löschtest):** Nennt der Nachsatz mindestens eine neue Bedingung, Teilmenge, Ursache, Kennzahl, Ausnahme oder Gegenposition? Ändert sich ohne ihn Reichweite, Polarität oder Sicherheitsgrad der Aussage? Zweimal nein: Muster 71.
+
+**Abgrenzung:** Muster 33 = Ankündigung des kommenden Aufbaus; Muster 71 blickt auf eine gemachte Aussage zurück. Muster 41 = falsch kalibrierte Sicherheit; Muster 71 kann korrekt kalibriert sein und trotzdem nichts Neues sagen. Muster 66 = angehängter Relativsatz-Nachklapp im selben Satz. Muster 32 = Autoritätsfloskel ("In Wirklichkeit ...") als Rahmung einer angeblich tieferen Sicht.
+
+**Kein Problem, wenn:** Die Wendung leitet echte Präzision ein: "Genauer gesagt bestanden 12 von 15 Prüffällen."
+
+**Lösung:** Entweder die Präzision liefern (Zahl, Bedingung, Ausnahme, Mechanismus) oder den Nachsatz streichen und die erste Aussage ehrlich kalibrieren.
+
+**Beispiel:**
+
+❌ Schlecht: "Der Test war erfolgreich. Genauer gesagt war er in vielerlei Hinsicht recht erfolgreich, auch wenn nicht alles perfekt lief."
+
+✓ Besser: "12 von 15 Prüffällen bestanden; drei scheiterten am Import großer CSV-Dateien."
+
+### Argumentation und Evidenz (7 Muster)
 
 #### 39. Passivkonstruktionen und subjektlose Fragmente [MEDIUM]
 <!-- haltbarkeit: kern -->
@@ -1055,7 +1091,7 @@ Häufige Indikatoren:
 
 **Formal-Modus-Ausnahme:** In wissenschaftlichen Texten sind Passivkonstruktionen Konvention ("wurde analysiert", "es konnte gezeigt werden"). In diesem Modus nur bei klarer Übernutzung eingreifen.
 
-**Abgrenzung – Unpersönlicher Akteur:** Abstrakte Subjekte mit Aktionsverb ("Die Analyse zeigt", "Das Ergebnis belegt", "Die Studie bestätigt") sind kein Passiv und kein subjektloses Fragment – der Akteur ist das abstrakte Nomen. Muster 39 gilt nur bei echtem Passiv oder fehlendem Subjekt; abstrakte Akteure sind unkritisch, solange sie nicht mit Muster 66 (Fake-Analyse-Anhang) kombiniert werden.
+**Abgrenzung – Unpersönlicher Akteur:** Abstrakte Subjekte sind bei fachüblicher Metonymie oder echter Funktion unkritisch ("Die Studie zeigt", "Das System speichert"). Übernimmt das Abstraktum dagegen eine Entscheidungs- oder Verantwortungshandlung ("Die Strategie entschied"), greift Muster 70. Muster 39 gilt nur bei echtem Passiv oder fehlendem Subjekt; die Kombination mit Muster 66 (Fake-Analyse-Anhang) bleibt gesondert zu prüfen.
 
 **Beispiel:**
 
@@ -1158,6 +1194,69 @@ Häufige Indikatoren:
 **Lösung:** Anekdote entfernen oder durch belegbare Beobachtung ersetzen. Beim eigenen Rewriting im Locker-Modus: Stimme nur aus der Schreibprobe oder explizit gelieferten Fakten speisen, nie generieren.
 ❌ Schlecht: "Ehrlich gesagt: Als ich letzte Woche ein Kundenprojekt migrierte, ist mir genau das passiert. Keine Sorge, die Lösung ist einfach."
 ✓ Besser: "Der Fehler tritt typischerweise bei Migrationen auf. Die Lösung: ..."
+
+#### 70. Verantwortungsverschleierung durch falsche Agency [MEDIUM]
+<!-- haltbarkeit: kern -->
+
+**Kategorie:** Argumentation und Evidenz
+
+**Problem:** Ein abstraktes Subjekt (Strategie, Kultur, Kennzahl, Roadmap) übernimmt eine Handlung, die Entscheidung, Absicht oder Verantwortung voraussetzt. Der Satz ist grammatisch aktiv, aber die semantische Rolle ist falsch besetzt: "Die Strategie entschied" kann nichts entscheiden. So verschwindet der belegte Akteur, und mit ihm die Zuständigkeit.
+
+Häufige Indikatoren:
+- "Die Strategie entschied, dass ..."
+- "Die Unternehmenskultur duldete keine Ausnahmen"
+- "Die Kennzahl erzwang den Stellenabbau"
+- "Die Roadmap priorisierte das Feature nach hinten"
+- Abstrakta mit Entscheidungs-, Anordnungs- oder Verantwortungsverben, obwohl das Material den echten Akteur nennt
+
+**Warum LLMs das tun:** Nominalisierter Berichtsstil aus Trainingstexten: Prozesse und Konzepte werden zu Handelnden, weil das objektiv und managementtauglich klingt. Dass dabei Verantwortung verschwindet, registriert das Modell nicht.
+
+**Voraussetzungen für einen Befund** (alle drei):
+1. Das Prädikat setzt Entscheidung, Absicht oder zurechenbares Handeln voraus.
+2. Das Subjekt kann diese Rolle im Kontext nicht tragen.
+3. Der menschliche oder institutionelle Akteur ist im Material belegt und für die Aussage relevant.
+
+Fehlt der echte Akteur im Material: keinen erfinden. Dann die offene Verantwortungsfrage anmerken oder den Satz stehen lassen.
+
+**Abgrenzung:** Muster 39 = Passiv oder fehlendes Subjekt (syntaktische Auslassung). Muster 70 = aktiver Satz mit falsch besetzter Rolle (semantische Fehlbesetzung). Muster 66 = funktionsleerer Nachklapp hinter vollständigem Satz. Muster 41 = überzogene Gewissheit einer Quelle ("beweist zweifelsfrei"); wird die Quelle dagegen zur Entscheiderin ("Die Studie beschloss"), gilt Muster 70. Muster 58 = Hypernym verdrängt Konkretion, ohne Verantwortung umzulenken.
+
+**Kein Problem, wenn:** Fachübliche Metonymie oder echte Funktion: "Die Studie zeigt", "Das Gesetz verlangt", "Das Gericht entschied", "Das Ministerium ordnete an", "Das System speichert die Datei".
+
+**Lösung:** Den belegten Akteur einsetzen und das Abstraktum in seine echte Rolle zurückholen (Grundlage, Anlass, Maßstab). Niemals einen Akteur erfinden.
+
+**Beispiel:**
+
+❌ Schlecht: "Die Strategie entschied, dass die Teams ab sofort wöchentlich ausliefern."
+
+✓ Besser: "Die Geschäftsführung legte wöchentliche Releases fest; Grundlage war die neue Plattformstrategie."
+
+#### 72. Pseudo-therapeutische Validierung [HIGH]
+<!-- haltbarkeit: jahrgang stand=2026-07 -->
+
+**Kategorie:** Argumentation und Evidenz
+
+**Problem:** Der Text diagnostiziert ungefragt Gefühle, Selbstbild oder Vorgeschichte des Adressaten: "Du bist nicht zu sensibel", "Deine Gefühle sind völlig valide", "Du wurdest nur zu lange nicht ernst genommen". Das klingt fürsorglich, behauptet aber psychologische Tatsachen über eine reale Person, die der Text nicht belegen kann.
+
+Häufige Indikatoren:
+- "Du bist nicht zu sensibel/empfindlich/anspruchsvoll"
+- "Deine Gefühle/Reaktionen sind (völlig) valide/berechtigt"
+- "Du wurdest nur ..." (nicht ernst genommen, kleingehalten)
+- Zuschreibung einer Innenwelt oder Vorgeschichte, die der Adressat nie genannt hat
+- Oft kombiniert mit vager Autorität ("Psychologen wissen, dass du ..."; dann zusätzlich Muster 11)
+
+**Warum LLMs das tun:** Assistenten sind auf empathische Bestätigung trainiert; Validierung wird im Feintuning belohnt. Das Register stammt aus Ratgeber-Texten und wandert ungefragt in Sachzusammenhänge.
+
+**Abgrenzung:** Muster 18 = austauschbare Höflichkeits- und Hilfsgesten. Muster 53 = spekulative Lückenfüllung über Dritte. Muster 59 = erfundenes Erleben des Autors; Muster 72 = erfundenes Erleben des Adressaten. Muster 69 = Registerbruch in der Architektur, keine Zuschreibung.
+
+**Kein Problem, wenn:** Der Adressat das Gefühl selbst genannt hat und die Antwort es ohne Verstärkung aufgreift; Beratung oder Coaching ausdrücklich der Auftrag ist und die Aussage aus dem Gespräch folgt; die Passage Zitat, Interview oder literarischer Dialog ist; die Formulierung einen Sachverhalt klärt statt die Psyche ("Es liegt nicht an dir: Der Server weist derzeit alle Konten ab").
+
+**Lösung:** Die Diagnose streichen und durch den belegbaren Sachkern ersetzen: was fehlt, was falsch lief, was zu tun ist.
+
+**Beispiel:**
+
+❌ Schlecht: "Du bist nicht zu sensibel. Du wurdest nur zu lange mit unklaren Antworten abgespeist."
+
+✓ Besser: "Die Nachricht nennt weder einen Termin noch eine zuständige Person. Frag nach beidem."
 
 ### Ergänzungen (4 Muster)
 

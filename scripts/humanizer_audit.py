@@ -282,18 +282,19 @@ def compact_rhythm_findings(suspicions: list[dict]) -> list[dict]:
 def compact_german_pattern_findings(findings: list[dict]) -> list[dict]:
     compact: list[dict] = []
     for item in findings:
-        summary = item.get("kind", "german pattern")
+        summary = item.get("message", item.get("kind", "german pattern"))
         if "evidence" in item:
             summary = f"{summary}: {evidence_summary(item['evidence'])}"
-        compact.append(
-            {
-                "source": "german_pattern",
-                "pattern": item.get("pattern", 0),
-                "kind": item.get("kind", "unknown"),
-                "severity": item.get("severity", "warning"),
-                "summary": short_text(summary),
-            }
-        )
+        compact_item = {
+            "source": "german_pattern",
+            "pattern": item.get("pattern", 0),
+            "kind": item.get("kind", "unknown"),
+            "severity": item.get("severity", "warning"),
+            "summary": short_text(summary),
+        }
+        if item.get("advisory"):
+            compact_item["advisory"] = True
+        compact.append(compact_item)
     return compact
 
 

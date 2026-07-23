@@ -4,7 +4,7 @@ description: 'Deutscher Stil-Editor für Claude Code/Codex: Register messen, Rhy
 allowed-tools: [Read, Write, Edit, Grep, Glob, Bash]
 metadata:
   display_name: Humanizer (Deutsch)
-  version: 5.9.0
+  version: 5.10.0
   author: Martin Moeller
   maintainer_website: https://www.martin-moeller.biz
   based_on: 'Deutsche Wikipedia: Anzeichen für KI-generierte Inhalte, Erkennung KI-Einsatz, Schnelltest KI'
@@ -102,7 +102,7 @@ Spätere Pässe dürfen frühere nicht invalidieren. Rhythmus immer zuletzt.
 
 **Pass 2 – Lexik (Cluster-Regel).** Floskel-Muster, KI-Marker-Vokabular (Muster 64), Kopula-Vermeidung (Muster 65), Abstrakta-Stapel (Muster 58): Hypernyme und Nominalstil dort auflösen, wo der konkrete Sachverhalt im Text oder Kontext steht. Konkretion kommt aus belegtem Material; unbelegte Lücken sichtbar markieren. Fertig, wenn nur Cluster bearbeitet wurden und Claim-/Persona-Lock halten.
 
-**Pass 3 – Struktur (Cluster-Regel).** Überschriften-Schemata, isometrische Absätze (Muster 61), substanzlose Sektionen, Listen-Parallelismus, Schließzwang (Muster 62). Erst nach diesem Pass steht die endgültige Absatzstruktur. Fertig, wenn Strukturänderungen keine neuen Fakten, Fazitfloskeln oder Volltextpflicht erzeugen.
+**Pass 3 – Struktur (Cluster-Regel).** Überschriften-Schemata/Absatzisometrie(M61)/substanzlose-Sektionen/Listen-Parallelismus/Schließzwang(M62) prüfen. Absatz-Umsortierungstest(ab drei substanziellen Hauptabsätzen): Nachbarabsätze tauschen; Prämissen-/Zeitfolge-/Referenz-/Folgerungsschaden? Kein Schaden: Inhaltsabhängigkeitsmangel melden. Gate: nicht bei FAQ/Glossar/Referenzdoku/Katalog/Nachrichtenüberblick/bewusst additiven Aufzählungen. Kein Auto-Rewrite, kein künstlicher Konnektor-„Fix“, kein nummeriertes Muster. Fertig, wenn Strukturänderungen Fakten/Fazitfloskeln/Volltextpflicht nicht erzeugen.
 
 **Pass 4 – Rhythmus (Locker/Sachlich: standardmäßig an; Formal: nur auf Wunsch).** Konkrete Stellschrauben:
 - Vorfeld rotieren: höchstens ~2 von 3 Sätzen subjektinitial. Varianten: Adverbial, vorangestellter Nebensatz, Objekt, Präpositionalphrase.

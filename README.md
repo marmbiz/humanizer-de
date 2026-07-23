@@ -8,11 +8,11 @@
 [![Version](https://img.shields.io/github/v/tag/marmbiz/humanizer-de?label=Version&color=c4501f)](https://github.com/marmbiz/humanizer-de/tags)
 [![Tests](https://github.com/marmbiz/humanizer-de/actions/workflows/tests.yml/badge.svg)](https://github.com/marmbiz/humanizer-de/actions/workflows/tests.yml)
 [![Lizenz](https://img.shields.io/badge/Lizenz-MIT_%2B_CC_BY--SA_4.0-1f6feb)](NOTICE)
-[![Muster](https://img.shields.io/badge/Muster-69_in_10_Kategorien-2da44e)](#69-muster-in-10-kategorien)
+[![Muster](https://img.shields.io/badge/Muster-72_in_10_Kategorien-2da44e)](#72-muster-in-10-kategorien)
 [![Claude Code](https://img.shields.io/badge/Claude_Code-Plugin-d97757)](#installation)
 [![Codex](https://img.shields.io/badge/Codex-Supported-10a37f)](#installation)
 
-**[Was ist das?](#was-ist-das)** · **[Installation](#installation)** · **[Benutzung](#benutzung)** · **[Beispiele](#beispiele)** · **[Fakten & Grenzen](#fakten-grenzen-und-datenschutz)** · **[Wie es arbeitet](#wie-der-skill-arbeitet)** · **[Optionale Werkzeuge](#optionale-werkzeuge)** · **[69 Muster](#69-muster-in-10-kategorien)** · **[Für AI-Assistenten](#für-ai-assistenten)** · **[Entwicklung](#entwicklung-und-verifikation)** · **[Was ist neu?](#was-ist-neu)**
+**[Was ist das?](#was-ist-das)** · **[Installation](#installation)** · **[Benutzung](#benutzung)** · **[Beispiele](#beispiele)** · **[Fakten & Grenzen](#fakten-grenzen-und-datenschutz)** · **[Wie es arbeitet](#wie-der-skill-arbeitet)** · **[Optionale Werkzeuge](#optionale-werkzeuge)** · **[72 Muster](#72-muster-in-10-kategorien)** · **[Für AI-Assistenten](#für-ai-assistenten)** · **[Entwicklung](#entwicklung-und-verifikation)** · **[Was ist neu?](#was-ist-neu)**
 
 <sub>German AI Text Humanizer · Claude Humanizer Deutsch · KI-Texte humanisieren Deutsch · Supports Claude Code and Codex · Von [Martin Moeller](https://www.martin-moeller.biz) · basiert auf den Wikipedia-Leitlinien [Anzeichen für KI-generierte Inhalte](https://de.wikipedia.org/wiki/Wikipedia:Anzeichen_f%C3%BCr_KI-generierte_Inhalte) (de) und [Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing) (en) · hervorgegangen aus dem [Humanizer](https://github.com/blader/humanizer) von [blader](https://github.com/blader)</sub>
 
@@ -585,9 +585,9 @@ davon wird zusammen mit dem Skill installiert oder automatisch aktiviert.
 
 ---
 
-## 69 Muster in 10 Kategorien
+## 72 Muster in 10 Kategorien
 
-Der Skill arbeitet mit einem Katalog aus **69 KI-Schreibmustern** in 10 Kategorien, priorisiert nach Schweregrad (HIGH / MEDIUM / LOW). Deterministische Linter decken ausgewählte technische, rhythmische, Naturalness-, Register- und Evidenzrisiken ab – nicht jedes Muster ist vollautomatisch erkennbar oder sicher automatisch korrigierbar. Linter-gestützt ist derzeit rund ein Dutzend Muster (u. a. 4, 43, 46, 54, 55, 58, 61, 63–65) plus Register-, Rhythmus- und Evidenz-Checks; die übrigen Muster prüft das Modell anhand des Katalogs. Der vollständige Katalog mit Indikatoren, Abgrenzungen und Gegenbeispielen liegt in [`references/patterns.md`](references/patterns.md). Für den schnellen Blick ohne Katalog fasst [`assets/checkliste-ki-tells.md`](assets/checkliste-ki-tells.md) die zehn häufigsten Tells auf einer Seite zusammen.
+Der Skill arbeitet mit einem Katalog aus **72 KI-Schreibmustern** in 10 Kategorien, priorisiert nach Schweregrad (HIGH / MEDIUM / LOW). Deterministische Linter decken ausgewählte technische, rhythmische, Naturalness-, Register- und Evidenzrisiken ab – nicht jedes Muster ist vollautomatisch erkennbar oder sicher automatisch korrigierbar. Linter-gestützt ist derzeit rund ein Dutzend Muster (u. a. 4, 43, 46, 54, 55, 58, 61, 63–65 sowie ein advisory Kandidatenhinweis für 72) plus Register-, Rhythmus- und Evidenz-Checks; die übrigen Muster prüft das Modell anhand des Katalogs. Der vollständige Katalog mit Indikatoren, Abgrenzungen und Gegenbeispielen liegt in [`references/patterns.md`](references/patterns.md). Für den schnellen Blick ohne Katalog fasst [`assets/checkliste-ki-tells.md`](assets/checkliste-ki-tells.md) die zehn häufigsten Tells auf einer Seite zusammen.
 
 <details>
 <summary><strong>Sprache und Tonfall (19 Muster)</strong></summary>
@@ -649,7 +649,7 @@ Der Skill arbeitet mit einem Katalog aus **69 KI-Schreibmustern** in 10 Kategori
 | # | Muster | Schwere |
 |---|--------|---------|
 | 23 | Markdown statt Wikitext | MEDIUM |
-| 24 | Fehlerhafter Wikitext und KI-Tool-Artefakte | MEDIUM |
+| 24 | Fehlerhafter Wikitext und KI-Tool-/Prozessartefakte | MEDIUM |
 | 25 | Defekte Links | MEDIUM |
 | 26 | Zitatfabrikation und unverifizierbare Referenzen | HIGH |
 | 27 | Inkorrekte Referenzen-Format | MEDIUM |
@@ -669,7 +669,7 @@ Der Skill arbeitet mit einem Katalog aus **69 KI-Schreibmustern** in 10 Kategori
 </details>
 
 <details>
-<summary><strong>Rhetorik und Struktur (12 Muster)</strong></summary>
+<summary><strong>Rhetorik und Struktur (13 Muster)</strong></summary>
 
 | # | Muster | Schwere |
 |---|--------|---------|
@@ -685,11 +685,12 @@ Der Skill arbeitet mit einem Katalog aus **69 KI-Schreibmustern** in 10 Kategori
 | 61 | Isometrisches Dokument | MEDIUM |
 | 62 | Markerloser Schließzwang | MEDIUM |
 | 67 | Ankündigungs-Spaltsatz | MEDIUM |
+| 71 | Retroaktive Scheinnuance | MEDIUM |
 
 </details>
 
 <details>
-<summary><strong>Argumentation und Evidenz (5 Muster)</strong></summary>
+<summary><strong>Argumentation und Evidenz (7 Muster)</strong></summary>
 
 | # | Muster | Schwere |
 |---|--------|---------|
@@ -698,6 +699,8 @@ Der Skill arbeitet mit einem Katalog aus **69 KI-Schreibmustern** in 10 Kategori
 | 41 | Fehlkalibriertes epistemisches Vertrauen | MEDIUM |
 | 53 | Lückenfüllende Spekulation ("hält sich bedeckt") | HIGH |
 | 59 | Erfundene Ich-Erfahrung und forcierte Lockerheit | HIGH |
+| 70 | Verantwortungsverschleierung durch falsche Agency | MEDIUM |
+| 72 | Pseudo-therapeutische Validierung | HIGH |
 
 </details>
 
@@ -853,12 +856,15 @@ Patch-Releases ohne öffentliche Relevanz dürfen im README-Changelog bleiben. M
 ### Feedback und Beitrag
 
 - **Bugs melden:** Issue im Repository erstellen
-- **Muster ergänzen:** Pull Request senden
+- **Muster ergänzen:** Pull Request senden; neue oder materiell erweiterte Lint-Regeln müssen
+  das verbindliche [Marker-Aufnahmeprotokoll](docs/marker-aufnahmeprotokoll.md) erfüllen
 - **Erfahrungen teilen:** in den Discussions diskutieren
 
 ---
 
 ## Was ist neu?
+
+- **5.10.0** - Katalog-Erweiterung auf 72 Muster, diesmal gegen unbelegte Zuschreibungen und Scheinpräzision: Muster 70 (Verantwortungsverschleierung durch falsche Agency) markiert Sätze wie „Die Strategie entschied“, in denen ein abstraktes Subjekt eine zurechenbare Handlung übernimmt und den belegten Akteur verdeckt. Muster 71 (Retroaktive Scheinnuance) erfasst angekündigte Präzisierungen („Genauer gesagt ...“), die die Aussage nur weicher wiederholen, ohne Bedingung, Ausnahme oder Mechanismus zu ergänzen. Muster 72 (Pseudo-therapeutische Validierung) stoppt unbelegte Diagnosen über den Adressaten („Du bist nicht zu sensibel“). Dazu: Muster 12 kennt jetzt die „Ob du X oder Y bist“-Spannweite, Muster 24 erfasst publizierte interne Reasoning-Spuren, Pass 3 prüft die Umsortierbarkeit von Hauptabsätzen, ein advisory Kandidaten-Lint für Muster 72 kam nach neuem Protokoll dazu, und dieses Marker-Aufnahmeprotokoll verlangt künftig für jeden Lint-Marker Positiv-, Negativ- und Grenz-Fixtures samt dokumentierter Fehlalarm-Erwartung. Der erste Kandidat (ein Marker-Lint für Muster 71) ist daran planmäßig gescheitert: Die Marker sind häufiger echte Präzisierung als Scheinnuance.
 
 - **5.9.0** - Katalog-Erweiterung auf 69 Muster, gegen Konstruktionen, die ohne Signalfloskeln auskommen und deshalb bisher durch Audits rutschten: Muster 67 (Ankündigungs-Spaltsatz) erfasst gehäufte Sätze wie „Was mich überrascht hat, war ...“, die eine einfache Aussage als Erkenntnismoment inszenieren, statt sie zu machen. Muster 68 (Komparativ-Rahmung) greift Vergleichsschablonen wie „weniger X als vielmehr Y“, die eine direkte, prüfbare Beschreibung ersetzen. Muster 69 (Struktureller Register-Kollaps) prüft lockere Texte erstmals auf Satz- und Absatzarchitektur statt nur auf Wortebene: informelle Marker über durchgeformter Schriftsprache sind der Tell, nicht die Wortwahl. Dazu erweiterte Indikatoren – Muster 8 erkennt jetzt Spiegel-Subjekte („X ist das eine. Y das andere.“), Umkehr-Parallelismen und Verstärker-Abschwächer-Oppositionen, Muster 11 die Tutorial-Stimme als anonyme Autorität, Muster 32 Reframe-Einleitungen („So betrachtet ...“) und Muster 33 Enthüllungs-Pivots („Es stellte sich heraus, dass ...“).
 
