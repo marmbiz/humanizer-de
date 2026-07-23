@@ -1,14 +1,14 @@
 # Humanizer-de Coverage Matrix
 
-Status: P0 source-of-truth matrix for v5.8.1.
+Status: P0 source-of-truth matrix for v5.9.0.
 
-This matrix prevents one common documentation error: treating the 66-pattern catalog as if every pattern were deterministically detected, automatically rewritten, and fully regression-tested. The project has several coverage layers with different guarantees.
+This matrix prevents one common documentation error: treating the 69-pattern catalog as if every pattern were deterministically detected, automatically rewritten, and fully regression-tested. The project has several coverage layers with different guarantees.
 
 ## Coverage Layers
 
 | Layer | Files | What it covers | Guarantee | What it does not cover |
 |---|---|---|---|---|
-| Pattern catalog | `references/patterns.md` | 66 named German AI-writing and text-quality patterns with severity, indicators, examples, and rewrite guidance | Complete catalog of the current rule vocabulary | Deterministic detection, safe auto-fix, or empirical validation for every pattern |
+| Pattern catalog | `references/patterns.md` | 69 named German AI-writing and text-quality patterns with severity, indicators, examples, and rewrite guidance | Complete catalog of the current rule vocabulary | Deterministic detection, safe auto-fix, or empirical validation for every pattern |
 | Decision tables | `references/decision-tables.md` | Overlap logic, mode matrix, evidence cases, structure cases, phrase/template cases, profile conflicts | Binding short logic for common ambiguous cases | Exhaustive handling of every text genre or edge case |
 | Naturalness cards | `references/de-naturalness.md` | Operational cards for patterns 7, 8, 13, 54, 55, 58, 60, 63, 64, 65 plus DACH and QGIR stop notes | Practical guardrails for late-stage German naturalness work | Full readability model or complete German stylistics |
 | Register profiles | `references/register-profiles.md` | Address form, distance, sentence/paragraph shape, terms, particles, punctuation, profile conflicts | Guardrails against generic looseness and profile drift | Automatic inference of every target audience |
@@ -16,7 +16,7 @@ This matrix prevents one common documentation error: treating the 66-pattern cat
 | QGIR | `references/qgir.md`, `SKILL.md` | Bounded second revision loop, pass limits, edit budget, stop rules | Process gate for proportional revision | Default full rewrite workflow |
 | Unicode linter | `scripts/unicode_lint.py` | Hidden Unicode and German quote issues | Deterministic findings and conservative fixes for its scope | Style, evidence, rhythm, register |
 | Rhythm linter | `scripts/rhythm_lint.py` | Suspicion metrics for patterns 4, 54, 55, 61 | Deterministic measurements and scoped suspicions | Final KI-Tell judgment; pattern 51 is deliberately not emitted |
-| German pattern linter | `scripts/german_pattern_lint.py` | Cluster checks for patterns 8, 13, 54, 58, 63, 64, 65 | Deterministic cluster findings for selected naturalness signals | Most of the 66-pattern catalog |
+| German pattern linter | `scripts/german_pattern_lint.py` | Cluster checks for patterns 8, 13, 54, 58, 63, 64, 65 | Deterministic cluster findings for selected naturalness signals | Most of the 69-pattern catalog |
 | Register linter | `scripts/register_lint.py` | Mixed address, expected address blockers, modal particles, formal voice intrusion | Deterministic profile-drift warnings/blockers for its features | Full register modeling |
 | Evidence linter | `scripts/evidence_lint.py` | Before/after anchor drift: numbers, dates, URLs, DOI, paragraphs, code, quotes, proper names, authority, direction | Conservative drift warnings/blockers | Full factual checking or semantic preservation |
 | Scenario contracts | `tests/scenarios/`, `scripts/run_review_eval.py` | LLM-in-loop invariants for output discipline, QGIR traces, edit budget, anchors, register, detector wording | Regression checks for known failure modes | A complete benchmark of German writing quality |
@@ -32,6 +32,14 @@ This matrix prevents one common documentation error: treating the 66-pattern cat
 | `register_lint.py` | 63 plus register/profile drift | Pattern IDs are secondary to profile safeguards |
 | `evidence_lint.py` | 11, 26, 42, 53-adjacent claim-delta risks | Detects anchor drift; does not verify external sources |
 | `run_review_eval.py` | Cross-pattern scenario contracts | Tests output invariants, not free-form prose quality |
+
+## Catalog-Only Pattern Coverage
+
+| Pattern | Coverage | Notes |
+|---:|---|---|
+| 67 | Human reviewer / LLM judgment | Ankündigungs-Spaltsätze require context and cluster interpretation; no deterministic detector |
+| 68 | Human reviewer / LLM judgment | Komparativ-Rahmung requires separating empty framing from a real, verifiable comparison |
+| 69 | Human reviewer / LLM judgment | Register profiles and writing samples inform the judgment; no deterministic sentence-architecture detector |
 
 ## Axis View: Check Axis x Check Level
 
@@ -59,14 +67,14 @@ These areas can be guided by rules and tests, but should not be documented as fu
 
 ## Allowed Coverage Claims
 
-- "The repo contains a 66-pattern catalog."
+- "The repo contains a 69-pattern catalog."
 - "The repo has deterministic linters for selected technical, rhythm, naturalness, register, and evidence risks."
 - "The repo uses scenario contracts to catch known LLM-in-loop failure modes."
 - "QGIR is a bounded process for proportional revision when clusters remain."
 
 ## Disallowed Coverage Claims
 
-- "All 66 patterns are deterministically detected."
+- "All 69 patterns are deterministically detected."
 - "The tools can prove semantic equivalence."
 - "The skill automatically rewrites every pattern safely."
 - "Passing `make verify` proves text quality for arbitrary German inputs."

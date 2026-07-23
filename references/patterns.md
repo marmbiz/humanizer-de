@@ -1,6 +1,6 @@
 # Humanizer-de Pattern Catalog
 
-Vollstaendiger Musterkatalog fuer Humanizer (Deutsch) v5.8.1. Nur bei konkreter Musterdiagnose, Audit oder Grenzfaellen laden.
+Vollstaendiger Musterkatalog fuer Humanizer (Deutsch) v5.9.0. Nur bei konkreter Musterdiagnose, Audit oder Grenzfaellen laden.
 
 ## Kurzreferenz
 
@@ -72,6 +72,9 @@ Vollstaendiger Musterkatalog fuer Humanizer (Deutsch) v5.8.1. Nur bei konkreter 
 | 64 | KI-Marker-Vokabular | MEDIUM | "beleuchten", "eintauchen", "spannend", "nahtlos", "die digitale Landschaft" in Häufung |
 | 65 | Kopula-Vermeidung | MEDIUM | "fungiert als"/"verfügt über" statt "ist"/"hat"; "verfasste" statt "schrieb", "verstarb" statt "starb" |
 | 66 | Fake-Analyse-Anhang | MEDIUM | "...was X unterstreicht/verdeutlicht/belegt", "...und zeigt damit, dass" – Relativsatz ohne neue Information |
+| 67 | Ankündigungs-Spaltsatz | MEDIUM | "Was mich überrascht hat, war ...", "Was dabei auffiel: ..."; Häufung vor Pointen |
+| 68 | Komparativ-Rahmung | MEDIUM | "weniger X als vielmehr Y", "eher X als Y", "mehr X als Y" als Beschreibungsersatz |
+| 69 | Struktureller Register-Kollaps | MEDIUM | lockere Marker über durchgeformter Schriftsprache; vollständige Satz- und Absatzarchitektur im Nähe-Register |
 
 ## Statistische Detektoren (GPTZero u. a.)
 
@@ -92,9 +95,9 @@ Die menschenlesbaren Labels dieser Tools ("Robotic Formality", "Mechanical Preci
 
 Der einzige substanzwahrende Hebel gegen niedrige Burstiness ist Muster 55 (Satzrhythmus spreizen). Niedrige Perplexity bei korrekter Fachsprache ist nicht "reparierbar", ohne den Text zu verschlechtern – und das ist nicht Aufgabe dieses Skills. Siehe SKILL.md-Leitplanke zu statistischen Detektoren.
 
-## Die 66 Muster
+## Die 69 Muster
 
-### Sprache und Tonfall (18 Muster)
+### Sprache und Tonfall (19 Muster)
 
 #### 1. Übermäßige Betonung von Symbolik [HIGH]
 <!-- haltbarkeit: kern -->
@@ -240,6 +243,9 @@ Häufige Indikatoren:
 - Pointierte Varianten: "kein X. Sondern Y." oder "nicht X, nicht Y, sondern Z"
 - Symmetrische Satzstrukturen
 - Abgehackte Verneinungen am Satzende: "kein Raten.", "keine Kompromisse.", "kein Aufwand."
+- Spiegel-Subjekte: "X ist das eine. Y das andere."
+- Umkehr-Parallelismus: "lieber präzise falsch als vage richtig" (gespiegelte Begriffspaare als Pointe)
+- Verstärker-Abschwächer-Opposition: "X akribisch, Y kaum"
 
 **Warum LLMs das tun:** Rhetorische Effekte aus literarischen Quellen. Die abgehackten Fragmente imitieren knappen Werbetext.
 
@@ -306,6 +312,7 @@ Häufige Indikatoren:
 - "Es wird gesagt"
 - "Manche argumentieren"
 - "Mehrere Studien deuten darauf hin" (ohne Quelle)
+- Tutorial-Stimme als anonyme Autorität: "Der übliche Weg ist ...", "Der Standard-Fix ist ...", wo eigene Erfahrung oder eine echte Quelle stehen müsste
 
 **Warum LLMs das tun:** Kann keine echten Quellen zitieren, also erfindet es Platzhalter.
 
@@ -436,7 +443,35 @@ Häufige Indikatoren:
 ❌ Schlecht: "Das Team lieferte die Migration in drei Wochen ab, was die hohe Effizienz des Vorgehens unterstreicht."
 ✓ Besser: "Das Team lieferte die Migration in drei Wochen ab." (oder: "...ab – geplant waren sechs.")
 
-### Stil (4 Muster)
+#### 68. Komparativ-Rahmung [MEDIUM]
+<!-- haltbarkeit: kern -->
+
+**Kategorie:** Sprache und Tonfall
+
+**Problem:** Der Text beschreibt eine Sache über die Abgrenzung von etwas anderem statt direkt: "Es geht weniger um Geschwindigkeit als vielmehr um Vertrauen." Die Vergleichsschablone erzeugt Differenziertheits-Anmutung, sagt aber weniger als eine direkte Aussage — was "weniger" und "vielmehr" konkret bedeuten, bleibt offen und unprüfbar.
+
+Häufige Indikatoren:
+- "weniger X als vielmehr Y"
+- "nicht so sehr X, sondern vor allem Y"
+- "eher X als Y" als wiederkehrende Charakterisierung
+- "fühlt sich mehr nach X als nach Y an"
+- "mehr X als Y" als Etikett ("mehr Werkstatt als Agentur")
+
+**Warum LLMs das tun:** Kontrastive Beschreibung ist in Feuilleton- und Essay-Trainingsdaten überrepräsentiert und gilt als differenziert. Das Modell nutzt die Schablone, um Nuancierung zu simulieren, wo eine konkrete Aussage stehen müsste.
+
+**Abgrenzung:** Muster 8 = Verneinungs-Parallelismus ("nicht nur ... sondern auch") und symmetrische Konstruktionen. Muster 12 = falsche Spannweite ("von ... bis"). Muster 68 = die Vergleichs- und Abstufungsschablone als Beschreibungsersatz.
+
+**Kein Problem, wenn:** Ein echter, prüfbarer Vergleich vorliegt ("Der neue Build ist schneller als der alte"), oder die Abgrenzung eine verbreitete Fehleinschätzung korrigiert und der Text danach konkret wird. Ein einzelnes bewusstes Bild kann stehen bleiben; der Tell ist die Häufung.
+
+**Lösung:** Direkt sagen, was die Sache ist oder tut. Fragen: Welche konkrete, prüfbare Aussage versteckt sich hinter dem Vergleich?
+
+**Beispiel:**
+
+❌ Schlecht: "Es geht weniger um das Werkzeug als vielmehr um die Haltung. Der Umbau fühlt sich eher wie ein Marathon als wie ein Sprint an."
+
+✓ Besser: "Das Werkzeug ist zweitrangig; entscheidend ist, ob das Team die Berichte liest. Der Umbau dauert: Wir rechnen mit zwei Jahren."
+
+### Stil (5 Muster)
 
 #### 13. Übermäßige Fettschrift [MEDIUM]
 <!-- haltbarkeit: kern -->
@@ -512,6 +547,33 @@ Häufige Indikatoren:
 ✓ Besser: "Danke für die Einführung. Ich setze dich auf bcc. Kein Stress, ich brauche nur ein klares Bild."
 
 **Kein Problem, wenn:** Ein einzelner Gedankenstrich pro Absatz als bewusstes Stilmittel dient und sich nicht wiederholt; ein Bindestrich in Komposita, Namen, URLs, IDs oder Produktbezeichnungen steht (`E-Mail`, `Jean-Paul`, `user-id`); ein Bis-Strich echte Bereiche markiert (`2020–2024`).
+
+#### 69. Struktureller Register-Kollaps [MEDIUM]
+<!-- haltbarkeit: jahrgang stand=2026-07 -->
+
+**Kategorie:** Stil
+
+**Problem:** Ein als locker markierter Text (Chat-Nachricht, Team-Update, persönliche Mail) trägt informelle Marker an der Oberfläche, aber darunter liegt durchgeformte Schriftsprache: vollständige, wohlgebaute Sätze, ein Thema pro Absatz, sauberer Bogen aus Ergebnis, Einschränkung und nächsten Schritten. Die Marker ("kurz vorab", "lg", Emoji) sind aufgesprüht, die Architektur ist Aufsatz.
+
+Häufige Indikatoren:
+- Grußformeln und Marker locker, aber kein einziges Satzfragment im ganzen Text
+- Ein Thema pro Absatz plus expliziter Abschluss in einer angeblichen Chat-Nachricht
+- Keine Selbstkorrektur, kein Nachtrag ("ach ja, noch was:")
+- Zahlen ausgeschrieben ("drei Vorfälle") statt Näherungsschreibweise ("~3 Vorfälle", "<10 min") im technischen Nähe-Register
+
+**Warum LLMs das tun:** Die Anweisung "schreib das locker" ändert im Modell primär Lexik und Grußformeln. Die antrainierte Dokumentarchitektur — Vollständigkeit, Gliederung, expliziter Abschluss — bleibt darunter bestehen.
+
+**Abgrenzung:** Muster 63 = Partikelarmut oder -überdosis (Wortebene). Muster 59 = erfundene Ich-Erfahrung und forcierte Mündlichkeit (Inhaltsebene). Muster 30 = Stilwechsel zwischen Absätzen. Muster 69 = polierte Satz- und Absatzarchitektur unter informeller Oberfläche (Strukturebene).
+
+**Kein Problem, wenn:** Der Autor auch im echten Nähe-Register durchgeformt schreibt (Schreibprobe prüfen), oder das Format Vollständigkeit verlangt (ein Statusreport, der nur freundlich eingeleitet wird, ist kein Chat).
+
+**Lösung:** Nicht mehr Marker aufsprühen, sondern die Architektur lockern: ein Fragment zulassen, einen Nachtrag ans Ende, eine Zahl in Näherungsschreibweise, einen Absatz zwei Aufgaben erledigen lassen. Nur aus Schreibprobe oder gelieferten Fakten speisen, nie Persönlichkeit erfinden (vgl. Muster 59).
+
+**Beispiel:**
+
+❌ Schlecht: "Kurz vorab: Die Migration ist durch. Wir haben drei kleinere Vorfälle gesehen, die alle behoben sind. Als Nächstes kümmern wir uns um das Monitoring. lg"
+
+✓ Besser: "kurz vorab: migration ist durch. ~3 kleinere vorfälle, alle behoben. monitoring machen wir als nächstes. ach ja: die dashboards sind noch ungetestet, schau ich mir morgen an."
 
 ### Kommunikation (6 Muster)
 
@@ -754,12 +816,12 @@ Häufige Indikatoren:
 
 **Lösung:** Entfernen oder in neutrale Form umwandeln ("Absatz über X hinzugefügt").
 
-### Rhetorik und Struktur (11 Muster)
+### Rhetorik und Struktur (12 Muster)
 
 #### 32. Persuasive Autoritäts-Floskeln [MEDIUM]
 <!-- haltbarkeit: kern -->
 
-**Wendungen, auf die Sie achten sollten:** "Die eigentliche Frage ist", "Im Kern", "In Wirklichkeit", "Was wirklich zählt", "Im Grunde genommen", "Das tiefere Problem", "Worauf es wirklich ankommt", "Der Kern der Sache", "Letztlich geht es um"
+**Wendungen, auf die Sie achten sollten:** "Die eigentliche Frage ist", "Im Kern", "In Wirklichkeit", "Was wirklich zählt", "Im Grunde genommen", "Das tiefere Problem", "Worauf es wirklich ankommt", "Der Kern der Sache", "Letztlich geht es um", "So betrachtet ...", "So gelesen ...", "Anders gerahmt ..." (Reframe-Einleitung, die gewöhnliche Fakten als Einsicht inszeniert)
 
 **Problem:** LLMs verwenden diese Wendungen, um gewöhnliche Aussagen als verborgene Erkenntnisse zu verpacken. Die "Wahrheit", die folgt, ist meist eine Wiederholung des bereits Gesagten. Anders als Muster 1 (Symbolik-Inflation, die die Bedeutung von Fakten aufbläht) und Muster 3 (Redaktionelle Kommentare, die Sätze aufpolstern), erzeugt dieses Muster gezielt den Eindruck, durch Lärm zu einer tieferen Einsicht vorzudringen, die nicht existiert.
 
@@ -774,7 +836,7 @@ Häufige Indikatoren:
 #### 33. Signposting und Ankündigungen [MEDIUM]
 <!-- haltbarkeit: kern -->
 
-**Wendungen, auf die Sie achten sollten:** "Schauen wir uns an", "Lassen Sie uns erkunden", "Hier ist, was Sie wissen müssen", "Die Sache ist die", "Was als Nächstes passiert", "Ohne weitere Umschweife", "Jetzt werfen wir einen Blick auf", "Kommen wir zu", "Tauchen wir ein", "Warum das wichtig ist:" oder "Das große Bild:" als Fließtext-Label
+**Wendungen, auf die Sie achten sollten:** "Schauen wir uns an", "Lassen Sie uns erkunden", "Hier ist, was Sie wissen müssen", "Die Sache ist die", "Was als Nächstes passiert", "Ohne weitere Umschweife", "Jetzt werfen wir einen Blick auf", "Kommen wir zu", "Tauchen wir ein", "Warum das wichtig ist:" oder "Das große Bild:" als Fließtext-Label, "Es stellte sich heraus, dass ...", "Wie sich zeigte ..." (Enthüllungs-Pivot ohne Enthüllung)
 
 **Problem:** LLMs kündigen an, was sie gleich tun werden, statt es einfach zu tun. Diese Wendungen bremsen den Leser mit Meta-Kommentar zur Textstruktur. Sie stammen aus dem Chatbot-Dialog-Training, wo das Modell seine eigene Antwort kommentiert, bevor es Inhalt liefert. Unterscheidet sich von Muster 18 (Kollaborative Kommunikation), das Chatbot-Höflichkeitsfloskeln abdeckt; dieses Muster betrifft Meta-Struktur-Vorspanne, die Inhalt ankündigen ohne ihn zu liefern.
 
@@ -945,6 +1007,35 @@ Häufige Indikatoren:
 **Lösung:** Streichen. Ein Absatz darf offen enden; der nächste knüpft inhaltlich an (Thema-Rhema statt Schleife).
 ❌ Schlecht: "Die Migration dauerte sechs Wochen und kostete 40.000 Euro. Damit war ein wichtiger Meilenstein erreicht."
 ✓ Besser: "Die Migration dauerte sechs Wochen und kostete 40.000 Euro."
+
+#### 67. Ankündigungs-Spaltsatz [MEDIUM]
+<!-- haltbarkeit: kern -->
+
+**Kategorie:** Rhetorik und Struktur
+
+**Problem:** Der Satz kündigt seine Aussage an, statt sie zu machen: "Was mich überrascht hat, war die Ladezeit." Die Spaltsatz-Konstruktion verpackt eine einfache Aussage in eine Enthüllungsgeste und hebt sie an, ohne Information hinzuzufügen. Der Doppelpunkt ist dabei nicht der Tell — die Ankündigungsstruktur ist es; sie funktioniert auch ganz ohne Signalwort und rutscht deshalb durch Floskel-Listen.
+
+Häufige Indikatoren:
+- "Was mich überrascht hat, war ..."
+- "Was am Ende funktionierte, war ..."
+- "Was fehlte, war ..."
+- "Was dabei auffiel: ..."
+- "Der Punkt, der alles änderte, war ..."
+- Häufung solcher Konstruktionen an Absatzanfängen oder unmittelbar vor Pointen
+
+**Warum LLMs das tun:** Reveal-Dramaturgie aus Essay- und Blog-Trainingsdaten. Die Konstruktion simuliert einen Erkenntnismoment und signalisiert dem Leser "jetzt kommt das Wichtige", statt das Wichtige zu sagen.
+
+**Abgrenzung:** Muster 33 = Meta-Ankündigung mit Signal-Vokabular ("Schauen wir uns an", "Hier ist, was Sie wissen müssen"). Muster 32 = Autoritäts-Floskel vor einer vermeintlichen Einsicht ("Die eigentliche Frage ist"). Muster 67 = die syntaktische Ankündigung per Spaltsatz, ohne Meta-Vokabular.
+
+**Kein Problem, wenn:** Die Hervorhebung eine echte Informationsstruktur trägt — etwa als direkte Antwort auf eine zuvor aufgeworfene Frage — oder der Text gesprochene Sprache wiedergibt (Interview, Transkript). Ein einzelner Spaltsatz ist unkritisch; der Tell ist die Häufung.
+
+**Lösung:** Die angekündigte Aussage direkt formulieren; das hervorzuhebende Element notfalls durch Wortstellung ans Satzende rücken.
+
+**Beispiel:**
+
+❌ Schlecht: "Was mich beim Test überrascht hat, war die Ladezeit. Was am Ende den Ausschlag gab, war der Support."
+
+✓ Besser: "Die Ladezeit hat mich beim Test überrascht. Den Ausschlag gab am Ende der Support."
 
 ### Argumentation und Evidenz (5 Muster)
 

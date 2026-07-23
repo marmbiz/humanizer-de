@@ -5,7 +5,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 CATALOG_PATH = ROOT / "references" / "patterns.md"
-EXPECTED_PATTERN_COUNT = 66
+EXPECTED_PATTERN_COUNT = 69
 CATALOG_HEADING = f"## Die {EXPECTED_PATTERN_COUNT} Muster"
 PATTERN_HEADING_RE = re.compile(r"^#### (\d{1,2})\. (.+?) \[(HIGH|MEDIUM|LOW)\]$")
 SHORT_REFERENCE_RE = re.compile(r"^## Kurzreferenz\s*$\n(?P<section>.*?)(?=^## |\Z)", re.MULTILINE | re.DOTALL)
@@ -63,7 +63,7 @@ def extract_short_reference_row(pattern_id):
 
 
 class PatternCatalogTests(unittest.TestCase):
-    def test_catalog_contains_exactly_66_pattern_ids(self):
+    def test_catalog_contains_exactly_69_pattern_ids(self):
         text = read_catalog()
         ids = [int(match) for match in re.findall(r"^####\s+(\d+)\.", text, re.MULTILINE)]
         self.assertEqual(sorted(ids), list(range(1, EXPECTED_PATTERN_COUNT + 1)))
@@ -71,7 +71,7 @@ class PatternCatalogTests(unittest.TestCase):
 
     def test_category_counts_match_actual(self):
         text = (ROOT / "references" / "patterns.md").read_text(encoding="utf-8")
-        catalog = text.split("## Die 66 Muster", 1)[1]
+        catalog = text.split("## Die 69 Muster", 1)[1]
 
         declared = {}
         actual = {}
@@ -95,7 +95,7 @@ class PatternCatalogTests(unittest.TestCase):
                 count,
                 f"Kategorie '{category}' deklariert {count} Muster, enthält aber {actual[category]}",
             )
-        self.assertEqual(sum(declared.values()), 66)
+        self.assertEqual(sum(declared.values()), 69)
 
     def test_catalog_keeps_required_sections(self):
         text = read_catalog()

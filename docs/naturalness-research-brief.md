@@ -42,7 +42,7 @@ Use this table before adding research-backed claims to the audit docs.
 
 The following are internal Humanizer-de heuristics unless separately sourced:
 
-- The 66-pattern catalog in `references/patterns.md`.
+- The 69-pattern catalog in `references/patterns.md`.
 - Overlap and mode logic in `references/decision-tables.md`.
 - Naturalness cards in `references/de-naturalness.md`.
 - QGIR stop rules in `references/qgir.md`.

@@ -1,6 +1,6 @@
 # Humanizer-de Decision Tables
 
-Nutze diese Tabellen vor `references/patterns.md`, wenn Befunde ueberlappen. Sie sind die verbindliche Kurzlogik fuer v5.8.1.
+Nutze diese Tabellen vor `references/patterns.md`, wenn Befunde ueberlappen. Sie sind die verbindliche Kurzlogik fuer v5.9.0.
 
 ## QGIR: Moduswahl
 
@@ -86,6 +86,21 @@ Nutze diese Tabellen vor `references/patterns.md`, wenn Befunde ueberlappen. Sie
 | Konkrete, inhaltstragende Explainer-Sektion | nicht 33/34/35 | Stehen lassen |
 | „Kurz gesagt" fasst im Absatz nur Vorheriges zusammen | 5, nicht 33 | Zusammenfassung streichen oder mit neuer Substanz verbinden |
 | Substanzlose Standardsektion, Doppelpunkt-Titel oder Inline-Label-Liste | 44 / 54 / 57 | Nach dem jeweiligen Strukturmechanismus behandeln |
+
+## Syntaktische Ankündigung, Komparativ-Rahmung und Locker-Architektur: 67 / 68 / 69
+
+| Situation | Muster | Aktion |
+|---|---:|---|
+| Spaltsatz kündigt eine einfache Aussage als Erkenntnismoment an („Was auffiel, war ...") | 67 | Aussage direkt formulieren; bei Einzelvorkommen und echter Informationsstruktur stehen lassen |
+| Meta-Ankündigung nutzt Signal-Vokabular („Schauen wir uns an", „Hier ist, was Sie wissen müssen") | 33, nicht 67 | Meta-Vorspann streichen und Inhalt direkt beginnen |
+| Autoritäts-Floskel rahmt eine vermeintlich tiefere Einsicht („Die eigentliche Frage ist") | 32, nicht 67 | Floskel streichen; Aussage direkt stellen |
+| Vergleichs- oder Abstufungsschablone ersetzt die direkte Beschreibung („weniger X als vielmehr Y") | 68 | Versteckte konkrete Aussage direkt formulieren |
+| Verneinungs- oder Spiegel-Parallelismus trägt die Pointe | 8, nicht 68 | Kontrastschema auf die konkrete Aussage zurückführen |
+| Figurative Spannweite nutzt „von ... bis" | 12, nicht 68 | Spannweite durch konkrete Menge oder Beschreibung ersetzen |
+| Lockere Marker liegen über polierter Satz- und Absatzarchitektur | 69 | Schreibprobe und Format prüfen; Architektur nur aus gelieferten Fakten lockern |
+| Auffälligkeit liegt auf Wortebene bei Partikelarmut oder -überdosis | 63, nicht 69 | Nach Partikel- und Moduslogik behandeln |
+| Lockerheit beruht auf erfundener Erfahrung oder forcierter Mündlichkeit | 59, nicht 69 | Persona-Lock anwenden; erfundene Erfahrung entfernen |
+| Register oder Stimme wechseln zwischen Absätzen | 30, nicht 69 | Wechsel angleichen; nicht pauschal die Architektur lockern |
 
 ## Evidenz zweiter Ordnung: 59
 
