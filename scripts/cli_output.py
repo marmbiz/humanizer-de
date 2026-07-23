@@ -8,6 +8,14 @@ import sys
 from typing import Any
 
 
+def resolve_exit_code(policy: str, findings: list[dict]) -> int:
+    if policy == "never":
+        return 0
+    if policy == "blocker":
+        return 1 if any(item.get("severity") == "blocker" for item in findings) else 0
+    return 1 if findings else 0
+
+
 def json_for_stdout(payload: Any, *, indent: int = 2, sort_keys: bool = False) -> str:
     """Keep readable Unicode where supported and fall back to ASCII-safe JSON."""
     rendered = json.dumps(payload, ensure_ascii=False, indent=indent, sort_keys=sort_keys)

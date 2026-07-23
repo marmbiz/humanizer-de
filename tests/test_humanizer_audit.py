@@ -264,7 +264,7 @@ class HumanizerAuditTests(unittest.TestCase):
         self.assertIn("low_burstiness", driver_kinds)
         self.assertIn("ai_marker_cluster", driver_kinds)
 
-    def test_duplicate_particle_findings_are_collapsed(self):
+    def test_particle_findings_come_from_register(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "text.md"
             path.write_text("Das ist ja schon wichtig.", encoding="utf-8")
@@ -274,8 +274,8 @@ class HumanizerAuditTests(unittest.TestCase):
         self.assertEqual(exit_code, 0)
         particle_findings = [item for item in report["findings"] if item.get("kind") == "particles_outside_locker"]
         self.assertEqual(len(particle_findings), 1)
-        self.assertEqual(particle_findings[0]["source"], "german_pattern")
-        self.assertEqual(report["summary"]["counts"]["german_pattern"], 1)
+        self.assertEqual(particle_findings[0]["source"], "register")
+        self.assertEqual(report["summary"]["counts"]["german_pattern"], 0)
         self.assertEqual(report["summary"]["counts"]["register"], 1)
 
     def test_style_profile_section_without_mode_has_no_delta(self):

@@ -16,7 +16,7 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
-from cli_output import print_json
+from cli_output import print_json, resolve_exit_code
 
 
 DICTIONARY = "de_DE"
@@ -107,24 +107,14 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     return parser.parse_args(argv)
 
 
-def exit_code(report: dict, fail_on: str) -> int:
-    if not report.get("available", True):
-        return 0
-    findings = report["findings"]
-    if fail_on == "never":
-        return 0
-    if fail_on == "blocker":
-        return 1 if any(item.get("severity") == "blocker" for item in findings) else 0
-    return 1 if findings else 0
-
-
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(sys.argv[1:] if argv is None else argv)
     before = load_text(args.before, args.before_file)
     after = load_text(args.after, args.after_file)
     report = lint(before, after)
     print_json(report)
-    return exit_code(report, args.fail_on)
+    findings = report["findings"] if report.get("available", True) else []
+    return resolve_exit_code(args.fail_on, findings)
 
 
 if __name__ == "__main__":

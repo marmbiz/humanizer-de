@@ -158,7 +158,7 @@ class UnicodeLintTests(unittest.TestCase):
             for index in range(len(text) + 1):
                 self.assertEqual(
                     contains(index),
-                    unicode_lint.in_ranges(index, ranges),
+                    any(start <= index < end for start, end in ranges),
                     f"Abweichung bei Index {index} in: {text!r}",
                 )
 

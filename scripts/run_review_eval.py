@@ -260,10 +260,8 @@ def style_profile_violations(scenario: dict, sample: dict) -> list[str]:
     return sorted(set(violations))
 
 
-def check_scenario(path: Path, check_invariants: bool = True) -> dict:
+def check_scenario(path: Path) -> dict:
     scenario = load_scenario(path)
-    if not check_invariants:
-        return {"file": str(path), "id": scenario["id"], "ok": True, "sample_results": []}
     sample_results = []
     ok = True
     for sample in scenario.get("sample_outputs", []):
@@ -306,11 +304,6 @@ def scenario_files(path: Path) -> list[Path]:
 def parse_args(argv: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Check Humanizer-de scenario contracts.")
     parser.add_argument("path", type=Path)
-    parser.add_argument(
-        "--check-invariants",
-        action="store_true",
-        help="Check sample output invariants after loading scenario files.",
-    )
     return parser.parse_args(argv)
 
 
@@ -318,14 +311,12 @@ def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv or sys.argv[1:])
     try:
         files = scenario_files(args.path)
-        results = [check_scenario(path, check_invariants=args.check_invariants) for path in files]
+        results = [check_scenario(path) for path in files]
     except (OSError, ValueError, json.JSONDecodeError) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 2
     ok = all(item["ok"] for item in results)
-    print_json(
-        {"ok": ok, "count": len(results), "checked_invariants": args.check_invariants, "results": results}
-    )
+    print_json({"ok": ok, "count": len(results), "results": results})
     return 0 if ok else 1
 
 

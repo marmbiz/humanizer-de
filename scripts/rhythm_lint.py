@@ -10,8 +10,8 @@ from __future__ import annotations
 
 import argparse
 import json
-import math
 import re
+import statistics
 import sys
 from pathlib import Path
 
@@ -21,7 +21,7 @@ if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
 import text_scope
-from cli_output import print_json
+from cli_output import print_json, resolve_exit_code
 
 
 SUBJUNCTIONS = {
@@ -275,23 +275,6 @@ def sentence_lengths(sentences: list[str]) -> list[int]:
     return [len(tokens(sentence)) for sentence in sentences if tokens(sentence)]
 
 
-def mean(values: list[int | float]) -> float:
-    return sum(values) / len(values) if values else 0.0
-
-
-def variance(values: list[int | float]) -> float:
-    if not values:
-        return 0.0
-    value_mean = mean(values)
-    return sum((value - value_mean) ** 2 for value in values) / len(values)
-
-
-def stddev(values: list[int | float]) -> float:
-    if not values:
-        return 0.0
-    return math.sqrt(variance(values))
-
-
 def rounded(value: float) -> float:
     return round(value, 3)
 
@@ -324,9 +307,9 @@ def syntactic_complexity(sentence: str) -> int:
 def syntactic_complexity_stats(sentences: list[str]) -> dict:
     scores = [syntactic_complexity(sentence) for sentence in sentences if tokens(sentence)]
     return {
-        "mean": rounded(mean(scores)),
-        "variance": rounded(variance(scores)),
-        "stddev": rounded(stddev(scores)),
+        "mean": rounded(statistics.fmean(scores) if scores else 0.0),
+        "variance": rounded(statistics.pvariance(scores) if scores else 0.0),
+        "stddev": rounded(statistics.pstdev(scores) if scores else 0.0),
     }
 
 
@@ -391,8 +374,8 @@ def repeated_openers(sentences: list[str]) -> list[dict]:
 def paragraph_report(index: int, block: str) -> dict:
     sentences = split_sentences(block)
     lengths = sentence_lengths(sentences)
-    length_mean = mean(lengths)
-    length_stddev = stddev(lengths)
+    length_mean = statistics.fmean(lengths) if lengths else 0.0
+    length_stddev = statistics.pstdev(lengths) if lengths else 0.0
     complexity = syntactic_complexity_stats(sentences)
     return {
         "index": index,
@@ -465,8 +448,8 @@ def analyze(text: str, file: str | None = None, scope: str = "user_text", mode: 
     paragraph_reports = [paragraph_report(index + 1, block) for index, block in enumerate(paragraph_blocks)]
     all_sentences = [sentence for block in blocks for sentence in split_sentences(block)]
     lengths = sentence_lengths(all_sentences)
-    length_mean = mean(lengths)
-    length_stddev = stddev(lengths)
+    length_mean = statistics.fmean(lengths) if lengths else 0.0
+    length_stddev = statistics.pstdev(lengths) if lengths else 0.0
     length_ratio = length_stddev / length_mean if length_mean else 0.0
     length_buckets = sentence_length_buckets(lengths)
     complexity = syntactic_complexity_stats(all_sentences)
@@ -575,14 +558,6 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     return parser.parse_args(argv)
 
 
-def exit_code(suspicions: list[dict], fail_on: str) -> int:
-    if fail_on == "never":
-        return 0
-    if fail_on == "blocker":
-        return 1 if any(item.get("severity") == "blocker" for item in suspicions) else 0
-    return 1 if suspicions else 0
-
-
 def compact_cli_report(report: dict) -> dict:
     compact = dict(report)
     document = dict(compact["document"])
@@ -605,7 +580,7 @@ def main(argv: list[str] | None = None) -> int:
     if not args.include_paragraphs:
         report = compact_cli_report(report)
     print_json(report)
-    return exit_code(report["suspicions"], args.fail_on)
+    return resolve_exit_code(args.fail_on, report["suspicions"])
 
 
 if __name__ == "__main__":

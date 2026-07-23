@@ -87,18 +87,6 @@ class GermanPatternLintTests(unittest.TestCase):
         text = "Dies stellt sicher. Kurz darauf legte er dar, was passiert, und fungiert als Beispiel."
         self.assertIn("copula_avoidance_cluster", kinds(german_pattern_lint.lint(text)))
 
-    def test_formal_particles_are_reported(self):
-        text = "Die Entscheidung ist ja eben wichtig."
-        self.assertIn("particles_outside_locker", kinds(german_pattern_lint.lint(text, mode="formal")))
-
-    def test_protected_code_particles_are_ignored(self):
-        text = "Sachlicher Text.\n\n```mermaid\nG -- ja --> O\n```"
-        self.assertNotIn("particles_outside_locker", kinds(german_pattern_lint.lint(text, mode="formal")))
-
-    def test_particle_stems_do_not_match_unrelated_words(self):
-        text = "Das Ergebnis stammt aus dem Januar. Wir mussten die Haltung mehrmals ändern, ebenso die Malerei."
-        self.assertNotIn("particles_outside_locker", kinds(german_pattern_lint.lint(text, mode="formal")))
-
     def test_negation_parallelism(self):
         text = "Kein Server, keine Datenbank. Kein Dashboard nötig."
         self.assertIn("negation_parallelism", kinds(german_pattern_lint.lint(text)))

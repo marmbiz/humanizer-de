@@ -86,14 +86,6 @@ EXPECTED_GERMAN_PATTERN_JSON = """{
         "lösungen": 1,
         "prozesse": 1
       }
-    },
-    {
-      "pattern": 63,
-      "kind": "particles_outside_locker",
-      "severity": "warning",
-      "evidence": {
-        "count": 1
-      }
     }
   ]
 }

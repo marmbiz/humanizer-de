@@ -16,7 +16,7 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
-from cli_output import print_json
+from cli_output import print_json, resolve_exit_code
 
 
 REGISTER_SCRIPT = SCRIPT_DIR / "register_lint.py"
@@ -67,7 +67,6 @@ ABSTRACTA = (
     "faktoren",
     "prozesse",
 )
-PARTICLES = tuple(sorted(register_lint.MODAL_PARTICLES))
 NEGATION_PARALLELISM_RES = (
     re.compile(r"\b[Kk]eine?[nmrs]?\b[^,.;:!?\n]{1,45},\s*[Kk]eine?[nmrs]?\b"),
     re.compile(r"\b[Nn]icht\b[^,.;:!?\n]{1,45},\s*[Nn]icht\b"),
@@ -126,11 +125,6 @@ def precise_context(precise: bool) -> tuple[dict | None, object | None]:
     return {"requested": True, "active": True}, nlp
 
 
-def precise_status(precise: bool) -> dict | None:
-    status, _ = precise_context(precise)
-    return status
-
-
 def marker_stem(marker: str) -> str:
     if marker.endswith("en") and len(marker) > 5:
         return marker[:-2]
@@ -174,11 +168,6 @@ def count_marker(text: str, marker: str) -> int:
     return sum(1 for match in matches if not in_mention(match.start(), ranges))
 
 
-def count_particle(text: str, marker: str) -> int:
-    lowered = text.lower()
-    return len(re.findall(rf"\b{re.escape(marker)}\b", lowered))
-
-
 def count_stellt_dar_dependency(text: str, nlp: object) -> int:
     doc = nlp(text)
     count = 0
@@ -216,12 +205,6 @@ def lint(text: str, mode: str = "sachlich", precise: bool = False) -> dict:
     abstract_hits = {marker: count_marker(lowered, marker) for marker in ABSTRACTA if count_marker(lowered, marker)}
     if sum(abstract_hits.values()) >= 3:
         findings.append({"pattern": 58, "kind": "abstraction_cluster", "severity": "warning", "evidence": abstract_hits})
-
-    particle_count = sum(count_particle(lowered, marker) for marker in PARTICLES)
-    if mode in {"sachlich", "formal"} and particle_count:
-        findings.append({"pattern": 63, "kind": "particles_outside_locker", "severity": "warning", "evidence": {"count": particle_count}})
-    if mode == "locker" and particle_count > 3:
-        findings.append({"pattern": 63, "kind": "particle_overdose", "severity": "warning", "evidence": {"count": particle_count}})
 
     colon_headings = [
         line.strip()
@@ -317,14 +300,6 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     return args
 
 
-def exit_code(findings: list[dict], fail_on: str) -> int:
-    if fail_on == "never":
-        return 0
-    if fail_on == "blocker":
-        return 1 if any(item["severity"] == "blocker" for item in findings) else 0
-    return 1 if findings else 0
-
-
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv or sys.argv[1:])
     if args.fixture:
@@ -336,7 +311,7 @@ def main(argv: list[str] | None = None) -> int:
     text = args.file.read_text(encoding="utf-8") if args.file else args.text or ""
     report = lint(text, mode=args.mode, precise=args.precise)
     print_json(report)
-    return exit_code(report["findings"], args.fail_on)
+    return resolve_exit_code(args.fail_on, report["findings"])
 
 
 if __name__ == "__main__":

@@ -16,7 +16,7 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
-from cli_output import print_json
+from cli_output import print_json, resolve_exit_code
 import text_scope
 
 
@@ -81,21 +81,11 @@ def protected_ranges(text: str) -> list[tuple[int, int]]:
     ranges = text_scope.protected_ranges(text, scope=text_scope.TYPOGRAPHIC_PROSE)
     link_title_re = re.compile(r"\]\([^()\s]+[ \t]+(\"[^\"\n]*\")\)")
     ranges.extend(match.span(1) for match in link_title_re.finditer(text))
-    return merge_ranges(ranges)
-
-
-def merge_ranges(ranges: list[tuple[int, int]]) -> list[tuple[int, int]]:
-    merged: list[tuple[int, int]] = []
-    for start, end in sorted(ranges):
-        if merged and start <= merged[-1][1]:
-            merged[-1] = (merged[-1][0], max(merged[-1][1], end))
-        else:
-            merged.append((start, end))
-    return merged
+    return text_scope.merge_ranges(ranges)
 
 
 def range_checker(ranges: list[tuple[int, int]]):
-    merged = merge_ranges(ranges)
+    merged = text_scope.merge_ranges(ranges)
     starts = [item[0] for item in merged]
     ends = [item[1] for item in merged]
 
@@ -104,11 +94,6 @@ def range_checker(ranges: list[tuple[int, int]]):
         return pos >= 0 and index < ends[pos]
 
     return contains
-
-
-def in_ranges(index: int, ranges: list[tuple[int, int]]) -> bool:
-    return any(start <= index < end for start, end in ranges)
-
 
 def add_finding(findings: list[dict], pattern: int, kind: str, index: int, char: str, message: str) -> None:
     findings.append(
@@ -334,14 +319,6 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     return args
 
 
-def exit_code(findings: list[dict], fail_on: str) -> int:
-    if fail_on == "never":
-        return 0
-    if fail_on == "blocker":
-        return 1 if any(item.get("severity") == "blocker" for item in findings) else 0
-    return 1 if findings else 0
-
-
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv or sys.argv[1:])
     text = args.text if args.text is not None else args.file.read_text(encoding="utf-8")
@@ -360,7 +337,7 @@ def main(argv: list[str] | None = None) -> int:
         result["fixed_text"] = fixed_text
 
     print_json(result)
-    return exit_code(findings, args.fail_on)
+    return resolve_exit_code(args.fail_on, findings)
 
 
 if __name__ == "__main__":

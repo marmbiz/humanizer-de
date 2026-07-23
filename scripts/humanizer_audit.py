@@ -20,11 +20,10 @@ import rhythm_lint
 import style_profile
 import syntax_lint
 import unicode_lint
-from cli_output import print_json
+from cli_output import print_json, resolve_exit_code
 
 
 SOURCES = ("unicode", "rhythm", "german_pattern", "register")
-DEDUP_FINDING_KINDS = {"particles_outside_locker", "particle_overdose"}
 RHYTHM_KEYS = (
     "sentence_count",
     "mean_sentence_length",
@@ -313,19 +312,6 @@ def compact_register_findings(findings: list[dict]) -> list[dict]:
     return compact
 
 
-def dedupe_findings(findings: list[dict]) -> list[dict]:
-    compact: list[dict] = []
-    seen_kinds: set[str] = set()
-    for item in findings:
-        kind = item.get("kind")
-        if kind in DEDUP_FINDING_KINDS:
-            if kind in seen_kinds:
-                continue
-            seen_kinds.add(kind)
-        compact.append(item)
-    return compact
-
-
 def style_profile_section(
     text: str,
     path: Path,
@@ -381,7 +367,7 @@ def analyze_file(
         "german_pattern": len(german_report["findings"]),
         "register": len(register_report["findings"]),
     }
-    findings = dedupe_findings(
+    findings = (
         compact_unicode_findings(unicode_findings)
         + compact_rhythm_findings(rhythm_report["suspicions"])
         + compact_german_pattern_findings(german_report["findings"])
@@ -485,14 +471,6 @@ def format_markdown(report: dict) -> str:
     return "\n".join(lines)
 
 
-def exit_code(report: dict, fail_on: str) -> int:
-    if fail_on == "never":
-        return 0
-    if fail_on == "blocker":
-        return 1 if any(item.get("severity") == "blocker" for item in report["findings"]) else 0
-    return 1 if any(report["summary"]["counts"].values()) else 0
-
-
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv or sys.argv[1:])
     if args.profile is not None and not args.profile.is_file():
@@ -517,7 +495,7 @@ def main(argv: list[str] | None = None) -> int:
         print(format_markdown(report))
     else:
         print_json(report)
-    return exit_code(report, args.fail_on)
+    return resolve_exit_code(args.fail_on, report["findings"])
 
 
 if __name__ == "__main__":

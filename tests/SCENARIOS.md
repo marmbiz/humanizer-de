@@ -11,7 +11,7 @@ Die Methodik entspricht dem Golden Corpus: Der Input ist der Testfall, die erwar
 Maschinenlesbare Invarianten liegen zusätzlich in `tests/scenarios/` und laufen über:
 
 ```bash
-python3 scripts/run_review_eval.py tests/scenarios --check-invariants
+python3 scripts/run_review_eval.py tests/scenarios
 ```
 
 ## Coverage-Matrix

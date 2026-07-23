@@ -91,7 +91,7 @@ Der Rhythmus-Linter ist ein reines Mess-Tool. Er schreibt nichts, korrigiert nic
 python3 scripts/evidence_lint.py --before-file before.md --after-file after.md
 python3 scripts/register_lint.py --file text.md --mode sachlich
 python3 scripts/german_pattern_lint.py --file text.md --mode locker
-python3 scripts/run_review_eval.py tests/scenarios --check-invariants
+python3 scripts/run_review_eval.py tests/scenarios
 ```
 
 Diese Checks sind konservative Reviewer-Hilfen. Sie sollen Faktenanker, Registerbrueche und Cluster melden, aber keine Rewrite-Automatik ersetzen.
@@ -101,7 +101,7 @@ Diese Checks sind konservative Reviewer-Hilfen. Sie sollen Faktenanker, Register
 QGIR steht fuer Quality-Guided Iterative Revision. Es ist ein begrenzter zweiter Revisionsmodus fuer proportionale, belegtreue Qualitaetsverbesserung:
 
 ```bash
-python3 scripts/run_review_eval.py tests/scenarios --check-invariants
+python3 scripts/run_review_eval.py tests/scenarios
 ```
 
 QGIR-Contracts liegen in `tests/scenarios/*qgir*.yaml`. Neue QGIR-Regeln zuerst in `references/qgir.md` beschreiben und nur dann in `SKILL.md` aufnehmen, wenn sie fuer die Runtime zwingend sind.

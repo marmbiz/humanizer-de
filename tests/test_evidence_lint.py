@@ -270,7 +270,7 @@ class EvidenceLintTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             ledger_path = Path(tmp) / "ledger.json"
             expected = evidence_lint.write_ledger(before, ledger_path)
-            loaded = evidence_lint.load_ledger(ledger_path)
+            loaded = evidence_lint.load_ledger_document(ledger_path)[0]
             document = json.loads(ledger_path.read_text(encoding="utf-8"))
 
         self.assertEqual(loaded, expected)
@@ -335,7 +335,7 @@ class EvidenceLintCliTests(unittest.TestCase):
                 capture_output=True,
                 text=True,
             )
-            expected = evidence_lint.lint_with_anchors(evidence_lint.load_ledger(ledger_path), after)
+            expected = evidence_lint.lint_with_anchors(evidence_lint.load_ledger_document(ledger_path)[0], after)
 
         self.assertEqual(proc.returncode, 1)
         self.assertEqual(json.loads(proc.stdout)["findings"], expected)

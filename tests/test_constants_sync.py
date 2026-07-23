@@ -16,14 +16,10 @@ def load_script(name):
 
 
 register_lint = load_script("register_lint")
-german_pattern_lint = load_script("german_pattern_lint")
 run_review_eval = load_script("run_review_eval")
 
 
 class ConstantsSyncTests(unittest.TestCase):
-    def test_german_pattern_particles_are_register_particles(self):
-        self.assertEqual(set(german_pattern_lint.PARTICLES), set(register_lint.MODAL_PARTICLES))
-
     def test_review_eval_address_regexes_use_register_forms(self):
         for form in register_lint.DU_FORMS:
             self.assertRegex(form, run_review_eval.DU_RE)

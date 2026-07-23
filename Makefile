@@ -16,7 +16,7 @@ lint:
 	$(PYTHON) scripts/german_pattern_lint.py --fixture tests/corpus/de-naturalness > /dev/null
 
 eval-contracts:
-	$(PYTHON) scripts/run_review_eval.py tests/scenarios --check-invariants > /dev/null
+	$(PYTHON) scripts/run_review_eval.py tests/scenarios > /dev/null
 
 verify: test lint
 	git diff --check

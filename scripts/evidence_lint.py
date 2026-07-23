@@ -15,7 +15,7 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
-from cli_output import print_json
+from cli_output import print_json, resolve_exit_code
 
 
 SYNTAX_SCRIPT = SCRIPT_DIR / "syntax_lint.py"
@@ -472,11 +472,6 @@ def load_ledger_document(path: Path) -> tuple[dict[str, set[str]], dict[str, str
     return result, policy
 
 
-def load_ledger(path: Path) -> dict[str, set[str]]:
-    ledger_anchors, _ = load_ledger_document(path)
-    return ledger_anchors
-
-
 def check_fixture(path: Path, precise: bool = False) -> list[dict]:
     data = json.loads(path.read_text(encoding="utf-8"))
     findings = lint(data["before"], data["after"], precise=precise)
@@ -533,14 +528,6 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     elif not has_before or not has_after:
         parser.error("pair mode requires one before source and one after source")
     return args
-
-
-def exit_code(findings: list[dict], fail_on: str) -> int:
-    if fail_on == "never":
-        return 0
-    if fail_on == "blocker":
-        return 1 if any(item["severity"] == "blocker" for item in findings) else 0
-    return 1 if findings else 0
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -611,7 +598,7 @@ def main(argv: list[str] | None = None) -> int:
     if status is not None:
         report["precise"] = status
     print_json(report)
-    return exit_code(findings, args.fail_on)
+    return resolve_exit_code(args.fail_on, findings)
 
 
 if __name__ == "__main__":

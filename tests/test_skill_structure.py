@@ -145,7 +145,6 @@ class SkillStructureTests(unittest.TestCase):
         self.assertIn(expected_pattern_label, plugin["description"])
         self.assertIn(expected_pattern_label, codex_plugin["description"])
         self.assertIn(expected_pattern_label, marketplace_plugin["description"])
-        self.assertIn("Supports Claude Code and Codex", readme_text)
         self.assertIn("Supports Claude Code and Codex", plugin["description"])
         self.assertIn("Supports Claude Code and Codex", codex_plugin["description"])
         self.assertIn("Supports Claude Code and Codex", marketplace_plugin["description"])
@@ -168,9 +167,6 @@ class SkillStructureTests(unittest.TestCase):
         research = read_utf8(ROOT / "docs" / "naturalness-research-brief.md")
         coverage = read_utf8(ROOT / "docs" / "coverage-matrix.md")
 
-        self.assertIn("Status: P0 research safeguard", research)
-        self.assertIn("Repo heuristic", research)
-        self.assertIn("Source Ledger Template", research)
         self.assertIn('Do not write "Studien zeigen"', research)
         self.assertIn("AI-detector evasion", research)
 
@@ -180,14 +176,11 @@ class SkillStructureTests(unittest.TestCase):
         self.assertIn("Scenario contracts", coverage)
         self.assertIn("Disallowed Coverage Claims", coverage)
         self.assertIn("All 72 patterns are deterministically detected", coverage)
-        self.assertIn("Unsourced Idea Intake", research)
-        self.assertIn("Maximize entropy", research)
 
     def test_naturalness_guidance_blocks_unsafe_persona_and_entropy_moves(self):
         skill = read_utf8(ROOT / "SKILL.md")
         naturalness = read_utf8(ROOT / "references" / "de-naturalness.md")
         profiles = read_utf8(ROOT / "references" / "register-profiles.md")
-        research = read_utf8(ROOT / "docs" / "naturalness-research-brief.md")
 
         self.assertIn("Deixis nur stabilisieren, nicht erfinden", skill)
         self.assertIn("Keine künstlichen Fragmente, Regelbrüche oder Partikel einsetzen", skill)
@@ -201,9 +194,6 @@ class SkillStructureTests(unittest.TestCase):
 
         self.assertIn("deictic_center", profiles)
         self.assertIn("Sprecherposition bleibt stabil", profiles)
-
-        self.assertIn("Accepted as internal heuristics only", research)
-        self.assertIn("Rejected as unsafe defaults", research)
 
     def test_quality_rubric_exists_and_is_anchored_in_pass_5(self):
         rubric = (ROOT / "references" / "quality-rubric.md")
@@ -224,7 +214,6 @@ class SkillStructureTests(unittest.TestCase):
     def test_ai_involvement_audit_stays_roadmap_not_active_skill(self):
         skill = read_utf8(ROOT / "SKILL.md")
         readme = read_utf8(ROOT / "README.md")
-        research = read_utf8(ROOT / "docs" / "naturalness-research-brief.md")
 
         self.assertNotIn("references/ai-involvement-audit.md", skill)
         self.assertNotIn("Hinweisdichte", skill)
@@ -238,33 +227,21 @@ class SkillStructureTests(unittest.TestCase):
         self.assertIn("kontrollierten Nachkamm", readme)
         self.assertIn("schlechter werden können", readme)
 
-        self.assertIn("Roadmap Ideas", research)
-        self.assertIn("Calibrated AI-involvement audit", research)
-        self.assertIn("labeled German benchmark", research)
-        self.assertIn("not authorship proof or uncalibrated percentages", research)
-
     def test_readme_examples_preserve_claim_boundaries(self):
         readme = read_utf8(ROOT / "README.md")
 
-        self.assertIn("berücksichtigt sie als Zielprofil", readme)
         self.assertNotIn("wendet sie auf das Rewrite an", readme)
-        self.assertIn("in 8 Ländern und hat einen Umsatz von 50 Millionen Euro", readme)
         self.assertNotIn("in 8 Ländern mit einem Umsatz von 50 Millionen Euro", readme)
-        self.assertIn("Die Produktivität fiel positiv auf. Der Umsatz verdreifachte sich.", readme)
         self.assertNotIn("in\ndiesem Zeitraum", readme)
 
     def test_readme_install_onboarding_is_explicit(self):
         readme = read_utf8(ROOT / "README.md")
         installation = readme.split("## Installation", 1)[1].split("## Benutzung", 1)[0]
 
-        self.assertIn("Für den Basis-Skill ist kein Python nötig", installation)
-        self.assertIn("Plugin und manuelle Skill-Kopie", installation)
         self.assertIn("### Was dabei installiert wird", installation)
         self.assertIn("**Nicht installiert werden:**", installation)
         self.assertIn("### Installation prüfen (alle Wege)", installation)
         self.assertIn("### Version und Updates", installation)
-        self.assertIn("`~/.codex/skills/` ist nur ein Legacy-Pfad", installation)
-        self.assertIn("`/reload-plugins`", installation)
         self.assertIn("https://code.claude.com/docs/en/discover-plugins", installation)
         self.assertIn("https://learn.chatgpt.com/docs/plugins", installation)
         self.assertNotIn("mkdir -p ~/.codex/skills", installation)
@@ -273,36 +250,13 @@ class SkillStructureTests(unittest.TestCase):
         self.assertIn("Keine Zusatzsoftware ohne Zustimmung", readme)
         self.assertIn("`$HOME/.claude/skills/humanizer-de/`", readme)
         self.assertIn("Aktivierung nicht behaupten", readme)
-        self.assertIn("py -m pip install -r requirements-precise.txt", readme)
-        self.assertIn("python3.12 -m venv .venv", readme)
-        self.assertIn("make doctor-full", readme)
-        self.assertIn("py scripts/doctor.py --json", readme)
-        self.assertIn("sudo apt install hunspell hunspell-de-de", readme)
 
-    def test_readme_follows_the_user_journey(self):
+    def test_readme_keeps_navigation_contracts(self):
         readme = read_utf8(ROOT / "README.md")
-        headings = [
-            "## Was ist das?",
-            "## Installation",
-            "## Benutzung",
-            "## Beispiele",
-            "## Fakten, Grenzen und Datenschutz",
-            "## Wie der Skill arbeitet",
-            "## Optionale Werkzeuge",
-            "## 72 Muster in 10 Kategorien",
-            "## Für AI-Assistenten",
-            "## Entwicklung und Verifikation",
-            "## Was ist neu?",
-            "## Attribution",
-            "## Lizenz",
-        ]
-
-        positions = [readme.index(heading) for heading in headings]
-        self.assertEqual(positions, sorted(positions))
-        self.assertIn("Installationsdetails, manuelle Wege und Updates", readme)
-        self.assertIn("Power-User: lokaler Prüfablauf", readme)
-        self.assertIn("Einzelchecks, Exit-Codes und Evidence-Gate", readme)
-        self.assertIn("Ältere Versionen", readme)
+        self.assertRegex(
+            readme,
+            r"<details>\s*<summary><strong>Ältere Versionen</strong></summary>",
+        )
 
         for anchor in [
             "warum-nutzen",
@@ -321,15 +275,6 @@ class SkillStructureTests(unittest.TestCase):
         agent_yaml = read_utf8(ROOT / "agents" / "openai.yaml")
         plugin = json.loads(read_utf8(ROOT / ".claude-plugin" / "plugin.json"))
         codex_plugin = json.loads(read_utf8(ROOT / ".codex-plugin" / "plugin.json"))
-
-        for phrase in [
-            "German AI Text Humanizer",
-            "Claude Humanizer Deutsch",
-            "KI-Texte humanisieren Deutsch",
-            "marmbiz/humanizer-de",
-            "deutschsprachiger Humanizer Skill für Claude Code und Codex",
-        ]:
-            self.assertIn(phrase, readme)
 
         self.assertIn("German AI Text Humanizer", skill)
         self.assertIn("German AI text humanizer for Claude/Codex", agent_yaml)

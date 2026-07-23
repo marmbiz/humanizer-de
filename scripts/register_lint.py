@@ -17,7 +17,7 @@ if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
 import text_scope
-from cli_output import print_json
+from cli_output import print_json, resolve_exit_code
 
 
 SYNTAX_SCRIPT = SCRIPT_DIR / "syntax_lint.py"
@@ -59,11 +59,6 @@ def precise_context(precise: bool) -> tuple[dict | None, object | None]:
     if nlp is None:
         return {"requested": True, "active": False, "reason": reason or "spacy_missing"}, None
     return {"requested": True, "active": True}, nlp
-
-
-def precise_status(precise: bool) -> dict | None:
-    status, _ = precise_context(precise)
-    return status
 
 
 def strip_protected(text: str, exclude_blockquotes: bool = False) -> str:
@@ -233,14 +228,6 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     return args
 
 
-def exit_code(findings: list[dict], fail_on: str) -> int:
-    if fail_on == "never":
-        return 0
-    if fail_on == "blocker":
-        return 1 if any(item["severity"] == "blocker" for item in findings) else 0
-    return 1 if findings else 0
-
-
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv or sys.argv[1:])
     if args.fixture:
@@ -252,7 +239,7 @@ def main(argv: list[str] | None = None) -> int:
     text = args.file.read_text(encoding="utf-8") if args.file else args.text or ""
     report = lint(text, mode=args.mode, expected_address=args.expected_address, precise=args.precise)
     print_json(report)
-    return exit_code(report["findings"], args.fail_on)
+    return resolve_exit_code(args.fail_on, report["findings"])
 
 
 if __name__ == "__main__":

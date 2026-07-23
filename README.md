@@ -806,7 +806,7 @@ python3 scripts/evidence_lint.py --before-file before.md --after-file after.md
 python3 scripts/spell_lint.py --before-file before.md --after-file after.md
 python3 scripts/register_lint.py --file <text.md> --mode formal
 python3 scripts/german_pattern_lint.py --file <text.md> --mode locker
-python3 scripts/run_review_eval.py tests/scenarios --check-invariants
+python3 scripts/run_review_eval.py tests/scenarios
 python3 scripts/syntax_lint.py --file <text.md>
 ```
 
