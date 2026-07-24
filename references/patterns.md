@@ -745,7 +745,7 @@ Häufige Indikatoren:
 - Autoren existieren, aber die genannte Publikation nicht
 - Reale Quelle existiert, enthält aber die behauptete Zahl, Aussage oder das Zitat nicht
 - Plausibles Aktenzeichen, Urteil, Gesetz, Studie oder Interview ohne auffindbaren Träger im übergebenen Material
-- Defekte externe Links mit `utm_source=`-Parametern – besonders verdächtig: `utm_source=chatgpt.com`, `utm_source=claude.ai`, `utm_source=gemini.google.com`, `utm_source=perplexity.ai` (direkter KI-Fingerabdruck)
+- Defekte externe Links mit `utm_source=`-Parametern – besonders verdächtig: `utm_source=chatgpt.com` (auch verkürzt `utm_source=chatgpt` oder `utm_source=openai`), `utm_source=claude.ai`, `utm_source=gemini.google.com`, `utm_source=perplexity.ai` (direkter KI-Fingerabdruck; Gemini und Claude setzen UTM-Tags seltener als ChatGPT)
 - Unbenutzte benannte Referenzen (`<ref name="..."/>` ohne zugehörige Definition)
 
 **Warum LLMs das tun:** Kann keine echten Quellen recherchieren und erzeugt plausibel aussehende Referenzen aus dem Training.
