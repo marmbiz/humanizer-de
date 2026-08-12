@@ -6,6 +6,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 EXPECTED_VERSION = "5.18.0"
+EXPECTED_DATE_RELEASED = "2026-08-11"
 EXPECTED_PATTERN_COUNT = 72
 
 
@@ -162,6 +163,10 @@ class SkillStructureTests(unittest.TestCase):
         self.assertRegex(
             citation_text,
             rf"(?m)^version:\s+['\"]?{re.escape(EXPECTED_VERSION)}['\"]?\s*$",
+        )
+        self.assertRegex(
+            citation_text,
+            rf"(?m)^date-released:\s+['\"]?{re.escape(EXPECTED_DATE_RELEASED)}['\"]?\s*$",
         )
         self.assertNotRegex(
             citation_text,
