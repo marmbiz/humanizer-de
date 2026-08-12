@@ -136,8 +136,8 @@ Bei jedem Version-Bump:
 
 1. Version und Changelog synchronisieren: `SKILL.md`, `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `.codex-plugin/plugin.json`, `references/patterns.md`, `references/decision-tables.md`, `docs/coverage-matrix.md`, `README.md` und `tests/test_skill_structure.py`.
 2. `make verify` ausführen.
-3. Release-Commit auf `main` pushen.
-4. Tag `vX.Y.Z` auf exakt diesen Commit setzen und pushen.
+3. Release-Änderungen per Pull Request einreichen, alle Pflichtchecks abwarten und nach `main` mergen.
+4. Den CI-Lauf auf `main` abwarten; erst danach Tag `vX.Y.Z` auf exakt diesen grünen Merge-Commit setzen und pushen.
 5. GitHub Release aus dem Tag erstellen. Release Notes sollen die Changelog-Zeile konkretisieren, aber keinen breiteren Scope behaupten.
 
 Patch-Releases ohne Nutzerwirkung dürfen nur im README-Changelog stehen. Minor-/Major-Releases und sichtbare Tool-, Skill- oder Workflow-Änderungen bekommen immer Git-Tag und GitHub Release.

@@ -951,8 +951,9 @@ Bei jedem Version-Bump:
 
 1. Version in `SKILL.md`, Plugin-Metadaten, Referenzen und Changelog synchronisieren.
 2. `make verify` ausführen.
-3. Änderungen committen und `main` pushen.
-4. Einen Tag `vX.Y.Z` exakt auf den Release-Commit setzen und pushen.
+3. Änderungen per Pull Request einreichen, alle Pflichtchecks abwarten und nach `main` mergen.
+4. Den CI-Lauf auf `main` abwarten; erst danach einen Tag `vX.Y.Z` exakt auf den grünen
+   Merge-Commit setzen und pushen.
 5. Auf GitHub einen Release aus diesem Tag erstellen. Die Release Notes dürfen die Changelog-Zeile erweitern, müssen aber denselben Scope beschreiben.
 
 Im README bleibt nur die aktuelle Version einzeln stehen; ältere Releases werden nach
@@ -961,10 +962,10 @@ GitHub Release.
 
 ### Feedback und Beitrag
 
-- **Bugs melden:** Issue im Repository erstellen
+- **Bugs melden:** [Issue im Repository erstellen](https://github.com/marmbiz/humanizer-de/issues/new/choose)
 - **Muster ergänzen:** Pull Request senden; neue oder materiell erweiterte Lint-Regeln müssen
   das verbindliche [Marker-Aufnahmeprotokoll](docs/marker-aufnahmeprotokoll.md) erfüllen
-- **Erfahrungen teilen:** in den Discussions diskutieren
+- **Erfahrungen teilen:** [als Issue zur Diskussion stellen](https://github.com/marmbiz/humanizer-de/issues/new/choose)
 
 ---
 

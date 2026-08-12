@@ -1,0 +1,44 @@
+name: Textqualitäts- oder Linterproblem
+description: Fehlalarm, übersehenes Muster oder unerwünschte Textänderung melden
+title: "[Qualität]: "
+labels:
+  - bug
+body:
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Art des Problems
+      options:
+        - Fehlalarm
+        - Muster übersehen
+        - Substanz oder Register beschädigt
+        - Anderes Qualitätsproblem
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Humanizer-Version
+      placeholder: 5.18.0
+    validations:
+      required: true
+  - type: textarea
+    id: input
+    attributes:
+      label: Kleinstes reproduzierbares Textbeispiel
+      description: Bitte vertrauliche Angaben entfernen.
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: Beobachtetes und erwartetes Verhalten
+    validations:
+      required: true
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Datenschutz
+      options:
+        - label: Das Beispiel enthält keine vertraulichen oder personenbezogenen Angaben.
+          required: true

@@ -1,0 +1,59 @@
+name: Installationsproblem
+description: Fehler beim Installieren oder Laden in Claude Code oder Codex melden
+title: "[Installation]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: Danke für den Bericht. Bitte keine Zugangsdaten oder Tokens einfügen.
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Plattform
+      options:
+        - Claude Code
+        - Codex
+        - Beide
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Versionsausgabe
+      description: Ausgabe von `claude --version` oder `codex --version`.
+      placeholder: claude 2.x / codex 0.x
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: Betriebssystem
+      placeholder: macOS 15, Windows 11, Ubuntu 24.04
+    validations:
+      required: true
+  - type: dropdown
+    id: install_path
+    attributes:
+      label: Installationsweg
+      options:
+        - Marketplace-Kurzform
+        - HTTPS-Repository-URL
+        - Lokale Plugin-Datei
+        - Anderer Weg
+    validations:
+      required: true
+  - type: textarea
+    id: error
+    attributes:
+      label: Fehlermeldung im Wortlaut
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Schritte zur Reproduktion
+      description: Welche Befehle oder Klicks führen zuverlässig zum Fehler?
+    validations:
+      required: true
