@@ -144,6 +144,7 @@ class SkillStructureTests(unittest.TestCase):
         coverage_text = read_utf8(ROOT / "docs" / "coverage-matrix.md")
         warp_text = read_utf8(ROOT / "WARP.md")
         checklist_text = read_utf8(ROOT / "assets" / "checkliste-ki-tells.md")
+        citation_text = read_utf8(ROOT / "CITATION.cff")
 
         self.assertRegex(skill_text, rf"version:\s+['\"]?{re.escape(EXPECTED_VERSION)}['\"]?")
         self.assertEqual(plugin["version"], EXPECTED_VERSION)
@@ -158,6 +159,15 @@ class SkillStructureTests(unittest.TestCase):
         self.assertIn(f"v{EXPECTED_VERSION}", patterns_text.splitlines()[2])
         self.assertIn(f"v{EXPECTED_VERSION}", decision_text.splitlines()[2])
         self.assertIn(f"v{EXPECTED_VERSION}", coverage_text)
+        self.assertRegex(
+            citation_text,
+            rf"(?m)^version:\s+['\"]?{re.escape(EXPECTED_VERSION)}['\"]?\s*$",
+        )
+        self.assertNotRegex(
+            citation_text,
+            r"(?m)^license:",
+            "CFF treats multiple licenses as OR; file-specific terms belong in NOTICE",
+        )
         self.assertEqual(
             warp_text.splitlines()[0],
             f"# WARP - Humanizer (Deutsch) Entwicklerleitfaden (v{EXPECTED_VERSION})",

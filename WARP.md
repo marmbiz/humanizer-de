@@ -134,7 +134,7 @@ Der README-Abschnitt "Was ist neu?" ist der vollständige Changelog. GitHub Rele
 
 Bei jedem Version-Bump:
 
-1. Version und Changelog synchronisieren: `SKILL.md`, `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `.codex-plugin/plugin.json`, `references/patterns.md`, `references/decision-tables.md`, `docs/coverage-matrix.md`, `README.md` und `tests/test_skill_structure.py`.
+1. Version und Changelog synchronisieren: `SKILL.md`, `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `.codex-plugin/plugin.json`, `references/patterns.md`, `references/decision-tables.md`, `docs/coverage-matrix.md`, `CITATION.cff` (Version und `date-released`), `README.md` und `tests/test_skill_structure.py`.
 2. `make verify` ausführen.
 3. Release-Änderungen per Pull Request einreichen, alle Pflichtchecks abwarten und nach `main` mergen.
 4. Den CI-Lauf auf `main` abwarten; erst danach Tag `vX.Y.Z` auf exakt diesen grünen Merge-Commit setzen und pushen.

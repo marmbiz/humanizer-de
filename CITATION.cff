@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-message: "If you use this software, please cite it using the metadata below."
+message: "If you use this software, please cite it using the metadata below. Licensing varies by file; see NOTICE."
 title: "Humanizer (Deutsch)"
 type: software
 authors:
@@ -9,4 +9,3 @@ version: 5.18.0
 date-released: 2026-08-11
 url: "https://github.com/marmbiz/humanizer-de"
 repository-code: "https://github.com/marmbiz/humanizer-de"
-license: MIT
