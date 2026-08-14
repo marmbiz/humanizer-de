@@ -971,6 +971,16 @@ GitHub Release.
 
 ## Was ist neu?
 
+- **5.18.1** - Muster 8 kennt eine Figur mehr: „X hat kein Y-Problem, X hat ein Z-Problem“.
+  Statt die Diagnose zu belegen, ersetzt die Umdeutung sie. Ausgelöst hat das ein Trend auf X,
+  wo Nutzer neun angebliche Verräter von KI-Text sammelten. Rund 30 der dort genannten 35
+  Tells deckt der Katalog bereits ab, mehrere davon wortgleich. Von den vier verbliebenen
+  Kandidaten hielt nur einer der Prüfung stand. Zwei fielen in der Messung durch. In echten
+  Menschentexten steht eine Zahl ohne Quellenangabe wie „43 Prozent“ nämlich häufiger als in
+  KI-Texten, und über zehn Texte des naiven GPT-Arms fand sich dafür kein einziger Treffer.
+  Beim vierten, dem Stakkato aus Zwei-Wort-Sätzen, lässt sich die Form nicht von legitimem
+  Werbetext trennen. Geändert hat sich nur Dokumentation, keine Erkennungslogik und keine
+  Schwelle.
 - **5.18.0** - Gehäufte Gedankenstriche (Muster 16) prüft der Skill jetzt deterministisch.
   Bisher war das Urteilssache. Der neue Detektor `dash_cluster` erkennt zwei Formen: viele
   Striche gedrängt in einem Absatz, und wenige Striche über viele Absätze verstreut, wobei
