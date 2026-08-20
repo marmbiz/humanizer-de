@@ -1453,7 +1453,7 @@ Harte Indikatoren (klare Tells):
 - **Calques:** „am Ende des Tages“ (at the end of the day), „in Reihenfolge zu“ (in order to), „zu Beginn mit“ (to begin with), „das macht keinen Unterschied für mich“ (that makes no difference to me)
 - **False Friends:** „eventuell“ als „schließlich“ (eventually, korrekt: „schließlich“/„am Ende“), „aktuell“ als „tatsächlich“ (actually, korrekt: „tatsächlich“/„eigentlich“), „sensibel“ als „vernünftig/umsichtig“ (sensible, korrekt: „vernünftig“/„besonnen“)
 - **Syntaktische Transfers:** englische Wortstellung in Relativsätzen („das Unternehmen, welches gegründet wurde in 1990“), nachgestellte Präpositionalphrasen nach englischem Muster („das Buch über Berlin von Peter Schneider geschrieben“)
-- **Kollokations-Transfers:** „bin ich simpler gegangen“ (I went simpler), „die Reibung fällt“ (friction drops), „der Filter bei der Arbeit“ (the filter at work), „gegen echten Output iterieren“ (iterate against output)
+- **Kollokations-Transfers:** „bin ich simpler gegangen“ (I went simpler), „die Reibung fällt“ (friction drops), „der Filter bei der Arbeit“ (the filter at work), „gegen echten Output iterieren“ (iterate against output), transitives „tragen“ als carries-Calque: „das ist XY, das alles trägt“, „der Satz trägt die Erzählung“ (X carries Y im Sinn von stützen/ausmachen/vermitteln; Lektoren-Beobachtung LinkedIn, 2026-08-21)
 - **Englischer Genitiv in deutscher Syntax:** „xAI's Agent Tools“ oder „OpenAI's Responses API“ statt „die Agent Tools von xAI“ beziehungsweise „die Responses API von OpenAI“
 
 **Kein belastbarer Tell (weglassen):**
@@ -1461,6 +1461,7 @@ Harte Indikatoren (klare Tells):
 - „Sinn machen“ – im heutigen Standarddeutsch etabliert; stilistische Präferenz, kein KI-Tell
 - „realisieren“ im Sinne von „erkennen/begreifen“ – lexikalisch etabliert (Duden, DWDS)
 - „kontrollieren“ als „beherrschen“ – Bedeutungen überlappen im Deutschen bereits
+- „tragen“ intransitiv oder in fester Wendung – „das Argument trägt“, „die Strategie trug nicht“, „das Eis trägt“, „Verantwortung/Früchte/Risiko tragen“ sind idiomatisches Deutsch; nur das transitive carries-Calque (siehe Kollokations-Transfers) ist ein Tell
 - Unnötige Possessivpronomen – allgemeines Übersetzungsdeutsch, Stilglättung
 - Einzelne Lehnwörter („Meeting“, „Team“, „Feedback“) – im Zielregister oft normal
 - Englische Titel, Zitate, Code und offizielle Produktstrings – nur die deutsche Anschlusskonstruktion prüfen
