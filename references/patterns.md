@@ -1,6 +1,6 @@
 # Humanizer-de Pattern Catalog
 
-Vollständiger Musterkatalog für Humanizer (Deutsch) v5.21.2. Nur bei konkreter Musterdiagnose, Audit oder Grenzfällen laden.
+Vollständiger Musterkatalog für Humanizer (Deutsch) v5.21.3. Nur bei konkreter Musterdiagnose, Audit oder Grenzfällen laden.
 
 ## Kurzreferenz
 
@@ -256,6 +256,9 @@ Häufige Indikatoren:
 - "nicht nur... sondern auch"
 - "weder... noch... sondern"
 - Pointierte Varianten: "kein X. Sondern Y." oder "nicht X, nicht Y, sondern Z"
+- Nachgestellter Kontrast-Schwanz als Satzschluss: "X, nicht Y." (linter-gestützt, zählt in
+  den Dichtebefund; beidseitige Wert-Korrekturen wie "am Dienstag, nicht am Mittwoch."
+  bleiben ausgenommen)
 - Symmetrische Satzstrukturen
 - Abgehackte Verneinungen am Satzende: "kein Raten.", "keine Kompromisse.", "kein Aufwand."
 - Spiegel-Subjekte: "X ist das eine. Y das andere."

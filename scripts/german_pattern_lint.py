@@ -139,7 +139,7 @@ NEGATION_PARALLELISM_RES = (
     ),
 )
 FACTUAL_CONTRAST_VALUE_PATTERN = (
-    r"(?:(?:am|im|um)\s+)?(?:"
+    r"(?:(?:am|im|um|ab|seit)\s+)?(?:"
     r"montags?|dienstags?|mittwochs?|donnerstags?|freitags?|samstags?|sonntags?"
     r"|(?:januar|februar|märz|maerz|april|mai|juni|juli|august|september|oktober|november|dezember)"
     r"(?:\s+\d{4})?"
@@ -160,6 +160,18 @@ ANTITHESIS_RES = (
         rf"\b(?P<left>{ANTITHESIS_OPERAND_PATTERN})\s+und\s+"
         rf"nicht\b(?!\s+(?:nur|allein|bloß|bloss|ausschließlich|ausschliesslich)\b)\s+"
         rf"(?P<right>{ANTITHESIS_OPERAND_PATTERN})",
+        re.IGNORECASE,
+    ),
+    # Nachgestellter Kontrast-Schwanz als Satzschluss: "X, nicht Y." Left deckt nur den
+    # Operanden direkt vor dem Komma, damit der Fakten-Carve-out beidseitige
+    # Wert-Korrekturen ("am Dienstag, nicht am Mittwoch.") weiter ausschließen kann.
+    # Das Schlusszeichen braucht folgenden Leerraum oder Textende (schließt Dezimal-,
+    # Tausender- und Domain-Punkte aus) und darf nicht auf ein Einzelzeichen-Token
+    # folgen (schließt Abkürzungen wie "z. B." und Ordinalpunkte wie "am 3. Mai" aus).
+    re.compile(
+        rf"\b(?P<left>{ANTITHESIS_OPERAND_PATTERN})\s*,\s*"
+        r"nicht\b(?!\s+(?:nur|allein|bloß|bloss|ausschließlich|ausschliesslich)\b)\s+"
+        r"(?P<right>[^,.;:!?\r\n]{1,80}?)(?<!\s[0-9A-Za-zÄÖÜäöüß])[.!?](?=\s|$)",
         re.IGNORECASE,
     ),
 )

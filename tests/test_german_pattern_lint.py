@@ -409,6 +409,64 @@ class GermanPatternLintTests(unittest.TestCase):
             with self.subTest(text=text):
                 self.assertNotIn("negation_antithesis_cluster", kinds(german_pattern_lint.lint(text)))
 
+    def test_negation_antithesis_cluster_for_trailing_contrast_tails(self):
+        text = (
+            "Der Test prüft das Produkt, nicht den Nutzer. "
+            "Unser Support spricht Handwerk, nicht Amtsdeutsch. "
+            "Das Modell optimiert auf Plausibilität, nicht auf Wahrheit. "
+            "Im Zentrum steht die Antwort, nicht der Verweis."
+        )
+        self.assertIn("negation_antithesis_cluster", kinds(german_pattern_lint.lint(text)))
+
+    def test_negation_antithesis_cluster_for_mixed_trailing_and_classic_forms(self):
+        text = (
+            "Der Test prüft das Produkt, nicht den Nutzer. "
+            "Im Zentrum steht die Antwort, nicht der Verweis. "
+            "Nicht abwarten, sondern machen. Laut und nicht leise lautet die Devise."
+        )
+        self.assertIn("negation_antithesis_cluster", kinds(german_pattern_lint.lint(text)))
+
+    def test_negation_antithesis_cluster_ignores_trailing_value_corrections(self):
+        for text in (
+            "Die Lieferung kommt am Dienstag, nicht am Mittwoch. " * 4,
+            "Der Termin liegt im August, nicht im September. " * 4,
+            "Die Messung ergab 12 Prozent, nicht 10 Prozent. " * 4,
+            "Der Vertrag gilt ab Mai, nicht ab Juni. " * 4,
+            "Der Stichtag ist morgen, nicht heute. " * 4,
+        ):
+            with self.subTest(text=text):
+                self.assertNotIn("negation_antithesis_cluster", kinds(german_pattern_lint.lint(text)))
+
+    def test_negation_antithesis_cluster_ignores_trailing_correlatives(self):
+        text = "Es geht um Qualität, nicht nur um Tempo. " * 4
+        self.assertNotIn("negation_antithesis_cluster", kinds(german_pattern_lint.lint(text)))
+
+    def test_negation_antithesis_trailing_tail_requires_sentence_end(self):
+        text = "Es zählt Qualität, nicht Tempo\n" * 4
+        self.assertNotIn("negation_antithesis_cluster", kinds(german_pattern_lint.lint(text)))
+
+    def test_negation_antithesis_trailing_tail_ignores_non_sentence_periods(self):
+        for text in (
+            "Wir prüfen Inhalte, nicht z. B. Formate der Konkurrenz. " * 4,
+            "Der Kurs kostet 1.200 Euro, nicht mehr als 2.400 Euro im Jahr. " * 4,
+            "Er schrieb an die Redaktion, nicht an mm.biz oder andere. " * 4,
+            "Der Termin ist am 5. Mai, nicht am 3. Mai wie geplant. " * 4,
+        ):
+            with self.subTest(text=text):
+                self.assertNotIn("negation_antithesis_cluster", kinds(german_pattern_lint.lint(text)))
+
+    def test_negation_antithesis_trailing_tail_overlapping_classic_form_counts_once(self):
+        text = "Nicht Absicht, sondern Gewohnheit, nicht Bosheit. " * 2
+        candidates = sorted(
+            match.span()
+            for pattern in german_pattern_lint.ANTITHESIS_RES
+            for match in pattern.finditer(text)
+        )
+        self.assertTrue(
+            any(right[0] < left[1] for left, right in zip(candidates, candidates[1:]))
+        )
+        self.assertNotIn("negation_antithesis_cluster", kinds(german_pattern_lint.lint(text)))
+
     def test_negation_antithesis_cluster_ignores_low_document_density(self):
         text = "Wort " * 1400 + (
             "Nicht abwarten, sondern machen. Nicht erklären, sondern liefern. "

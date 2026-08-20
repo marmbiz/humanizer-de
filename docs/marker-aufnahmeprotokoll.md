@@ -53,14 +53,20 @@ im Marktplatz-Eintrag.
 
 1. **Muster-ID, Name, Zweck:** Muster 8, `negation_antithesis_cluster`. Der Befund ergänzt
    die bestehende lokale `negation_parallelism`-Prüfung um gehäufte Formen „nicht A,
-   sondern B“ und „A und nicht B“, ohne deren Kind oder Schwelle zu ändern.
+   sondern B“, „A und nicht B“ und den satzfinalen Kontrast-Schwanz „A, nicht B.“,
+   ohne deren Kind oder Schwelle zu ändern.
 2. **Texttypen, Modi, ausgeschlossene Spans:** Aktiv in allen Texttypen und Modi. Code,
    Inline-Code, Frontmatter, URLs, Markdown-/HTML-Syntax, Inline-Zitate und
    Markdown-Hervorhebungen werden über die vorhandenen Scope- und Use-Mention-Mechanismen
    ausgeblendet. Auch Treffer, die einen solchen Span nur teilweise überlappen, zählen nicht.
-3. **Erkennungslogik:** Zwei case-insensitive Regexe erfassen die beiden Formen mit
-   höchstens 80 Zeichen je Antithesenarm. Überlappende Treffer der beiden Regexe zählen
-   einmal. „Nicht nur … sondern auch“ bleibt ausgeschlossen.
+3. **Erkennungslogik:** Drei case-insensitive Regexe erfassen die Formen „nicht A,
+   sondern B“, „A und nicht B“ und den nachgestellten Kontrast-Schwanz „A, nicht B.“
+   mit höchstens 80 Zeichen je Antithesenarm. Der Schwanz zählt nur satzfinal: Das
+   Schlusszeichen `[.!?]` braucht folgenden Leerraum oder Textende und darf nicht auf
+   ein Einzelzeichen-Token folgen — Dezimal-, Tausender-, Domain-, Abkürzungs-
+   („z. B.“) und Ordinalpunkte („am 3. Mai“) gelten nicht als Satzende. Überlappende
+   Treffer der Regexe zählen einmal. „Nicht nur … sondern auch“ bleibt ausgeschlossen;
+   beim Schwanz gilt derselbe Ausschluss für „, nicht nur/allein/bloß/ausschließlich“.
    Offensichtliche beidseitige Zeit-, Datums- und Zahlkorrekturen einschließlich geläufiger
    Einheiten sowie Monat-Jahr-Angaben zählen nicht.
 4. **Schwelle:** Warnung erst ab mindestens vier Treffern und mindestens 3,0 Treffern pro
@@ -82,6 +88,12 @@ im Marktplatz-Eintrag.
    | Grenzfall | Schutzspan nur in einem Antithesenarm | kein Befund |
    | Grenzfall | zwei Sätze mit je zwei überlappenden Formen | zwei statt vier Treffer, kein Befund |
    | Grenzfall | vier „nicht nur … sondern auch“-Korrelationen | kein Befund |
+   | Positiv | vier satzfinale Schwanz-Formen „A, nicht B.“ | neuer Dichtebefund |
+   | Positiv | gemischter Cluster aus Schwanz- und klassischen Formen | neuer Dichtebefund |
+   | Negativ | vier beidseitige Wert-Korrekturen in Schwanz-Form („am Dienstag, nicht am Mittwoch.“) | kein Befund |
+   | Negativ | vier „, nicht nur“-Korrelationen | kein Befund |
+   | Grenzfall | Schwanz-Form ohne Satzschlusszeichen dahinter | kein Treffer, kein Befund |
+   | Grenzfall | Schwanz überlappt klassische „nicht A, sondern B“-Form | zählt einmal, kein Befund |
 
 6. **Fehlalarmfamilien:** Inhaltliche Abgrenzungen und sachliche Korrekturen sind
    syntaktisch nicht allgemein von Pointen zu trennen. Automatisch ausgeschlossen wird nur
@@ -97,6 +109,29 @@ im Marktplatz-Eintrag.
    Präzisierung vom 2026-08-11: Der erste Regex akzeptiert neben dem Komma auch die
    katalogisierten Dash-Trenner. Die Schwellen bleiben unverändert. Damit kann Muster 16
    überlappende „nicht X – sondern Y“-Spans zuverlässig Muster 8 überlassen.
+   Erweiterung vom 2026-08-20, Version 5.21.3: dritter Regex für den nachgestellten
+   Kontrast-Schwanz „A, nicht B.“ (satzfinal). Anlass war eine externe Meldung aus der
+   Praxis (Kurztext-Set mit unsichtbaren Kontrastfiguren). Messung am 50-Texte-Korpus:
+   GPT 0/10, Claude 8 Rohtreffer in 5/10, echte Menschen (pre2022) 4 in 3/20, own 4 in
+   4/10 — Claude-Marker-Charakter. Cluster-Wirkung im vollen Pipeline-Lauf: vorher 0/50
+   Texte mit Dichtebefund, nachher genau 1 (claude-09, count 4, Dichte 5,1/1000); 0 neue
+   Fehlalarme auf beiden Menschen-Bedingungen. `left` deckt bewusst nur den Operanden
+   direkt vor dem Komma, damit der Fakten-Carve-out beidseitige Wert-Korrekturen weiter
+   ausschließt. Schwellen unverändert (4 + 3,0/1.000). Die im selben Befund gemeldete
+   Satzgrenzen-Form („kein X. Sondern Y.“) und ein ODER-Pfad für Kurztexte unter 500
+   Wörtern sind bewusst nicht aufgenommen: 0 Korpus-Belege bzw. keine FP-Baseline für
+   das Zielregister — beide warten auf das Werbe-/Social-Korpus
+   (research/base-rates/NEXT.md, Abschnitt Kurztext-Befund).
+   Nachtrag nach Review vom selben Tag: Der Satzend-Anker bekam zwei Guards (Leerraum-
+   Lookahead gegen Dezimal-/Tausender-/Domain-Punkte, Lookbehind gegen Einzelzeichen-
+   Token für Abkürzungs- und Ordinalpunkte), das Wert-Präfix des Fakten-Carve-outs
+   wurde um „ab“ und „seit“ erweitert (schließt „ab Mai, nicht ab Juni.“ beidseitig
+   als Korrektur aus). Bekannte, bewusst offene Grenzfälle: dichte juristische
+   Abgrenzungsprosa („zuständig ist X, nicht Y.“) kann bei vier Treffern in kurzer
+   Strecke clustern — Register liegt außerhalb der FP-Baseline, bleibt manueller
+   Prüffall nach Punkt 6; ein Roh-Schwanz-Treffer nimmt seine Spanne wie alle
+   Antithesen-Kandidaten aus der M16-Dash-Zählung (Entscheid vom 2026-08-11), im
+   Repo-Bestand verliert dadurch kein Dokument einen Dash-Befund.
 
 ## Erweitert: M43 um Tags-Block und Variation Selectors
 

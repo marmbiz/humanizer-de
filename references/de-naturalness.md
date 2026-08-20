@@ -32,7 +32,7 @@ Diese Karten operationalisieren die Muster 7, 8, 13, 45, 54, 55, 58, 60, 61, 63,
 
 ## 8 Negative Parallelismen
 
-- Signal: gepaarte Verneinungsreihen „kein X, kein Y (, nur Z)“ oder „nicht X, nicht Y“ als Rhythmus- oder Pointenmittel. `german_pattern_lint` meldet `negation_parallelism`; dichte Cluster aus „nicht A, sondern B“ oder „A und nicht B“ meldet er als `negation_antithesis_cluster`.
+- Signal: gepaarte Verneinungsreihen „kein X, kein Y (, nur Z)“ oder „nicht X, nicht Y“ als Rhythmus- oder Pointenmittel. `german_pattern_lint` meldet `negation_parallelism`; dichte Cluster aus „nicht A, sondern B“, „A und nicht B“ oder dem satzfinalen Kontrast-Schwanz „A, nicht B.“ meldet er als `negation_antithesis_cluster`.
 - Schlechter Reflex: jede Verneinung tilgen.
 - Sicherer Eingriff: die parallele Reihung in eine normale Aussage auflösen; eine Verneinung genügt meist.
 - Nicht anfassen: einzelne Verneinung, „nicht X, sondern Y“-Sachkorrektur, belegte Aufzählung.
