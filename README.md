@@ -1014,6 +1014,11 @@ GitHub Release.
 
 ## Was ist neu?
 
+- **5.21.4** - Muster 45 ergänzt drei kontextgebundene Calques aus der Praxis: transitives
+  „tragen“ für englisch carries, „Veränderungen umarmen“ für embrace change und „Potenzial
+  freischalten“ für unlock potential. Idiomatisches „tragen“ sowie wörtliches Umarmen und
+  technisches Freischalten bleiben geschützt. Die Erkennung bleibt urteilsbasiert. Eine neue
+  Linter-Regel oder pauschale Wortmarker kommen nicht hinzu.
 - **5.21.3** - Der Antithesen-Detektor von Muster 8 erkennt jetzt auch den nachgestellten
   Kontrast-Schwanz: Sätze mit dem Schluss „X, nicht Y.“ zählen in den bestehenden
   Dichtebefund. Abkürzungs-, Dezimal- und Ordinalpunkte gelten dabei nicht als Satzende.
