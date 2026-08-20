@@ -437,7 +437,7 @@ diffundieren und verlieren dadurch mit der Zeit an Trennschärfe.
 **Kein Problem, wenn:** das Wort fachlich gebunden ist ("robuste Statistik", "dynamisches Routing", "Meilenstein" im Projektplan) oder einzeln steht. Erst ab 3+ Markern im selben Text als Cluster behandeln.
 **Lösung:** Durch das gewöhnliche Wort ersetzen ("beleuchten" → "untersuchen"/"beschreiben", "spannend" → streichen oder konkret begründen, "die digitale Landschaft" → das gemeinte konkrete Feld benennen).
 
-**Kontextgebundene Unterform – abstraktes „tragen“:** Das Einzelwort ist kein Marker. Ein MEDIUM-Befund liegt erst bei einem Cluster semantisch überdehnter Stützmetaphern vor, etwa „Forschung/These/Hypothese/Änderung trägt“: Richtwert drei abstrakte Verwendungen im Dokument oder zwei in engem Abstand. Konkrete und etablierte Kollokationen wie „einen Karton tragen“, „Kosten tragen“ oder „Verantwortung tragen“ bleiben geschützt. Jede problematische Stelle wird nach ihrem eigenen Sinn redigiert; eine einheitliche Ersetzung durch „funktioniert“ erzeugt nur das nächste Wiederholungsmuster.
+**Kontextgebundene Unterform – abstraktes „tragen“:** Das Einzelwort ist kein Marker. Ein MEDIUM-Befund liegt erst bei einem Cluster semantisch überdehnter Stützmetaphern vor, etwa „Forschung/These/Hypothese/Änderung trägt“: Richtwert drei abstrakte Verwendungen im Dokument oder zwei in engem Abstand. Konkrete und etablierte Kollokationen wie „einen Karton tragen“, „Kosten tragen“ oder „Verantwortung tragen“ bleiben geschützt. Jede problematische Stelle wird nach ihrem eigenen Sinn redigiert; eine einheitliche Ersetzung durch „funktioniert“ erzeugt nur das nächste Wiederholungsmuster. Abgrenzung: Das transitive carries-Calque („X trägt Y“ im Sinn von stützen/ausmachen) ist Muster 45 und schon als Einzelbefund behandelbar, ohne Cluster.
 
 ❌ Schlecht: "Der Artikel beleuchtet das vielschichtige Zusammenspiel der Akteure in der digitalen Landschaft und zeigt spannende Entwicklungen auf."
 ✓ Besser: "Der Artikel beschreibt, wie die drei großen Anbieter aufeinander reagieren und wo sich der Markt gerade dreht."
@@ -1461,7 +1461,7 @@ Harte Indikatoren (klare Tells):
 - „Sinn machen“ – im heutigen Standarddeutsch etabliert; stilistische Präferenz, kein KI-Tell
 - „realisieren“ im Sinne von „erkennen/begreifen“ – lexikalisch etabliert (Duden, DWDS)
 - „kontrollieren“ als „beherrschen“ – Bedeutungen überlappen im Deutschen bereits
-- „tragen“ intransitiv oder in fester Wendung – „das Argument trägt“, „die Strategie trug nicht“, „das Eis trägt“, „Verantwortung/Früchte/Risiko tragen“ sind idiomatisches Deutsch; nur das transitive carries-Calque (siehe Kollokations-Transfers) ist ein Tell
+- „tragen“ intransitiv oder in fester Wendung – „das Argument trägt“, „die Strategie trug nicht“, „das Eis trägt“, „Verantwortung/Früchte/Risiko tragen“ sind einzeln idiomatisches Deutsch; nur das transitive carries-Calque (siehe Kollokations-Transfers) ist ein 45er-Einzelbefund. Häufen sich abstrakte Stützmetaphern („These/Forschung trägt“, 3+ im Dokument), greift stattdessen die Cluster-Unterform in Muster 64
 - Unnötige Possessivpronomen – allgemeines Übersetzungsdeutsch, Stilglättung
 - Einzelne Lehnwörter („Meeting“, „Team“, „Feedback“) – im Zielregister oft normal
 - Englische Titel, Zitate, Code und offizielle Produktstrings – nur die deutsche Anschlusskonstruktion prüfen
