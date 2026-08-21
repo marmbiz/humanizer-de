@@ -1,4 +1,4 @@
-# WARP - Humanizer (Deutsch) Entwicklerleitfaden (v5.21.4)
+# WARP - Humanizer (Deutsch) Entwicklerleitfaden (v5.22.0)
 
 WARP = Workflow, Architecture, References, Principles.
 
@@ -22,6 +22,7 @@ humanizer-de/
 │   ├── rhythm_lint.py               # Muster 4/54/55/61, JSON-Report
 │   ├── evidence_lint.py             # Faktenanker vor/nach Rewrite
 │   ├── humanizer_two_pass.py        # getrenntes Audit und begrenzter Rewrite
+│   ├── detection_snapshot.py        # report-only Stand der Fixture- und FP-Befunde
 │   ├── register_lint.py             # Register-/Profil-Drift
 │   ├── german_pattern_lint.py       # deutsche Marker-Cluster
 │   └── run_review_eval.py           # Scenario-Contract-Invarianten
@@ -67,11 +68,14 @@ Muster 43 und 46 sind scriptgestützt:
 ```bash
 python3 scripts/unicode_lint.py --file path/to/text.md
 python3 scripts/unicode_lint.py --file path/to/text.md --fix --write
+python3 scripts/humanizer_audit.py --file path/to/text.md --fix-safe
 ```
 
 Für echten Nutzertext immer `--file` verwenden. `--text` ist nur für statische Smoke-Tests wie `AB` gedacht; Rohtext nie direkt in Shell-Kommandos einsetzen.
 
 Der Linter darf versteckte Unicode-Zeichen entfernen und sichere `U+201E ... U+201D`-Paare zu `U+201E ... U+201C` korrigieren. ASCII-Quotes werden gemeldet, aber nicht automatisch in deutsche Quotes umgewandelt.
+`humanizer_audit.py --fix-safe` macht ausschließlich diese bestehenden Korrekturen und prüft
+anschließend die gespeicherte Fassung. Zahlen-, Datums- und Apostrophformate bleiben manuell.
 
 Tests müssen echte Codepoints mit `chr()`/`ord()` prüfen. Optisch ähnliche Glyphen reichen nicht.
 
@@ -132,7 +136,7 @@ Zusätzlich manuell prüfen:
 
 ## Release-Prozess
 
-Der README-Abschnitt "Was ist neu?" ist der vollständige Changelog. GitHub Releases sind die öffentlichen Meilensteine für installierbare oder sichtbare Versionen.
+Der README-Abschnitt „Was ist neu?“ ist der vollständige Changelog. GitHub Releases sind die öffentlichen Meilensteine für installierbare oder sichtbare Versionen.
 
 Bei jedem Version-Bump:
 

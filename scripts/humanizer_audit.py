@@ -19,7 +19,7 @@ import rhythm_lint
 import style_profile
 import syntax_lint
 import unicode_lint
-from cli_output import handle_cli_input_errors, print_json, read_user_text, require_file, resolve_exit_code
+from cli_output import atomic_write_text, handle_cli_input_errors, print_json, read_user_text, require_file, resolve_exit_code
 import text_scope
 
 
@@ -75,10 +75,18 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
         help="Ignore any user profile (.humanizer/profile.json); use base targets only.",
     )
     parser.add_argument("--precise", action="store_true", help="spaCy-gestützte Verfeinerung, wenn installiert; sonst wirkungslos")
+    parser.add_argument(
+        "--fix-safe",
+        action="store_true",
+        help="Atomically apply only the conservative fixes already provided by unicode_lint (patterns 43/46).",
+    )
     parser.add_argument("--fail-on", choices=["never", "blocker", "any"], default="never")
     args = parser.parse_args(argv)
     require_file(parser, args.file, "--file")
     require_file(parser, args.profile, "--profile")
+    selected = args.file if args.file is not None else args.latest
+    if args.fix_safe and selected.is_symlink():
+        parser.error("--fix-safe refuses symlink input")
     return args
 
 
@@ -102,6 +110,18 @@ def input_path(args: argparse.Namespace) -> Path:
     if args.file:
         return args.file
     return latest_markdown_file(args.latest)
+
+
+def apply_safe_fixes(path: Path) -> dict:
+    text = read_user_text(path)
+    fixed = unicode_lint.fix(text)
+    changed = fixed != text
+    if changed:
+        atomic_write_text(path, fixed, newline="")
+    return {
+        "changed": changed,
+        "scope": ["hidden_unicode", "unambiguous_german_closing_quotes"],
+    }
 
 
 def short_text(value: object, width: int = 140) -> str:
@@ -477,6 +497,8 @@ def format_markdown(report: dict) -> str:
             f"uniform_paragraphs={str(rhythm['paragraph_sentence_counts_uniform']).lower()}"
         ),
     ]
+    if "safe_fix" in report:
+        lines.insert(2, f"SafeFix: changed={str(report['safe_fix']['changed']).lower()}")
     style = report["style_profile"]
     metrics = style["metrics"]
     style_line = (
@@ -515,6 +537,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"error: {error}", file=sys.stderr)
         return 2
 
+    safe_fix = apply_safe_fixes(path) if args.fix_safe else None
     report = analyze_file(
         path,
         args.mode or "sachlich",
@@ -523,6 +546,8 @@ def main(argv: list[str] | None = None) -> int:
         profile_path=profile_path,
         precise=args.precise,
     )
+    if safe_fix is not None:
+        report["safe_fix"] = safe_fix
     if args.format == "md":
         print(format_markdown(report))
     else:

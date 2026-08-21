@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import difflib
 import hashlib
 import json
 import math
@@ -111,6 +112,17 @@ EDIT_SCHEMA = {
 
 def write_json(path: Path, value: object) -> None:
     path.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
+def unified_diff(original: str, revised: str, revised_name: str) -> str:
+    return "".join(
+        difflib.unified_diff(
+            original.splitlines(keepends=True),
+            revised.splitlines(keepends=True),
+            fromfile="original.md",
+            tofile=revised_name,
+        )
+    )
 
 
 def occurrences(text: str, value: str) -> list[tuple[int, int]]:
@@ -820,7 +832,11 @@ def main(argv: list[str] | None = None) -> int:
         violations = protected_violations(original, proposed, ledger)
         blockers = evidence_gate(original_path, candidate_path, args.out_dir)
         accepted = not violations and not blockers
-        candidate_path.replace(args.out_dir / ("result.md" if accepted else "rejected.md"))
+        revised_path = args.out_dir / ("result.md" if accepted else "rejected.md")
+        candidate_path.replace(revised_path)
+        (args.out_dir / "changes.diff").write_bytes(
+            unified_diff(original, proposed, revised_path.name).encode("utf-8")
+        )
 
         report = {
             "accepted": accepted,

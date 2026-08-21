@@ -1,0 +1,49 @@
+name: content audit
+
+on:
+  pull_request:
+    paths:
+      - "**.md"
+      - "scripts/**"
+      - "tests/corpus/**"
+      - "tests/fp_corpus/**"
+
+permissions:
+  contents: read
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build advisory reports
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          mkdir -p humanizer-reports
+          python scripts/detection_snapshot.py \
+            --revision "$GITHUB_SHA" \
+            --output humanizer-reports/detection-snapshot.json
+          count=0
+          while IFS= read -r -d '' path; do
+            count=$((count + 1))
+            python scripts/humanizer_audit.py \
+              --file "$path" \
+              --fail-on never \
+              > "humanizer-reports/content-$count.json"
+          done < <(git diff --name-only --diff-filter=ACMR -z "$BASE_SHA" "$GITHUB_SHA" -- '*.md')
+          printf '### Humanizer content audit\n\n%d Markdown files audited. Findings are advisory; JSON reports are attached as an artifact.\n' \
+            "$count" >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload advisory reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: humanizer-content-audit
+          path: humanizer-reports/
+          if-no-files-found: error

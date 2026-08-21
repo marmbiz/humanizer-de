@@ -91,6 +91,42 @@ class HumanizerAuditTests(unittest.TestCase):
         self.assertEqual(sum(report["summary"]["counts"].values()), 0)
         self.assertEqual(report["summary"]["preflight"]["risk"], "insufficient_text")
 
+    def test_fix_safe_writes_only_existing_unicode_fixes_before_audit(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "text.md"
+            path.write_bytes("„Text\"\u200b\r\n".encode("utf-8"))
+
+            exit_code, report = run_json(["--file", str(path), "--fix-safe"])
+
+            self.assertEqual(exit_code, 0)
+            self.assertEqual(path.read_bytes(), "„Text“\r\n".encode("utf-8"))
+            self.assertEqual(
+                report["safe_fix"],
+                {
+                    "changed": True,
+                    "scope": ["hidden_unicode", "unambiguous_german_closing_quotes"],
+                },
+            )
+            self.assertEqual(report["summary"]["counts"]["unicode"], 0)
+            self.assertIn("SafeFix: changed=true", humanizer_audit.format_markdown(report))
+
+    @unittest.skipIf(os.name == "nt", "symlink creation is not portable on Windows CI")
+    def test_fix_safe_refuses_symlink_without_touching_target(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp) / "target.md"
+            link = Path(tmp) / "link.md"
+            target.write_text("„Text\"\u200b", encoding="utf-8")
+            link.symlink_to(target)
+            stderr = io.StringIO()
+
+            with redirect_stderr(stderr):
+                exit_code = humanizer_audit.main(["--file", str(link), "--fix-safe"])
+
+            self.assertEqual(exit_code, 2)
+            self.assertTrue(link.is_symlink())
+            self.assertEqual(target.read_text(encoding="utf-8"), "„Text\"\u200b")
+            self.assertIn("--fix-safe refuses symlink input", stderr.getvalue())
+
     def test_address_validation_candidate_is_gate_neutral_advisory(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "candidate.md"

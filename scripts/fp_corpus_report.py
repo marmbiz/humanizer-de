@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import argparse
-import importlib.util
 import sys
 from collections import Counter
 from pathlib import Path
@@ -17,21 +16,11 @@ if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
 from cli_output import handle_cli_input_errors, print_json, read_json_object, read_user_text
-
-
-def load_module(name: str):
-    spec = importlib.util.spec_from_file_location(name, SCRIPT_DIR / f"{name}.py")
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[name] = module
-    spec.loader.exec_module(module)
-    return module
-
-
-register_lint = load_module("register_lint")
-german_pattern_lint = load_module("german_pattern_lint")
-unicode_lint = load_module("unicode_lint")
-rhythm_lint = load_module("rhythm_lint")
-evidence_lint = load_module("evidence_lint")
+import evidence_lint
+import german_pattern_lint
+import register_lint
+import rhythm_lint
+import unicode_lint
 
 
 def count(items: list[dict], counter: Counter[str]) -> None:

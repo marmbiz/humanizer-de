@@ -50,6 +50,7 @@ class CliContractTests(unittest.TestCase):
             "unicode_lint",
             "style_profile",
             "doctor",
+            "detection_snapshot",
             "fp_corpus_report",
             "run_review_eval",
             "german_pattern_lint",

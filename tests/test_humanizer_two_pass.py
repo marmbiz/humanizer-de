@@ -550,6 +550,11 @@ class HumanizerTwoPassTests(unittest.TestCase):
             self.assertNotEqual(run.call_args_list[0].kwargs["cwd"], run.call_args_list[1].kwargs["cwd"])
             self.assertIn("BESTÄTIGTES LEDGER", run.call_args_list[1].args[0])
             self.assertEqual((out / "result.md").read_text(encoding="utf-8"), "Die Lösung.\n")
+            diff = (out / "changes.diff").read_text(encoding="utf-8")
+            self.assertIn("--- original.md", diff)
+            self.assertIn("+++ result.md", diff)
+            self.assertIn("-Die smarte Lösung.", diff)
+            self.assertIn("+Die Lösung.", diff)
             report = json.loads((out / "report.json").read_text(encoding="utf-8"))
             self.assertEqual(report["advisory_count"], 1)
             self.assertEqual(report["advisories"], audit["advisories"])
@@ -750,6 +755,7 @@ class HumanizerTwoPassTests(unittest.TestCase):
 
             self.assertEqual(code, 0)
             self.assertEqual((out / "result.md").read_bytes(), original)
+            self.assertEqual((out / "changes.diff").read_bytes(), b"")
 
     def test_regular_file_is_rejected_as_output_directory(self):
         with tempfile.TemporaryDirectory() as temp_name:

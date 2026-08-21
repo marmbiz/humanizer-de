@@ -5,7 +5,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-EXPECTED_VERSION = "5.21.4"
+EXPECTED_VERSION = "5.22.0"
 EXPECTED_PATTERN_COUNT = 72
 
 
@@ -74,6 +74,10 @@ class SkillStructureTests(unittest.TestCase):
         self.assertIn("Plugin-Root", wrapper_text)
         self.assertEqual({path.name for path in skill_wrapper.iterdir()}, {"SKILL.md"})
         self.assertFalse(any(path.is_symlink() for path in skill_wrapper.rglob("*")))
+
+    def test_claude_plugin_uses_default_skill_discovery(self):
+        plugin = json.loads(read_utf8(ROOT / ".claude-plugin" / "plugin.json"))
+        self.assertNotIn("skills", plugin)
 
     def test_skill_frontmatter_survives_yaml_parsing(self):
         # Regression for PR #1 (ueberBrot): an unquoted plain scalar containing
@@ -160,6 +164,8 @@ class SkillStructureTests(unittest.TestCase):
         self.assertIn(f"v{EXPECTED_VERSION}", decision_text.splitlines()[2])
         self.assertIn(f"v{EXPECTED_VERSION}", coverage_text)
         self.assertRegex(citation_text, rf"(?m)^version:\s*{re.escape(EXPECTED_VERSION)}$")
+        self.assertIn(f"license: {plugin['license']}", citation_text)
+        self.assertEqual(plugin["license"], codex_plugin["license"])
         self.assertEqual(
             warp_text.splitlines()[0],
             f"# WARP - Humanizer (Deutsch) Entwicklerleitfaden (v{EXPECTED_VERSION})",
@@ -184,6 +190,15 @@ class SkillStructureTests(unittest.TestCase):
         self.assertIn("GitHub Release", readme_text)
         self.assertIn("GitHub Release", warp_text)
         self.assertIn("Tag `vX.Y.Z`", warp_text)
+
+    def test_content_audit_workflow_is_advisory_and_read_only(self):
+        workflow = read_utf8(ROOT / ".github" / "workflows" / "content-audit.yml")
+
+        self.assertIn("permissions:\n  contents: read", workflow)
+        self.assertIn("--fail-on never", workflow)
+        self.assertIn("actions/upload-artifact@v4", workflow)
+        self.assertNotIn("pull_request_target", workflow)
+        self.assertNotRegex(workflow, r"(?m)^\s*(?:issues|pull-requests):\s*write\s*$")
 
     def test_readme_flowchart_tracks_the_skill(self):
         # Das Mermaid-Diagramm ist release-sync-pflichtig, wurde aber von keinem

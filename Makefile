@@ -2,7 +2,7 @@ FILE ?= README.md
 PYTHON ?= $(if $(wildcard .venv/bin/python),.venv/bin/python,python3)
 LANGUAGETOOL ?= languagetool
 
-.PHONY: test lint eval-contracts verify bench doctor doctor-full lt
+.PHONY: test lint eval-contracts verify bench detection-snapshot doctor doctor-full lt
 
 test:
 	$(PYTHON) -m unittest discover -s tests -v
@@ -18,11 +18,14 @@ lint:
 eval-contracts:
 	$(PYTHON) scripts/run_review_eval.py tests/scenarios > /dev/null
 
-verify: test lint
+verify: test lint eval-contracts
 	git diff --check
 
 bench:
 	$(PYTHON) scripts/bench.py --check
+
+detection-snapshot:
+	$(PYTHON) scripts/detection_snapshot.py
 
 doctor:
 	$(PYTHON) scripts/doctor.py

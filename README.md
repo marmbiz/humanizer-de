@@ -396,6 +396,8 @@ protokolliert seinen Tokenverbrauch stattdessen in den JSONL-Ereignissen der Cal
 Der Rewrite-Aufruf erhält keine Schreibrechte: Nur der
 Host kann bestätigte Spannen anwenden. Nur ein angenommenes Ergebnis erscheint als `result.md`.
 Abgelehnte Vorschläge heißen `rejected.md`, und `report.json` nennt Schutzverletzungen oder Blocker.
+`changes.diff` hält die Änderung in beiden Fällen als Unified Diff fest; bei einem Null-Edit bleibt
+die Datei leer.
 Audit, Ledger, Modellantworten und Hashes bleiben zur Nachprüfung im Zielverzeichnis.
 Der Text wird an den jeweiligen Modellanbieter übertragen. Die Quellenprüfung bleibt eine
 unvollständige Nebenprüfung. Die harten Gates schützen erkennbare Anker, ersetzen aber keine
@@ -446,6 +448,18 @@ Für Datei-Input ist der erste deterministische Schritt ein kompakter Sammelchec
 ```bash
 python3 scripts/humanizer_audit.py --file <text.md> --mode sachlich
 ```
+
+Eindeutig sichere Unicode-Korrekturen lassen sich vor dem Audit atomar anwenden:
+
+```bash
+python3 scripts/humanizer_audit.py --file <text.md> --mode sachlich --fix-safe
+```
+
+Der Schalter entfernt ausschließlich die bereits von `unicode_lint --fix` abgedeckten verborgenen
+Unicode-Zeichen und repariert eindeutige deutsche Schlusszeichen aus Muster 43/46. Gerade
+ASCII-Anführungszeichen sowie Zahlen-, Datums- und Apostrophformate werden nicht automatisch
+umgeschrieben. Symlink-Eingaben lehnt der schreibende Pfad ab; bestehende Dateirechte bleiben
+beim atomaren Ersetzen erhalten.
 
 Für Arbeitsordner mit Markdown-Entwürfen kann der neueste Stand automatisch gewählt werden:
 
@@ -952,8 +966,22 @@ python3 scripts/spell_lint.py --before-file before.md --after-file after.md
 python3 scripts/register_lint.py --file <text.md> --mode formal
 python3 scripts/german_pattern_lint.py --file <text.md> --mode locker
 python3 scripts/run_review_eval.py tests/scenarios
+python3 scripts/detection_snapshot.py
 python3 scripts/syntax_lint.py --file <text.md>
 ```
+
+### Detection-Snapshot und Content-CI
+
+`python3 scripts/detection_snapshot.py` fasst die vorhandenen Golden-, Naturalness- und
+Register-Fixtures mit dem tolerierten False-Positive-Korpus zusammen. Der JSON-Bericht enthält
+die erwarteten, gefundenen, fehlenden und zusätzlichen Treffer sowie einen Fixture-Hash. Er ist
+bewusst report-only: kein globaler Recall-/F1-Score und kein Release-Gate.
+
+Die Workflow-Vorlage [`.github/workflows/content-audit.yml`](.github/workflows/content-audit.yml)
+führt diesen Snapshot bei passenden Pull Requests aus und auditiert geänderte Markdown-Dateien
+mit `--fail-on never`. Sie lädt die JSON-Berichte als Artefakt hoch und schreibt nur die Anzahl
+geprüfter Dateien in die Job-Zusammenfassung. Es gibt keine PR-Kommentare, keine Modellaufrufe
+und keine Schreibberechtigung für Repository-Inhalte.
 
 ### Exit-Codes
 
@@ -966,6 +994,7 @@ Alle Scripts folgen der Konvention `0` = ok, `1` = Findings gemäß Fail-Schwell
 | `unicode_lint.py` | jedem Finding |
 | `register_lint.py`, `evidence_lint.py` | nur Blockern; Warnings blocken nicht |
 | `rhythm_lint.py`, `german_pattern_lint.py`, `humanizer_audit.py`, `syntax_lint.py`, `spell_lint.py` | nie; Messen ist kein Urteil, der JSON-Report ist die Schnittstelle |
+| `detection_snapshot.py` | nie; der Snapshot ist ein nicht-gatender Trendbericht |
 | `run_review_eval.py` und alle `--fixture`-Modi | Erwartungs-Mismatch |
 
 Wer ein Script in CI als Gate nutzt, muss diese Semantik kennen: `german_pattern_lint.py` und `rhythm_lint.py` liefern auch mit Befunden Exit `0`; dort gehört der JSON-Report ausgewertet, nicht der Exit-Code.
@@ -1014,6 +1043,14 @@ GitHub Release.
 
 ## Was ist neu?
 
+- **5.22.0** - Vier kleine Workflow-Erweiterungen nutzen vorhandene Verträge: Der Sammelcheck
+  kann die konservativen Unicode-Korrekturen aus Muster 43/46 mit `--fix-safe` atomar anwenden.
+  Der Two-Pass-Runner schreibt für angenommene und abgelehnte Fassungen ein `changes.diff`.
+  Ein report-only Detection-Snapshot hält Treffer und tolerierte Fehlalarme der bestehenden
+  Fixtures samt Hash fest. Eine Content-CI-Vorlage veröffentlicht diese Daten und Audits
+  geänderter Markdown-Dateien als Artefakt, ohne PR-Kommentare oder Gate. Die Scenario-Contracts
+  laufen nun auch über `make verify` in CI. Das Claude-Plugin nutzt die native Skill-Erkennung
+  und umgeht damit den fehleranfälligen Root-Pfad älterer Claude-Code-Versionen.
 - **5.21.4** - Muster 45 ergänzt drei kontextgebundene Calques aus der Praxis: transitives
   „tragen“ für englisch carries, „Veränderungen umarmen“ für embrace change und „Potenzial
   freischalten“ für unlock potential. Idiomatisches „tragen“ sowie wörtliches Umarmen und

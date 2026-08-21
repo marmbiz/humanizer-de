@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import stat
 import sys
 from functools import wraps
 from pathlib import Path
@@ -55,12 +56,15 @@ def read_user_text(path: Path) -> str:
 
 def atomic_write_text(path: Path, text: str, *, newline: str | None = None) -> None:
     temp_path = None
+    mode = stat.S_IMODE(path.stat().st_mode) if path.exists() else None
     try:
         with NamedTemporaryFile(
             "w", encoding="utf-8", newline=newline, dir=path.parent, prefix=f".{path.name}.", delete=False
         ) as handle:
             temp_path = Path(handle.name)
             handle.write(text)
+        if mode is not None:
+            os.chmod(temp_path, mode)
         os.replace(temp_path, path)
     finally:
         if temp_path is not None:
