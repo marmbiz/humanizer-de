@@ -40,6 +40,9 @@ def clear_precise_cache():
 
 
 class HumanizerAuditTests(unittest.TestCase):
+    def test_sibling_linters_share_register_module(self):
+        self.assertIs(humanizer_audit.german_pattern_lint.register_lint, humanizer_audit.register_lint)
+
     def test_file_json_output_shape_and_unicode_collapse(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "text.md"

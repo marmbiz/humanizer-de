@@ -4,7 +4,8 @@ WARP = Workflow, Architecture, References, Principles.
 
 ## Architektur
 
-`SKILL.md` ist nicht mehr die Musterquelle. Seit v3.5 ist es ein schlanker Runtime-Router:
+`SKILL.md` ist nicht mehr die Musterquelle. Seit v3.5 ist es ein schlanker Runtime-Router.
+Der folgende Baum zeigt die zentralen Dateien, nicht den vollständigen Repository-Inhalt:
 
 ```text
 humanizer-de/

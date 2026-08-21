@@ -2,14 +2,13 @@
 """Report Humanizer-de rhythm suspicions, not findings.
 
 The script measures deterministic rhythm and burstiness signals for patterns
-4, 51, 54, 55, and 61. It deliberately returns suspicions only: cluster logic,
+4, 54, 55, and 61. It deliberately returns suspicions only: cluster logic,
 mode handling, source context, and carve-outs stay with the model or reviewer.
 """
 
 from __future__ import annotations
 
 import argparse
-import json
 import re
 import statistics
 import sys

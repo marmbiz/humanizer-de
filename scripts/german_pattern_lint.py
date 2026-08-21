@@ -25,13 +25,9 @@ from cli_output import (
     resolve_exit_code,
 )
 import evidence_lint
+import register_lint
 import text_scope
 
-
-REGISTER_SCRIPT = SCRIPT_DIR / "register_lint.py"
-register_spec = importlib.util.spec_from_file_location("register_lint", REGISTER_SCRIPT)
-register_lint = importlib.util.module_from_spec(register_spec)
-register_spec.loader.exec_module(register_lint)
 
 SYNTAX_SCRIPT = SCRIPT_DIR / "syntax_lint.py"
 _SYNTAX_LINT = None
