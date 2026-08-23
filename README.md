@@ -1062,7 +1062,11 @@ GitHub Release.
   Ein report-only Detection-Snapshot hält Treffer und tolerierte Fehlalarme der bestehenden
   Fixtures samt Hash fest. Eine Content-CI-Vorlage veröffentlicht diese Daten und Audits
   geänderter Markdown-Dateien als Artefakt, ohne PR-Kommentare oder Gate. Die Scenario-Contracts
-  laufen nun auch über `make verify` in CI. Das Claude-Plugin nutzt die native Skill-Erkennung
+  laufen nun auch über `make verify` in CI. Dazu kommt ein Installationsweg ohne Terminal:
+  `make skill-bundle` packt Skill, Referenzen und Prüfskripte in ein Archiv, das jedes
+  veröffentlichte Release mitliefert. Wie sich das Archiv in der Weboberfläche von Claude
+  hochladen lässt und welche Einstellung dort nötig ist, steht in der Installationsanleitung.
+  Das Claude-Plugin nutzt die native Skill-Erkennung
   und umgeht damit den fehleranfälligen Root-Pfad älterer Claude-Code-Versionen.
 - **5.21.4** - Muster 45 ergänzt drei kontextgebundene Calques aus der Praxis: transitives
   „tragen“ für englisch carries, „Veränderungen umarmen“ für embrace change und „Potenzial
