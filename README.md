@@ -93,7 +93,7 @@ am jeweils neuesten Release. Danach in claude.ai unter **Customize → Skills �
 Upload a skill** hochladen. Voraussetzung ist die eingeschaltete Code-Ausführung
 (Einstellungen → Capabilities → „Code execution and file creation“); ohne sie laufen die
 Prüfskripte nicht. Der optionale Präzisionspfad mit spaCy fehlt dort, alles Übrige arbeitet
-wie in Claude Code. Updates brauchen einen neuen Upload.
+wie in Claude Code. Für ein Update dient der Punkt „Replace“ im Menü des Skills; er ersetzt die vorhandene Fassung, statt eine zweite danebenzustellen. Hochgeladene Dateien liegen dort schreibgeschützt, korrigierte Fassungen kommen deshalb als neue Datei zurück.
 
 Was im Archiv steckt, lässt sich nachrechnen. Es enthält 25 Textdateien: die Anleitung,
 den Musterkatalog samt Referenztexten, die Prüfskripte sowie Lizenz und Herkunftsnachweis.
