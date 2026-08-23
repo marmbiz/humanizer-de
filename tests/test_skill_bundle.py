@@ -1,3 +1,4 @@
+import json
 import re
 import subprocess
 import sys
@@ -59,6 +60,62 @@ class SkillBundleTests(unittest.TestCase):
         self.assertTrue(referenced, "SKILL.md nennt kein Script")
         for name in sorted(referenced):
             self.assertIn(f"{BUNDLE_NAME}/scripts/{name}", self.names, name)
+
+    def test_license_and_notice_travel_with_the_bundle(self):
+        # The archive is a redistribution: MIT asks for the notice, the pattern
+        # catalogue is CC BY-SA 4.0 and needs the attribution in NOTICE.
+        self.assertIn(f"{BUNDLE_NAME}/LICENSE", self.names)
+        self.assertIn(f"{BUNDLE_NAME}/NOTICE", self.names)
+
+    def test_repo_tooling_stays_out(self):
+        # These need tests/ fixtures or an external CLI; inside the bundle they only fail.
+        for name in (
+            "bench.py",
+            "detection_snapshot.py",
+            "fp_corpus_report.py",
+            "run_review_eval.py",
+            "humanizer_two_pass.py",
+        ):
+            self.assertNotIn(f"{BUNDLE_NAME}/scripts/{name}", self.names, name)
+
+    def test_bundled_scripts_resolve_their_imports(self):
+        # A bundled script importing a script left behind would break on first use.
+        with tempfile.TemporaryDirectory() as workdir:
+            work = Path(workdir)
+            with zipfile.ZipFile(self.bundle) as archive:
+                archive.extractall(work)
+            scripts = sorted((work / BUNDLE_NAME / "scripts").glob("*.py"))
+            self.assertTrue(scripts)
+            for script in scripts:
+                result = subprocess.run(
+                    [sys.executable, "-c", f"import importlib.util,sys; "
+                     f"spec=importlib.util.spec_from_file_location('m', r'{script}'); "
+                     f"mod=importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)"],
+                    cwd=work / BUNDLE_NAME / "scripts",
+                    capture_output=True,
+                    text=True,
+                )
+                self.assertEqual(result.returncode, 0, f"{script.name}: {result.stderr}")
+
+    def test_doctor_reports_a_healthy_bundle(self):
+        # SKILL.md sends users to doctor.py first; inside the bundle it must not report
+        # missing plugin manifests as an error.
+        with tempfile.TemporaryDirectory() as workdir:
+            work = Path(workdir)
+            with zipfile.ZipFile(self.bundle) as archive:
+                archive.extractall(work)
+            result = subprocess.run(
+                [sys.executable, "scripts/doctor.py", "--json"],
+                cwd=work / BUNDLE_NAME,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            report = json.loads(result.stdout)
+            self.assertTrue(report["ok"], report)
+            ids = {entry["id"] for entry in report["checks"]}
+            self.assertIn("layout", ids)
+            self.assertNotIn("version_sync", ids)
 
     def test_bundle_excludes_build_artifacts(self):
         for name in self.names:

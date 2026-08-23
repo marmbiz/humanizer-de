@@ -83,13 +83,37 @@ def skill_version(path: Path) -> str | None:
     return match.group(1) if match else None
 
 
-def package_checks(root: Path) -> tuple[list[dict[str, Any]], str | None]:
-    required_paths = (
+def is_bundle(root: Path) -> bool:
+    """True for an unpacked skill bundle: runtime files present, repo scaffolding absent.
+
+    The uploadable archive ships SKILL.md, scripts/ and references/ but no plugin
+    manifests and no skills/ mirror. Demanding them there would report an error for a
+    complete, working install.
+    """
+    runtime = (
         root / "SKILL.md",
-        root / "skills" / "humanizer-de" / "SKILL.md",
         root / "scripts" / "humanizer_audit.py",
         root / "references" / "patterns.md",
     )
+    scaffolding = (
+        root / ".claude-plugin" / "plugin.json",
+        root / ".codex-plugin" / "plugin.json",
+        root / "skills" / "humanizer-de" / "SKILL.md",
+    )
+    return all(path.is_file() for path in runtime) and not any(
+        path.is_file() for path in scaffolding
+    )
+
+
+def package_checks(root: Path) -> tuple[list[dict[str, Any]], str | None]:
+    bundle = is_bundle(root)
+    required_paths = (
+        root / "SKILL.md",
+        root / "scripts" / "humanizer_audit.py",
+        root / "references" / "patterns.md",
+    )
+    if not bundle:
+        required_paths += (root / "skills" / "humanizer-de" / "SKILL.md",)
     missing = [path.relative_to(root).as_posix() for path in required_paths if not path.is_file()]
     version = skill_version(root / "SKILL.md")
     base_status = "ok" if not missing and version else "error"
@@ -98,6 +122,19 @@ def package_checks(root: Path) -> tuple[list[dict[str, Any]], str | None]:
     checks = [
         check("base_skill", "Basis-Skill", base_status, required=True, version=version, detail=base_detail),
     ]
+
+    if bundle:
+        checks.append(
+            check(
+                "layout",
+                "Paketform",
+                "ok",
+                required=True,
+                version=version,
+                detail="hochgeladenes Skill-Paket; Plugin-Manifeste gehoeren nicht dazu",
+            )
+        )
+        return checks, version
 
     manifests: dict[str, tuple[str, Path]] = {
         "claude_plugin": ("Claude-Paket", root / ".claude-plugin" / "plugin.json"),

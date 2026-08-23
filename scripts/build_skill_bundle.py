@@ -20,46 +20,65 @@ from cli_output import handle_cli_input_errors, print_json  # noqa: E402
 BUNDLE_NAME = "humanizer-de"
 DEFAULT_OUTPUT = ROOT / "dist" / f"{BUNDLE_NAME}.zip"
 
-# Files the skill needs at runtime. SKILL.md routes into references/ and scripts/;
-# the checklist is the only asset it points at.
-BUNDLE_FILES = ("SKILL.md",)
-BUNDLE_DIRS = ("scripts", "references")
-BUNDLE_EXTRA = ("assets/checkliste-ki-tells.md",)
+# Everything is listed by name: a directory sweep would pick up untracked files and make
+# the archive depend on the working tree instead of the commit.
+BUNDLE_FILES = (
+    "SKILL.md",
+    "LICENSE",
+    "NOTICE",
+    "assets/checkliste-ki-tells.md",
+)
 
-# The bundle ships the skill, not the toolchain that produces it.
-EXCLUDED_NAMES = ("build_skill_bundle.py",)
-EXCLUDED_SUFFIXES = (".pyc",)
-EXCLUDED_DIR_NAMES = ("__pycache__",)
+# The nine files SKILL.md routes into.
+BUNDLE_REFERENCES = (
+    "de-naturalness.md",
+    "decision-tables.md",
+    "evidence-ledger.md",
+    "patterns.md",
+    "qgir.md",
+    "quality-rubric.md",
+    "register-profiles.md",
+    "style-targets.json",
+    "user-profile.md",
+)
+
+# Scripts SKILL.md calls, plus the three modules they import. Repo tooling stays out:
+# it needs tests/ fixtures or an external CLI and only fails inside the bundle.
+BUNDLE_SCRIPTS = (
+    "cli_output.py",
+    "doctor.py",
+    "evidence_lint.py",
+    "german_pattern_lint.py",
+    "humanizer_audit.py",
+    "register_lint.py",
+    "rhythm_lint.py",
+    "spell_lint.py",
+    "style_profile.py",
+    "syntax_lint.py",
+    "text_scope.py",
+    "unicode_lint.py",
+)
 
 # Fixed timestamp keeps repeated builds byte-identical for the same input.
 ZIP_TIMESTAMP = (1980, 1, 1, 0, 0, 0)
 
 
-def is_excluded(path: Path) -> bool:
-    if path.name in EXCLUDED_NAMES or path.suffix in EXCLUDED_SUFFIXES:
-        return True
-    return any(part in EXCLUDED_DIR_NAMES for part in path.parts)
+def bundle_paths() -> tuple[str, ...]:
+    return (
+        BUNDLE_FILES
+        + tuple(f"references/{name}" for name in BUNDLE_REFERENCES)
+        + tuple(f"scripts/{name}" for name in BUNDLE_SCRIPTS)
+    )
 
 
 def collect_members(root: Path = ROOT) -> list[tuple[Path, str]]:
     """Return (source path, archive name) pairs, sorted for a stable archive."""
     members: list[tuple[Path, str]] = []
-    for name in BUNDLE_FILES + BUNDLE_EXTRA:
+    for name in bundle_paths():
         source = root / name
         if not source.is_file():
             raise FileNotFoundError(f"Bundle-Datei fehlt: {name}")
         members.append((source, f"{BUNDLE_NAME}/{name}"))
-    for name in BUNDLE_DIRS:
-        directory = root / name
-        if not directory.is_dir():
-            raise FileNotFoundError(f"Bundle-Verzeichnis fehlt: {name}")
-        for source in directory.rglob("*"):
-            if not source.is_file():
-                continue
-            relative = source.relative_to(root)
-            if is_excluded(relative):
-                continue
-            members.append((source, f"{BUNDLE_NAME}/{relative.as_posix()}"))
     members.sort(key=lambda member: member[1])
     return members
 
@@ -72,6 +91,9 @@ def build(output: Path, root: Path = ROOT) -> dict[str, object]:
             info = zipfile.ZipInfo(arcname, date_time=ZIP_TIMESTAMP)
             info.compress_type = zipfile.ZIP_DEFLATED
             info.external_attr = 0o644 << 16
+            # Pinned: ZipInfo defaults this to the build platform, which would give
+            # Windows builds a different checksum for identical content.
+            info.create_system = 3
             archive.writestr(info, source.read_bytes())
     return {
         "output": str(output),

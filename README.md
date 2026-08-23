@@ -95,12 +95,15 @@ Upload a skill** hochladen. Voraussetzung ist die eingeschaltete Code-Ausführun
 Prüfskripte nicht. Der optionale Präzisionspfad mit spaCy fehlt dort, alles Übrige arbeitet
 wie in Claude Code. Updates brauchen einen neuen Upload.
 
-Was im Archiv steckt, lässt sich nachrechnen. Es enthält 28 Dateien: die Anleitung, den
-Musterkatalog samt Referenztexten und die Prüfskripte — keine Binärdateien. Die Skripte
-kommen mit Pythons Standardbibliothek aus, installieren nichts nach und brauchen keinen
-Netzzugang; der optionale spaCy-Pfad ist der einzige Zusatz und im Archiv nicht enthalten.
-Weil derselbe Stand immer dasselbe Archiv ergibt, lässt sich die Herkunft prüfen: Die
-Prüfsumme aus dem Release muss mit der aus dem eigenen Klon übereinstimmen.
+Was im Archiv steckt, lässt sich nachrechnen. Es enthält 25 Textdateien: die Anleitung,
+den Musterkatalog samt Referenztexten, die Prüfskripte sowie Lizenz und Herkunftsnachweis.
+Nichts davon ist eine Binärdatei, und kein Skript installiert etwas nach oder öffnet eine
+Netzverbindung. Gebündelt wird nur, was der Skill selbst aufruft; Entwicklungswerkzeuge des
+Repositorys bleiben draußen. Die Skripte laufen mit Pythons Standardbibliothek. Wo sie ein
+optionales Werkzeug suchen — spaCy für den Präzisionspfad, hunspell für die
+Rechtschreibprobe —, schalten sie den betreffenden Teil ab, statt zu scheitern; beide
+Werkzeuge liegen dem Archiv nicht bei. Weil das Paket aus einer festen Dateiliste entsteht
+und Zeitstempel wie Metadaten gesetzt sind, ergibt derselbe Stand dasselbe Archiv.
 
 ```bash
 git clone --depth 1 https://github.com/marmbiz/humanizer-de.git && cd humanizer-de
@@ -1072,6 +1075,15 @@ GitHub Release.
 
 ## Was ist neu?
 
+- **5.22.2** - Das hochladbare Paket trägt jetzt Lizenz und Herkunftsnachweis. Als
+  eigenständige Weitergabe braucht es beide. Gebündelt wird nur noch, was der Skill selbst
+  aufruft; die Entwicklungswerkzeuge des Repositorys sind draußen, weil sie Testdaten oder
+  fremde Programme erwarten und im Paket nicht laufen. `doctor.py` erkennt die Paketform und
+  verlangt dort keine Plugin-Manifeste mehr, statt einen vollständigen Stand als Fehler zu
+  melden. Weil das Archiv aus einer festen Dateiliste entsteht und seine Metadaten gesetzt
+  sind, liefert derselbe Stand auf jedem Betriebssystem dieselbe Prüfsumme. Die
+  Installationsanleitung beschreibt den Paketinhalt genauer. Der Präzisionspfad steckt als
+  Code im Archiv, es fehlen nur spaCy und das Sprachmodell.
 - **5.22.1** - Wer kein Terminal nutzt, installiert den Skill jetzt in der Weboberfläche von
   Claude. `make skill-bundle` packt Skill, Referenzen und Prüfskripte in ein Archiv, das jedem
   Release beiliegt. Die Installationsanleitung beschreibt den Upload und nennt die Einstellung,
