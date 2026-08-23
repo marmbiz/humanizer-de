@@ -12,6 +12,9 @@ Thumbs.db
 .vscode/
 .idea/
 
+# Build output
+dist/
+
 # Temporary files
 *.tmp
 *.bak
