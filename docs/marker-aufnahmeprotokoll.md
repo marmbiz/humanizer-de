@@ -45,6 +45,16 @@ Zu bumpen sind: `.claude-plugin/plugin.json`, `.codex-plugin/plugin.json`, `CITA
 `tests/`. `test_release_metadata_stays_in_sync` erzwingt diese vollständige Liste;
 `scripts/doctor.py` prüft separat den Versions-Sync von `SKILL.md` und den beiden
 Plugin-Manifesten.
+Beim Veröffentlichen gehört das hochladbare Skill-Paket an das Release. GitHub versiegelt
+veröffentlichte Releases, deshalb muss das Archiv **beim Anlegen** dabei sein — nachträglich
+nimmt das Release keine Datei mehr an, und der Tag-Name lässt sich danach für kein zweites
+Release mehr verwenden:
+
+```bash
+make skill-bundle
+gh release create vX.Y.Z --title "vX.Y.Z" --notes-file <notes> --target main dist/humanizer-de.zip
+```
+
 `.claude-plugin/marketplace.json` führt bewusst keine Version: Steht sie an beiden Stellen,
 gewinnt `plugin.json` ohne Warnung, und ein vergessener Wert dort verdeckt den gepflegten
 im Marktplatz-Eintrag.
