@@ -85,6 +85,16 @@ Schlüssel funktioniert die vollständige HTTPS-Adresse:
 /plugin marketplace add https://github.com/marmbiz/humanizer-de.git
 ```
 
+### Claude im Browser (claude.ai)
+
+Ohne Terminal geht es über die Weboberfläche. Das fertige Paket liegt als
+[`humanizer-de.zip`](https://github.com/marmbiz/humanizer-de/releases/latest/download/humanizer-de.zip)
+am jeweils neuesten Release. Danach in claude.ai unter **Customize → Skills → Add →
+Upload a skill** hochladen. Voraussetzung ist die eingeschaltete Code-Ausführung
+(Einstellungen → Capabilities → „Code execution and file creation“); ohne sie laufen die
+Prüfskripte nicht. Der optionale Präzisionspfad mit spaCy fehlt dort, alles Übrige arbeitet
+wie in Claude Code. Updates brauchen einen neuen Upload.
+
 ### Funktioniert es?
 
 In der neuen beziehungsweise neu geladenen Sitzung eingeben:
@@ -125,6 +135,8 @@ Das testet die Messwerkzeuge. Die eigentliche Überarbeitung übernimmt der Skil
 
 - Claude Code oder Codex (CLI, App oder IDE-Integration). Cursor und andere Tools mit
   Agent-Skills-Unterstützung funktionieren über die [manuelle Installation](#cursor-und-andere-agent-skills-tools)
+- In claude.ai genügt ein Browser; dort zählt allein, dass die Code-Ausführung
+  eingeschaltet ist
 - Für den Basis-Skill ist kein Python nötig. Python 3 wird erst gebraucht, wenn die
   deterministischen Prüfskripte ausgeführt werden sollen.
 
@@ -139,6 +151,7 @@ Produktversionen, sondern unterschiedliche Installationswege.
 | Claude Code | [Claude-Code-Plugin](#claude-code-plugin-empfohlen) | Aktivierung und Updates laufen über Claude Code |
 | Plugins sind nicht verfügbar | [Manuelle Installation](#manuelle-installation-fortgeschritten) | Funktioniert lokal, muss aber selbst aktualisiert werden |
 | Cursor | [Manuelle Installation](#cursor-und-andere-agent-skills-tools) | Cursor lädt Agent Skills aus `~/.agents/skills/` und `~/.cursor/skills/` |
+| Kein Terminal | [Upload in claude.ai](#claude-im-browser-claudeai) | Ein ZIP genügt, die Prüfskripte laufen im Container von Claude |
 
 Wenn du eine KI mit der Installation beauftragst, gelten zusätzlich die
 [Installationsregeln für Assistenten](#installationsregeln-für-assistenten).
