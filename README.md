@@ -95,6 +95,22 @@ Upload a skill** hochladen. Voraussetzung ist die eingeschaltete Code-Ausführun
 Prüfskripte nicht. Der optionale Präzisionspfad mit spaCy fehlt dort, alles Übrige arbeitet
 wie in Claude Code. Updates brauchen einen neuen Upload.
 
+Was im Archiv steckt, lässt sich nachrechnen. Es enthält 28 Dateien: die Anleitung, den
+Musterkatalog samt Referenztexten und die Prüfskripte — keine Binärdateien. Die Skripte
+kommen mit Pythons Standardbibliothek aus, installieren nichts nach und brauchen keinen
+Netzzugang; der optionale spaCy-Pfad ist der einzige Zusatz und im Archiv nicht enthalten.
+Weil derselbe Stand immer dasselbe Archiv ergibt, lässt sich die Herkunft prüfen: Die
+Prüfsumme aus dem Release muss mit der aus dem eigenen Klon übereinstimmen.
+
+```bash
+git clone --depth 1 https://github.com/marmbiz/humanizer-de.git && cd humanizer-de
+make skill-bundle
+```
+
+Der Befehl gibt die SHA-256-Summe aus. Stimmt sie mit der Angabe im Release überein, steckt
+im heruntergeladenen Archiv genau der Code, der öffentlich im Repository liegt. Veröffentlichte
+Releases sind bei GitHub versiegelt, ihre Dateien lassen sich nachträglich nicht austauschen.
+
 ### Funktioniert es?
 
 In der neuen beziehungsweise neu geladenen Sitzung eingeben:
@@ -1056,17 +1072,19 @@ GitHub Release.
 
 ## Was ist neu?
 
+- **5.22.1** - Wer kein Terminal nutzt, installiert den Skill jetzt in der Weboberfläche von
+  Claude. `make skill-bundle` packt Skill, Referenzen und Prüfskripte in ein Archiv, das jedem
+  Release beiliegt. Die Installationsanleitung beschreibt den Upload und nennt die Einstellung,
+  ohne die dort keine Prüfskripte laufen. Derselbe Stand ergibt immer dasselbe Archiv, deshalb
+  lässt sich die ausgegebene Prüfsumme gegen die Angabe im Release halten. Am Skill selbst
+  ändert sich nichts.
 - **5.22.0** - Vier kleine Workflow-Erweiterungen nutzen vorhandene Verträge: Der Sammelcheck
   kann die konservativen Unicode-Korrekturen aus Muster 43/46 mit `--fix-safe` atomar anwenden.
   Der Two-Pass-Runner schreibt für angenommene und abgelehnte Fassungen ein `changes.diff`.
   Ein report-only Detection-Snapshot hält Treffer und tolerierte Fehlalarme der bestehenden
   Fixtures samt Hash fest. Eine Content-CI-Vorlage veröffentlicht diese Daten und Audits
   geänderter Markdown-Dateien als Artefakt, ohne PR-Kommentare oder Gate. Die Scenario-Contracts
-  laufen nun auch über `make verify` in CI. Dazu kommt ein Installationsweg ohne Terminal:
-  `make skill-bundle` packt Skill, Referenzen und Prüfskripte in ein Archiv, das jedes
-  veröffentlichte Release mitliefert. Wie sich das Archiv in der Weboberfläche von Claude
-  hochladen lässt und welche Einstellung dort nötig ist, steht in der Installationsanleitung.
-  Das Claude-Plugin nutzt die native Skill-Erkennung
+  laufen nun auch über `make verify` in CI. Das Claude-Plugin nutzt die native Skill-Erkennung
   und umgeht damit den fehleranfälligen Root-Pfad älterer Claude-Code-Versionen.
 - **5.21.4** - Muster 45 ergänzt drei kontextgebundene Calques aus der Praxis: transitives
   „tragen“ für englisch carries, „Veränderungen umarmen“ für embrace change und „Potenzial

@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import sys
 import zipfile
 from pathlib import Path
@@ -76,6 +77,7 @@ def build(output: Path, root: Path = ROOT) -> dict[str, object]:
         "output": str(output),
         "file_count": len(members),
         "bytes": output.stat().st_size,
+        "sha256": hashlib.sha256(output.read_bytes()).hexdigest(),
     }
 
 
@@ -99,6 +101,7 @@ def main(argv: list[str] | None = None) -> int:
         print_json(result)
     else:
         print(f"{result['output']} ({result['file_count']} Dateien, {result['bytes']} Bytes)")
+        print(f"sha256  {result['sha256']}")
     return 0
 
 

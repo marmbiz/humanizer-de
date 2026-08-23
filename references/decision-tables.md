@@ -1,6 +1,6 @@
 # Humanizer-de Decision Tables
 
-Nutze diese Tabellen vor `references/patterns.md`, wenn Befunde überlappen. Sie sind die verbindliche Kurzlogik für v5.22.0.
+Nutze diese Tabellen vor `references/patterns.md`, wenn Befunde überlappen. Sie sind die verbindliche Kurzlogik für v5.22.1.
 
 ## QGIR: Moduswahl
 
