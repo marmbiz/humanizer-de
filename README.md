@@ -87,13 +87,20 @@ Schlüssel funktioniert die vollständige HTTPS-Adresse:
 
 ### Claude im Browser (claude.ai)
 
-Ohne Terminal geht es über die Weboberfläche. Das fertige Paket liegt als
+Ohne Terminal geht es über die Weboberfläche. Ein Schritt kommt allerdings vor allen
+anderen: Unter **Einstellungen → Capabilities** muss „Code execution and file creation“
+eingeschaltet sein. In Free-, Pro- und Max-Konten ist das nicht voreingestellt, und solange
+es fehlt, erscheint der Skills-Bereich gar nicht erst.
+
+Steht der Schalter, führt der Weg über **Customize → Skills → Add → Upload a skill**. Das
+fertige Paket liegt als
 [`humanizer-de.zip`](https://github.com/marmbiz/humanizer-de/releases/latest/download/humanizer-de.zip)
-am jeweils neuesten Release. Danach in claude.ai unter **Customize → Skills → Add →
-Upload a skill** hochladen. Anthropic prüft das Archiv danach ein bis zwei Minuten lang sicherheitshalber, erst dann steht der Skill bereit. Voraussetzung ist die eingeschaltete Code-Ausführung
-(Einstellungen → Capabilities → „Code execution and file creation“); ohne sie laufen die
-Prüfskripte nicht. Der optionale Präzisionspfad mit spaCy fehlt dort, alles Übrige arbeitet
-wie in Claude Code. Für ein Update dient der Punkt „Replace“ im Menü des Skills; er ersetzt die vorhandene Fassung, statt eine zweite danebenzustellen. Hochgeladene Dateien liegen dort schreibgeschützt, korrigierte Fassungen kommen deshalb als neue Datei zurück.
+am jeweils neuesten Release. Nach dem Hochladen prüft Anthropic das Archiv ein bis zwei
+Minuten lang, danach steht der Skill bereit. Der optionale Präzisionspfad mit spaCy fehlt
+dort, alles Übrige arbeitet wie in Claude Code. Für ein Update dient der Punkt „Replace“ im
+Menü des Skills; er ersetzt die vorhandene Fassung, statt eine zweite danebenzustellen.
+Hochgeladene Dateien liegen schreibgeschützt, korrigierte Fassungen kommen deshalb als neue
+Datei zurück.
 
 Was im Archiv steckt, lässt sich nachrechnen. Es enthält 25 Textdateien: die Anleitung,
 den Musterkatalog samt Referenztexten, die Prüfskripte sowie Lizenz und Herkunftsnachweis.
