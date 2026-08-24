@@ -90,7 +90,7 @@ Schlüssel funktioniert die vollständige HTTPS-Adresse:
 Ohne Terminal geht es über die Weboberfläche. Das fertige Paket liegt als
 [`humanizer-de.zip`](https://github.com/marmbiz/humanizer-de/releases/latest/download/humanizer-de.zip)
 am jeweils neuesten Release. Danach in claude.ai unter **Customize → Skills → Add →
-Upload a skill** hochladen. Voraussetzung ist die eingeschaltete Code-Ausführung
+Upload a skill** hochladen. Anthropic prüft das Archiv danach ein bis zwei Minuten lang sicherheitshalber, erst dann steht der Skill bereit. Voraussetzung ist die eingeschaltete Code-Ausführung
 (Einstellungen → Capabilities → „Code execution and file creation“); ohne sie laufen die
 Prüfskripte nicht. Der optionale Präzisionspfad mit spaCy fehlt dort, alles Übrige arbeitet
 wie in Claude Code. Für ein Update dient der Punkt „Replace“ im Menü des Skills; er ersetzt die vorhandene Fassung, statt eine zweite danebenzustellen. Hochgeladene Dateien liegen dort schreibgeschützt, korrigierte Fassungen kommen deshalb als neue Datei zurück.
