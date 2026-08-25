@@ -19,6 +19,21 @@ spec.loader.exec_module(doctor)
 import cli_output
 
 
+def write_bundle_fixture(root: Path, *, patterns_version: str = "1.0.0") -> None:
+    (root / "scripts").mkdir()
+    (root / "references").mkdir()
+    (root / "SKILL.md").write_text("metadata:\n  version: 1.0.0\n", encoding="utf-8")
+    (root / "scripts" / "humanizer_audit.py").touch()
+    (root / "references" / "patterns.md").write_text(
+        f"# Humanizer-de Pattern Catalog\n\nVollständiger Musterkatalog für Humanizer (Deutsch) v{patterns_version}.\n",
+        encoding="utf-8",
+    )
+    (root / "references" / "decision-tables.md").write_text(
+        "# Humanizer-de Decision Tables\n\nNutze diese Tabellen als Kurzlogik für v1.0.0.\n",
+        encoding="utf-8",
+    )
+
+
 class DoctorTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -30,7 +45,10 @@ class DoctorTests(unittest.TestCase):
         self.assertTrue(report["ok"])
         self.assertEqual(report["name"], "humanizer-de")
         self.assertEqual(report["version"], "5.22.2")
-        self.assertEqual(report["privacy"], "No user text or content files were read.")
+        self.assertEqual(
+            report["privacy"],
+            "No user text was read; only the listed repository and skill files were read.",
+        )
         ids = {item["id"] for item in report["checks"]}
         self.assertTrue(
             {
@@ -66,7 +84,7 @@ class DoctorTests(unittest.TestCase):
             "ok": True,
             "full": False,
             "summary": "base_only",
-            "privacy": "No user text or content files were read.",
+            "privacy": "No user text was read; only the listed repository and skill files were read.",
             "checks": [],
         }
         with mock.patch.object(doctor, "build_report", return_value=report):
@@ -175,6 +193,31 @@ class DoctorTests(unittest.TestCase):
         version_sync = next(item for item in checks if item["id"] == "version_sync")
         self.assertEqual(version_sync["status"], "error")
         self.assertEqual(json.loads(version_sync["detail"])["marketplace"], None)
+
+    def test_new_metadata_mismatch_breaks_version_sync(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_bundle_fixture(root, patterns_version="1.0.1")
+
+            checks, _ = doctor.package_checks(root)
+
+        version_sync = next(item for item in checks if item["id"] == "version_sync")
+        self.assertEqual(version_sync["status"], "error")
+        self.assertEqual(
+            json.loads(version_sync["detail"])["references/patterns.md"],
+            "1.0.1",
+        )
+
+    def test_missing_repo_only_metadata_does_not_break_bundle_version_sync(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_bundle_fixture(root)
+
+            checks, _ = doctor.package_checks(root)
+
+        version_sync = next(item for item in checks if item["id"] == "version_sync")
+        self.assertEqual(version_sync["status"], "ok")
+        self.assertEqual(version_sync["version"], "1.0.0")
 
     def test_human_report_has_clear_summary(self):
         output = doctor.format_report(self.report)

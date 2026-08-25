@@ -120,7 +120,7 @@ class SkillBundleTests(unittest.TestCase):
             self.assertTrue(report["ok"], report)
             ids = {entry["id"] for entry in report["checks"]}
             self.assertIn("layout", ids)
-            self.assertNotIn("version_sync", ids)
+            self.assertIn("version_sync", ids)
 
     def test_bundle_excludes_build_artifacts(self):
         for name in self.names:

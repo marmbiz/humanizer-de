@@ -122,6 +122,7 @@ def package_checks(root: Path) -> tuple[list[dict[str, Any]], str | None]:
     checks = [
         check("base_skill", "Basis-Skill", base_status, required=True, version=version, detail=base_detail),
     ]
+    versions: dict[str, str | None] = {"skill": version}
 
     if bundle:
         checks.append(
@@ -134,41 +135,68 @@ def package_checks(root: Path) -> tuple[list[dict[str, Any]], str | None]:
                 detail="hochgeladenes Skill-Paket; Plugin-Manifeste gehoeren nicht dazu",
             )
         )
-        return checks, version
+    else:
+        manifests: dict[str, tuple[str, Path]] = {
+            "claude_plugin": ("Claude-Paket", root / ".claude-plugin" / "plugin.json"),
+            "codex_plugin": ("Codex-Paket", root / ".codex-plugin" / "plugin.json"),
+        }
+        for check_id, (label, path) in manifests.items():
+            try:
+                data = read_json(path)
+                manifest_version = data.get("version")
+                versions[check_id] = manifest_version
+                status = "ok" if data.get("name") == "humanizer-de" and manifest_version else "error"
+                checks.append(
+                    check(check_id, label, status, required=True, version=manifest_version, path=str(path))
+                )
+            except (OSError, json.JSONDecodeError) as error:
+                versions[check_id] = None
+                checks.append(check(check_id, label, "error", required=True, detail=str(error), path=str(path)))
 
-    manifests: dict[str, tuple[str, Path]] = {
-        "claude_plugin": ("Claude-Paket", root / ".claude-plugin" / "plugin.json"),
-        "codex_plugin": ("Codex-Paket", root / ".codex-plugin" / "plugin.json"),
-    }
-    versions: dict[str, str | None] = {"skill": version}
-    for check_id, (label, path) in manifests.items():
+        marketplace_path = root / ".claude-plugin" / "marketplace.json"
+        marketplace_valid = True
         try:
-            data = read_json(path)
-            manifest_version = data.get("version")
-            versions[check_id] = manifest_version
-            status = "ok" if data.get("name") == "humanizer-de" and manifest_version else "error"
-            checks.append(
-                check(check_id, label, status, required=True, version=manifest_version, path=str(path))
-            )
-        except (OSError, json.JSONDecodeError) as error:
-            versions[check_id] = None
-            checks.append(check(check_id, label, "error", required=True, detail=str(error), path=str(path)))
+            marketplace = read_json(marketplace_path)
+            plugins = marketplace["plugins"]
+            if not isinstance(plugins, list) or not plugins or not isinstance(plugins[0], dict):
+                raise TypeError("plugins must be a non-empty list of objects")
+            marketplace_version = plugins[0].get("version")
+        except (OSError, json.JSONDecodeError, KeyError, TypeError):
+            marketplace_version = None
+            marketplace_valid = False
+        if not marketplace_valid:
+            versions["marketplace"] = None
+        elif marketplace_version:
+            versions["marketplace"] = marketplace_version
 
-    marketplace_path = root / ".claude-plugin" / "marketplace.json"
-    marketplace_valid = True
-    try:
-        marketplace = read_json(marketplace_path)
-        plugins = marketplace["plugins"]
-        if not isinstance(plugins, list) or not plugins or not isinstance(plugins[0], dict):
-            raise TypeError("plugins must be a non-empty list of objects")
-        marketplace_version = plugins[0].get("version")
-    except (OSError, json.JSONDecodeError, KeyError, TypeError):
-        marketplace_version = None
-        marketplace_valid = False
-    if not marketplace_valid:
-        versions["marketplace"] = None
-    elif marketplace_version:
-        versions["marketplace"] = marketplace_version
+    version_files = {
+        "WARP.md": (root / "WARP.md", r"(?m)\A# WARP[^\n]*\(v(\d+\.\d+\.\d+)\)$"),
+        "README.md": (
+            root / "README.md",
+            r"(?m)^## Was ist neu\?\s*\n- \*\*(\d+\.\d+\.\d+)\*\*",
+        ),
+        "references/patterns.md": (
+            root / "references" / "patterns.md",
+            r"\A[^\n]*\n[^\n]*\nVollständiger Musterkatalog[^\n]*\bv(\d+\.\d+\.\d+)\.",
+        ),
+        "references/decision-tables.md": (
+            root / "references" / "decision-tables.md",
+            r"\A[^\n]*\n[^\n]*\nNutze diese Tabellen[^\n]*\bv(\d+\.\d+\.\d+)\.",
+        ),
+        "docs/coverage-matrix.md": (
+            root / "docs" / "coverage-matrix.md",
+            r"\A[^\n]*\n[^\n]*\nStatus:[^\n]*\bv(\d+\.\d+\.\d+)\.",
+        ),
+        "CITATION.cff": (root / "CITATION.cff", r"(?m)^version:\s*(\d+\.\d+\.\d+)\s*$"),
+    }
+    for name, (path, pattern) in version_files.items():
+        if not path.is_file():
+            continue
+        try:
+            match = re.search(pattern, path.read_text(encoding="utf-8"))
+        except (OSError, UnicodeError):
+            match = None
+        versions[name] = match.group(1) if match else None
 
     known_versions = [value for value in versions.values() if value]
     synced = len(known_versions) == len(versions) and len(set(known_versions)) == 1
@@ -413,7 +441,7 @@ def build_report(root: Path = ROOT) -> dict[str, Any]:
         "ok": ok,
         "full": full,
         "summary": "full" if full else ("base_only" if ok else "error"),
-        "privacy": "No user text or content files were read.",
+        "privacy": "No user text was read; only the listed repository and skill files were read.",
         "checks": checks,
     }
 
@@ -436,7 +464,7 @@ def format_report(report: dict[str, Any]) -> str:
         [
             "",
             f"Gesamt: {report['summary'].upper()}",
-            "Datenschutz: Es wurden keine Nutzertexte oder Inhaltsdateien gelesen.",
+            "Datenschutz: Es wurden keine Nutzertexte gelesen; nur die aufgeführten Repo-/Skill-Dateien.",
         ]
     )
     return "\n".join(lines)
