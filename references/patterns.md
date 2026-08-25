@@ -93,7 +93,7 @@ Die menschenlesbaren Labels dieser Tools ("Robotic Formality", "Mechanical Preci
 | Mechanical Precision | niedrige Perplexity durch Fachbegriffe | nicht behandeln – Fachsprache bewahren |
 | Impersonal Tone | Passiv, Quellenattribution | nicht behandeln, außer Muster 39 liegt vor |
 | Robotic Formality | klare Struktur, Doppelpunkt-Titel | nur bei Muster 54 (gehäufte Doppelpunkt-Titel) |
-| Lacks Creativity / Lacks Creative Grammar | niedrige Burstiness | nur bei Muster 55/51, mit Carve-out |
+| Lacks Creativity / Lacks Creative Grammar | niedrige Burstiness | nur bei Muster 55, mit Carve-out |
 | Mechanical Writing | gleichförmige Kadenz | nur bei Muster 55, mit Carve-out |
 
 Der einzige substanzwahrende Hebel gegen niedrige Burstiness ist Muster 55 (Satzrhythmus spreizen). Niedrige Perplexity bei korrekter Fachsprache ist nicht "reparierbar", ohne den Text zu verschlechtern – und das ist nicht Aufgabe dieses Skills. Siehe SKILL.md-Leitplanke zu statistischen Detektoren.
@@ -373,7 +373,6 @@ Häufige Indikatoren:
 #### 58. Abstrakta-Stapel und Hypernym-Präferenz [MEDIUM]
 <!-- haltbarkeit: jahrgang stand=2026-07 -->
 <!-- pass: 2 -->
-**Kategorie:** Sprache und Tonfall
 **Problem:** Das Modell wählt systematisch den Oberbegriff statt der Sache: "Maßnahmen", "Aspekte", "Lösungen", "Herausforderungen", "Faktoren", "Prozesse" – oft kombiniert mit Nominalstil ("die Umsetzung der Optimierung der Abläufe"). Der Text bleibt korrekt, sagt aber nichts Prüfbares. Das ist die behandelbare Hälfte niedriger Perplexity: Konkretisierung erhöht Informationsgehalt und Wortvarianz zugleich, ohne Fachsprache anzutasten.
 Häufige Indikatoren:
 - "verschiedene Maßnahmen", "zahlreiche Aspekte", "innovative Lösungen", "zentrale Faktoren"
@@ -388,7 +387,6 @@ Häufige Indikatoren:
 #### 60. Synonym-Rotation für dieselbe Entität [MEDIUM]
 <!-- haltbarkeit: kern -->
 <!-- pass: 2 -->
-**Kategorie:** Sprache und Tonfall
 **Problem:** Zwanghafte Wiederholungsvermeidung: "die Hansestadt", "die Elbmetropole", "die Stadt an der Alster" für denselben Referenten. Menschen wiederholen das Wort oder pronominalisieren; die Rotation wirkt enzyklopädisch-bemüht und macht Texte schwerer lesbar, weil der Leser Referenzen neu auflösen muss. Derselbe Mechanismus trifft nicht nur Eigennamen, sondern jeden wiederkehrenden Sachbegriff: "die Studie" → "die Untersuchung" → "die Analyse" → "die Forschungsarbeit" für dieselbe Sache, "das Verfahren" → "die Methodik" → "der Ansatz" → "das Konzept". Ursache ist die Wiederholungsvermeidung beim Decoding, kein Bedeutungsunterschied.
 Häufige Indikatoren:
 - 3+ verschiedene Bezeichnungen für dieselbe Entität oder denselben Sachbegriff in einem Abschnitt
@@ -403,7 +401,6 @@ Häufige Indikatoren:
 #### 63. Modalpartikel-Anomalie [LOW]
 <!-- haltbarkeit: jahrgang stand=2026-07 -->
 <!-- pass: 4 -->
-**Kategorie:** Sprache und Tonfall
 **Problem:** Nur im Modus Locker behandeln, in Sachlich höchstens diagnostisch. Beide Extreme sind Tells: (a) Vollständige Abwesenheit von Modalpartikeln (ja, doch, eben, halt, wohl, mal, schon, ohnehin) in einem Text, der sonst Nähe-Register fährt – LLM-Deutsch ist partikelarm, weil Partikeln keine propositionale Funktion haben. (b) Partikel-Überdosis als Über-Humanisierung (vgl. Muster 59).
 Häufige Indikatoren:
 - Blog/Newsletter im Du-Ton ohne eine einzige Modalpartikel über mehrere Absätze
@@ -418,7 +415,6 @@ Häufige Indikatoren:
 <!-- haltbarkeit: jahrgang stand=2026-07 -->
 <!-- pass: 2 -->
 <!-- m64-judgment-only: entfesseln, revolutionieren, prägen, robust, essenziell, lebendig, landschaft, reise, meilenstein, spannungsfeld -->
-**Kategorie:** Sprache und Tonfall
 **Problem:** Für englische Wissenschaftssprache ist die Überrepräsentation bestimmter Wörter in
 LLM-beeinflussten Texten empirisch belegt. Die folgenden deutschen Marker sind eine funktionale,
 noch nicht gegen einen breiten deutschen Gebrauchstext-Korpus validierte Übertragung. Einzeln sind
@@ -445,7 +441,6 @@ diffundieren und verlieren dadurch mit der Zeit an Trennschärfe.
 #### 65. Kopula-Vermeidung [MEDIUM]
 <!-- haltbarkeit: jahrgang stand=2026-07 -->
 <!-- pass: 2 -->
-**Kategorie:** Sprache und Tonfall
 **Problem:** LLMs ersetzen das schlichte "ist"/"hat" durch gespreizte Ersatzkonstruktionen: "fungiert als", "dient als", "stellt ... dar", "repräsentiert", "bildet", "erweist sich als", "präsentiert sich als", "zeichnet sich durch ... aus", "verfügt über", "bietet", "beherbergt", "wartet mit ... auf". Der Satz klingt gehobener, sagt aber exakt dasselbe. Adaptiert aus blader/humanizer Muster #8 ("Copula Avoidance"). Dieselbe Aufwertung trifft einfache Vollverben: "schrieb" → "verfasste", "starb" → "verstarb", "nutzte" → "verwendete", "machte" → "führte durch", "half" → "unterstützte". Das Verb wird gehobener, der Inhalt bleibt gleich.
 Häufige Indikatoren:
 - "fungiert als" / "dient als" statt "ist"
@@ -464,7 +459,6 @@ Häufige Indikatoren:
 #### 66. Fake-Analyse-Anhang [MEDIUM]
 <!-- haltbarkeit: kern -->
 <!-- pass: 2 -->
-**Kategorie:** Sprache und Tonfall
 **Problem:** LLMs hängen an normale Informationssätze scheinanalytische Relativsätze oder Anschlusskonstruktionen, die eine Schlussfolgerung vortäuschen, aber keine neue Information liefern. Erkennbar am Löschtest: Fällt „was X unterstreicht/zeigt/verdeutlicht“ weg, geht keine Information verloren – der Hauptsatz steht vollständig. Die Konstruktion ist grammatikalisch korrekt; ihr Tell ist die funktionale Leere des Anhangs.
 Häufige Indikatoren:
 - „...was X unterstreicht / belegt / verdeutlicht / bestätigt / beweist“
@@ -482,8 +476,6 @@ Häufige Indikatoren:
 #### 68. Komparativ-Rahmung [MEDIUM]
 <!-- haltbarkeit: kern -->
 <!-- pass: 3 -->
-
-**Kategorie:** Sprache und Tonfall
 
 **Problem:** Der Text beschreibt eine Sache über die Abgrenzung von etwas anderem statt direkt: "Es geht weniger um Geschwindigkeit als vielmehr um Vertrauen." Die Vergleichsschablone erzeugt Differenziertheits-Anmutung, sagt aber weniger als eine direkte Aussage — was "weniger" und "vielmehr" konkret bedeuten, bleibt offen und unprüfbar.
 
@@ -593,8 +585,6 @@ Häufige Indikatoren:
 #### 69. Struktureller Register-Kollaps [MEDIUM]
 <!-- haltbarkeit: jahrgang stand=2026-07 -->
 <!-- pass: 4 -->
-
-**Kategorie:** Stil
 
 **Problem:** Ein als locker markierter Text (Chat-Nachricht, Team-Update, persönliche Mail) trägt informelle Marker an der Oberfläche, aber darunter liegt durchgeformte Schriftsprache: vollständige, wohlgebaute Sätze, ein Thema pro Absatz, sauberer Bogen aus Ergebnis, Einschränkung und nächsten Schritten. Die Marker ("kurz vorab", "lg", Emoji) sind aufgesprüht, die Architektur ist Aufsatz.
 
@@ -1007,8 +997,6 @@ Häufige Indikatoren:
 <!-- haltbarkeit: kern -->
 <!-- pass: 1 -->
 
-**Kategorie:** Rhetorik und Struktur
-
 **Problem:** Der Text beschreibt eine Änderungsgeschichte statt den aktuellen Sachverhalt. Das ist in Changelogs, Release Notes und Migrationsanleitungen richtig, aber in Dokumentation, Blogtexten, Hilfetexten und Kommentaren wirkt es wie ein Diff-Kommentar, der im eigentlichen Text stehen geblieben ist.
 
 Häufige Indikatoren:
@@ -1035,8 +1023,6 @@ Häufige Indikatoren:
 <!-- haltbarkeit: kern -->
 <!-- pass: 2 -->
 
-**Kategorie:** Rhetorik und Struktur
-
 **Wendungen, auf die Sie achten sollten:** "X ist die Sprache des Y", "X ist die Währung des Y", "X ist die Architektur des Y", "X wird zur Falle", "X ist kein Werkzeug, sondern ein Spiegel", "im Kern von X steht Y".
 
 **Problem:** LLMs verwandeln eine gewöhnliche Aussage in einen wiederverwendbaren, tiefgründig klingenden Aphorismus. Die Schablone "X ist das Y des Z" suggeriert Bedeutung, fügt aber keine Präzision hinzu – sie ersetzt eine konkrete, prüfbare Behauptung durch eine griffige Leerformel. Solche Sätze lassen sich auf fast jedes Thema anwenden, gerade weil sie nichts Konkretes sagen.
@@ -1058,7 +1044,6 @@ Häufige Indikatoren:
 #### 61. Isometrisches Dokument [MEDIUM]
 <!-- haltbarkeit: jahrgang stand=2026-07 -->
 <!-- pass: 3 -->
-**Kategorie:** Rhetorik und Struktur
 **Problem:** Alle Absätze 3–5 Sätze, alle H2-Sektionen gleich lang, alle Listen-Items in derselben grammatischen Form und Länge, jeder Aspekt bekommt gleich viel Raum. Die Symmetrie überlebt Satz-Edits und ist deshalb ein stärkerer Tell als monotoner Satzbau. Menschliche Texte gewichten ungleich: ausführlich, wo der Autor etwas weiß; knapp, wo nicht.
 Häufige Indikatoren:
 - Absatzlängen fast konstant (Differenz selten mehr als ein Satz)
@@ -1071,7 +1056,6 @@ Häufige Indikatoren:
 #### 62. Markerloser Schließzwang [MEDIUM]
 <!-- haltbarkeit: kern -->
 <!-- pass: 3 -->
-**Kategorie:** Rhetorik und Struktur
 **Problem:** Jeder Absatz endet mit einem bewertenden Abschlusssatz, der nichts Neues sagt ("Damit ist die Grundlage gelegt.", "Das zahlt sich langfristig aus.", "So bleibt das System zukunftsfähig.") – Muster 5 ohne dessen Markerphrasen. Die strukturelle Funktion (Absatz "zumachen") ist der Tell, nicht die Wortwahl.
 Häufige Indikatoren:
 - Letzter Satz des Absatzes wiederholt oder bewertet das bereits Gesagte
@@ -1087,8 +1071,6 @@ Häufige Indikatoren:
 #### 67. Ankündigungs-Spaltsatz [MEDIUM]
 <!-- haltbarkeit: kern -->
 <!-- pass: 3 -->
-
-**Kategorie:** Rhetorik und Struktur
 
 **Problem:** Der Satz kündigt seine Aussage an, statt sie zu machen: "Was mich überrascht hat, war die Ladezeit." Die Spaltsatz-Konstruktion verpackt eine einfache Aussage in eine Enthüllungsgeste und hebt sie an, ohne Information hinzuzufügen. Der Doppelpunkt ist dabei nicht der Tell — die Ankündigungsstruktur ist es; sie funktioniert auch ganz ohne Signalwort und rutscht deshalb durch Floskel-Listen.
 
@@ -1117,8 +1099,6 @@ Häufige Indikatoren:
 #### 71. Retroaktive Scheinnuance [MEDIUM]
 <!-- haltbarkeit: kern -->
 <!-- pass: 2 -->
-
-**Kategorie:** Rhetorik und Struktur
 
 **Problem:** Auf eine pauschale Aussage folgt eine angekündigte Präzisierung ("Genauer gesagt", "Fairerweise muss man sagen", "Eigentlich ist es komplizierter"), die dieselbe Aussage nur weicher wiederholt. Es kommt weder Bedingung noch Ausnahme, weder Mechanismus noch Zahl. Der Text simuliert Differenziertheit.
 
@@ -1222,8 +1202,6 @@ Häufige Indikatoren:
 <!-- haltbarkeit: kern -->
 <!-- pass: 1 -->
 
-**Kategorie:** Argumentation und Evidenz
-
 **Problem:** Wenn eine Quelle fehlt, füllt die KI die Lücke mit plausibel klingendem Fülltext. Besonders bei Personen, kleinen Unternehmen oder historischen Details entstehen dann Sätze über Privatsphäre, Zurückhaltung, wahrscheinliche Herkunft oder mutmaßliche Motive, obwohl der Text eigentlich sagen müsste: nicht belegt.
 
 Häufige Indikatoren:
@@ -1255,7 +1233,6 @@ Häufige Indikatoren:
 #### 59. Erfundene Ich-Erfahrung und forcierte Lockerheit [HIGH]
 <!-- haltbarkeit: jahrgang stand=2026-07 -->
 <!-- pass: 1 -->
-**Kategorie:** Argumentation und Evidenz
 **Problem:** Auf "menschlich" getrimmter KI-Text simuliert Persönlichkeit: gestellte Anekdoten ("Als ich letzte Woche mit einem Kunden sprach..."), Pseudo-Nähe ("Ehrlich gesagt", "Keine Sorge", "Spoiler:"), behauptete Praxiserfahrung ohne Träger. Erfundene Erfahrung ist Fabrikation, kein Stilmittel – die Evidenz-Logik von Muster 26/53 gilt analog. Dies ist der Tell zweiter Ordnung: Er entsteht oft erst durch Humanisierungs-Versuche.
 Häufige Indikatoren:
 - Anekdoten ohne nachprüfbaren Träger ("Ein Kunde erzählte mir neulich...")
@@ -1274,8 +1251,6 @@ Häufige Indikatoren:
 #### 70. Verantwortungsverschleierung durch falsche Agency [MEDIUM]
 <!-- haltbarkeit: kern -->
 <!-- pass: 2 -->
-
-**Kategorie:** Argumentation und Evidenz
 
 **Problem:** Ein abstraktes Subjekt (Strategie, Kultur, Kennzahl, Roadmap) übernimmt eine Handlung, die Entscheidung, Absicht oder Verantwortung voraussetzt. Der Satz ist grammatisch aktiv, aber die semantische Rolle ist falsch besetzt: "Die Strategie entschied" kann nichts entscheiden. So verschwindet der belegte Akteur, und mit ihm die Zuständigkeit.
 
@@ -1311,8 +1286,6 @@ Fehlt der echte Akteur im Material: keinen erfinden. Dann die offene Verantwortu
 <!-- haltbarkeit: jahrgang stand=2026-07 -->
 <!-- pass: 2 -->
 
-**Kategorie:** Argumentation und Evidenz
-
 **Problem:** Der Text diagnostiziert ungefragt Gefühle, Selbstbild oder Vorgeschichte des Adressaten: "Du bist nicht zu sensibel", "Deine Gefühle sind völlig valide", "Du wurdest nur zu lange nicht ernst genommen". Das klingt fürsorglich, behauptet aber psychologische Tatsachen über eine reale Person, die der Text nicht belegen kann.
 
 Häufige Indikatoren:
@@ -1344,8 +1317,6 @@ Diese Muster sind in Version 3.2 neu aufgenommen und konzeptuell den bestehenden
 <!-- haltbarkeit: kern -->
 <!-- pass: 1 -->
 
-**Kategorie:** Argumentation und Evidenz
-
 **Problem:** Die angegebene Quelle existiert und ist formal korrekt zitiert, belegt aber die getroffene Aussage nicht. Anders als Muster 26 (fabrizierte Quellen) ist die Referenz real – nur der Inhalt passt nicht zur Behauptung.
 
 Häufige Indikatoren:
@@ -1375,8 +1346,6 @@ Häufige Indikatoren:
 <!-- haltbarkeit: jahrgang stand=2026-07 -->
 <!-- pass: 1 -->
 
-**Kategorie:** Auszeichnungstext
-
 **Problem:** KI-Tools hinterlassen unsichtbare Unicode-Zeichen im Text. Diese sind für das Auge nicht wahrnehmbar, stören aber Wiki-Syntax, Volltextsuche, Screenreader und Textvergleich. Ergänzt Muster 24 um die unsichtbare Ebene. Nur echte Hidden Characters – sichtbare Typografie (Anführungszeichen, Apostrophe) gehört nicht hierher.
 
 Häufige Indikatoren:
@@ -1402,8 +1371,6 @@ Häufige Indikatoren:
 #### 44. Standard-Kapitel ohne Substanz [MEDIUM]
 <!-- haltbarkeit: kern -->
 <!-- pass: 3 -->
-
-**Kategorie:** Stil
 
 **Problem:** Das Problem ist **nicht** die Überschrift an sich, sondern der generische, unbelegte Fülltext darunter. Überschriften wie „Bedeutung“ oder „Relevanz“ können in enzyklopädischen Texten legitim sein, wenn der Abschnitt konkrete Belege enthält. Tell ist die Kombination aus Standard-Überschrift + substanzloser Allgemeinplätze.
 
@@ -1444,8 +1411,6 @@ Häufige Indikatoren:
 #### 45. Anglizismus-Strukturen [MEDIUM]
 <!-- haltbarkeit: kern -->
 <!-- pass: 2 -->
-
-**Kategorie:** Sprache und Tonfall
 
 **Problem:** KI überträgt englische Satzmuster, Kollokationen und Bedeutungen wörtlich ins Deutsche. Das Muster zielt nur auf **harte Transfers**: Calques (Lehnübersetzungen), False Friends (Falschfreunde) und syntaktische Muster, die im Deutschen als Übersetzungsdeutsch auffallen. Einzelne Anglizismen in Business- oder Umgangssprache sind **kein** Anzeichen.
 
@@ -1488,8 +1453,6 @@ Harte Indikatoren (klare Tells):
 <!-- haltbarkeit: kern -->
 <!-- pass: 1 -->
 
-**Kategorie:** Typografie
-
 **Problem:** Claude und andere KI-Modelle setzen das schließende deutsche Anführungszeichen systematisch falsch. Korrekt ist: öffnend „ (U+201E, doppeltes tiefes Anführungszeichen) und schließend “ (U+201C, doppeltes oberes Anführungszeichen links). Stattdessen produziert Claude oft ” (U+201D, doppeltes oberes Anführungszeichen rechts) als Schlusszeichen, oder mischt englische Anführungszeichen ein. Dieses Problem ist per Prompt nicht zuverlässig behebbar und erfordert Post-Processing.
 
 Korrekte deutsche Paare:
@@ -1509,15 +1472,13 @@ Korrekte deutsche Paare:
 
 Gemischte Stile zählen nur, wenn die Mischung die Asymmetrie oben enthält; bloßes Pendeln zwischen geraden und typografischen Quotes ist Editor-Artefakt, kein Tell.
 
-**Warum LLMs das tun:** Vermutlich Tokenisierung, Post-Processing oder UI-Rendering. Englische Trainingsmaterial dominiert die Zeichenwahl. Per Prompt nicht zuverlässig lösbar.
+**Warum LLMs das tun:** Vermutlich Tokenisierung, Post-Processing oder UI-Rendering. Englisches Trainingsmaterial dominiert die Zeichenwahl. Per Prompt nicht zuverlässig lösbar.
 
 **Lösung:** Post-Processor/Linter einsetzen. Prüflogik: jedes öffnende „ (U+201E) muss ein schließendes “ (U+201C) haben; jedes öffnende ‚ (U+201A) muss ein schließendes ‘ (U+2018) haben. Gerade Quotes ("...") als "nicht typografisch" markieren. Englische Curly Quotes (“...”) als mehrdeutig flaggen, nicht automatisch als KI-Tell. Gültige Verschachtelung wie „Er sagte: ‚Hallo‘“ nicht als gemischten Stil werten.
 
 #### 47. Englische Titel-Großschreibung [MEDIUM]
 <!-- haltbarkeit: kern -->
 <!-- pass: 1 -->
-
-**Kategorie:** Typografie
 
 **Problem:** KI überträgt die englische Title-Case-Konvention ins Deutsche: "Die Neue KI Strategie Für Unternehmen". Im Deutschen gilt Satzschreibung: nur das erste Wort und Substantive werden großgeschrieben.
 
@@ -1540,8 +1501,6 @@ Häufige Indikatoren:
 <!-- haltbarkeit: kern -->
 <!-- pass: 1 -->
 
-**Kategorie:** Typografie
-
 **Problem:** KI verwendet englische Zahlen- und Datumsformate in deutschen Texten.
 
 Häufige Indikatoren:
@@ -1558,8 +1517,6 @@ Häufige Indikatoren:
 <!-- haltbarkeit: kern -->
 <!-- pass: 1 -->
 
-**Kategorie:** Typografie
-
 **Problem:** KI überträgt den englischen Genitiv-Apostroph ins Deutsche. Im Deutschen steht kein Apostroph vor dem Genitiv-s, außer bei Eigennamen die auf s, x, z, ce enden (dort als Auslassungszeichen).
 
 Häufige Indikatoren:
@@ -1575,8 +1532,6 @@ Häufige Indikatoren:
 #### 50. Interpunktion bei Stichpunkt-Aufzählungen [LOW]
 <!-- haltbarkeit: kern -->
 <!-- pass: 1 -->
-
-**Kategorie:** Typografie
 
 **Problem:** KI setzt Punkte ans Ende reiner Stichwort-Aufzählungen und beginnt Stichwörter mit Großbuchstaben, auch wenn es keine vollständigen Sätze sind.
 
@@ -1597,8 +1552,6 @@ Deutsche Konvention:
 #### 51. Obsessive Parataxe [MEDIUM]
 <!-- haltbarkeit: kern -->
 <!-- pass: 4 -->
-
-**Kategorie:** Stil
 
 **Problem:** KI produziert lange Passagen mit ausschließlich Hauptsätzen gleicher Struktur. Kein Nebensatz, keine Subordination, kein Satzgefüge. Der Text wirkt monoton und roboterhaft, obwohl jeder einzelne Satz korrekt ist.
 
@@ -1699,8 +1652,6 @@ Den Subtitel/Nachsatz *nicht* entfernen, solange er echte, nicht-redundante Info
 #### 55. Gleichförmiger Satzrhythmus [MEDIUM]
 <!-- haltbarkeit: kern -->
 <!-- pass: 4 -->
-
-**Kategorie:** Stil
 
 **Problem:** Die Sätze schwanken kaum in Länge und Bau. Die meisten liegen im selben Wortfenster (oft 10–18 Wörter), beginnen mit dem Subjekt und folgen Subjekt-Verb-Objekt. Es fehlt der Wechsel zwischen einem sehr kurzen Satz und einem langen, gegliederten. Der Text ist dadurch korrekt und gut lesbar, aber metrisch monoton. Statistische Detektoren (GPTZero u. a.) messen diese fehlende Varianz als niedrige "Burstiness" und werten sie als KI-Signal – gemeldet als "Lacks Creative Grammar" oder "Mechanical Writing".
 
