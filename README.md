@@ -1084,6 +1084,17 @@ GitHub Release.
 
 ## Was ist neu?
 
+- **5.22.3** - Wartungslauf. `doctor.py` vergleicht die Version über alle versionstragenden
+  Dateien statt nur über die Manifeste. Fehlende Repo-Dateien gelten in der Paketform nicht
+  als Fehler. Die Naturalness-Karte zu Muster 7 beschreibt jetzt die konzessive
+  „Trotz X … Y“-Schablone statt einer Dublette von Muster 8. In der Modusmatrix des Skills
+  sind vier Formulierungen an die verbindlichen Entscheidungstabellen angeglichen.
+  Anrede-Befunde von `register_lint` hängen laut korrigierter Doku am gesetzten
+  Erwartungswert, nicht am Modus. Aus dem Katalog sind verwaiste Kategorie-Zeilen entfernt,
+  aus den Rhythmus-Prüfungen ein totes Muster. WARP beschreibt den Umfang von `--fix` und
+  den Release-Ablauf vollständig, und zwei neue Tests sichern die Musterzahl-Angaben und
+  die Dateizahl des Pakets.
+
 - **5.22.2** - Das hochladbare Paket trägt jetzt Lizenz und Herkunftsnachweis. Als
   eigenständige Weitergabe braucht es beide. Gebündelt wird nur noch, was der Skill selbst
   aufruft; die Entwicklungswerkzeuge des Repositorys sind draußen, weil sie Testdaten oder

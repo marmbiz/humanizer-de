@@ -5,7 +5,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-EXPECTED_VERSION = "5.22.2"
+EXPECTED_VERSION = "5.22.3"
 EXPECTED_PATTERN_COUNT = 72
 
 
