@@ -81,10 +81,10 @@ Lint-Befunde sind Verdacht, kein Verdikt – jeden vor einer Änderung gegen den
 | HIGH Evidenz/Quelle | markieren/korrigieren | markieren/korrigieren | markieren/korrigieren |
 | HIGH Stil | ändern | ändern | nur wenn nicht fachkonventionell; Muster 10 überspringen |
 | MEDIUM Technik/Struktur | ändern | ändern | markieren oder vorsichtig ändern |
-| MEDIUM weicher Stil | bei Häufung ändern | bei Häufung/klarer Mechanik ändern | meist nur markieren |
-| LOW Format | ändern, wenn störend | ändern bei Regelverstoß | meist überspringen |
+| MEDIUM weicher Stil | bei Häufung/Cluster ändern | bei Häufung/klarer Mechanik ändern | meist nur markieren |
+| LOW Format | ändern, wenn störend | ändern bei klarem Regelverstoß | meist überspringen oder markieren |
 
-False Friends aus Muster 45 immer korrigieren. Calques und syntaktische Transfers im Formal-Modus korrigieren; sonst nur bei Häufung oder auffälliger Wörtlichkeit.
+False Friends aus Muster 45 immer korrigieren. Calques und syntaktische Transfers im Formal-Modus korrigieren; in Sachlich/Locker nur bei Häufung oder auffälliger Wörtlichkeit.
 
 <!-- SLOW_UPDATE_END -->
 
@@ -104,7 +104,7 @@ Spätere Pässe dürfen frühere nicht invalidieren. Rhythmus immer zuletzt.
 
 **Pass 2 – Lexik (Cluster-Regel).** Alle Muster mit `pass: 2`; Schwerpunkte: Floskel-Muster, harte Anglizismus-Strukturen (Muster 45; auch bei grünem Sammelcheck urteilsbasiert prüfen), KI-Marker-Vokabular (Muster 64), Kopula-Vermeidung (Muster 65), Abstrakta-Stapel (Muster 58): Hypernyme und Nominalstil nur aus belegtem Material konkretisieren; Lücken sichtbar markieren. Fertig, wenn nur Cluster bearbeitet wurden und Claim-/Persona-Lock halten.
 
-**Pass 3 – Struktur und rhetorische Figuren (Cluster-Regel).** Alle Muster mit `pass: 3`; Schwerpunkte: Überschriften-Schemata/Absatzisometrie(M61)/substanzlose-Sektionen/Listen-Parallelismus/Schließzwang(M62) sowie die Figuren Trikolon(M9), Dichotomie(M7), negativer Parallelismus(M8) und Merismus(M12) prüfen — je nach Cluster-Regel, ein einzelnes Trikolon ist kein Befund. Absatz-Umsortierungstest(ab drei substanziellen Hauptabsätzen): Nachbarabsätze tauschen; Prämissen-/Zeitfolge-/Referenz-/Folgerungsschaden? Kein Schaden: Inhaltsabhängigkeitsmangel melden. Gate: nicht bei FAQ/Glossar/Referenzdoku/Katalog/Nachrichtenüberblick/bewusst additiven Aufzählungen. Kein Auto-Rewrite, kein künstlicher Konnektor-„Fix“, kein nummeriertes Muster. Fertig, wenn Strukturänderungen Fakten/Fazitfloskeln/Volltextpflicht nicht erzeugen.
+**Pass 3 – Struktur und rhetorische Figuren (Cluster-Regel).** Alle Muster mit `pass: 3`; Schwerpunkte: Überschriften-Schemata/Absatzisometrie(M61)/substanzlose-Sektionen/Listen-Parallelismus/Schließzwang(M62) sowie die Figuren Trikolon(M9), Dichotomie(M7), negativer Parallelismus(M8) und „von… bis“-Erweiterung(M12) prüfen — je nach Cluster-Regel, ein einzelnes Trikolon ist kein Befund. Absatz-Umsortierungstest(ab drei substanziellen Hauptabsätzen): Nachbarabsätze tauschen; Prämissen-/Zeitfolge-/Referenz-/Folgerungsschaden? Kein Schaden: Inhaltsabhängigkeitsmangel melden. Gate: nicht bei FAQ/Glossar/Referenzdoku/Katalog/Nachrichtenüberblick/bewusst additiven Aufzählungen. Kein Auto-Rewrite, kein künstlicher Konnektor-„Fix“, kein nummeriertes Muster. Fertig, wenn Strukturänderungen Fakten/Fazitfloskeln/Volltextpflicht nicht erzeugen.
 
 **Pass 4 – Rhythmus (Locker/Sachlich: standardmäßig an; Formal: nur auf Wunsch).** Alle Muster mit `pass: 4`; konkrete Stellschrauben:
 - Vorfeld nur im Cluster rotieren, bis die Häufung bricht; nicht unter menschliches Maß (~0,8 subjektinitial) drücken. Varianten: Adverbial, vorangestellter Nebensatz, Objekt, Präpositionalphrase, nie zweimal dieselbe.
