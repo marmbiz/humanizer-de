@@ -99,6 +99,10 @@ fertige Paket liegt als
 am jeweils neuesten Release. Nach dem Hochladen prüft Anthropic das Archiv ein bis zwei
 Minuten lang, danach steht der Skill bereit. Der Präzisionspfad liegt als Code im Archiv,
 bleibt ohne spaCy und Sprachmodell aber inaktiv; alles Übrige arbeitet wie in Claude Code.
+Der ganze Weg, vom Skills-Menü bis zum fertigen Upload, in elf Sekunden:
+
+https://github.com/user-attachments/assets/c567f29e-f37b-4323-b308-f04276eb9081
+
 Für ein Update dient der Punkt „Replace“ im
 Menü des Skills; er ersetzt die vorhandene Fassung, statt eine zweite danebenzustellen.
 Hochgeladene Dateien liegen schreibgeschützt, korrigierte Fassungen kommen deshalb als neue
