@@ -73,7 +73,7 @@ python3 scripts/humanizer_audit.py --file path/to/text.md --fix-safe
 
 Für echten Nutzertext immer `--file` verwenden. `--text` ist nur für statische Smoke-Tests wie `AB` gedacht; Rohtext nie direkt in Shell-Kommandos einsetzen.
 
-Der Linter darf versteckte Unicode-Zeichen entfernen und sichere `U+201E ... U+201D`-Paare zu `U+201E ... U+201C` korrigieren. ASCII-Quotes werden gemeldet, aber nicht automatisch in deutsche Quotes umgewandelt.
+Der Linter darf versteckte Unicode-Zeichen entfernen, sichere `U+201E ... U+201D`-Paare zu `U+201E ... U+201C` korrigieren und ASCII-Schlusszeichen nach deutschem Öffner (`U+201E`/`U+201A`) zu `U+201C`/`U+2018` umschreiben. Freistehende ASCII-Quotes ohne deutschen Öffner werden nur gemeldet, nicht automatisch umgewandelt.
 `humanizer_audit.py --fix-safe` macht ausschließlich diese bestehenden Korrekturen und prüft
 anschließend die gespeicherte Fassung. Zahlen-, Datums- und Apostrophformate bleiben manuell.
 
@@ -140,13 +140,15 @@ Der README-Abschnitt „Was ist neu?“ ist der vollständige Changelog. GitHub 
 
 Bei jedem Version-Bump:
 
-1. Version und Changelog synchronisieren: `SKILL.md`, `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `.codex-plugin/plugin.json`, `references/patterns.md`, `references/decision-tables.md`, `docs/coverage-matrix.md`, `README.md` und `tests/test_skill_structure.py`.
+1. Version und Changelog synchronisieren: `SKILL.md`, `.claude-plugin/plugin.json`, `.codex-plugin/plugin.json`, `references/patterns.md`, `references/decision-tables.md`, `docs/coverage-matrix.md`, `README.md`, `WARP.md`, `CITATION.cff` und `tests/test_skill_structure.py`. `.claude-plugin/marketplace.json` trägt bewusst kein `version`-Feld; `assets/checkliste-ki-tells.md` synchronisiert die Musterzahl, nicht die Version.
 2. `make verify` ausführen.
-3. Release-Änderungen per Pull Request einreichen, alle Pflichtchecks abwarten und nach `main` mergen.
-4. Den CI-Lauf auf `main` abwarten; erst danach Tag `vX.Y.Z` auf exakt diesen grünen Merge-Commit setzen und pushen.
-5. GitHub Release aus dem Tag erstellen. Release Notes sollen die Changelog-Zeile konkretisieren, aber keinen breiteren Scope behaupten.
+3. Änderungen auf `main` bringen (direkter Push oder Pull Request) und den CI-Lauf auf `main` mit `gh run list` prüfen.
+4. Erst nach grüner CI Tag `vX.Y.Z` auf den neuesten Commit setzen und pushen.
+5. `make skill-bundle` ausführen und das GitHub Release aus dem Tag mit `dist/humanizer-de.zip` als Asset erstellen – Releases sind nach dem Anlegen versiegelt, das Asset muss beim `gh release create` dabei sein. Release Notes sollen die Changelog-Zeile konkretisieren, aber keinen breiteren Scope behaupten.
 
 Patch-Releases ohne Nutzerwirkung dürfen nur im README-Changelog stehen. Minor-/Major-Releases und sichtbare Tool-, Skill- oder Workflow-Änderungen bekommen immer Git-Tag und GitHub Release.
+
+Ausnahme dokumentiert: `v5.22.0` hat bewusst kein eigenes GitHub Release – der Stand ging im `v5.22.1`-Release auf, das auch das Skill-Bundle nachlieferte.
 
 ## Optimierung
 
