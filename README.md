@@ -97,8 +97,9 @@ Steht der Schalter, führt der Weg über **Customize → Skills → Add → Uplo
 fertige Paket liegt als
 [`humanizer-de.zip`](https://github.com/marmbiz/humanizer-de/releases/latest/download/humanizer-de.zip)
 am jeweils neuesten Release. Nach dem Hochladen prüft Anthropic das Archiv ein bis zwei
-Minuten lang, danach steht der Skill bereit. Der optionale Präzisionspfad mit spaCy fehlt
-dort, alles Übrige arbeitet wie in Claude Code. Für ein Update dient der Punkt „Replace“ im
+Minuten lang, danach steht der Skill bereit. Der Präzisionspfad liegt als Code im Archiv,
+bleibt ohne spaCy und Sprachmodell aber inaktiv; alles Übrige arbeitet wie in Claude Code.
+Für ein Update dient der Punkt „Replace“ im
 Menü des Skills; er ersetzt die vorhandene Fassung, statt eine zweite danebenzustellen.
 Hochgeladene Dateien liegen schreibgeschützt, korrigierte Fassungen kommen deshalb als neue
 Datei zurück.
@@ -610,8 +611,8 @@ Rhythm: sentences=12, mean=13.5, stddev/mean=0.434, subject_initial=0.5, connect
 StyleProfile: words=162, nominal_style_ratio=0.0, type_token_ratio=0.772, particles=0
 Findings:
 unicode:
-- warning pattern 43 hidden_unicode x1 spans=124:125: Remove hidden Unicode character.
-- warning pattern 46 wrong_german_closing_quote x1 spans=211:212: Use U+201C after U+201E, not U+201D.
+- warning pattern 43 hidden_unicode x1 spans=245:246: Remove hidden Unicode character.
+- warning pattern 46 wrong_german_closing_quote x1 spans=385:386: Use U+201C after U+201E, not U+201D.
 ```
 
 Sagt der Bericht `no_rewrite_or_local_edit_only`, bleibt der Text bis auf die zwei
@@ -619,7 +620,7 @@ Einzelbefunde in Ruhe. Die Ausgaben sind Verdacht, kein Urteil, und ausdrücklic
 Autorenschaftsprüfung – wofür die Zahlen taugen und wofür nicht, steht direkt im Anschluss.
 
 Im JSON tragen adressierbare Befunde ein optionales Feld
-`spans: [{"start": 124, "end": 125}]`. Gezählt wird in Unicode-Codepoints wie in Python,
+`spans: [{"start": 245, "end": 246}]`. Gezählt wird in Unicode-Codepoints wie in Python,
 bezogen auf den unveränderten Originaltext. `offset_unit` nennt diese Konvention
 explizit. Dokumentweite Rhythmusmetriken erhalten bewusst keine erfundene Einzelposition.
 
@@ -778,7 +779,7 @@ davon wird zusammen mit dem Skill installiert oder automatisch aktiviert.
 
 ## 72 Muster in 10 Kategorien
 
-Der Skill arbeitet mit einem Katalog aus **72 KI-Schreibmustern** in 10 Kategorien, priorisiert nach Schweregrad (HIGH / MEDIUM / LOW). Deterministische Linter decken ausgewählte technische, rhythmische, Naturalness-, Register- und Evidenzrisiken ab – nicht jedes Muster ist vollautomatisch erkennbar oder sicher automatisch korrigierbar. Linter-gestützt sind derzeit rund 18 Muster (2, 4, 8, 13, 16, 39, 43, 44, 46, 54, 55, 58, 61, 63–65 sowie ein advisory Kandidatenhinweis für 72; Muster 2 und 44: Teilaspekte, Muster 39: Erkennung im Präzisionspfad mit spaCy, kein Gate-Anschluss) plus Register-, Rhythmus- und Evidenz-Checks. Die übrigen Muster prüft das Modell anhand des Katalogs. Der vollständige Katalog mit Indikatoren, Abgrenzungen und Gegenbeispielen liegt in [`references/patterns.md`](references/patterns.md). Für den schnellen Blick ohne Katalog fasst [`assets/checkliste-ki-tells.md`](assets/checkliste-ki-tells.md) die zehn häufigsten Tells auf einer Seite zusammen.
+Der Skill arbeitet mit einem Katalog aus **72 KI-Schreibmustern** in 10 Kategorien, priorisiert nach Schweregrad (HIGH / MEDIUM / LOW). Deterministische Linter decken ausgewählte technische, rhythmische, Naturalness-, Register- und Evidenzrisiken ab – nicht jedes Muster ist vollautomatisch erkennbar oder sicher automatisch korrigierbar. Linter-gestützt sind derzeit 17 Muster (2, 4, 8, 13, 16, 39, 43, 44, 46, 54, 55, 58, 61, 63–65 sowie ein advisory Kandidatenhinweis für 72; Muster 2 und 44: Teilaspekte, Muster 39: Erkennung im Präzisionspfad mit spaCy, kein Gate-Anschluss) plus Register-, Rhythmus- und Evidenz-Checks. Die übrigen Muster prüft das Modell anhand des Katalogs. Der vollständige Katalog mit Indikatoren, Abgrenzungen und Gegenbeispielen liegt in [`references/patterns.md`](references/patterns.md). Für den schnellen Blick ohne Katalog fasst [`assets/checkliste-ki-tells.md`](assets/checkliste-ki-tells.md) die zehn häufigsten Tells auf einer Seite zusammen.
 
 <details>
 <summary><strong>Sprache und Tonfall (19 Muster)</strong></summary>
@@ -1026,7 +1027,7 @@ und keine Schreibberechtigung für Repository-Inhalte.
 ### Exit-Codes
 
 Alle Scripts folgen der Konvention `0` = ok, `1` = Findings gemäß Fail-Schwelle bzw. Fixture-/Eval-Mismatch, `2` = Aufruffehler (falsche Argumente). Die Fail-Schwelle unterscheidet sich bewusst je Script:
-`--fail-on` übersteuert die Fail-Schwelle pro Aufruf. Die Defaults bleiben unverändert. Blocker kennen nur `register_lint.py`, `evidence_lint.py` und `humanizer_audit.py`, deshalb akzeptieren allein sie `{never,blocker,any}`. Für `unicode_lint.py`, `rhythm_lint.py`, `german_pattern_lint.py` und `spell_lint.py` gilt `{never,any}`; ein `blocker` dort wäre eine Schwelle, die nie greift, und wird als Aufruffehler abgewiesen. Ohne das Flag arbeiten `syntax_lint.py` (reine Messstufe) und `run_review_eval.py`; `doctor.py` kennt stattdessen `--require-full`.
+`--fail-on` übersteuert die Fail-Schwelle pro Aufruf. Die Defaults bleiben unverändert. Blocker kennen nur `register_lint.py`, `evidence_lint.py` und `humanizer_audit.py`, deshalb akzeptieren allein sie `{never,blocker,any}`. Für `unicode_lint.py`, `rhythm_lint.py`, `german_pattern_lint.py` und `spell_lint.py` gilt `{never,any}`; ein `blocker` dort wäre eine Schwelle, die nie greift, und wird als Aufruffehler abgewiesen. Ohne das Flag arbeiten `syntax_lint.py` (reine Messstufe), `style_profile.py` und `run_review_eval.py`; `doctor.py` kennt stattdessen `--require-full`.
 
 | Script | Exit `1` bei |
 |---|---|
@@ -1333,7 +1334,7 @@ einem eigenständigen System für deutschsprachige Texte mit eigenem Versionssch
 - **[WikiProjekt KI und Wikipedia](https://de.wikipedia.org/wiki/Wikipedia:WikiProjekt_KI_und_Wikipedia)** – Deutsch Wikipedia
 - **[Original Humanizer Skill](https://github.com/blader/humanizer)** – Englische Version
 - **[Claude Code](https://claude.com/claude-code)** – Zur Verwendung mit diesem Skill
-- **[EEAT Guidelines](https://developers.google.com/search/docs/beginner/eeat-signals)** – Google Search Guidelines
+- **[EEAT Guidelines](https://developers.google.com/search/docs/fundamentals/creating-helpful-content)** – Google Search Guidelines
 
 ---
 
