@@ -17,14 +17,15 @@ def read_utf8(path: Path) -> str:
     return path.read_text(encoding="utf-8")
 
 
-def build_into(directory: Path) -> Path:
+def build_into(directory: Path) -> tuple[Path, dict[str, object]]:
     output = directory / f"{BUNDLE_NAME}.zip"
-    subprocess.run(
-        [sys.executable, str(SCRIPT), "--output", str(output)],
+    result = subprocess.run(
+        [sys.executable, str(SCRIPT), "--output", str(output), "--format", "json"],
         check=True,
         capture_output=True,
+        text=True,
     )
-    return output
+    return output, json.loads(result.stdout)
 
 
 class SkillBundleTests(unittest.TestCase):
@@ -33,7 +34,7 @@ class SkillBundleTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls._tmp = tempfile.TemporaryDirectory()
-        cls.bundle = build_into(Path(cls._tmp.name))
+        cls.bundle, cls.build_result = build_into(Path(cls._tmp.name))
         with zipfile.ZipFile(cls.bundle) as archive:
             cls.names = archive.namelist()
 
@@ -46,6 +47,10 @@ class SkillBundleTests(unittest.TestCase):
         self.assertIn(f"{BUNDLE_NAME}/SKILL.md", self.names)
         roots = {name.split("/", 1)[0] for name in self.names}
         self.assertEqual(roots, {BUNDLE_NAME})
+
+    def test_bundle_file_count_matches_readme(self):
+        # README.md says "Es enthält 25 Textdateien"; update it with bundle changes.
+        self.assertEqual(self.build_result["file_count"], 25)
 
     def test_referenced_reference_files_are_bundled(self):
         skill = read_utf8(ROOT / "SKILL.md")
@@ -125,7 +130,7 @@ class SkillBundleTests(unittest.TestCase):
 
     def test_build_is_reproducible(self):
         with tempfile.TemporaryDirectory() as other:
-            second = build_into(Path(other))
+            second, _ = build_into(Path(other))
             self.assertEqual(self.bundle.read_bytes(), second.read_bytes())
 
     def test_bundle_runs_standalone(self):

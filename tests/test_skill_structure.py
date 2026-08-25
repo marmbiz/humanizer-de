@@ -184,9 +184,18 @@ class SkillStructureTests(unittest.TestCase):
         self.assertIn("Supports Claude Code and Codex", codex_plugin["description"])
         self.assertIn("Supports Claude Code and Codex", marketplace_plugin["description"])
         self.assertIn("Claude/Codex", read_utf8(ROOT / "agents" / "openai.yaml"))
-        self.assertNotIn("65 Muster", plugin["description"])
-        self.assertNotIn("65 Muster", codex_plugin["description"])
-        self.assertNotIn("65 Muster", marketplace_plugin["description"])
+        for description in (
+            plugin["description"],
+            codex_plugin["description"],
+            marketplace_plugin["description"],
+        ):
+            self.assertTrue(
+                all(
+                    count == str(EXPECTED_PATTERN_COUNT)
+                    for count in re.findall(r"\d+(?= Muster)", description)
+                ),
+                description,
+            )
         self.assertIn("GitHub Release", readme_text)
         self.assertIn("GitHub Release", warp_text)
         self.assertIn("Tag `vX.Y.Z`", warp_text)
