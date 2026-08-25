@@ -48,7 +48,7 @@ Nutze diese Tabellen vor `references/patterns.md`, wenn Befunde überlappen. Sie
 | Kurzer Einstieg enthält konkrete Zahl, Datum oder These | nicht 34 | Stehen lassen |
 | Standard-Überschrift mit belegtem, konkretem Inhalt | nicht 44 | Stehen lassen oder nur Überschrift präzisieren |
 
-## Floskeln und Schablonen: 1 / 2 / 32 / 56 / 58 / 60 / 64 / 65
+## Floskeln und Schablonen: 1 / 2 / 32 / 56 / 58 / 60 / 64 / 65 / 66
 
 | Situation | Muster | Aktion |
 |---|---:|---|
@@ -176,7 +176,7 @@ Substantive themenfremd ersetzen. Funktioniert der Satz unverändert, anschließ
 
 Die Matrix steuert die Eingriffsentscheidung des Modells. `german_pattern_lint` meldet
 modusunabhängig; `rhythm_lint` unterdrückt bei `--mode formal` die Stilverdachte zu den
-Mustern 55 und 61, und `register_lint` schaltet Partikel- und Anrede-Findings je Modus.
+Mustern 55 und 61, und `register_lint` schaltet Partikel-Findings je Modus; die Anrede-Findings hängen an `--expected-address`, nicht am Modus.
 Zusätzlich wertet die Preflight-Empfehlung den Modus maschinell aus.
 
 | Musterklasse | Locker | Sachlich | Formal |

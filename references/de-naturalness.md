@@ -25,10 +25,10 @@ Diese Karten operationalisieren die Muster 7, 8, 13, 45, 54, 55, 58, 60, 61, 63,
 
 ## 7 Dichotomie-Zuspitzung
 
-- Signal: Sätze oder Absatzschlüsse als „nicht X, sondern Y“-Zuspitzung, gehäuft oder als wiederkehrende Pointe. Die Einzelkonstruktion bleibt bewusst Urteil; nur ein dichtes Dokumentcluster läuft als M8-Befund.
-- Schlechter Reflex: jede „nicht X, sondern Y“-Konstruktion umschreiben.
-- Sicherer Eingriff: nur die gehäufte oder pointierende Wiederholung auflösen und als normale Aussage führen; eine einzelne Gegenüberstellung stehen lassen.
-- Nicht anfassen: echte Sachkorrektur („nicht Montag, sondern Dienstag“), einzelner sachlicher Kontrast.
+- Signal: konzessive Gegensatz-Schablone „Trotz X … steht Y vor Z“ oder „Obwohl …, jedoch …“, einzeln oder als „Lob → Herausforderungen → Ausblick“-Struktur über mehrere Absätze.
+- Schlechter Reflex: jeden Gegensatz und jedes „trotz“ umschreiben.
+- Sicherer Eingriff: den zu glatten Gegensatz in zwei normale Aussagen auflösen („macht Fortschritte, kämpft aber mit …“); die Dreier-Struktur als Cluster behandeln, nicht die Einzelteile.
+- Nicht anfassen: Gegensätze mit belegter Substanz (konkrete Zahlen, benannte Risiken, datierte Vorhaben); ein sachlicher Ausblick.
 
 ## 8 Negative Parallelismen
 
@@ -103,7 +103,7 @@ Diese Karten operationalisieren die Muster 7, 8, 13, 45, 54, 55, 58, 60, 61, 63,
 
 ## 65 Kopula-Vermeidung
 
-- Signal: gehauftes "fungiert als", "stellt dar", "verfügt über", "zeichnet sich aus".
+- Signal: gehäuftes "fungiert als", "stellt dar", "verfügt über", "zeichnet sich aus".
 - Schlechter Reflex: "ist" und "hat" vermeiden.
 - Sicherer Eingriff: auf "ist" oder "hat" zurückführen, wenn keine Information verloren geht.
 - Nicht anfassen: echte Funktionsbeschreibung, etwa "dient als Notausgang".

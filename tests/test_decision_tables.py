@@ -11,7 +11,7 @@ class DecisionTableTests(unittest.TestCase):
         for pattern_id in ("11", "25", "26", "42", "53", "5", "6", "34", "44", "58", "59", "60", "61", "62", "64", "65"):
             self.assertIn(f"| {pattern_id} |", text)
         self.assertIn("## Evidenz: 11 / 25 / 26 / 42 / 53", text)
-        self.assertIn("## Floskeln und Schablonen: 1 / 2 / 32 / 56 / 58 / 60 / 64 / 65", text)
+        self.assertIn("## Floskeln und Schablonen: 1 / 2 / 32 / 56 / 58 / 60 / 64 / 65 / 66", text)
         self.assertIn("## Struktur: 5 / 6 / 34 / 44 / 61 / 62", text)
         self.assertIn("## Evidenz zweiter Ordnung: 59", text)
 
