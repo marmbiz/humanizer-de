@@ -476,9 +476,9 @@ def apply_scope(suspicions: list[dict], scope: str, mode: str) -> tuple[list[dic
     for item in suspicions:
         pattern = item["pattern"]
         should_suppress = False
-        if scope == "skill_doc" and pattern in {51, 55, 61}:
+        if scope == "skill_doc" and pattern in {55, 61}:
             should_suppress = True
-        if mode == "formal" and pattern in {51, 55, 61}:
+        if mode == "formal" and pattern in {55, 61}:
             should_suppress = True
         if should_suppress:
             suppressed.append(suppress_suspicion(item, scope, mode))

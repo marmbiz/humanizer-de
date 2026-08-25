@@ -183,7 +183,6 @@ class RhythmLintTests(unittest.TestCase):
         report = rhythm_lint.analyze(text)
         self.assertEqual(report["document"]["sentence_count"], 1)
         self.assertNotIn(55, pattern_ids(report))
-        self.assertNotIn(51, pattern_ids(report))
 
     def test_markdown_table_rows_are_not_prose_blocks(self):
         text = (
@@ -232,24 +231,30 @@ class RhythmLintTests(unittest.TestCase):
         text = "Darüber hinaus prüft das Team die Werte. Darüber hinaus speichert es die Notizen."
         self.assertIn(4, pattern_ids(rhythm_lint.analyze(text)))
 
-    def test_skill_doc_scope_does_not_surface_pattern_51(self):
+    def test_skill_doc_scope_suppresses_pattern_55(self):
         text = (
             "Prüfe den Modus. Lies die Quelle. Markiere die Lücke. "
             "Bewahre den Satz. Entferne den Platzhalter. Melde den Befund. "
             "Teste die Ausgabe. Stoppe bei Fehlern."
         )
-        report = rhythm_lint.analyze(text, scope="skill_doc")
-        self.assertNotIn(51, pattern_ids(report))
+        self.assertIn(55, pattern_ids(rhythm_lint.analyze(text)))
 
-    def test_formal_mode_does_not_surface_pattern_51(self):
+        report = rhythm_lint.analyze(text, scope="skill_doc")
+        self.assertNotIn(55, pattern_ids(report))
+        self.assertIn(55, {item["pattern"] for item in report["suppressed"]})
+
+    def test_formal_mode_suppresses_pattern_61(self):
         text = (
-            "Die Datenerhebung wurde abgeschlossen. "
-            "Die Auswertung wurde dokumentiert. "
-            "Die Ergebnisse wurden geprüft. "
+            "Die Datenerhebung wurde abgeschlossen.\n\n"
+            "Die Auswertung wurde dokumentiert.\n\n"
+            "Die Ergebnisse wurden geprüft.\n\n"
             "Die Methode wurde beschrieben."
         )
+        self.assertIn(61, pattern_ids(rhythm_lint.analyze(text)))
+
         report = rhythm_lint.analyze(text, mode="formal")
-        self.assertNotIn(51, pattern_ids(report))
+        self.assertNotIn(61, pattern_ids(report))
+        self.assertIn(61, {item["pattern"] for item in report["suppressed"]})
 
     def test_cli_default_omits_paragraph_details(self):
         exit_code, report = run_cli(["--text", "Kurz. Noch ein Satz."])
