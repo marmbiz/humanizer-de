@@ -326,13 +326,21 @@ def lint(text: str, mode: str = "sachlich", expected_address: str | None = None,
             "Modal particles should not be added in Sachlich/Formal.",
             spans["particles"],
         )
-    if mode == "formal" and (found["emoji_count"] or found["rhetorical_questions"]):
+    if mode == "formal" and found["emoji_count"]:
         add(
             findings,
             "blocker",
             "formal_voice_intrusion",
-            "Formal mode should not add emojis or rhetorical engagement.",
-            spans["emoji"] + spans["questions"],
+            "Formal mode should not add emojis.",
+            spans["emoji"],
+        )
+    if mode == "formal" and found["rhetorical_questions"]:
+        add(
+            findings,
+            "warning",
+            "formal_questions",
+            "Questions in formal mode: verify they are genuine content questions, not added rhetorical engagement.",
+            spans["questions"],
         )
     if mode == "locker" and found["modal_particle_count"] > 3:
         add(

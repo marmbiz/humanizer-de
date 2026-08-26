@@ -1,5 +1,7 @@
+import io
 import importlib.util
 import unittest
+from contextlib import redirect_stdout
 from pathlib import Path
 
 
@@ -45,9 +47,25 @@ class RegisterLintTests(unittest.TestCase):
         )
         self.assertEqual(report["features"], register_lint.features(text))
 
-    def test_formal_voice_intrusion_is_blocker(self):
-        report = register_lint.lint("Die Studie zeigt den Effekt. Klingt spannend?", mode="formal")
-        self.assertIn("formal_voice_intrusion", kinds(report))
+    def test_formal_question_is_warning_not_blocker(self):
+        text = "Welche Folgen hat der Effekt?"
+        report = register_lint.lint(text, mode="formal")
+
+        finding = next(item for item in report["findings"] if item["kind"] == "formal_questions")
+        self.assertEqual(finding["severity"], "warning")
+        self.assertEqual(
+            finding["message"],
+            "Questions in formal mode: verify they are genuine content questions, not added rhetorical engagement.",
+        )
+        self.assertEqual([text[span["start"]:span["end"]] for span in finding["spans"]], ["?"])
+        self.assertNotIn("formal_voice_intrusion", kinds(report))
+        self.assertFalse(any(item["severity"] == "blocker" for item in report["findings"]))
+
+        with redirect_stdout(io.StringIO()):
+            exit_code = register_lint.main(
+                ["--text", text, "--mode", "formal", "--fail-on", "blocker"]
+            )
+        self.assertEqual(exit_code, 0)
 
     def test_bmp_emojis_trigger_formal_voice_intrusion(self):
         texts = (
@@ -64,7 +82,12 @@ class RegisterLintTests(unittest.TestCase):
                 self.assertGreaterEqual(register_lint.features(text)["emoji_count"], 1)
                 report = register_lint.lint(text, mode="formal")
                 self.assertFalse(report["ok"])
-                self.assertIn("formal_voice_intrusion", kinds(report))
+                finding = next(
+                    item for item in report["findings"] if item["kind"] == "formal_voice_intrusion"
+                )
+                self.assertEqual(finding["severity"], "blocker")
+                self.assertEqual(finding["message"], "Formal mode should not add emojis.")
+                self.assertNotIn("formal_questions", kinds(report))
 
     def test_non_emoji_symbols_do_not_trigger_formal_voice_intrusion(self):
         texts = (

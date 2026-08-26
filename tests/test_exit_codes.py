@@ -95,7 +95,7 @@ class ExitCodeTests(unittest.TestCase):
             audit_path.write_text('Er sagte "Hallo".', encoding="utf-8")
             cases = [
                 (unicode_lint, ["--text", 'Er sagte "Hallo".'], "any", 1),
-                (register_lint, ["--text", "Klingt spannend?", "--mode", "formal"], "blocker", 1),
+                (register_lint, ["--text", "Die Prüfung ist abgeschlossen. ✅", "--mode", "formal"], "blocker", 1),
                 (
                     evidence_lint,
                     [
@@ -239,14 +239,14 @@ class ExitCodeTests(unittest.TestCase):
     def test_blocker_policy_still_gates_blocker_capable_scripts(self):
         with tempfile.TemporaryDirectory() as tmp:
             blocker_path = Path(tmp) / "blocker.md"
-            blocker_path.write_text("Klingt spannend?", encoding="utf-8")
+            blocker_path.write_text("Die Prüfung ist abgeschlossen. ✅", encoding="utf-8")
             warning_path = Path(tmp) / "warning.md"
-            warning_path.write_text("Das ist ja schon wichtig.", encoding="utf-8")
+            warning_path.write_text("Welche Folgen hat der Effekt?", encoding="utf-8")
             cases = [
                 (
                     register_lint,
-                    ["--text", "Klingt spannend?", "--mode", "formal"],
-                    ["--text", "Das ist ja schon wichtig.", "--mode", "sachlich"],
+                    ["--text", "Die Prüfung ist abgeschlossen. ✅", "--mode", "formal"],
+                    ["--text", "Welche Folgen hat der Effekt?", "--mode", "formal"],
                 ),
                 (
                     evidence_lint,
@@ -266,7 +266,7 @@ class ExitCodeTests(unittest.TestCase):
                 (
                     humanizer_audit,
                     ["--file", str(blocker_path), "--mode", "formal", "--no-profile"],
-                    ["--file", str(warning_path), "--mode", "sachlich", "--no-profile"],
+                    ["--file", str(warning_path), "--mode", "formal", "--no-profile"],
                 ),
             ]
 
