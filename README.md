@@ -611,6 +611,7 @@ alle leeren Prüfsektionen:
 $ python3 scripts/humanizer_audit.py --file entwurf.md --mode sachlich --format md
 
 Preflight: risk=low, score=0, recommendation=no_rewrite_or_local_edit_only
+Calibration: risk=low means no calibrated signal fired, not that the text is clean. Signal coverage is weakest for advertising, social-media and essay/thought-leadership registers, where AI patterns can pass unseen.
 Rhythm: sentences=12, mean=13.5, stddev/mean=0.434, subject_initial=0.5, connectors=0
 StyleProfile: words=162, nominal_style_ratio=0.0, type_token_ratio=0.772, particles=0
 Findings:
@@ -620,7 +621,10 @@ unicode:
 ```
 
 Sagt der Bericht `no_rewrite_or_local_edit_only`, bleibt der Text bis auf die zwei
-Einzelbefunde in Ruhe. Die Ausgaben sind Verdacht, kein Urteil, und ausdrücklich keine
+Einzelbefunde in Ruhe. Die Calibration-Zeile erscheint bei jedem `low`-Befund und erinnert
+daran, dass ein stilles Ergebnis nur „kein geeichtes Signal“ bedeutet. In Registern wie
+Werbung, Social Media oder Essayistik kann dahinter auch eine Erkennungslücke stecken. Die
+Ausgaben sind Verdacht, kein Urteil, und ausdrücklich keine
 Autorenschaftsprüfung – wofür die Zahlen taugen und wofür nicht, steht direkt im Anschluss.
 
 Im JSON tragen adressierbare Befunde ein optionales Feld
@@ -1087,6 +1091,15 @@ GitHub Release.
 ---
 
 ## Was ist neu?
+
+- **5.23.0** - Der Sammelcheck ordnet ein unauffälliges Ergebnis jetzt selbst ein. `risk=low`
+  heißt nur, dass kein geeichtes Signal angeschlagen hat. Eine neue Calibration-Zeile nennt
+  deshalb die Register, in denen die Erkennung am schwächsten ist, darunter Werbung, Social
+  Media und Essayistik. Dort kann ein stilles Ergebnis auch eine Lücke sein. Im Formal-Modus
+  blockieren Fragezeichen nicht mehr pauschal: Echte Sachfragen erzeugen eine Warnung mit
+  Prüfauftrag. Emojis bleiben Blocker. Alle `--fail-on`-Flags erklären in der Hilfe ihre
+  Schwelle samt Default, `make help` listet die Make-Ziele auf, und der Entwicklerleitfaden
+  führt jetzt alle Skripte.
 
 - **5.22.3** - Wartungslauf. `doctor.py` vergleicht die Version über alle versionstragenden
   Dateien statt nur über die Manifeste. Fehlende Repo-Dateien gelten in der Paketform nicht
