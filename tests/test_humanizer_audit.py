@@ -427,6 +427,55 @@ class HumanizerAuditTests(unittest.TestCase):
         self.assertEqual(after["score"], before["score"] + 2)
         self.assertIn(after["risk"], {"medium", "high"})
 
+    def test_low_preflight_includes_calibration_note_and_markdown_line(self):
+        expected = (
+            "risk=low means no calibrated signal fired, not that the text is clean. "
+            "Signal coverage is weakest for advertising, social-media and essay/thought-leadership "
+            "registers, where AI patterns can pass unseen."
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "text.md"
+            path.write_text("Das Team prüft den Entwurf.", encoding="utf-8")
+
+            _, report = run_json(["--file", str(path)])
+
+        report["summary"]["preflight"] = humanizer_audit.preflight_assessment(
+            {
+                "document": {
+                    "sentence_count": 8,
+                    "stddev_mean_ratio": 0.6,
+                    "subject_initial_ratio": 0.5,
+                    "repeated_openers": [],
+                    "connector_density_by_paragraph": [0],
+                    "sentence_length_buckets": {
+                        "ratios": {"short_lt_12": 0.15, "long_gt_28": 0.1}
+                    },
+                    "paragraph_sentence_counts_uniform": False,
+                }
+            },
+            [],
+            [],
+            "sachlich",
+        )
+        preflight = report["summary"]["preflight"]
+        self.assertEqual(preflight["risk"], "low")
+        self.assertEqual(preflight["calibration_note"], expected)
+        lines = humanizer_audit.format_markdown(report).splitlines()
+        preflight_index = next(i for i, line in enumerate(lines) if line.startswith("Preflight: "))
+        self.assertEqual(lines[preflight_index + 1], f"Calibration: {expected}")
+
+    def test_non_low_preflight_omits_calibration_note_and_markdown_line(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "text.md"
+            path.write_text("Das Team prüft den Entwurf.", encoding="utf-8")
+
+            _, report = run_json(["--file", str(path)])
+
+        preflight = report["summary"]["preflight"]
+        self.assertNotEqual(preflight["risk"], "low")
+        self.assertNotIn("calibration_note", preflight)
+        self.assertNotIn("\nCalibration: ", humanizer_audit.format_markdown(report))
+
     def test_antithesis_summary_keeps_density_before_long_matches(self):
         text = (
             "Nicht abwarten, sondern machen. Der Plan ist mutig und nicht vorsichtig. "

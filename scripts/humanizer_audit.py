@@ -251,7 +251,7 @@ def preflight_assessment(
         recommendation = "no_rewrite_or_local_edit_only"
         combing = {"auto": False, "max_iterations": 0, "reason": "no_cluster"}
 
-    return {
+    result = {
         "risk": risk,
         "score": score,
         "drivers": drivers[:6],
@@ -259,6 +259,9 @@ def preflight_assessment(
         "combing": combing,
         "quality_warning": quality_warning,
     }
+    if risk == "low":
+        result["calibration_note"] = "risk=low means no calibrated signal fired, not that the text is clean. Signal coverage is weakest for advertising, social-media and essay/thought-leadership registers, where AI patterns can pass unseen."
+    return result
 
 
 def compact_unicode_findings(findings: list[dict]) -> list[dict]:
@@ -497,6 +500,8 @@ def format_markdown(report: dict) -> str:
             f"uniform_paragraphs={str(rhythm['paragraph_sentence_counts_uniform']).lower()}"
         ),
     ]
+    if "calibration_note" in preflight:
+        lines.insert(3, f"Calibration: {preflight['calibration_note']}")
     if "safe_fix" in report:
         lines.insert(2, f"SafeFix: changed={str(report['safe_fix']['changed']).lower()}")
     style = report["style_profile"]
