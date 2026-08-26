@@ -80,7 +80,7 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
         action="store_true",
         help="Atomically apply only the conservative fixes already provided by unicode_lint (patterns 43/46).",
     )
-    parser.add_argument("--fail-on", choices=["never", "blocker", "any"], default="never")
+    parser.add_argument("--fail-on", choices=["never", "blocker", "any"], default="never", help="Exit 1 threshold: never (default), blocker, or any finding.")
     args = parser.parse_args(argv)
     require_file(parser, args.file, "--file")
     require_file(parser, args.profile, "--profile")

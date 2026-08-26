@@ -547,7 +547,7 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--ledger", type=Path, help="Read original anchors from a JSON ledger instead of --before.")
     parser.add_argument("--fixture", type=Path, help="JSON fixture file or directory.")
     parser.add_argument("--precise", action="store_true", help="spaCy-gestützte Verfeinerung, wenn installiert; sonst wirkungslos")
-    parser.add_argument("--fail-on", choices=["never", "blocker", "any"], default="blocker")
+    parser.add_argument("--fail-on", choices=["never", "blocker", "any"], default="blocker", help="Exit 1 threshold: never, blocker (default), or any finding.")
     args = parser.parse_args(argv)
     require_file(parser, args.before_file, "--before-file")
     require_file(parser, args.after_file, "--after-file")

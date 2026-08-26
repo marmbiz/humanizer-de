@@ -370,7 +370,7 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     source.add_argument("--file", type=Path, help="UTF-8 text file to lint.")
     parser.add_argument("--fix", action="store_true", help="Apply safe fixes in output.")
     parser.add_argument("--write", action="store_true", help="Write fixed text back to --file. Requires --fix.")
-    parser.add_argument("--fail-on", choices=["never", "any"], default="any")
+    parser.add_argument("--fail-on", choices=["never", "any"], default="any", help="Exit 1 threshold: never or any finding (intentional default; every finding fails).")
     args = parser.parse_args(argv)
     require_file(parser, args.file, "--file")
     if args.write and (not args.fix or not args.file):

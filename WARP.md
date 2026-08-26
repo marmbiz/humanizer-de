@@ -16,7 +16,7 @@ humanizer-de/
 │   ├── qgir.md                      # Quality-Guided Iterative Revision
 │   ├── evidence-ledger.md           # Claim-Delta und Faktenanker
 │   ├── register-profiles.md         # Zielprofil und Registerlogik
-│   └── de-naturalness.md            # deutsche Rule Cards fuer spaete Muster
+│   └── de-naturalness.md            # deutsche Rule Cards für späte Muster
 ├── scripts/
 │   ├── unicode_lint.py              # Muster 43/46, JSON-Report, optional --fix
 │   ├── rhythm_lint.py               # Muster 4/54/55/61, JSON-Report
@@ -25,7 +25,17 @@ humanizer-de/
 │   ├── detection_snapshot.py        # report-only Stand der Fixture- und FP-Befunde
 │   ├── register_lint.py             # Register-/Profil-Drift
 │   ├── german_pattern_lint.py       # deutsche Marker-Cluster
-│   └── run_review_eval.py           # Scenario-Contract-Invarianten
+│   ├── run_review_eval.py           # Scenario-Contract-Invarianten
+│   ├── bench.py                     # deterministische CPU-Benchmarks der Linter
+│   ├── build_skill_bundle.py        # uploadbares Skill-Bundle als ZIP bauen
+│   ├── cli_output.py                # Modul: Datei-Leser, JSON-Ausgabe, Exit-Code-Policy (kein CLI)
+│   ├── doctor.py                    # lokale Humanizer-Installation diagnostizieren
+│   ├── fp_corpus_report.py          # False-Positive-Korpus nach Datei und Fundart auswerten
+│   ├── humanizer_audit.py           # kompakten Humanizer-Lint-Audit ausführen
+│   ├── spell_lint.py                # neue unbekannte Hunspell-Wörter vor/nach Rewrite prüfen
+│   ├── style_profile.py             # rohe Stilmetriken ohne Interpretation ausgeben
+│   ├── syntax_lint.py               # optionale spaCy-Syntaxmetriken ausgeben
+│   └── text_scope.py                # Modul für offsettreue Markdown-Textbereiche (kein CLI)
 ├── tests/
 │   ├── test_skill_structure.py
 │   ├── test_patterns_catalog.py

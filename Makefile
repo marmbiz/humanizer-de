@@ -2,10 +2,23 @@ FILE ?= README.md
 PYTHON ?= $(if $(wildcard .venv/bin/python),.venv/bin/python,python3)
 LANGUAGETOOL ?= languagetool
 
-.PHONY: test lint eval-contracts verify bench detection-snapshot doctor doctor-full lt skill-bundle
+.PHONY: test help lint eval-contracts verify bench detection-snapshot doctor doctor-full lt skill-bundle
 
 test:
 	$(PYTHON) -m unittest discover -s tests -v
+
+help:
+	@echo 'test                Alle Unit-Tests ausführen'
+	@echo 'help                Diese Target-Übersicht anzeigen'
+	@echo 'lint                Linter-Smoke-Tests ausführen'
+	@echo 'eval-contracts      Review-Szenarien prüfen'
+	@echo 'verify              Tests, Linter, Szenarien und Diff prüfen'
+	@echo 'skill-bundle        Uploadbares Skill-Bundle bauen'
+	@echo 'bench               CPU-Benchmarks gegen die Baseline prüfen'
+	@echo 'detection-snapshot  Erkennungsstand der Fixtures und FP-Befunde ausgeben'
+	@echo 'doctor              Lokale Humanizer-Installation prüfen'
+	@echo 'doctor-full         Installation samt optionalen Werkzeugen prüfen'
+	@echo 'lt                  Datei optional mit LanguageTool prüfen'
 
 lint:
 	$(PYTHON) scripts/unicode_lint.py --text "AB" > /dev/null

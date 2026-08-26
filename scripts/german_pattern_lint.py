@@ -690,7 +690,7 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     source.add_argument("--fixture", type=Path)
     parser.add_argument("--mode", choices=["locker", "sachlich", "formal"], default="sachlich")
     parser.add_argument("--precise", action="store_true", help="spaCy-gestützte Verfeinerung, wenn installiert; sonst wirkungslos")
-    parser.add_argument("--fail-on", choices=["never", "any"], default="never")
+    parser.add_argument("--fail-on", choices=["never", "any"], default="never", help="Exit 1 threshold: never (default) or any finding.")
     args = parser.parse_args(argv)
     require_file(parser, args.file, "--file")
     if args.fixture:

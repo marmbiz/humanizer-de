@@ -102,7 +102,7 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     after = parser.add_mutually_exclusive_group(required=True)
     after.add_argument("--after", help="After passage as inline text.")
     after.add_argument("--after-file", type=Path, help="Read after passage from file.")
-    parser.add_argument("--fail-on", choices=["never", "any"], default="never")
+    parser.add_argument("--fail-on", choices=["never", "any"], default="never", help="Exit 1 threshold: never (default) or any finding.")
     args = parser.parse_args(argv)
     require_file(parser, args.before_file, "--before-file")
     require_file(parser, args.after_file, "--after-file")
