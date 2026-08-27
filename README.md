@@ -108,7 +108,7 @@ Menü des Skills; er ersetzt die vorhandene Fassung, statt eine zweite danebenzu
 Hochgeladene Dateien liegen schreibgeschützt, korrigierte Fassungen kommen deshalb als neue
 Datei zurück.
 
-Was im Archiv steckt, lässt sich nachrechnen. Es enthält 25 Textdateien: die Anleitung,
+Was im Archiv steckt, lässt sich nachrechnen. Es enthält 26 Textdateien: die Anleitung,
 den Musterkatalog samt Referenztexten, die Prüfskripte sowie Lizenz und Herkunftsnachweis.
 Nichts davon ist eine Binärdatei, und kein Skript installiert etwas nach oder öffnet eine
 Netzverbindung. Gebündelt wird nur, was der Skill selbst aufruft; Entwicklungswerkzeuge des

@@ -42,7 +42,7 @@ BUNDLE_REFERENCES = (
     "user-profile.md",
 )
 
-# Scripts SKILL.md calls, plus the three modules they import. Repo tooling stays out:
+# Scripts SKILL.md or its pipeline calls, plus the three modules they import. Repo tooling stays out:
 # it needs tests/ fixtures or an external CLI and only fails inside the bundle.
 BUNDLE_SCRIPTS = (
     "cli_output.py",
@@ -57,6 +57,7 @@ BUNDLE_SCRIPTS = (
     "syntax_lint.py",
     "text_scope.py",
     "unicode_lint.py",
+    "verify_changes.py",
 )
 
 # Fixed timestamp keeps repeated builds byte-identical for the same input.

@@ -49,8 +49,8 @@ class SkillBundleTests(unittest.TestCase):
         self.assertEqual(roots, {BUNDLE_NAME})
 
     def test_bundle_file_count_matches_readme(self):
-        # README.md says "Es enthält 25 Textdateien"; update it with bundle changes.
-        self.assertEqual(self.build_result["file_count"], 25)
+        # README.md says "Es enthält 26 Textdateien"; update it with bundle changes.
+        self.assertEqual(self.build_result["file_count"], 26)
 
     def test_referenced_reference_files_are_bundled(self):
         skill = read_utf8(ROOT / "SKILL.md")
