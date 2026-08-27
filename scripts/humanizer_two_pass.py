@@ -207,9 +207,15 @@ def confirm_ledger(original: str, ledger: dict[str, Any]) -> dict[str, Any]:
         else:
             valid_candidates.append(candidate)
     spans = candidate_spans(original, valid_candidates)
+    valid_advisories = []
+    discarded_advisories = []
     for advisory in ledger.get("advisories", []):
         if not occurrences(original, advisory["source"]):
-            raise ValueError(f"advisory source missing from original: {advisory['source']!r}")
+            discarded_advisories.append(
+                {"source": advisory["source"], "reason": "source_missing_from_original"}
+            )
+        else:
+            valid_advisories.append(advisory)
     immutable_spans: list[tuple[int, int]] = []
     for category, anchors in ledger["protected"].items():
         for anchor in anchors:
@@ -274,9 +280,10 @@ def confirm_ledger(original: str, ledger: dict[str, Any]) -> dict[str, Any]:
         "schema_version": 2,
         "register": ledger["register"],
         "candidates": kept,
-        "advisories": ledger.get("advisories", []),
+        "advisories": valid_advisories,
         "protected": ledger["protected"],
         "discarded_candidates": discarded,
+        "discarded_advisories": discarded_advisories,
     }
 
 
@@ -913,6 +920,8 @@ def main(argv: list[str] | None = None) -> int:
             "discarded_candidate_count": len(ledger["discarded_candidates"]),
             "advisory_count": len(ledger["advisories"]),
             "advisories": ledger["advisories"],
+            "discarded_advisory_count": len(ledger["discarded_advisories"]),
+            "discarded_advisories": ledger["discarded_advisories"],
             "edit_count": len(edits["edits"]),
             "protected_violations": violations,
             "evidence_blockers": blockers,
