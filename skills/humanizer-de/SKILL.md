@@ -1,6 +1,6 @@
 ---
 name: humanizer-de
-description: 'Deutscher Stil-Editor für Claude Code/Codex: Register messen, Rhythmus glätten, evidence-safe rewrites, Naturalness-Checks; deutschen Text humanisieren, KI-Schreibmuster/KI-Tells auditieren; German AI Text Humanizer.'
+description: 'Deutscher Stil-Editor für Claude Code/Codex: Register messen, Rhythmus glätten, Faktenanker konservativ abgleichen, Naturalness prüfen; deutschen Text humanisieren, KI-Schreibmuster/KI-Tells auditieren; German AI Text Humanizer.'
 ---
 
 # Humanizer (Deutsch) — Plugin-Router

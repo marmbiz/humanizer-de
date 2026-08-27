@@ -31,7 +31,8 @@ Diese Elemente dürfen durch Humanisierung nicht verschwinden, wandern oder ihre
 
 Konkrete Quellen sind nicht Dekoration. Eine Referenz muss existieren, formal plausibel sein und die konkrete Aussage tragen. Wenn das im aktuellen Material nicht prüfbar ist, markiere den Prüfstatus statt den Text glatter zu schreiben.
 
-Markiere unbelegte oder erfundene Quellen immer, auch ohne weitere Änderung.
+Markiere auffällige unbelegte oder erfundene Quellen auch ohne weitere Änderung. Die Prüfung
+bleibt eine unvollständige Nebenprüfung und verspricht keine vollständige Quelleninventur.
 
 Prüfe besonders:
 

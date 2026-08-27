@@ -20,7 +20,7 @@ metadata:
 
 Wenn der Nutzer deutschen Text humanisieren, KI-Schreibmuster entfernen oder deutsche KI-Tells prüfen will, überarbeite die betroffenen Stellen. Bewahre Substanz, Register und belegbare Aussagen. Ziel ist ein guter, natürlicher Text mit proportionalen Eingriffen.
 
-Der Skill ist damit ein deutscher Stil-Editor mit Evidence-Gate: Register und Rhythmus messen, evidence-safe aufs Zielprofil redigieren, KI-Schreibmuster auditieren und entfernen. Humanizing ist der prominenteste Anwendungsfall.
+Der Skill ist ein evidenzbewusster deutscher Stil-Editor: Register und Rhythmus messen, aufs Zielprofil redigieren, KI-Schreibmuster auditieren und entfernen. Das ankerbasierte Evidence-Gate des optionalen Two-Pass-Runners ersetzt keine fachliche Endabnahme.
 
 Fokus des Skills ist KI-Muster-Audit mit gezielter Textverbesserung. Reines Korrektorat, Grammatikprüfung, Übersetzung und allgemeine Stilpolitur gehören nur dazu, wenn sie diesem Ziel dienen.
 
@@ -58,7 +58,7 @@ QGIR ist kein Pass-0-Zweig, sondern eine optionale Erweiterung nach Pass 5, wenn
 - Substanz erhalten. Entferne nur Artefakte ohne Informationsgehalt oder markiere echte Lücken.
 - Statistische Detektoren (GPTZero u. a.) messen Perplexity und Satzrhythmus, nicht diese Muster. Befunde wie „Mechanical Precision“ oder „Impersonal Tone“ treffen meist legitime Fachsprache, korrekte Quellen und sachliche Klarheit – nicht als KI-Tell behandeln und keinen Text verschlechtern, um einen Score zu senken. Behandelbar sind nur gehäufte Doppelpunkt-Titel (Muster 54) und monotoner Satzrhythmus (Muster 55).
 - Detector-Bezug ist Kontext. Bewertet wird, ob eine Änderung Qualität, Lesbarkeit oder echte KI-Muster verbessert; Substanz bleibt wichtiger als Scorewirkung.
-- **Null-Edit:** Gilt erst nach abgeschlossenem Pass 1. Bleibt der Text stilistisch sauber oder bleiben nur False Positives, sage das, nenne höchstens die verworfenen Kandidaten und höre auf. Belegbefunde fallen nie darunter: unbelegte, unprüfbare oder erfundene Quellen werden immer markiert, auch wenn sonst nichts geändert wird.
+- **Null-Edit:** Gilt erst nach abgeschlossenem Pass 1. Bleibt kein bearbeitungswürdiger Stilcluster oder bleiben nur False Positives, sage das, nenne höchstens die verworfenen Kandidaten und höre auf. Belegbefunde fallen nie darunter: Auffällige unbelegte, unprüfbare oder erfundene Quellen markieren; die Quellenprüfung bleibt unvollständig.
 
 ## Carve-outs: bekannte False Positives
 
@@ -100,7 +100,7 @@ Spätere Pässe dürfen frühere nicht invalidieren. Rhythmus immer zuletzt.
 
 **Musterabdeckung je Pass.** Die Pässe 1 bis 4 arbeiten **alle** Muster ihres Passes ab; die unten genannten sind Schwerpunkte, keine Liste. Ihre Musterliste holen sie aus [references/patterns.md](references/patterns.md) per Grep-Anker `<!-- pass: N -->` mit zwei Zeilen Vorkontext (`-B 2`), einzelne Blöcke per `^#### <Nummer>\.` mit Nachlauf (`-A 30`). Die Datei nicht vollständig lesen: Der Volltext-Read bleibt dem Audit-Zweig vorbehalten, der den ganzen Katalog fordert.
 
-**Pass 1 – Artefakte und Evidenz (immer, Einzelbefund genügt).** Chatbot-Floskeln, Platzhalter, Quellenprobleme (Decision Table Evidenz), Unicode, falsche Typografie und Claim-Delta prüfen; dazu alle Muster mit `pass: 1`. Bei Overlaps zuerst [references/decision-tables.md](references/decision-tables.md); [references/evidence-ledger.md](references/evidence-ledger.md) bei Faktenankern. Dieser Pass bleibt bei Evidenz, Technik und Artefakten; Stilarbeit folgt später. Für sichere Datei-Korrekturen: `unicode_lint.py --fix --write`; Ergebnis bei Frontmatter und Bildtiteln prüfen (siehe Carve-outs). Der Evidenzteil läuft unabhängig von späterer Stilarbeit; jede Quelle einzeln einstufen, auch Zahlen und Studien, die an einer schon geprüften Institution hängen. Fertig, wenn jeder HIGH-/Technik-/Evidenzfund geändert, markiert oder als False Positive verworfen ist.
+**Pass 1 – Artefakte und Evidenz (immer, Einzelbefund genügt).** Chatbot-Floskeln, Platzhalter, Quellenprobleme (Decision Table Evidenz), Unicode, falsche Typografie und Claim-Delta prüfen; dazu alle Muster mit `pass: 1`. Bei Overlaps zuerst [references/decision-tables.md](references/decision-tables.md); [references/evidence-ledger.md](references/evidence-ledger.md) bei Faktenankern. Dieser Pass bleibt bei Evidenz, Technik und Artefakten; Stilarbeit folgt später. Für sichere Datei-Korrekturen: `unicode_lint.py --fix --write`; Ergebnis bei Frontmatter und Bildtiteln prüfen (siehe Carve-outs). Der Evidenzteil läuft unabhängig von späterer Stilarbeit; jede erkannte Quelle einzeln einstufen, auch Zahlen und Studien an einer schon geprüften Institution. Fertig, wenn jeder erkannte HIGH-/Technik-/Evidenzfund geändert, markiert oder als False Positive verworfen ist.
 
 **Pass 2 – Lexik (Cluster-Regel).** Alle Muster mit `pass: 2`; Schwerpunkte: Floskel-Muster, harte Anglizismus-Strukturen (Muster 45; auch bei grünem Sammelcheck urteilsbasiert prüfen), KI-Marker-Vokabular (Muster 64), Kopula-Vermeidung (Muster 65), Abstrakta-Stapel (Muster 58): Hypernyme und Nominalstil nur aus belegtem Material konkretisieren; Lücken sichtbar markieren. Fertig, wenn nur Cluster bearbeitet wurden und Claim-/Persona-Lock halten.
 

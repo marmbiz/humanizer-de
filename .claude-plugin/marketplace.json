@@ -4,12 +4,12 @@
     "name": "Martin Moeller",
     "url": "https://github.com/marmbiz"
   },
-  "description": "Marketplace für den Humanizer-de-Skill / German AI Text Humanizer für deutsche KI-Schreibmuster: deutscher Stil-Editor mit Evidence-Gate und messbarem Register. Supports Claude Code and Codex.",
+  "description": "Marketplace für den Humanizer-de-Skill / German AI Text Humanizer für deutsche KI-Schreibmuster: evidenzbewusster deutscher Stil-Editor mit messbarem Register. Supports Claude Code and Codex.",
   "plugins": [
     {
       "name": "humanizer-de",
       "source": "./",
-      "description": "Deutscher Stil-Editor für Claude Code/Codex: misst Register und Rhythmus, redigiert evidence-safe auf ein Zielprofil und auditiert/entfernt KI-Schreibmuster. German AI Text Humanizer / deutscher Humanizer Skill: KI-Schreibmuster in deutschen Texten auditieren und belegtreu überarbeiten. Supports Claude Code and Codex. 72 Muster in 10 Kategorien für deutschsprachige Texte. Kern: Evidence-Gate und messbares Register.",
+      "description": "Deutscher Stil-Editor für Claude Code/Codex: misst Register und Rhythmus, redigiert proportional auf ein Zielprofil, gleicht erkennbare Faktenanker konservativ ab und auditiert/entfernt KI-Schreibmuster. German AI Text Humanizer / deutscher Humanizer Skill. Supports Claude Code and Codex. 72 Muster in 10 Kategorien für deutschsprachige Texte. Kern: evidenzbewusste Redaktion und messbares Register.",
       "author": {
         "name": "Martin Moeller",
         "url": "https://martin-moeller.biz"

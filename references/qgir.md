@@ -37,7 +37,7 @@ Für Claim-Delta reicht der direkte Vorpass-Diff nicht aus. Vor Pass 1 ein Origi
 
 | Situation | Modus |
 |---|---|
-| Text ist sauber oder hat nur Einzelsignale | Audit-only |
+| Kein bearbeitungswürdiger Cluster oder nur Einzelsignale | Audit-only |
 | Klare Cluster, aber geringe Drift-Gefahr | Minimal revise |
 | Erste Revision lässt noch echte HIGH/MEDIUM-Cluster stehen | QGIR |
 | Quelle, Recht, Technik, Formalregister oder Zielprofil würde durch weitere Revision leiden | Stop |

@@ -1,7 +1,7 @@
 {
   "name": "humanizer-de",
   "version": "5.24.0",
-  "description": "Deutscher Stil-Editor für Claude Code/Codex: misst Register und Rhythmus, redigiert evidence-safe auf ein Zielprofil und auditiert/entfernt KI-Schreibmuster. German AI Text Humanizer / deutscher Humanizer Skill: KI-Schreibmuster in deutschen Texten auditieren und belegtreu überarbeiten. Supports Claude Code and Codex. 72 Muster in 10 Kategorien für deutschsprachige Texte. Kern: Evidence-Gate und messbares Register.",
+  "description": "Deutscher Stil-Editor für Claude Code/Codex: misst Register und Rhythmus, redigiert proportional auf ein Zielprofil, gleicht erkennbare Faktenanker konservativ ab und auditiert/entfernt KI-Schreibmuster. German AI Text Humanizer / deutscher Humanizer Skill. Supports Claude Code and Codex. 72 Muster in 10 Kategorien für deutschsprachige Texte. Kern: evidenzbewusste Redaktion und messbares Register.",
   "skills": "./skills/",
   "author": {
     "name": "Martin Moeller",
@@ -37,7 +37,7 @@
   "interface": {
     "displayName": "Humanizer (Deutsch)",
     "shortDescription": "German style editor and German AI text humanizer for Claude/Codex",
-    "longDescription": "Humanizer (Deutsch) ist ein deutscher Stil-Editor, German AI Text Humanizer und deutscher Humanizer Skill für Claude Code und Codex. Er misst Register und Satzrhythmus, redigiert evidence-safe auf ein Zielprofil und prüft deutschsprachige Texte auf typische KI-Schreibmuster, um sie belegtreu, registerstabil und natürlicher zu überarbeiten. Supports Claude Code and Codex. Kern: Evidence-Gate und 72 Muster in 10 Kategorien.",
+    "longDescription": "Humanizer (Deutsch) ist ein evidenzbewusster deutscher Stil-Editor und German AI Text Humanizer für Claude Code und Codex. Er misst Register und Satzrhythmus, redigiert proportional, gleicht erkennbare Faktenanker konservativ ab und prüft deutschsprachige Texte auf typische KI-Schreibmuster. Supports Claude Code and Codex. 72 Muster in 10 Kategorien.",
     "developerName": "Martin Moeller",
     "category": "Productivity",
     "capabilities": [
@@ -50,7 +50,7 @@
     "defaultPrompt": [
       "Humanisiere diesen deutschen Text.",
       "Prüfe diesen Text auf KI-Schreibmuster.",
-      "Entferne KI-Tells, ohne Fakten zu ändern."
+      "Entferne KI-Tells und bewahre vorhandene Faktenanker."
     ]
   }
 }

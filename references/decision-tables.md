@@ -6,7 +6,7 @@ Nutze diese Tabellen vor `references/patterns.md`, wenn Befunde überlappen. Sie
 
 | Situation | Aktion |
 |---|---|
-| Text ist sauber oder hat nur Einzelsignale | Audit-only; nicht umschreiben |
+| Kein bearbeitungswürdiger Cluster oder nur Einzelsignale | Audit-only; nicht umschreiben |
 | Echte HIGH/MEDIUM-Cluster, geringe Drift-Gefahr | Minimal revise; ein lokaler Pass |
 | Nach Minimal-Revision bleiben echte HIGH/MEDIUM-Cluster | QGIR mit max. 2 Pässen |
 | Dritter Pass wäre nötig | Nur bei dokumentiertem schweren Restcluster |

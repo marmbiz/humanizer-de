@@ -49,7 +49,7 @@ Vollständiger Musterkatalog für Humanizer (Deutsch) v5.24.0. Nur bei konkreter
 | 41 | Fehlkalibriertes epistemisches Vertrauen | MEDIUM | Über-Behauptung: "grundlegend", "entscheidend"; Über-Absicherung: "scheint möglicherweise" |
 | 42 | Beleginkongruenz | HIGH | Quelle existiert, belegt aber die Aussage nicht |
 | 43 | Versteckte Unicode-Zeichen | HIGH | Zero-Width-Space (U+200B), Soft-Hyphen, BOM, Bidi-Controls (U+202A–E, U+2066–9) |
-| 44 | Standard-Kapitel ohne Substanz | MEDIUM | Standard-Überschrift + unbelegter Fülltext; nicht kürzen, sondern konkretisieren/integrieren |
+| 44 | Standard-Kapitel ohne Substanz | MEDIUM | Standard-Überschrift + unbelegter Fülltext; integrieren oder leeren Abschnitt entfernen |
 | 45 | Anglizismus-Strukturen | MEDIUM | Harte Calques & False Friends: "am Ende des Tages", "eventuell" = "schließlich", "aktuell" = "tatsächlich" |
 | 46 | Falsche deutsche Anführungszeichen | HIGH | Falsches Schlusszeichen: „Text” statt „Text“ (U+201E/U+201C) |
 | 47 | Englische Titel-Großschreibung | MEDIUM | "Die Neue KI Strategie" statt Satzschreibung |
@@ -120,7 +120,7 @@ Häufige Indikatoren:
 
 ❌ Schlecht: "Die Kathedrale steht als Zeugnis für die künstlerische Brillanz des Mittelalters."
 
-✓ Besser: "Die Kathedrale zeigt die Handwerkskunst des Mittelalters und beeindruckt noch heute."
+✓ Besser: "An der Kathedrale zeigt sich die künstlerische Brillanz des Mittelalters."
 
 #### 2. Werbesprache und Superlative [HIGH]
 <!-- haltbarkeit: kern -->
@@ -145,7 +145,7 @@ Auch übersetzte Hype-Idiome aus dem englischen KI-Sprech gehören hierher: "das
 
 ❌ Schlecht: "Die atemberaubende Altstadt mit ihrem reichen kulturellen Erbe zieht Besucher aus aller Welt an."
 
-✓ Besser: "Die Altstadt zieht Besucher an. Ihre Geschichte reicht Jahrhunderte zurück."
+✓ Besser: "Die Altstadt mit ihrem kulturellen Erbe zieht Besucher aus aller Welt an."
 
 #### 3. Redaktionelle Kommentare und Meta-Sprache [HIGH]
 <!-- haltbarkeit: kern -->
@@ -167,7 +167,7 @@ Häufige Indikatoren:
 
 ❌ Schlecht: "Es ist wichtig zu bemerken, dass die Bevölkerung in diesem Zeitraum gewachsen ist."
 
-✓ Besser: "Die Bevölkerung wuchs zwischen 1950 und 2000 um 30 Prozent."
+✓ Besser: "Die Bevölkerung wuchs in diesem Zeitraum."
 
 #### 4. Mechanische Konjunktionen [HIGH]
 <!-- haltbarkeit: kern -->
@@ -348,7 +348,7 @@ Keine Quelle erfinden. Entweder: echte Quelle einfügen wenn bekannt, Zuschreibu
 
 ❌ Schlecht: "Branchenberichte zeigen, dass der Markt wächst."
 
-✓ Besser: "Der Markt wächst (laut Wirtschaftsministerium 2024)." oder "Der Markt wächst seit 2020."
+✓ Besser: "Der Markt wächst. [ECHTE QUELLE NÖTIG]"
 
 #### 12. Falsche Erweiterung ("von... bis") [MEDIUM]
 <!-- haltbarkeit: kern -->
@@ -381,7 +381,7 @@ Häufige Indikatoren:
 **Warum LLMs das tun:** Hypernyme sind die statistisch sichere Wahl; sie passen auf jeden Kontext und sind in zusammenfassenden Trainingsdaten überrepräsentiert.
 **Kein Problem, wenn:** der Oberbegriff echte Mengen bündelt ("drei Maßnahmen: A, B, C") oder die Konkretion im übergebenen Kontext schlicht fehlt.
 **Lösung:** Durch den konkreten Sachverhalt ersetzen, der im Text oder Kontext belegt ist. Fehlt er: stehen lassen oder `[KONKRETION NÖTIG]` markieren. Nie Details erfinden, um konkret zu wirken – das wäre Muster 53.
-❌ Schlecht: "Die Stadt ergriff verschiedene Maßnahmen zur Verbesserung der Verkehrssituation."
+❌ Schlecht: "Die Stadt ergriff verschiedene Maßnahmen zur Verbesserung der Verkehrssituation: Sie sperrte zwei Durchgangsstraßen und senkte das Tempolimit auf 30 km/h."
 ✓ Besser: "Die Stadt sperrte zwei Durchgangsstraßen und senkte das Tempolimit auf 30 km/h."
 
 #### 60. Synonym-Rotation für dieselbe Entität [MEDIUM]
@@ -436,7 +436,7 @@ diffundieren und verlieren dadurch mit der Zeit an Trennschärfe.
 **Kontextgebundene Unterform – abstraktes „tragen“:** Das Einzelwort ist kein Marker. Ein MEDIUM-Befund liegt erst bei einem Cluster semantisch überdehnter Stützmetaphern vor, etwa „Forschung/These/Hypothese/Änderung trägt“: Richtwert drei abstrakte Verwendungen im Dokument oder zwei in engem Abstand. Konkrete und etablierte Kollokationen wie „einen Karton tragen“, „Kosten tragen“ oder „Verantwortung tragen“ bleiben geschützt. Jede problematische Stelle wird nach ihrem eigenen Sinn redigiert; eine einheitliche Ersetzung durch „funktioniert“ erzeugt nur das nächste Wiederholungsmuster. Abgrenzung: Das transitive carries-Calque („X trägt Y“ im Sinn von stützen/ausmachen) ist Muster 45 und schon als Einzelbefund behandelbar, ohne Cluster.
 
 ❌ Schlecht: "Der Artikel beleuchtet das vielschichtige Zusammenspiel der Akteure in der digitalen Landschaft und zeigt spannende Entwicklungen auf."
-✓ Besser: "Der Artikel beschreibt, wie die drei großen Anbieter aufeinander reagieren und wo sich der Markt gerade dreht."
+✓ Besser: "Der Artikel beschreibt das Zusammenspiel der Akteure und die Entwicklung des Marktes. [KONKRETION NÖTIG]"
 
 #### 65. Kopula-Vermeidung [MEDIUM]
 <!-- haltbarkeit: jahrgang stand=2026-07 -->
@@ -471,7 +471,7 @@ Häufige Indikatoren:
 **Kein Problem, wenn:** Der Relativsatz echte, aus dem Hauptsatz nicht ableitbare Information hinzufügt (z. B. "Die Studie wurde dreimal wiederholt, was die Replizierbarkeit nachweist" – wenn die Dreifachwiederholung tatsächlich das erste Replizierbarkeits-Signal im Text ist).
 **Lösung:** Relativsatz streichen. Falls die Schlussfolgerung echte Information trägt: als eigenständigen Satz mit konkretem Beleg formulieren statt als Anhang.
 ❌ Schlecht: "Das Team lieferte die Migration in drei Wochen ab, was die hohe Effizienz des Vorgehens unterstreicht."
-✓ Besser: "Das Team lieferte die Migration in drei Wochen ab." (oder: "...ab, geplant waren sechs.")
+✓ Besser: "Das Team lieferte die Migration in drei Wochen ab."
 
 #### 68. Komparativ-Rahmung [MEDIUM]
 <!-- haltbarkeit: kern -->
@@ -498,7 +498,7 @@ Häufige Indikatoren:
 
 ❌ Schlecht: "Es geht weniger um das Werkzeug als vielmehr um die Haltung. Der Umbau fühlt sich eher wie ein Marathon als wie ein Sprint an."
 
-✓ Besser: "Das Werkzeug ist zweitrangig. Entscheidend ist, ob das Team die Berichte liest. Der Umbau dauert: Wir rechnen mit zwei Jahren."
+✓ Besser: "Das Werkzeug ist zweitrangig, die Haltung zählt. Der Umbau braucht Zeit."
 
 ### Stil (5 Muster)
 
@@ -606,7 +606,7 @@ Häufige Indikatoren:
 
 ❌ Schlecht: "Kurz vorab: Die Migration ist durch. Wir haben drei kleinere Vorfälle gesehen, die alle behoben sind. Als Nächstes kümmern wir uns um das Monitoring. lg"
 
-✓ Besser: "kurz vorab: migration ist durch. ~3 kleinere vorfälle, alle behoben. monitoring machen wir als nächstes. ach ja: die dashboards sind noch ungetestet, schau ich mir morgen an."
+✓ Besser: "kurz vorab: Migration durch. Drei kleinere Vorfälle, alle behoben. Als Nächstes: Monitoring. lg"
 
 ### Kommunikation (6 Muster)
 
@@ -903,7 +903,7 @@ Häufige Indikatoren:
 
 ❌ Schlecht: "Schauen wir uns an, wie Caching in Next.js funktioniert. Hier ist, was Sie wissen müssen. Lassen Sie uns das Schritt für Schritt durchgehen."
 
-✓ Besser: "Next.js cached auf vier Ebenen: Request-Memoization, Data-Cache, Full-Route-Cache und Router-Cache auf dem Client."
+✓ Besser: "Caching in Next.js"
 
 #### 34. Fragmentierte Überschriften [LOW]
 <!-- haltbarkeit: kern -->
@@ -959,7 +959,7 @@ Häufige Indikatoren:
 
 ❌ Schlecht: "Seit Anbeginn der Zivilisation suchen Menschen nach Wegen, effizienter zu kommunizieren. Im Zeitalter der Digitalisierung hat sich diese Suche grundlegend verändert."
 
-✓ Besser: "E-Mail hat den Geschäftsbrief abgelöst. Slack hat die E-Mail nicht abgelöst, aber den Ton verändert."
+✓ Besser: "Die Digitalisierung hat die Kommunikationswege grundlegend verändert."
 
 #### 37. "In der heutigen X-Welt" Framing [MEDIUM]
 <!-- haltbarkeit: kern -->
@@ -975,7 +975,7 @@ Häufige Indikatoren:
 
 ❌ Schlecht: "In der heutigen digitalen Welt ist eine starke Online-Präsenz für Unternehmen unerlässlich."
 
-✓ Besser: "Ohne Website findet ein Handwerksbetrieb heute kaum noch Kunden unter 40."
+✓ Besser: "Für Unternehmen ist eine starke Online-Präsenz heute wichtig."
 
 #### 38. Aspirativer Unternehmensschluss [MEDIUM]
 <!-- haltbarkeit: kern -->
@@ -991,7 +991,7 @@ Häufige Indikatoren:
 
 ❌ Schlecht: "Mit dieser Strategie ist das Unternehmen bestens aufgestellt für die Zukunft. Die Möglichkeiten sind grenzenlos."
 
-✓ Besser: "Ob die Strategie aufgeht, zeigt sich im nächsten Quartal."
+✓ Besser: "Das Unternehmen ist mit dieser Strategie für die Zukunft gut aufgestellt."
 
 #### 52. Diff-verankertes Schreiben [MEDIUM]
 <!-- haltbarkeit: kern -->
@@ -1039,7 +1039,7 @@ Häufige Indikatoren:
 
 ❌ Schlecht: "Symmetrie ist die Sprache des Vertrauens. Effizienz wird zur Falle, sobald Teams die menschliche Ebene vergessen."
 
-✓ Besser: "Symmetrische Layouts wirken auf Nutzer oft vorhersehbarer. Teams können Abläufe so weit optimieren, dass sie übersehen, wie Menschen sie tatsächlich verwenden."
+✓ Besser: "Symmetrie kann Vertrauen fördern. Effizienz kann zulasten der menschlichen Ebene gehen."
 
 #### 61. Isometrisches Dokument [MEDIUM]
 <!-- haltbarkeit: jahrgang stand=2026-07 -->
@@ -1122,7 +1122,7 @@ Häufige Indikatoren:
 
 ❌ Schlecht: "Der Test war erfolgreich. Genauer gesagt war er in vielerlei Hinsicht recht erfolgreich, auch wenn nicht alles perfekt lief."
 
-✓ Besser: "12 von 15 Prüffällen bestanden, drei scheiterten am Import großer CSV-Dateien."
+✓ Besser: "Der Test war erfolgreich, aber nicht alles lief perfekt."
 
 ### Argumentation und Evidenz (7 Muster)
 
@@ -1145,11 +1145,13 @@ Häufige Indikatoren:
 
 **Abgrenzung – Unpersönlicher Akteur:** Abstrakte Subjekte sind bei fachüblicher Metonymie oder echter Funktion unkritisch ("Die Studie zeigt", "Das System speichert"). Übernimmt das Abstraktum dagegen eine Entscheidungs- oder Verantwortungshandlung ("Die Strategie entschied"), greift Muster 70. Muster 39 gilt nur bei echtem Passiv oder fehlendem Subjekt; die Kombination mit Muster 66 (Fake-Analyse-Anhang) bleibt gesondert zu prüfen.
 
+Fehlt der Akteur im Material, nur das Fragment grammatisch vervollständigen oder die Lücke markieren. Nicht für einen aktiven Satz einen Akteur erfinden.
+
 **Beispiel:**
 
 ❌ Schlecht: "Keine Konfigurationsdatei nötig. Die Ergebnisse werden automatisch gespeichert."
 
-✓ Besser: "Sie brauchen keine Konfigurationsdatei. Das System speichert die Ergebnisse automatisch."
+✓ Besser: "Eine Konfigurationsdatei ist nicht nötig. Die Ergebnisse werden automatisch gespeichert."
 
 #### 40. Konditional-Stapel [MEDIUM]
 <!-- haltbarkeit: kern -->
@@ -1171,7 +1173,7 @@ Häufige Indikatoren:
 
 ❌ Schlecht: "Wenn das Argument stimmt, und wenn die Evidenz diese Lesart stützt, dann könnte die Politik einen gewissen Effekt gehabt haben – sofern der Kontext wie beschrieben war."
 
-✓ Besser: "Die Evidenz stützt das Argument, dass die Politik in diesem Kontext einen Effekt hatte."
+✓ Besser: "Wenn das Argument stimmt und die Evidenz diese Lesart stützt, könnte die Politik in diesem Kontext einen gewissen Effekt gehabt haben."
 
 #### 41. Fehlkalibriertes epistemisches Vertrauen [MEDIUM]
 <!-- haltbarkeit: kern -->
@@ -1192,11 +1194,11 @@ Häufige Indikatoren:
 
 ❌ Schlecht (Über-Behauptung): "Die Daten zeigen zweifellos, dass Remote-Arbeit die Produktivität grundlegend verändert hat."
 
-✓ Besser: "In den untersuchten Unternehmen stieg die Produktivität im ersten Jahr der Remote-Arbeit um durchschnittlich 8 Prozent."
+✓ Besser: "Die Daten deuten darauf hin, dass Remote-Arbeit die Produktivität verändert hat."
 
 ❌ Schlecht (Über-Absicherung): "Es scheint, dass die Politik möglicherweise einen gewissen Effekt auf die Ergebnisse gehabt haben könnte."
 
-✓ Besser: "Die Politik führte in zwei von drei untersuchten Fällen zu einer moderaten Verbesserung."
+✓ Besser: "Die Politik könnte die Ergebnisse beeinflusst haben."
 
 #### 53. Lückenfüllende Spekulation [HIGH]
 <!-- haltbarkeit: kern -->
@@ -1246,7 +1248,7 @@ Häufige Indikatoren:
 - Einsatz-Test: Riskiert der Autor irgendwo etwas – eine überprüfbare Angabe, ein Eingeständnis, eine angreifbare Position? Ein Text, der nirgends falsch liegen kann, hat keinen Träger.
 **Lösung:** Anekdote entfernen oder durch belegbare Beobachtung ersetzen. Beim eigenen Rewriting im Locker-Modus: Stimme nur aus der Schreibprobe oder explizit gelieferten Fakten speisen, nie generieren.
 ❌ Schlecht: "Ehrlich gesagt: Als ich letzte Woche ein Kundenprojekt migrierte, ist mir genau das passiert. Keine Sorge, die Lösung ist einfach."
-✓ Besser: "Der Fehler tritt typischerweise bei Migrationen auf. Die Lösung: ..."
+✓ Besser: Ich-Erfahrung entfernen und die verbleibende Sachaussage nur aus dem vorhandenen Kontext formulieren; fehlt sie, `[SUBSTANZ PRÜFEN]` markieren.
 
 #### 70. Verantwortungsverschleierung durch falsche Agency [MEDIUM]
 <!-- haltbarkeit: kern -->
@@ -1280,7 +1282,7 @@ Fehlt der echte Akteur im Material: keinen erfinden. Dann die offene Verantwortu
 
 ❌ Schlecht: "Die Strategie entschied, dass die Teams ab sofort wöchentlich ausliefern."
 
-✓ Besser: "Die Geschäftsführung legte wöchentliche Releases fest. Grundlage war die neue Plattformstrategie."
+✓ Besser: "Die Teams sollen ab sofort wöchentlich ausliefern. Wer das festlegte, bleibt im Text offen."
 
 #### 72. Pseudo-therapeutische Validierung [HIGH]
 <!-- haltbarkeit: jahrgang stand=2026-07 -->
@@ -1307,7 +1309,7 @@ Häufige Indikatoren:
 
 ❌ Schlecht: "Du bist nicht zu sensibel. Du wurdest nur zu lange mit unklaren Antworten abgespeist."
 
-✓ Besser: "Die Nachricht nennt weder einen Termin noch eine zuständige Person. Frag nach beidem."
+✓ Besser: "Ob die Reaktion angemessen ist, lässt sich aus dem vorliegenden Kontext nicht beurteilen."
 
 ### Ergänzungen (4 Muster)
 
@@ -1390,11 +1392,11 @@ Häufige Indikatoren:
 
 **Warum LLMs das tun:** Nachahmung formaler akademischer und journalistischer Strukturen. Standard-Kapitel füllen Platz, wo keine konkrete Information verfügbar ist.
 
-**Lösung:** Nicht kürzen (Leitplanke „Nie kürzen“ gilt). Vorgehen in dieser Reihenfolge:
-1. **Substanz finden:** Prüfen, ob unter der Überschrift tatsächlich eine Aussage steckt, die bloß verwässert formuliert ist. Wenn ja: konkretisieren, Belege einfügen.
-2. **Integrieren:** Falls der Abschnitt nur thematisch Bekanntes wiederholt, Inhalt in bestehende thematische Kapitel verschieben und die Standard-Überschrift entfernen. Der Text selbst bleibt im Artikel erhalten.
-3. **Umwidmen:** Generische Überschrift durch spezifische ersetzen („Zukunftsperspektiven“ → „Marktprognosen 2025–2030“), wenn der Inhalt das trägt.
-4. **Fallback bei echter Substanzlosigkeit:** Wenn weder konkrete Aussage noch tragbare Paraphrase noch thematische Zuordnung möglich ist, Abschnitt mit `[SUBSTANZ PRÜFEN]` markieren und wörtlich stehen lassen. Streichung oder Inhaltsergänzung liegt dann beim menschlichen Redigat, nicht beim Skill-Durchlauf. So bleibt die „Nie kürzen“-Leitplanke gewahrt, ohne Inhalt zu erfinden.
+**Lösung:** Substanz schützen, nicht Leerraum. Vorgehen in dieser Reihenfolge:
+1. **Substanz finden:** Prüfen, ob unter der Überschrift eine Aussage steckt, die nur verwässert formuliert ist. Wenn ja: aus dem vorhandenen Material konkretisieren.
+2. **Integrieren:** Falls der Abschnitt Bekanntes wiederholt, die konkrete Aussage in das passende Kapitel verschieben und die Standard-Überschrift entfernen.
+3. **Umwidmen:** Eine generische Überschrift nur dann spezifischer formulieren, wenn der vorhandene Inhalt sie trägt.
+4. **Leeren Abschnitt entfernen:** Enthält der Abschnitt keine einzigartige Aussage, kann er entfallen. Fehlt wahrscheinlich nur Material, stattdessen `[SUBSTANZ PRÜFEN]` markieren. Nie Belege oder Details ergänzen, um den Abschnitt zu retten.
 
 **Beispiel:**
 
@@ -1403,10 +1405,7 @@ Häufige Indikatoren:
 >
 > Die Zukunft der Technologie ist vielversprechend. Experten erwarten weitere Fortschritte und neue Einsatzmöglichkeiten. Unternehmen sollten sich frühzeitig auf die Veränderungen einstellen.
 
-✓ Besser (umgewidmet + konkretisiert):
-> == Marktprognosen ==
->
-> Der VDMA erwartet bis 2030 ein jährliches Marktwachstum von 12 Prozent.<ref>VDMA Branchenbericht 2024, S. 42.</ref> Treiber sind vor allem der Ausbau industrieller Anwendungen.
+✓ Besser: Abschnitt entfernen; er enthält keine konkrete Aussage.
 
 #### 45. Anglizismus-Strukturen [MEDIUM]
 <!-- haltbarkeit: kern -->
@@ -1569,7 +1568,7 @@ Häufige Indikatoren:
 
 ❌ Schlecht: "Das Team analysierte die Daten. Die Ergebnisse waren eindeutig. Die Conversion stieg um 25 Prozent. Das Projekt wurde im Budget abgeschlossen."
 
-✓ Besser: "Das Team analysierte die Daten und kam zu einem eindeutigen Ergebnis: Die Conversion stieg um 25 Prozent, obwohl das Projekt im Budget blieb."
+✓ Besser: "Das Team analysierte die Daten. Das Ergebnis war eindeutig: Die Conversion stieg um 25 Prozent. Das Projekt blieb im Budget."
 
 #### 57. Markdown-Struktur-Artefakte [MEDIUM]
 <!-- haltbarkeit: jahrgang stand=2026-08 -->

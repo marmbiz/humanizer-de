@@ -238,18 +238,18 @@ def preflight_assessment(
     if risk == "insufficient_text":
         recommendation = "audit_only"
         combing = {"auto": False, "max_iterations": 0, "reason": "too_few_sentences"}
+    elif risk == "low":
+        recommendation = "no_rewrite_or_local_edit_only"
+        combing = {"auto": False, "max_iterations": 0, "reason": "no_cluster"}
     elif mode == "formal":
         recommendation = "humanizer_pass_without_auto_combing"
         combing = {"auto": False, "max_iterations": 0, "reason": "formal_mode"}
     elif risk == "high":
         recommendation = "humanizer_pass_plus_combing"
         combing = {"auto": True, "max_iterations": 2, "reason": "strong_cluster"}
-    elif risk == "medium":
+    else:
         recommendation = "humanizer_pass; combing_if_rhythm_remains"
         combing = {"auto": False, "max_iterations": 2, "reason": "review_after_pass_5"}
-    else:
-        recommendation = "no_rewrite_or_local_edit_only"
-        combing = {"auto": False, "max_iterations": 0, "reason": "no_cluster"}
 
     result = {
         "risk": risk,

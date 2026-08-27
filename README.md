@@ -2,7 +2,7 @@
 
 <picture>
   <source type="image/webp" srcset="assets/humanizer-de-hero.webp">
-  <img src="assets/humanizer-de-hero.png" alt="humanizer-de – German AI text humanizer und deutscher Stil-Editor mit Evidence-Gate. Less machine. More voice." width="100%">
+  <img src="assets/humanizer-de-hero.png" alt="humanizer-de – German AI text humanizer und evidenzbewusster deutscher Stil-Editor. Less machine. More voice." width="100%">
 </picture>
 
 [![Version](https://img.shields.io/github/v/tag/marmbiz/humanizer-de?label=Version&color=c4501f)](https://github.com/marmbiz/humanizer-de/tags)
@@ -27,13 +27,14 @@
 
 ## Was ist das?
 
-Humanizer (Deutsch) macht aus glatten KI-Entwürfen bessere deutsche Texte: natürlicher, belegtreuer
-und näher an deiner Stimme. Fakten, Zahlen, Namen und Quellen bleiben geschützt. Ist ein Text schon
-sauber, sagt der Skill das und lässt ihn in Ruhe.
+Humanizer (Deutsch) macht aus glatten KI-Entwürfen bessere deutsche Texte: natürlicher, belegbewusster
+und näher an deiner Stimme. Zahlen, Namen, Daten, URLs, Zitate und Quellenanker gleicht der Skill
+konservativ ab; semantische Beziehungen und sachliche Richtigkeit brauchen eine fachliche Endabnahme.
+Ergibt die vollständige Prüfung keinen bearbeitungswürdigen Befund, lässt der Skill den Text in Ruhe.
 
 | Vorher | Nachher |
 |---|---|
-| „Darüber hinaus ist es von entscheidender Bedeutung, innovative Lösungen nahtlos zu implementieren.“ | „Außerdem müssen wir neue Lösungen reibungslos einführen.“ |
+| „Darüber hinaus ist es von entscheidender Bedeutung, innovative Lösungen nahtlos zu implementieren.“ | „Innovative Lösungen müssen reibungslos eingeführt werden.“ |
 
 Du brauchst dafür zunächst weder Python noch Zusatzsoftware. Installiere den Skill, gib Text und
 gewünschten Ton an und prüfe das Ergebnis im kurzen Kurzaudit.
@@ -48,9 +49,10 @@ hinein – mit Positiv-, Negativ- und Grenzfixtures und einer dokumentierten
 Fehlalarm-Erwartung. Scheitert ein Kandidat daran, wird er nicht aufgenommen. In 5.10.0 ist das
 einem Lint-Marker so ergangen.
 
-Das Sprachmodell schreibt. Darüber liegt der Skill als Prüf- und Evidence-Rahmen. Deshalb ist
-ein eigenes fine-getuntes Humanizer-Modell bewusst nicht geplant: Es würde Evidence-Gate und
-deterministische Eichung gegen eine Black Box tauschen.
+Das Sprachmodell schreibt. Darüber liegt der Skill als Prüf- und Evidence-Rahmen. Ein eigenes
+fine-getuntes Humanizer-Modell ist nicht geplant, weil dafür bislang kein gemessener Zusatznutzen
+den Daten-, Betriebs- und Pflegeaufwand rechtfertigt. Auch ein anderer Writer bliebe an denselben
+Prüfrahmen gebunden.
 
 ---
 
@@ -466,22 +468,24 @@ python3 scripts/humanizer_audit.py --file entwurf.md --mode sachlich
 # → preflight: medium → humanizer_pass
 ```
 
-**2. Sauberer Text bleibt unangetastet.** Derselbe Aufruf auf einem lebendigen menschlichen Text:
+**2. Text ohne kalibriertes Signal bleibt unangetastet.** Derselbe Aufruf auf einem lebendigen menschlichen Text:
 
 ```bash
 # → counts: alles 0 · preflight: low → no_rewrite_or_local_edit_only
 ```
 
-Das ist der Null-Edit: Die Antwort ist dann ein Befund („Text ist sauber“), keine Umschreibung.
+Das ist der Null-Edit: Die Antwort meldet „kein kalibriertes Signal; kein Rewrite angezeigt“,
+nicht die unbelegbare Gesamtaussage, der Text sei sauber.
 
-**3. Das Evidence-Gate blockt verschobene Fakten.** Ändert eine Umformulierung „12 Prozent“ in „13 Prozent“:
+**3. Das Evidence-Gate blockt erkennbare Faktenanker-Änderungen.** Ändert eine Umformulierung „12 Prozent“ in „13 Prozent“:
 
 ```bash
 python3 scripts/evidence_lint.py --before-file vorher.md --after-file nachher.md
 # → blocker: removed_number ["12 Prozent"], added_number ["13 Prozent"] · Exit 1
 ```
 
-Bleiben alle Anker erhalten, blockiert nichts.
+Ein nicht blockierter Lauf ist keine Sachprüfung: Der Linter vergleicht erkennbare Anker und
+Marker, bindet sie aber nicht vollständig an Akteure und Aussagen.
 
 **4. `--precise` räumt dokumentierte Fehlalarme ab** (mit installiertem spaCy) – direkt auf einer mitgelieferten Fixture nachprüfbar:
 
@@ -658,9 +662,10 @@ ignoriert es.
 
 ## Fakten, Grenzen und Datenschutz
 
-Der Humanizer schützt Zahlen, Namen, Daten, URLs, Zitate, Quellen und die Richtung einer Aussage.
-Er erfindet keine Erfahrung und macht aus einer Vermutung keine Gewissheit. Ist ein Text sauber oder
-bleiben nur bekannte Fehlalarme, greift er nicht weiter ein.
+Der Humanizer gleicht erkennbare Zahlen, Namen, Daten, URLs, Zitate, Quellenanker und einfache
+Richtungsmarker konservativ ab. Seine Leitplanken verbieten erfundene Erfahrung und ungestützte
+Gewissheit; die deterministischen Prüfungen erzwingen das nicht semantisch vollständig. Ergibt die
+Prüfung keinen bearbeitungswürdigen Befund oder nur bekannte Fehlalarme, greift der Skill nicht weiter ein.
 
 **Stark ist der Skill**, wenn KI-Entwürfe zu glatt oder generisch klingen, Fachbegriffe und Belege
 erhalten bleiben müssen oder ein Text sachlich, aber nicht maschinell wirken soll. **Zurückhaltung
@@ -685,8 +690,8 @@ vertreten. Außerhalb dieser Genres sind Befunde entsprechend vorsichtiger zu le
 | Skill in Claude Code oder Codex | Der Text geht an das jeweilige Modell; es gelten dessen Datenschutzregeln und der eigene Vertrag |
 
 Lokale Dateien werden nur geschrieben, wenn du eine Dateiänderung ausdrücklich verlangst oder
-selbst speicherst. Stilprofil und Feedback-Ledger unter `.humanizer/` speichern Regeln und
-Entscheidungen, niemals Textauszüge.
+selbst speicherst. Das optionale Stilprofil unter `.humanizer/profile.json` speichert Regeln,
+niemals Textauszüge.
 
 ---
 
@@ -712,7 +717,7 @@ flowchart TD
     C -- ja --> E["Fakten sichern – Pass 1<br/>Zahlen, Namen, Quellen, Zitate"]
     E --> R["Redigieren – Pass 2–4<br/>Lexik, Struktur, Rhythmus"]
     R --> A["Selbst-Audit – Pass 5<br/>Qualität und Stimme"]
-    A --> G{"Evidence-Gate grün?"}
+    A --> G{"Claim-/Ankerprüfung grün?"}
     G -- nein --> R
     G -- ja --> O([Überarbeiteter Text + Kurzaudit])
 ```
@@ -725,18 +730,16 @@ behauptet aber weder Expertise noch Autorenschaft.
 ## Optionale Werkzeuge
 
 Du musst nichts davon vorsorglich installieren. Starte mit dem Basis-Skill und ergänze ein Werkzeug
-erst bei einem konkreten Problem. Die Werte sind grobe Orientierung, keine gemessene Garantie, und
-lassen sich wegen überlappender Prüfziele nicht addieren.
+erst bei einem konkreten Problem. Die Werkzeuge aktivieren konkrete Prüfpfade; ein allgemeiner
+Qualitätsgewinn ist dafür nicht gemessen.
 
-| Setup | Grober Boost gegenüber der Basis | Besonders sinnvoll für |
-|---|---:|---|
-| Nur der Skill | Basis (0 %) | Ausprobieren, kurze Texte und normales Redigieren |
-| Skill + Python | etwa +20–30 % | Dateien, Fakten und reproduzierbare Prüfungen |
-| zusätzlich spaCy | etwa +5–10 % | Weniger bekannte Fehlalarme und genauere Satzanalyse |
-| zusätzlich Hunspell | etwa +3–7 % | Namen, Fachwörter und neue Tippfehler in Datei-Rewrites |
-| zusätzlich LanguageTool | etwa +5–15 % | Abschließendes Korrektorat von Grammatik und Zeichensetzung |
-
-Die Ergebnisse variieren je nach Textart, Textlänge, Ausgangsqualität und Arbeitsweise deutlich.
+| Setup | Ermöglicht |
+|---|---|
+| Nur der Skill | Ausprobieren, kurze Texte und normales Redigieren |
+| Skill + Python | Lokale, reproduzierbare Prüfskripte für Dateien und erkennbare Faktenanker |
+| zusätzlich spaCy | Genauere Satzanalyse und dokumentierte Fehlalarm-Filter |
+| zusätzlich Hunspell | Vergleich neuer unbekannter Wörter bei Datei-Rewrites |
+| zusätzlich LanguageTool | Zusätzliches Korrektorat von Grammatik und Zeichensetzung |
 
 Den lokalen Status prüft ein textfreier Doctor-Check:
 
@@ -953,15 +956,16 @@ Der Skill arbeitet mit einem Katalog aus **72 KI-Schreibmustern** in 10 Kategori
 
 Citation-friendly Kurzfassung:
 
-> Humanizer (Deutsch) (`marmbiz/humanizer-de`) ist ein deutschsprachiger Humanizer Skill für Claude Code und Codex und zugleich ein deutscher Stil-Editor mit Evidence-Gate. Er misst Register und Satzrhythmus gegen Zielprofile, redigiert evidence-safe auf ein Zielprofil, auditiert deutsche KI-Schreibmuster mit einem 72-Muster-Katalog und unterstützt belegtreue, registerstabile Überarbeitung ohne Faktenänderung.
+> Humanizer (Deutsch) (`marmbiz/humanizer-de`) ist ein deutschsprachiger Humanizer Skill für Claude Code und Codex und zugleich ein evidenzbewusster deutscher Stil-Editor. Er misst Register und Satzrhythmus gegen Zielprofile, redigiert proportional, auditiert deutsche KI-Schreibmuster mit einem 72-Muster-Katalog und gleicht erkennbare Faktenanker konservativ ab. Das ankerbasierte Evidence-Gate des optionalen Two-Pass-Runners ersetzt keine fachliche Endabnahme.
 
 Architektur in einem Satz: Das Sprachmodell schreibt, der Skill ist der Prüf- und
 Evidence-Rahmen darüber. Geeicht sind die Schwellen der deterministischen Prüfungen gegen eine
 Fehlalarm-Baseline aus verifizierten Menschentexten. Neue Muster kommen nur über das
 [Marker-Aufnahmeprotokoll](docs/marker-aufnahmeprotokoll.md) hinein. Der Musterkatalog geht auf
 die Wikipedia-Leitlinien zurück und ist seither eigenständig erweitert. Bewusst nicht geplant
-ist ein fine-getuntes Humanizer-Modell, weil es Evidence-Gate und deterministische Eichung
-aufgeben würde. Das Ziel ist ein besserer Text, nicht das Umgehen von Detektoren.
+ist ein fine-getuntes Humanizer-Modell: Ein gemessener Zusatznutzen rechtfertigt den zusätzlichen
+Daten-, Betriebs- und Pflegeaufwand bislang nicht. Das Ziel ist ein besserer Text, nicht das
+Umgehen von Detektoren.
 
 Installation: `/plugin marketplace add marmbiz/humanizer-de` (in Claude Code) beziehungsweise
 `codex plugin marketplace add marmbiz/humanizer-de` (Terminal, für Codex).
@@ -983,7 +987,7 @@ Installation: `/plugin marketplace add marmbiz/humanizer-de` (in Claude Code) be
 
 Dieses Repository passt zu Suchanfragen nach deutschem Humanizer Skill, Claude Humanizer Deutsch,
 KI-Texte humanisieren Deutsch, German AI Text Humanizer, Germanizer, KI-Tells in deutschen Texten,
-evidenzsicherer Humanisierung und evidence-safe Redaktion für Claude Code und Codex.
+belegbewusster Humanisierung und ankerbewusster Redaktion für Claude Code und Codex.
 
 GitHub-Themen: `claude-skill`, `codex-skill`, `claude-code`, `humanizer`, `ai-humanizer`, `german`,
 `deutsch`, `ki-text`, `ki-texte-humanisieren`, `germanizer`, `prompt-engineering`, `stil-editor`,
@@ -1056,13 +1060,20 @@ Wer ein Script in CI als Gate nutzt, muss diese Semantik kennen: `german_pattern
 
 ### Evidence-Gate einzeln nutzen
 
-Das Evidence-Gate prüft ein Textpaar unabhängig vom Humanizing auf Faktenverschiebung:
+Das ankerbasierte Evidence-Gate prüft ein Textpaar unabhängig vom Humanizing auf erkennbare
+Faktenverschiebungen:
 
 ```bash
 python3 scripts/evidence_lint.py --before-file before.md --after-file after.md
 ```
 
-Verglichen werden Faktenanker (Zahlen, Daten, URLs, DOIs, Paragraphen, Code, Zitate, Eigennamen), der Autoritätsgrad von Aussagen und die Claim-Richtung (Zunahme/Abnahme). Der JSON-Report listet jede Abweichung. Ein Blocker (etwa eine neue Zahl oder eine gekippte Aussagerichtung) bedeutet: die Umformulierung hat Fakten verschoben und gehört zurückgewiesen. Exit-Code 1 nur bei Blockern, Warnings (z. B. neue Eigennamen) blocken nicht. Details zum Schema stehen in [`references/evidence-ledger.md`](references/evidence-ledger.md).
+Verglichen werden Faktenanker (Zahlen, Daten, URLs, DOIs, Paragraphen, Code, Zitate, Eigennamen)
+sowie dokumentweite Marker für Autoritätsgrad und Claim-Richtung. Der JSON-Report listet erkannte
+Abweichungen. Ein Blocker, etwa eine neue Zahl oder ein eindeutiger Richtungswechsel, gehört
+zurückgewiesen. Exit-Code 1 gilt nur bei Blockern; Warnings wie neue Eigennamen blocken nicht.
+Gleichbleibende Marker können vertauschte Beziehungen, Akteure oder Negationen verdecken. Ein
+grüner Report ist deshalb keine semantische oder fachliche Freigabe. Details zum Schema stehen in
+[`references/evidence-ledger.md`](references/evidence-ledger.md).
 
 Die YAML-Szenarien in `tests/scenarios/` sind bewusst maschinenlesbare Contracts. QGIR-Szenarien prüfen zusätzlich Pass-Limits, Edit-Budget, geschützte Anker, Registerdrift und Claim-Richtungsdrift. Detector-Bezug bleibt außerhalb der Contract-Checks. Die ausführlichere Datei `tests/SCENARIOS.md` bleibt die manuelle LLM-im-Loop-Referenz.
 
@@ -1270,7 +1281,7 @@ GitHub Release.
   ihr abgehakt. In vier Texten des Wirksamkeitspiloten schrieb der Skill deshalb je über hundert
   Wörter zu Anführungszeichen und Passivsätzen, aber kein Wort zu den eingebauten Falschquellen.
   Jetzt läuft der Belegteil unabhängig davon, ein niedriges Preflight-Risiko verkürzt ihn nicht
-  mehr, und jede Quelle wird einzeln eingestuft — auch die Zahlen, die an einer bereits
+  mehr, und jede erkannte Quelle wird einzeln eingestuft — auch die Zahlen, die an einer bereits
   geprüften Institution hängen und ihre Glaubwürdigkeit allein von ihr beziehen. Dafür bekommt
   der Output einen Pflichtblock „Belege“, der auch beim Null-Edit erscheint. Auf denselben vier
   Texten steigt die Zahl beanstandeter Quellen von null auf drei von acht. Die Umstellung wirkt
@@ -1313,9 +1324,9 @@ GitHub Release.
   schlägt darauf also nicht mehr an. Ohne diese Regel würde jeder deutsche Text mit einer
   Passivkonstruktion das Gate reißen, denn ein Hinweis liefert Kontext und keinen Defekt.
   Betroffen ist auch der Kandidatenhinweis für Muster 72, der bisher für sich genommen Exit-Code
-  `1` auslöste. Künftig werden unbelegte oder erfundene Quellen immer markiert, selbst wenn der Text
-  sonst unangetastet bleibt. Weil Markieren kein Eingriff ist, bleibt der Null-Edit-Vertrag
-  intakt. Klarstellung zur Modussteuerung: Der Muster-Linter meldet modusunabhängig,
+  `1` auslöste. Künftig werden auffällige unbelegte oder erfundene Quellen unabhängig vom
+  Stilbefund markiert, selbst wenn der Text sonst unangetastet bleibt. Weil Markieren kein Eingriff
+  ist, bleibt der Null-Edit-Vertrag intakt. Klarstellung zur Modussteuerung: Der Muster-Linter meldet modusunabhängig,
   nur die Preflight-Empfehlung wertet den Modus maschinell aus. Katalog und Schwellen bleiben unverändert.
 
 - **5.12.0** - Wartungsrelease mit zwei geschlossenen Detektor-Lücken: Fettdruck-Marker

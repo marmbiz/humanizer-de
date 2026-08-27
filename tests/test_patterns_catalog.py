@@ -1,3 +1,4 @@
+import importlib.util
 import re
 import unittest
 from pathlib import Path
@@ -10,6 +11,12 @@ CATALOG_HEADING = f"## Die {EXPECTED_PATTERN_COUNT} Muster"
 PATTERN_HEADING_RE = re.compile(r"^#### (\d{1,2})\. (.+?) \[(HIGH|MEDIUM|LOW)\]$")
 SHORT_REFERENCE_RE = re.compile(r"^## Kurzreferenz\s*$\n(?P<section>.*?)(?=^## |\Z)", re.MULTILINE | re.DOTALL)
 SHORT_REFERENCE_ROW_RE = re.compile(r"^\|\s*(\d+)\s*\|\s*(.*?)\s*\|\s*(HIGH|MEDIUM|LOW)\s*\|.*\|\s*$")
+
+EVIDENCE_SPEC = importlib.util.spec_from_file_location(
+    "patterns_evidence_lint", ROOT / "scripts" / "evidence_lint.py"
+)
+evidence_lint = importlib.util.module_from_spec(EVIDENCE_SPEC)
+EVIDENCE_SPEC.loader.exec_module(evidence_lint)
 
 
 def read_catalog():
@@ -62,6 +69,15 @@ def extract_short_reference_row(pattern_id):
     return match.group(0)
 
 
+def strip_example_wrapper(text):
+    text = text.strip()
+    if text.startswith('"') and '"' in text[1:]:
+        return text[1:text.rfind('"')]
+    if text.startswith("„") and "“" in text[1:]:
+        return text[1:text.rfind("“")]
+    return text
+
+
 class PatternCatalogTests(unittest.TestCase):
     def test_catalog_contains_exactly_72_pattern_ids(self):
         text = read_catalog()
@@ -102,6 +118,25 @@ class PatternCatalogTests(unittest.TestCase):
         self.assertIn("## Kurzreferenz", text)
         self.assertIn("## Statistische Detektoren (GPTZero u. a.)", text)
         self.assertIn(CATALOG_HEADING, text)
+
+    def test_one_line_rewrite_examples_add_no_hard_factual_anchor(self):
+        text = read_catalog()
+        pairs = re.findall(
+            r"^❌[^\n]*?:\s*(.+?)\n\n?^✓ Besser[^\n]*?:\s*(.+)$",
+            text,
+            re.MULTILINE,
+        )
+        self.assertGreater(len(pairs), 20)
+
+        for before_raw, after_raw in pairs:
+            before = evidence_lint.anchors(strip_example_wrapper(before_raw))
+            after = evidence_lint.anchors(strip_example_wrapper(after_raw))
+            added = {
+                kind: sorted(after[kind] - before[kind])
+                for kind in ("number", "date", "url", "doi", "paragraph")
+                if after[kind] - before[kind]
+            }
+            self.assertFalse(added, f"Besser-Beispiel ergänzt Faktenanker: {added}")
 
     def test_pattern_headings_have_required_format(self):
         text = read_catalog()

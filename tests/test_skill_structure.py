@@ -233,10 +233,10 @@ class SkillStructureTests(unittest.TestCase):
             self.assertIn("72", diagram,
                           "Der Audit-Zweig prueft den vollen Katalog; "
                           "das Diagramm nennt die Musterzahl nicht")
-        if "unbelegte oder erfundene Quellen werden immer markiert" in skill_text:
-            self.assertRegex(diagram, r"markier",
-                             "SKILL.md markiert unbelegte Quellen auch beim "
-                             "Null-Edit; das Diagramm zeigt es nicht")
+        self.assertIn("Quellenprüfung bleibt unvollständig", skill_text)
+        self.assertRegex(diagram, r"markier",
+                         "SKILL.md markiert auffällige Quellen auch beim "
+                         "Null-Edit; das Diagramm zeigt es nicht")
 
         knoten = set(re.findall(r"(\w+)\s*[\[({]", diagram))
         kanten = []

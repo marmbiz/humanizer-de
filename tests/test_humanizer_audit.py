@@ -464,6 +464,33 @@ class HumanizerAuditTests(unittest.TestCase):
         preflight_index = next(i for i, line in enumerate(lines) if line.startswith("Preflight: "))
         self.assertEqual(lines[preflight_index + 1], f"Calibration: {expected}")
 
+    def test_low_preflight_never_recommends_a_rewrite_by_mode(self):
+        rhythm_report = {
+            "document": {
+                "sentence_count": 8,
+                "stddev_mean_ratio": 0.6,
+                "subject_initial_ratio": 0.5,
+                "repeated_openers": [],
+                "connector_density_by_paragraph": [0],
+                "sentence_length_buckets": {
+                    "ratios": {"short_lt_12": 0.15, "long_gt_28": 0.1}
+                },
+                "paragraph_sentence_counts_uniform": False,
+            }
+        }
+
+        for mode in ("locker", "sachlich", "formal"):
+            with self.subTest(mode=mode):
+                preflight = humanizer_audit.preflight_assessment(
+                    rhythm_report, [], [], mode
+                )
+                self.assertEqual(preflight["risk"], "low")
+                self.assertEqual(
+                    preflight["recommendation"],
+                    "no_rewrite_or_local_edit_only",
+                )
+                self.assertEqual(preflight["combing"]["reason"], "no_cluster")
+
     def test_non_low_preflight_omits_calibration_note_and_markdown_line(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "text.md"

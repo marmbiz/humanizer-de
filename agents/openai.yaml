@@ -4,6 +4,6 @@ interface:
   icon_small: "./assets/banner-light.svg"
   icon_large: "./assets/banner-light.svg"
   brand_color: "#C4501F"
-  default_prompt: "Use $humanizer-de to audit and humanize this German text without changing facts."
+  default_prompt: "Use $humanizer-de to audit and humanize this German text while preserving explicit factual anchors and flagging uncertainty."
 policy:
   allow_implicit_invocation: true
