@@ -556,8 +556,13 @@ class HumanizerTwoPassTests(unittest.TestCase):
             self.assertIn("-Die smarte Lösung.", diff)
             self.assertIn("+Die Lösung.", diff)
             report = json.loads((out / "report.json").read_text(encoding="utf-8"))
+            verification = json.loads((out / "verify.json").read_text(encoding="utf-8"))
             self.assertEqual(report["advisory_count"], 1)
             self.assertEqual(report["advisories"], audit["advisories"])
+            self.assertEqual(report["verification"]["identical"], verification["identical"])
+            self.assertEqual(
+                report["verification"]["changed_ratio"], verification["tokens"]["changed_ratio"]
+            )
 
     def test_main_normalizes_before_freezing_protected_anchors(self):
         original = 'Er sagt „Wort".\n'
@@ -610,6 +615,7 @@ class HumanizerTwoPassTests(unittest.TestCase):
                 },
             )
             self.assertEqual(report["protected_violations"], [])
+            self.assertEqual(report["verification"]["typography"], {'"': -1, "“": 1})
 
     def test_model_calls_disable_tools(self):
         envelope = json.dumps(
@@ -815,6 +821,8 @@ class HumanizerTwoPassTests(unittest.TestCase):
                 report["unicode_fix"]["sha256_before"],
                 report["unicode_fix"]["sha256_after"],
             )
+            self.assertTrue(report["verification"]["identical"])
+            self.assertEqual(report["verification"]["typography"], {})
 
     def test_regular_file_is_rejected_as_output_directory(self):
         with tempfile.TemporaryDirectory() as temp_name:

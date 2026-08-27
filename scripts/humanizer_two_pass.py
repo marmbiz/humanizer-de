@@ -29,6 +29,7 @@ import rhythm_lint
 EVIDENCE_LINT = ROOT / "scripts" / "evidence_lint.py"
 HUMANIZER_AUDIT = ROOT / "scripts" / "humanizer_audit.py"
 UNICODE_LINT = ROOT / "scripts" / "unicode_lint.py"
+VERIFY_CHANGES = ROOT / "scripts" / "verify_changes.py"
 PATTERNS = ROOT / "references" / "patterns.md"
 SENTENCE_CLOSERS = "\"'„“‚‘”’«»‹›"
 MARKDOWN_STRUCTURE_RE = re.compile(
@@ -780,6 +781,7 @@ def main(argv: list[str] | None = None) -> int:
                 HUMANIZER_AUDIT,
                 UNICODE_LINT,
                 EVIDENCE_LINT,
+                VERIFY_CHANGES,
             )
         }
     except (OSError, UnicodeError) as error:
@@ -866,6 +868,24 @@ def main(argv: list[str] | None = None) -> int:
         (args.out_dir / "changes.diff").write_bytes(
             unified_diff(original, proposed, revised_path.name).encode("utf-8")
         )
+        verification_run = subprocess.run(
+            [
+                sys.executable,
+                str(VERIFY_CHANGES),
+                "--before-file",
+                str(original_path),
+                "--after-file",
+                str(revised_path),
+            ],
+            text=True,
+            encoding="utf-8",
+            capture_output=True,
+            timeout=120,
+        )
+        if verification_run.returncode:
+            raise RuntimeError(f"change verification failed: {verification_run.stderr.strip()}")
+        verification_report = json.loads(verification_run.stdout)
+        write_json(args.out_dir / "verify.json", verification_report)
 
         report = {
             "accepted": accepted,
@@ -896,6 +916,15 @@ def main(argv: list[str] | None = None) -> int:
             "edit_count": len(edits["edits"]),
             "protected_violations": violations,
             "evidence_blockers": blockers,
+            "verification": {
+                "identical": verification_report["identical"],
+                "changed_ratio": verification_report["tokens"]["changed_ratio"],
+                "typography": {
+                    symbol: entry["delta"]
+                    for symbol, entry in verification_report["typography"].items()
+                    if entry["delta"] != 0
+                },
+            },
             "model_calls": 1 + bool(ledger["candidates"]),
             "model_cost_usd": (
                 audit_cost + (rewrite_cost or 0) if audit_cost is not None else None
