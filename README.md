@@ -405,11 +405,14 @@ statt Klarheit, Belegtreue oder Stimme zu verbessern.
 
 ### Zwei getrennte Modellaufrufe
 
-Der optionale Runner trennt Audit und Rewrite auch technisch. Der erste, read-only Aufruf
-erstellt ein Ledger aus bestätigten Kandidaten und wortgleichen Schutzankern. Bleiben bestätigte
-Kandidaten übrig, liefert ein frischer zweiter Aufruf nur Ersetzungen dafür. Der Host setzt sie
-deterministisch ein. Teilüberschriften, Teilsätze, verschobene Schutzanker und neue
-Evidence-Blocker werden abgelehnt.
+Der optionale Runner trennt Audit und Rewrite auch technisch. Vor dem Audit sichert er die
+unveränderte Eingabe als `original.md` und erzeugt daraus `normalized.md`, das
+`unicode_lint --fix --write` konservativ bereinigt. Alle folgenden Schritte einschließlich
+Schutzankern und Evidence-Gate arbeiten auf dieser Fassung, und `report.json` hält den Eingriff
+unter `unicode_fix` fest. Der erste, read-only Aufruf erstellt ein Ledger aus bestätigten
+Kandidaten und wortgleichen Schutzankern. Bleiben bestätigte Kandidaten übrig, liefert ein
+frischer zweiter Aufruf nur Ersetzungen dafür. Der Host setzt sie deterministisch ein.
+Teilüberschriften, Teilsätze, verschobene Schutzanker und neue Evidence-Blocker werden abgelehnt.
 
 Voraussetzung ist eine angemeldete lokale `claude`-CLI. Das Zielverzeichnis muss leer sein:
 
@@ -442,8 +445,11 @@ Der Rewrite-Aufruf erhält keine Schreibrechte: Nur der
 Host kann bestätigte Spannen anwenden. Nur ein angenommenes Ergebnis erscheint als `result.md`.
 Abgelehnte Vorschläge heißen `rejected.md`, und `report.json` nennt Schutzverletzungen oder Blocker.
 `changes.diff` hält die Änderung in beiden Fällen als Unified Diff fest; bei einem Null-Edit bleibt
-die Datei leer.
-Audit, Ledger, Modellantworten und Hashes bleiben zur Nachprüfung im Zielverzeichnis.
+die Datei leer. Danach vergleicht `verify_changes.py` die ausgelieferte Fassung mit dem echten
+Original. Den vollständigen Nachweis enthält `verify.json`. In `report.json` steht unter
+`verification` die Kurzfassung aus Identität, Änderungsquote und Typografie-Deltas.
+`normalized.md`, `verify.json`, Audit, Ledger, Modellantworten und Hashes bleiben zur Nachprüfung
+im Zielverzeichnis.
 Der Text wird an den jeweiligen Modellanbieter übertragen. Die Quellenprüfung bleibt eine
 unvollständige Nebenprüfung. Die harten Gates schützen erkennbare Anker, ersetzen aber keine
 fachliche Endabnahme.
@@ -1130,6 +1136,8 @@ GitHub Release.
 - **5.22.0** - Vier kleine Workflow-Erweiterungen nutzen vorhandene Verträge: Der Sammelcheck
   kann die konservativen Unicode-Korrekturen aus Muster 43/46 mit `--fix-safe` atomar anwenden.
   Der Two-Pass-Runner schreibt für angenommene und abgelehnte Fassungen ein `changes.diff`.
+  `normalized.md` hält seine Arbeitsfassung fest, `verify.json` den vollständigen
+  Änderungsnachweis gegen das Original.
   Ein report-only Detection-Snapshot hält Treffer und tolerierte Fehlalarme der bestehenden
   Fixtures samt Hash fest. Eine Content-CI-Vorlage veröffentlicht diese Daten und Audits
   geänderter Markdown-Dateien als Artefakt, ohne PR-Kommentare oder Gate. Die Scenario-Contracts
