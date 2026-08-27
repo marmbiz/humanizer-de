@@ -28,6 +28,7 @@ import rhythm_lint
 
 EVIDENCE_LINT = ROOT / "scripts" / "evidence_lint.py"
 HUMANIZER_AUDIT = ROOT / "scripts" / "humanizer_audit.py"
+UNICODE_LINT = ROOT / "scripts" / "unicode_lint.py"
 PATTERNS = ROOT / "references" / "patterns.md"
 SENTENCE_CLOSERS = "\"'„“‚‘”’«»‹›"
 MARKDOWN_STRUCTURE_RE = re.compile(
@@ -768,21 +769,49 @@ def main(argv: list[str] | None = None) -> int:
         original = args.file.read_bytes().decode("utf-8")
         original_path = args.out_dir / "original.md"
         original_path.write_bytes(original.encode("utf-8"))
+        normalized_path = args.out_dir / "normalized.md"
+        normalized_path.write_bytes(original.encode("utf-8"))
         runtime_hashes = {
             path: hashlib.sha256(path.read_bytes()).hexdigest()
-            for path in (Path(__file__), ROOT / "SKILL.md", PATTERNS, HUMANIZER_AUDIT, EVIDENCE_LINT)
+            for path in (
+                Path(__file__),
+                ROOT / "SKILL.md",
+                PATTERNS,
+                HUMANIZER_AUDIT,
+                UNICODE_LINT,
+                EVIDENCE_LINT,
+            )
         }
     except (OSError, UnicodeError) as error:
         return fail_run(args.out_dir, started, error)
 
     try:
-        preflight = deterministic_audit(original_path, args.mode)
+        unicode_fix = subprocess.run(
+            [
+                sys.executable,
+                str(UNICODE_LINT),
+                "--file",
+                str(normalized_path),
+                "--fix",
+                "--write",
+                "--fail-on",
+                "never",
+            ],
+            text=True,
+            encoding="utf-8",
+            capture_output=True,
+            timeout=120,
+        )
+        if unicode_fix.returncode:
+            raise RuntimeError(f"unicode normalization failed: {unicode_fix.stderr.strip()}")
+        normalized = normalized_path.read_bytes().decode("utf-8")
+        preflight = deterministic_audit(normalized_path, args.mode)
         write_json(args.out_dir / "preflight.json", preflight)
         with tempfile.TemporaryDirectory(prefix="humanizer-two-pass-") as temp_name:
             temp = Path(temp_name)
             audit_temp = temp / "audit"
             audit_temp.mkdir()
-            audit_text = audit_prompt(original, args.mode, preflight)
+            audit_text = audit_prompt(normalized, args.mode, preflight)
             audit, audit_cost = run_model(
                 audit_text,
                 AUDIT_SCHEMA,
@@ -794,13 +823,13 @@ def main(argv: list[str] | None = None) -> int:
                 provider=args.provider,
             )
             write_json(args.out_dir / "audit-ledger.json", audit)
-            ledger = confirm_ledger(original, audit)
+            ledger = confirm_ledger(normalized, audit)
             write_json(args.out_dir / "confirmed-ledger.json", ledger)
 
             if ledger["candidates"]:
                 rewrite_temp = temp / "rewrite"
                 rewrite_temp.mkdir()
-                rewrite_text = rewrite_prompt(original, ledger)
+                rewrite_text = rewrite_prompt(normalized, ledger)
                 remaining_budget = (
                     args.max_budget_usd - audit_cost
                     if args.max_budget_usd is not None and audit_cost is not None
@@ -823,14 +852,14 @@ def main(argv: list[str] | None = None) -> int:
                 edits = {"edits": []}
                 rewrite_cost = None
             write_json(args.out_dir / "edits.json", edits)
-        proposed = apply_edits(original, ledger, edits)
+        proposed = apply_edits(normalized, ledger, edits)
 
         if any(hashlib.sha256(path.read_bytes()).hexdigest() != digest for path, digest in runtime_hashes.items()):
             raise RuntimeError("runtime files changed during the model calls")
         candidate_path = args.out_dir / "candidate.md"
         candidate_path.write_bytes(proposed.encode("utf-8"))
-        violations = protected_violations(original, proposed, ledger)
-        blockers = evidence_gate(original_path, candidate_path, args.out_dir)
+        violations = protected_violations(normalized, proposed, ledger)
+        blockers = evidence_gate(normalized_path, candidate_path, args.out_dir)
         accepted = not violations and not blockers
         revised_path = args.out_dir / ("result.md" if accepted else "rejected.md")
         candidate_path.replace(revised_path)
@@ -844,6 +873,11 @@ def main(argv: list[str] | None = None) -> int:
             "model": args.model,
             "mode": args.mode,
             "source_sha256": hashlib.sha256(original.encode()).hexdigest(),
+            "unicode_fix": {
+                "changed": normalized != original,
+                "sha256_before": hashlib.sha256(original.encode()).hexdigest(),
+                "sha256_after": hashlib.sha256(normalized.encode()).hexdigest(),
+            },
             "skill_sha256": runtime_hashes[ROOT / "SKILL.md"],
             "catalog_sha256": runtime_hashes[PATTERNS],
             "runner_sha256": runtime_hashes[Path(__file__)],

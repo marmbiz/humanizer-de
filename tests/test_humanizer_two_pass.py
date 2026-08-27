@@ -559,6 +559,58 @@ class HumanizerTwoPassTests(unittest.TestCase):
             self.assertEqual(report["advisory_count"], 1)
             self.assertEqual(report["advisories"], audit["advisories"])
 
+    def test_main_normalizes_before_freezing_protected_anchors(self):
+        original = 'Er sagt „Wort".\n'
+        normalized = "Er sagt „Wort“.\n"
+        audit = {
+            "register": "sachlich",
+            "candidates": [],
+            "advisories": [],
+            "protected": {"facts": [], "quotes": ["„Wort“"], "terms": [], "persona": []},
+        }
+        with tempfile.TemporaryDirectory() as temp_name:
+            temp = Path(temp_name)
+            source = temp / "source.md"
+            out = temp / "out"
+            source.write_text(original, encoding="utf-8")
+
+            def deterministic_audit(path, _mode):
+                self.assertEqual(path, out / "normalized.md")
+                self.assertEqual(path.read_text(encoding="utf-8"), normalized)
+                return {"preflight": {}, "findings": []}
+
+            def evidence_gate(before, _after, _out):
+                self.assertEqual(before, out / "normalized.md")
+                self.assertEqual(before.read_text(encoding="utf-8"), normalized)
+                return []
+
+            with (
+                mock.patch.object(two_pass, "run_model", return_value=(audit, None)) as run,
+                mock.patch.object(two_pass, "deterministic_audit", side_effect=deterministic_audit),
+                mock.patch.object(two_pass, "evidence_gate", side_effect=evidence_gate),
+                mock.patch("builtins.print"),
+            ):
+                code = two_pass.main(["--file", str(source), "--out-dir", str(out)])
+
+            self.assertEqual(code, 0)
+            self.assertIn(normalized, run.call_args.args[0])
+            self.assertEqual((out / "original.md").read_text(encoding="utf-8"), original)
+            self.assertEqual((out / "normalized.md").read_text(encoding="utf-8"), normalized)
+            self.assertEqual((out / "result.md").read_text(encoding="utf-8"), normalized)
+            diff = (out / "changes.diff").read_text(encoding="utf-8")
+            self.assertIn('-Er sagt „Wort".', diff)
+            self.assertIn('+Er sagt „Wort“.', diff)
+            report = json.loads((out / "report.json").read_text(encoding="utf-8"))
+            self.assertEqual(
+                report["unicode_fix"],
+                {
+                    "changed": True,
+                    "sha256_before": two_pass.hashlib.sha256(original.encode()).hexdigest(),
+                    "sha256_after": two_pass.hashlib.sha256(normalized.encode()).hexdigest(),
+                },
+            )
+            self.assertEqual(report["protected_violations"], [])
+
     def test_model_calls_disable_tools(self):
         envelope = json.dumps(
             {"subtype": "success", "structured_output": {}, "total_cost_usd": 0.01}
@@ -755,7 +807,14 @@ class HumanizerTwoPassTests(unittest.TestCase):
 
             self.assertEqual(code, 0)
             self.assertEqual((out / "result.md").read_bytes(), original)
+            self.assertEqual((out / "normalized.md").read_bytes(), original)
             self.assertEqual((out / "changes.diff").read_bytes(), b"")
+            report = json.loads((out / "report.json").read_text(encoding="utf-8"))
+            self.assertFalse(report["unicode_fix"]["changed"])
+            self.assertEqual(
+                report["unicode_fix"]["sha256_before"],
+                report["unicode_fix"]["sha256_after"],
+            )
 
     def test_regular_file_is_rejected_as_output_directory(self):
         with tempfile.TemporaryDirectory() as temp_name:
