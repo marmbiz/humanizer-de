@@ -1098,6 +1098,14 @@ GitHub Release.
 
 ## Was ist neu?
 
+- **5.24.0** - Der Two-Pass-Runner bereinigt die Eingabe jetzt am Eingang. Eine Arbeitskopie
+  läuft durch den konservativen Unicode-Fix, und alle Schutzanker frieren auf der reparierten
+  Fassung ein. Am Ausgang vergleicht das neue Prüfskript `verify_changes.py` die gelieferte
+  Fassung mit dem unveränderten Original und legt den vollen Nachweis als `verify.json` bei.
+  Im Report stehen Identität, Änderungsquote und Typografie-Deltas. Damit zählt das Paket 26
+  Dateien. Ein fehlerhaft gefülltes Advisory-Feld bricht den Lauf nicht mehr ab, sondern
+  wandert aussortiert und begründet in den Report.
+
 - **5.23.0** - Der Sammelcheck ordnet ein unauffälliges Ergebnis jetzt selbst ein. `risk=low`
   heißt nur, dass kein geeichtes Signal angeschlagen hat. Eine neue Calibration-Zeile nennt
   deshalb die Register, in denen die Erkennung am schwächsten ist, darunter Werbung, Social

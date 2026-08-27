@@ -44,7 +44,7 @@ class DoctorTests(unittest.TestCase):
 
         self.assertTrue(report["ok"])
         self.assertEqual(report["name"], "humanizer-de")
-        self.assertEqual(report["version"], "5.23.0")
+        self.assertEqual(report["version"], "5.24.0")
         self.assertEqual(
             report["privacy"],
             "No user text was read; only the listed repository and skill files were read.",
@@ -80,7 +80,7 @@ class DoctorTests(unittest.TestCase):
     def test_require_full_exits_one_for_partial_installation(self):
         report = {
             "name": "humanizer-de",
-            "version": "5.23.0",
+            "version": "5.24.0",
             "ok": True,
             "full": False,
             "summary": "base_only",
