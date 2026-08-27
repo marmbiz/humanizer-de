@@ -112,6 +112,12 @@ EDIT_SCHEMA = {
 }
 
 
+def subprocess_env() -> dict[str, str]:
+    env = os.environ.copy()
+    env.update(PYTHONUTF8="1", PYTHONIOENCODING="utf-8")
+    return env
+
+
 def write_json(path: Path, value: object) -> None:
     path.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
@@ -602,6 +608,7 @@ def run_model(
             command,
             input=prompt,
             cwd=cwd,
+            env=subprocess_env(),
             text=True,
             encoding="utf-8",
             capture_output=True,
@@ -650,6 +657,7 @@ def run_model(
         command,
         input=prompt,
         cwd=cwd,
+        env=subprocess_env(),
         text=True,
         encoding="utf-8",
         capture_output=True,
@@ -677,6 +685,7 @@ def run_model(
 def deterministic_audit(source: Path, mode: str) -> dict[str, Any]:
     completed = subprocess.run(
         [sys.executable, str(HUMANIZER_AUDIT), "--file", str(source), "--mode", mode],
+        env=subprocess_env(),
         text=True,
         encoding="utf-8",
         capture_output=True,
@@ -695,6 +704,7 @@ def evidence_gate(original_path: Path, result_path: Path, out_dir: Path) -> list
     ledger_path = out_dir / "evidence-ledger.json"
     write = subprocess.run(
         [sys.executable, str(EVIDENCE_LINT), "--before-file", str(original_path), "--write-ledger", str(ledger_path)],
+        env=subprocess_env(),
         text=True,
         encoding="utf-8",
         capture_output=True,
@@ -713,6 +723,7 @@ def evidence_gate(original_path: Path, result_path: Path, out_dir: Path) -> list
             "--fail-on",
             "never",
         ],
+        env=subprocess_env(),
         text=True,
         encoding="utf-8",
         capture_output=True,
@@ -806,6 +817,7 @@ def main(argv: list[str] | None = None) -> int:
                 "--fail-on",
                 "never",
             ],
+            env=subprocess_env(),
             text=True,
             encoding="utf-8",
             capture_output=True,
@@ -884,6 +896,7 @@ def main(argv: list[str] | None = None) -> int:
                 "--after-file",
                 str(revised_path),
             ],
+            env=subprocess_env(),
             text=True,
             encoding="utf-8",
             capture_output=True,
