@@ -1125,6 +1125,21 @@ GitHub Release.
 
 ## Was ist neu?
 
+- **5.25.0** - Nach einem Repo-Audit räumt diese Version Ehrlichkeits- und Robustheitsfunde
+  auf. Durchgängig beschreibt die Dokumentation der Quellen- und Faktenprüfung jetzt ihren
+  echten Umfang: erkennbare Anker, konservativer Abgleich, unvollständige Nebenprüfung. Der
+  Sammelcheck empfiehlt bei niedrigem Preflight-Risiko auch im Formal-Modus keinen Durchgang
+  mehr. Vier Verbmarker aus Muster 64 zählen gleichlautende Substantive nicht mehr mit, eine
+  „Beleuchtung“ ist also kein „beleuchten“. Im Two-Pass-Runner sterben Läufe nicht mehr an
+  flektierten Schutzankern: Zitiert das Audit-Modell einen Anker in Grundform, verankert der
+  Host ihn deterministisch an der eindeutigen Textstelle und weist das im Report unter
+  `reanchored` aus. Verstöße der Einsetzstufe enden als geprüfte Ablehnung statt als Abbruch.
+  Drei Angleichungen betreffen nur Text: Der Werbetexte-Abschnitt rechnet den
+  Schablonen-Detektor aus 5.17.0 ein, die Release-Regel im README beschreibt den tatsächlichen
+  Ablauf, und die Checkliste trägt statt eines ungemessenen Häufigkeits-Titels eine ehrliche
+  Überschrift. Entfernt sind das ungenutzte Entscheidungs-Ledger und die ungemessenen
+  Prozentwerte der Werkzeugtabelle.
+
 - **5.24.0** - Der Two-Pass-Runner bereinigt die Eingabe jetzt am Eingang. Eine Arbeitskopie
   läuft durch den konservativen Unicode-Fix, und alle Schutzanker frieren auf der reparierten
   Fassung ein. Am Ausgang vergleicht das neue Prüfskript `verify_changes.py` die gelieferte

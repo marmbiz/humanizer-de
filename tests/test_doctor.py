@@ -44,7 +44,7 @@ class DoctorTests(unittest.TestCase):
 
         self.assertTrue(report["ok"])
         self.assertEqual(report["name"], "humanizer-de")
-        self.assertEqual(report["version"], "5.24.0")
+        self.assertEqual(report["version"], "5.25.0")
         self.assertEqual(
             report["privacy"],
             "No user text was read; only the listed repository and skill files were read.",
