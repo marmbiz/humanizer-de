@@ -809,7 +809,7 @@ davon wird zusammen mit dem Skill installiert oder automatisch aktiviert.
 
 ## 72 Muster in 10 Kategorien
 
-Der Skill arbeitet mit einem Katalog aus **72 KI-Schreibmustern** in 10 Kategorien, priorisiert nach Schweregrad (HIGH / MEDIUM / LOW). Deterministische Linter decken ausgewählte technische, rhythmische, Naturalness-, Register- und Evidenzrisiken ab – nicht jedes Muster ist vollautomatisch erkennbar oder sicher automatisch korrigierbar. Linter-gestützt sind derzeit 17 Muster (2, 4, 8, 13, 16, 39, 43, 44, 46, 54, 55, 58, 61, 63–65 sowie ein advisory Kandidatenhinweis für 72; Muster 2 und 44: Teilaspekte, Muster 39: Erkennung im Präzisionspfad mit spaCy, kein Gate-Anschluss) plus Register-, Rhythmus- und Evidenz-Checks. Die übrigen Muster prüft das Modell anhand des Katalogs. Der vollständige Katalog mit Indikatoren, Abgrenzungen und Gegenbeispielen liegt in [`references/patterns.md`](references/patterns.md). Für den schnellen Blick ohne Katalog fasst [`assets/checkliste-ki-tells.md`](assets/checkliste-ki-tells.md) die zehn häufigsten Tells auf einer Seite zusammen.
+Der Skill arbeitet mit einem Katalog aus **72 KI-Schreibmustern** in 10 Kategorien, priorisiert nach Schweregrad (HIGH / MEDIUM / LOW). Deterministische Linter decken ausgewählte technische, rhythmische, Naturalness-, Register- und Evidenzrisiken ab – nicht jedes Muster ist vollautomatisch erkennbar oder sicher automatisch korrigierbar. Linter-gestützt sind derzeit 17 Muster (2, 4, 8, 13, 16, 39, 43, 44, 46, 54, 55, 58, 61, 63–65 sowie ein advisory Kandidatenhinweis für 72; Muster 2 und 44: Teilaspekte, Muster 39: Erkennung im Präzisionspfad mit spaCy, kein Gate-Anschluss) plus Register-, Rhythmus- und Evidenz-Checks. Die übrigen Muster prüft das Modell anhand des Katalogs. Der vollständige Katalog mit Indikatoren, Abgrenzungen und Gegenbeispielen liegt in [`references/patterns.md`](references/patterns.md). Für den schnellen Blick ohne Katalog fasst [`assets/checkliste-ki-tells.md`](assets/checkliste-ki-tells.md) zehn typische Tells auf einer Seite zusammen.
 
 <details>
 <summary><strong>Sprache und Tonfall (19 Muster)</strong></summary>
@@ -1100,12 +1100,15 @@ Meilensteine. Ausführlichere Notes zu veröffentlichten Ständen stehen in den
 
 Bei jedem Version-Bump:
 
-1. Version in `SKILL.md`, Plugin-Metadaten, Referenzen und Changelog synchronisieren.
+1. Version und Changelog synchronisieren.
 2. `make verify` ausführen.
-3. Änderungen per Pull Request einreichen, alle Pflichtchecks abwarten und nach `main` mergen.
-4. Den CI-Lauf auf `main` abwarten und erst danach einen Tag `vX.Y.Z` exakt auf den grünen
-   Merge-Commit setzen und pushen.
-5. Auf GitHub einen Release aus diesem Tag erstellen. Die Release Notes dürfen die Changelog-Zeile erweitern, müssen aber denselben Scope beschreiben.
+3. Änderungen auf `main` bringen, per direktem Push oder Pull Request, und den CI-Lauf auf
+   `main` mit `gh run list` prüfen.
+4. Erst nach grüner CI den Tag `vX.Y.Z` auf den neuesten Commit setzen und pushen.
+5. `make skill-bundle` ausführen und das GitHub Release aus dem Tag mit
+   `dist/humanizer-de.zip` als Asset erstellen. Das Asset muss beim Anlegen dabei sein, weil
+   Releases danach versiegelt sind. Die Release Notes konkretisieren die Changelog-Zeile,
+   behaupten aber keinen breiteren Scope.
 
 Im README bleibt nur die aktuelle Version einzeln stehen. Ältere Releases werden nach
 Minor-Reihe zusammengefasst. Jeder veröffentlichte Stand behält trotzdem seinen Tag und

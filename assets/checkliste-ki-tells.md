@@ -1,4 +1,4 @@
-# Die 10 häufigsten deutschen KI-Tells
+# Zehn typische deutsche KI-Tells
 
 Kompakte Checkliste zum schnellen Gegenlesen, auch ohne installierten Skill nutzbar. Der
 vollständige Katalog mit 72 Mustern, Beispielen und Abgrenzungen steht in
