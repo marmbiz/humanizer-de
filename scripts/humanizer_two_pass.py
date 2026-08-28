@@ -154,6 +154,38 @@ def anchor_occurrences(text: str, value: str) -> list[tuple[int, int]]:
     ]
 
 
+def reground_anchor(text: str, anchor: str) -> str:
+    parts = []
+    for part in re.findall(r"\w+|\W+", anchor):
+        if re.fullmatch(r"\w+", part) and len(part) >= 4:
+            parts.append(re.escape(part[: max(3, len(part) - 2)]) + r"\w{0,4}")
+        else:
+            parts.append(
+                "".join(
+                    r'''[„“”"‚‘’']'''
+                    if character in '„“”"‚‘’\''
+                    else r"[–—-]"
+                    if character in "–—-"
+                    else re.escape(character)
+                    for character in part
+                )
+            )
+    pattern = "".join(parts)
+    if anchor[:1].isalnum() or anchor.startswith("_"):
+        pattern = rf"(?<!\w){pattern}"
+    if anchor[-1:].isalnum() or anchor.endswith("_"):
+        pattern = rf"{pattern}(?!\w)"
+    found = list(re.finditer(pattern, text)) if pattern else []
+    if not found:
+        raise ValueError(f"anchor missing from original: {anchor!r}")
+    if len(found) != 1:
+        raise ValueError(f"anchor ambiguous in original: {anchor!r}")
+    grounded = found[0].group()
+    if not 0.8 * len(anchor) <= len(grounded) <= 1.2 * len(anchor):
+        raise ValueError(f"anchor re-grounding outside 80-120% length: {anchor!r}")
+    return grounded
+
+
 def ends_sentence(text: str, *, protect_abbreviations: bool = False) -> bool:
     value = rhythm_lint.protect_sentence_periods(text) if protect_abbreviations else text
     return bool(re.search(rf"[.!?][{re.escape(SENTENCE_CLOSERS)}]*$", value.rstrip()))
@@ -223,11 +255,19 @@ def confirm_ledger(original: str, ledger: dict[str, Any]) -> dict[str, Any]:
         else:
             valid_advisories.append(advisory)
     immutable_spans: list[tuple[int, int]] = []
-    for category, anchors in ledger["protected"].items():
-        for anchor in anchors:
+    protected = {category: list(anchors) for category, anchors in ledger["protected"].items()}
+    reanchored = []
+    for category, anchors in protected.items():
+        for index, anchor in enumerate(anchors):
             found = anchor_occurrences(original, anchor)
             if not found:
-                raise ValueError(f"{category}: anchor missing from original: {anchor!r}")
+                try:
+                    grounded = reground_anchor(original, anchor)
+                except ValueError as error:
+                    raise ValueError(f"{category}: {error}") from error
+                anchors[index] = grounded
+                reanchored.append({"category": category, "from": anchor, "to": grounded})
+                found = anchor_occurrences(original, grounded)
             if category in {"quotes", "persona"}:
                 immutable_spans.extend(found)
 
@@ -275,7 +315,7 @@ def confirm_ledger(original: str, ledger: dict[str, Any]) -> dict[str, Any]:
             and anchor_start < end
             and not any(other_end <= start or end <= other_start for other_start, other_end in anchor_occurrences(original, anchor))
             for category in ("facts", "terms")
-            for anchor in ledger["protected"][category]
+            for anchor in protected[category]
             for anchor_start, anchor_end in anchor_occurrences(original, anchor)
         ):
             discarded.append({"id": candidate_id, "reason": "deletes_unique_protected_anchor"})
@@ -287,7 +327,8 @@ def confirm_ledger(original: str, ledger: dict[str, Any]) -> dict[str, Any]:
         "register": ledger["register"],
         "candidates": kept,
         "advisories": valid_advisories,
-        "protected": ledger["protected"],
+        "protected": protected,
+        "reanchored": reanchored,
         "discarded_candidates": discarded,
         "discarded_advisories": discarded_advisories,
     }
@@ -873,13 +914,18 @@ def main(argv: list[str] | None = None) -> int:
                 edits = {"edits": []}
                 rewrite_cost = None
             write_json(args.out_dir / "edits.json", edits)
-        proposed = apply_edits(normalized, ledger, edits)
+        try:
+            proposed = apply_edits(normalized, ledger, edits)
+            apply_violations = []
+        except ValueError as error:
+            proposed = normalized
+            apply_violations = [{"kind": "apply_stage_violation", "message": str(error)}]
 
         if any(hashlib.sha256(path.read_bytes()).hexdigest() != digest for path, digest in runtime_hashes.items()):
             raise RuntimeError("runtime files changed during the model calls")
         candidate_path = args.out_dir / "candidate.md"
         candidate_path.write_bytes(proposed.encode("utf-8"))
-        violations = protected_violations(normalized, proposed, ledger)
+        violations = apply_violations + protected_violations(normalized, proposed, ledger)
         blockers = evidence_gate(normalized_path, candidate_path, args.out_dir)
         accepted = not violations and not blockers
         revised_path = args.out_dir / ("result.md" if accepted else "rejected.md")
@@ -931,6 +977,8 @@ def main(argv: list[str] | None = None) -> int:
             "candidate_count": len(audit["candidates"]),
             "confirmed_candidate_count": len(ledger["candidates"]),
             "discarded_candidate_count": len(ledger["discarded_candidates"]),
+            "reanchored_count": len(ledger["reanchored"]),
+            "reanchored": ledger["reanchored"],
             "advisory_count": len(ledger["advisories"]),
             "advisories": ledger["advisories"],
             "discarded_advisory_count": len(ledger["discarded_advisories"]),

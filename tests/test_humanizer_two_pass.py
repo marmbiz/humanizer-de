@@ -116,6 +116,37 @@ class HumanizerTwoPassTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "anchor missing from original"):
             two_pass.confirm_ledger("Wir backen seit drei Generationen.", ledger)
 
+    def test_confirmation_rejects_ambiguous_regrounding(self):
+        ledger = {
+            "register": "sachlich",
+            "candidates": [],
+            "protected": {"facts": [], "quotes": [], "terms": ["System"], "persona": []},
+        }
+
+        with self.assertRaisesRegex(ValueError, "anchor ambiguous in original"):
+            two_pass.confirm_ledger("Systeme helfen. Systeme lernen.", ledger)
+
+    def test_confirmation_leaves_exact_anchor_untouched(self):
+        ledger = {
+            "register": "sachlich",
+            "candidates": [],
+            "protected": {"facts": [], "quotes": [], "terms": ["System"], "persona": []},
+        }
+
+        confirmed = two_pass.confirm_ledger("Das System hilft.", ledger)
+
+        self.assertEqual(confirmed["protected"]["terms"], ["System"])
+        self.assertEqual(confirmed["reanchored"], [])
+
+    def test_reground_anchor_tolerates_quote_variants(self):
+        self.assertEqual(two_pass.reground_anchor("Er sagt „Wort“.", '„Wort"'), "„Wort“")
+
+    def test_reground_anchor_tolerates_four_character_suffix(self):
+        self.assertEqual(
+            two_pass.reground_anchor("Status des Backup-Dienstes: aktiv.", "Backup-Dienst"),
+            "Backup-Dienstes",
+        )
+
     def test_confirmation_discards_invalid_multisentence_candidate_only(self):
         invalid = {
             "id": "c1",
@@ -507,13 +538,13 @@ class HumanizerTwoPassTests(unittest.TestCase):
                 },
             )
 
-    def test_main_uses_two_fresh_calls_and_only_applies_confirmed_candidate(self):
+    def test_main_regrounds_inflected_anchor_and_only_applies_confirmed_candidate(self):
         audit = {
             "register": "sachlich",
             "candidates": [
                 {
                     "id": "c1",
-                    "source": "smarte",
+                    "source": "smarten",
                     "patterns": ["2"],
                     "reason": "Floskel",
                     "goal": "streichen",
@@ -522,16 +553,16 @@ class HumanizerTwoPassTests(unittest.TestCase):
                 }
             ],
             "advisories": [
-                {"source": "Lösung", "reason": "Quelle nicht verifiziert"},
+                {"source": "Systeme", "reason": "Quelle nicht verifiziert"},
                 {"source": "Satzlängenvarianz 0,512", "reason": "Metrik auffällig"},
             ],
-            "protected": {"facts": [], "quotes": [], "terms": [], "persona": []},
+            "protected": {"facts": [], "quotes": [], "terms": ["System"], "persona": []},
         }
         with tempfile.TemporaryDirectory() as temp_name:
             temp = Path(temp_name)
             source = temp / "source.md"
             out = temp / "out"
-            source.write_text("Die smarte Lösung.\n", encoding="utf-8")
+            source.write_text("Die smarten Systeme.\n", encoding="utf-8")
             with (
                 mock.patch.object(
                     two_pass,
@@ -552,15 +583,20 @@ class HumanizerTwoPassTests(unittest.TestCase):
             self.assertEqual(run.call_count, 2)
             self.assertNotEqual(run.call_args_list[0].kwargs["cwd"], run.call_args_list[1].kwargs["cwd"])
             self.assertIn("BESTÄTIGTES LEDGER", run.call_args_list[1].args[0])
-            self.assertEqual((out / "result.md").read_text(encoding="utf-8"), "Die Lösung.\n")
+            self.assertEqual((out / "result.md").read_text(encoding="utf-8"), "Die Systeme.\n")
             diff = (out / "changes.diff").read_text(encoding="utf-8")
             self.assertIn("--- original.md", diff)
             self.assertIn("+++ result.md", diff)
-            self.assertIn("-Die smarte Lösung.", diff)
-            self.assertIn("+Die Lösung.", diff)
+            self.assertIn("-Die smarten Systeme.", diff)
+            self.assertIn("+Die Systeme.", diff)
             report = json.loads((out / "report.json").read_text(encoding="utf-8"))
             confirmed = json.loads((out / "confirmed-ledger.json").read_text(encoding="utf-8"))
             verification = json.loads((out / "verify.json").read_text(encoding="utf-8"))
+            reanchored = [{"category": "terms", "from": "System", "to": "Systeme"}]
+            self.assertEqual(confirmed["protected"]["terms"], ["Systeme"])
+            self.assertEqual(confirmed["reanchored"], reanchored)
+            self.assertEqual(report["reanchored_count"], 1)
+            self.assertEqual(report["reanchored"], reanchored)
             self.assertEqual(report["advisory_count"], 1)
             self.assertEqual(report["advisories"], audit["advisories"][:1])
             self.assertEqual(report["discarded_advisory_count"], 1)
@@ -632,6 +668,56 @@ class HumanizerTwoPassTests(unittest.TestCase):
             )
             self.assertEqual(report["protected_violations"], [])
             self.assertEqual(report["verification"]["typography"], {'"': -1, "“": 1})
+
+    def test_main_rejects_apply_stage_contract_violation(self):
+        original = "Fakt 42 bleibt.\n"
+        audit = {
+            "register": "sachlich",
+            "candidates": [
+                {
+                    "id": "c1",
+                    "source": original,
+                    "patterns": ["64"],
+                    "reason": "Form",
+                    "goal": "glätten",
+                    "action": "rewrite",
+                    "scope": "sentence",
+                }
+            ],
+            "advisories": [],
+            "protected": {"facts": ["42"], "quotes": [], "terms": [], "persona": []},
+        }
+        edits = {"edits": [{"candidate_id": "c1", "replacement": "Fakt bleibt.\n"}]}
+        with tempfile.TemporaryDirectory() as temp_name:
+            temp = Path(temp_name)
+            source = temp / "source.md"
+            out = temp / "out"
+            source.write_text(original, encoding="utf-8")
+            with (
+                mock.patch.object(two_pass, "run_model", side_effect=[(audit, None), (edits, None)]),
+                mock.patch.object(
+                    two_pass, "deterministic_audit", return_value={"preflight": {}, "findings": []}
+                ),
+                mock.patch.object(two_pass, "evidence_gate", return_value=[]),
+                mock.patch("builtins.print"),
+            ):
+                code = two_pass.main(["--file", str(source), "--out-dir", str(out)])
+
+            self.assertEqual(code, 1)
+            self.assertEqual((out / "rejected.md").read_text(encoding="utf-8"), original)
+            self.assertEqual((out / "changes.diff").read_text(encoding="utf-8"), "")
+            self.assertTrue((out / "verify.json").is_file())
+            report = json.loads((out / "report.json").read_text(encoding="utf-8"))
+            self.assertFalse(report["accepted"])
+            self.assertEqual(
+                report["protected_violations"],
+                [
+                    {
+                        "kind": "apply_stage_violation",
+                        "message": "rewrite candidate changed owned facts anchor: c1",
+                    }
+                ],
+            )
 
     def test_model_calls_disable_tools(self):
         envelope = json.dumps(
