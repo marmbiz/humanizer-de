@@ -692,7 +692,7 @@ class HumanizerTwoPassTests(unittest.TestCase):
             temp = Path(temp_name)
             source = temp / "source.md"
             out = temp / "out"
-            source.write_text(original, encoding="utf-8")
+            source.write_bytes(original.encode("utf-8"))
             with (
                 mock.patch.object(two_pass, "run_model", side_effect=[(audit, None), (edits, None)]),
                 mock.patch.object(
