@@ -41,6 +41,84 @@ class GermanPatternLintTests(unittest.TestCase):
         text = "Der Text beleuchtet das vielschichtige Zusammenspiel in einer dynamischen Landschaft."
         self.assertIn("ai_marker_cluster", kinds(german_pattern_lint.lint(text)))
 
+    def test_ai_marker_stem_overrides_keep_existing_verb_forms(self):
+        text = (
+            "Der Bericht beleuchtet die Messung. Forschende können in die Methode "
+            "eintauchen. Der Anhang erklärt, was die Auswertung aufzeigt."
+        )
+        finding = next(
+            item
+            for item in german_pattern_lint.lint(text)["findings"]
+            if item["kind"] == "ai_marker_cluster"
+        )
+        self.assertEqual(
+            finding["evidence"],
+            {"beleuchten": 1, "eintauchen": 1, "aufzeigen": 1},
+        )
+
+        matched = {
+            "beleuchten": (
+                "beleuchten",
+                "beleuchtet",
+                "beleuchtete",
+                "beleuchtend",
+                "beleuchtende",
+            ),
+            "eintauchen": ("eintauchen", "eintaucht"),
+            "unterstreichen": ("unterstreicht", "unterstreichen"),
+            "aufzeigen": ("aufzeigen", "aufzeigt", "aufzeigte"),
+        }
+        for marker, forms in matched.items():
+            for form in forms:
+                with self.subTest(marker=marker, form=form):
+                    self.assertEqual(german_pattern_lint.count_marker(form, marker), 1)
+
+        unmatched = {
+            "eintauchen": "taucht in das Thema ein",
+            "unterstreichen": "unterstrich",
+            "aufzeigen": "aufgezeigt",
+        }
+        for marker, form in unmatched.items():
+            with self.subTest(marker=marker, form=form):
+                self.assertEqual(german_pattern_lint.count_marker(form, marker), 0)
+
+    def test_ai_marker_cluster_ignores_repeated_lighting_noun(self):
+        text = (
+            "Die Beleuchtung links ist warm. Die Beleuchtung rechts ist gedimmt. "
+            "Die Beleuchtung an der Decke bleibt ausgeschaltet."
+        )
+        self.assertNotIn("ai_marker_cluster", kinds(german_pattern_lint.lint(text)))
+
+    def test_ai_marker_stem_overrides_ignore_derivative_nouns(self):
+        derivatives = {
+            "beleuchten": ("Beleuchtung", "Beleuchtungen", "Beleuchter"),
+            "eintauchen": ("Eintauchung",),
+            "unterstreichen": ("Unterstreichung", "Unterstreichungen"),
+            "aufzeigen": ("Aufzeigung",),
+        }
+        for marker, forms in derivatives.items():
+            for form in forms:
+                with self.subTest(marker=marker, form=form):
+                    self.assertEqual(german_pattern_lint.count_marker(form, marker), 0)
+
+    def test_ai_marker_cluster_does_not_count_lighting_noun_as_third_hit(self):
+        text = (
+            "Der Bericht beleuchtet den Aufbau und erklärt, was er aufzeigt. "
+            "Die Beleuchtung ist warm."
+        )
+        self.assertEqual(
+            german_pattern_lint.count_marker(text, "beleuchten")
+            + german_pattern_lint.count_marker(text, "aufzeigen"),
+            2,
+        )
+        self.assertNotIn("ai_marker_cluster", kinds(german_pattern_lint.lint(text)))
+
+    def test_ai_marker_stem_override_keeps_substantivized_beleuchten(self):
+        self.assertEqual(
+            german_pattern_lint.count_marker("das Beleuchten des Themas", "beleuchten"),
+            1,
+        )
+
     def test_ai_marker_cluster_ignores_blockquote(self):
         text = "> Der Text beleuchtet das vielschichtige Zusammenspiel in einer dynamischen Landschaft.\n"
         self.assertNotIn("ai_marker_cluster", kinds(german_pattern_lint.lint(text)))

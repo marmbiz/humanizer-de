@@ -120,7 +120,12 @@ ABSTRACTA = (
 # Marker, die der Standard-Stamm nicht erreicht: Er streicht nur ein End-"en",
 # deshalb bleiben die beiden Formen auf "e" im Plural stecken. "prozess" allein
 # waere zu weit und trafe auch Prozessor und prozessual.
+# Die vier Verbstämme schließen gleichlautende Fremd-Derivate aus.
 MARKER_PATTERNS = {
+    "beleuchten": re.compile(r"\bbeleucht(?!ung|er)\w*\b", re.IGNORECASE),
+    "eintauchen": re.compile(r"\beintauch(?!ung)\w*\b", re.IGNORECASE),
+    "unterstreichen": re.compile(r"\bunterstreich(?!ung)\w*\b", re.IGNORECASE),
+    "aufzeigen": re.compile(r"\baufzeig(?!ung)\w*\b", re.IGNORECASE),
     "aspekte": re.compile(r"\baspekt(?:e|en|es)?\b", re.IGNORECASE),
     "prozesse": re.compile(r"\bprozess(?:e|en|es)?\b", re.IGNORECASE),
 }

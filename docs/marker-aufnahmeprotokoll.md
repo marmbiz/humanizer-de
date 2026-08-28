@@ -59,6 +59,46 @@ gh release create vX.Y.Z --title "vX.Y.Z" --notes-file <notes> --target main dis
 gewinnt `plugin.json` ohne Warnung, und ein vergessener Wert dort verdeckt den gepflegten
 im Marktplatz-Eintrag.
 
+## Präzisiert: M64-Verbstämme gegen Fremd-Derivate
+
+1. **Name und Zweck:** Bestehender M64-Befund `ai_marker_cluster`. Vier Verbmarker sollen
+   ihre bisherigen Flexionsformen weiter erfassen, aber gleichlautende Substantiv-Derivate
+   fremder Lexeme nicht mehr als das jeweilige Verb ausweisen.
+2. **Scope:** Alle Modi und Texttypen des bestehenden Befunds. Geändert werden nur
+   `beleuchten`, `eintauchen`, `unterstreichen` und `aufzeigen`; alle anderen AI_MARKERS,
+   ABSTRACTA, COPULA_AVOIDANCE und die geschützten Spans bleiben unverändert.
+3. **Logik:** Die vorhandene Override-Mechanik nutzt nun die case-insensitiven Muster
+   `\bbeleucht(?!ung|er)\w*\b`, `\beintauch(?!ung)\w*\b`,
+   `\bunterstreich(?!ung)\w*\b` und `\baufzeig(?!ung)\w*\b`. Die negativen Lookaheads
+   verengen ausschließlich die bisherige Stamm-Matchmenge. Präteritum, Partizip mit
+   `ge` und getrennte Partikeln werden bewusst nicht neu erschlossen.
+4. **Schwelle:** Unverändert mindestens drei AI_MARKER-Treffer pro Text. Zwei echte
+   Verbformen plus ein ausgeschlossenes Derivat erzeugen keinen Cluster.
+5. **Fixtures:**
+
+   | Typ | Textfamilie | Erwartung |
+   |---|---|---|
+   | Positiv | `beleuchtet` + `eintauchen` + `aufzeigt` | `ai_marker_cluster` |
+   | Positiv | bisher erfasste Flexionsformen aller vier Verben | jeweils ein Markertreffer |
+   | Positiv | substantiviertes „das Beleuchten des Themas“ | ein Treffer für `beleuchten` |
+   | Negativ | dreimal `Beleuchtung` im Fototext | kein Befund |
+   | Negativ | `Beleuchtung`, `Beleuchtungen`, `Beleuchter` | kein Treffer für `beleuchten` |
+   | Negativ | `Eintauchung`, `Unterstreichung(en)`, `Aufzeigung` | kein Treffer für die Verben |
+   | Grenzfall | zwei Verbformen plus einmal `Beleuchtung` | kein Cluster |
+   | Grenzfall | `unterstrich`, `aufgezeigt`, `taucht ... ein` | wie bisher nicht erfasst |
+
+6. **Fehlalarmfamilie:** Themengebundene Sach- und Fachprosa über Beleuchtung sowie
+   sprachliche oder typografische Unterstreichungen. Die ausgeschlossenen Nomen bezeichneten
+   bislang reale Gegenstände oder Verfahren, während die Evidenz fälschlich das Verb nannte.
+7. **Severity, Meldung, Aktion:** `warning`, Evidenzstruktur und manueller Prüfauftrag
+   bleiben unverändert. Es gibt keinen Auto-Rewrite.
+8. **Autorschaft:** Der Befund erlaubt weiterhin keine Aussage darüber, ob ein Mensch oder
+   ein Sprachmodell den Text verfasst hat.
+9. **Version und Begründung:** 2026-08-28, Zielversion 5.24.1. Anlass ist ein reproduzierter
+   Fehlalarm auf themengebundener Sachprosa außerhalb der FP-Baseline-Genres: In einem
+   Beleuchtungs-Fachtext erzeugten drei Nomen einen M64-Cluster, dessen Evidenz das falsche
+   Lexem `beleuchten` nannte.
+
 ## Erweitert: M8-Negationsantithese als Dichtebefund
 
 1. **Muster-ID, Name, Zweck:** Muster 8, `negation_antithesis_cluster`. Der Befund ergänzt
