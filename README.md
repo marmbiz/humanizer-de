@@ -371,7 +371,16 @@ Humanisiere diesen Text. Entferne nur sprachliche Muster, nicht die Formatierung
 
 ### Werbetexte: mehr Eingriff auf Wunsch
 
-Bei Werbe- und Landingpage-Texten hält sich der Skill zurück. Er räumt Floskeln dort seltener ab als anderswo, weil Werbesprache werben darf und seine Schutzregeln den bewusst gesetzten Dreiklang nicht von der austauschbaren Schablone unterscheiden können. Wer mehr Eingriff will, hängt den folgenden Absatz an seine Anweisung an:
+Seit 5.17.0 erkennt der Skill Werbeschablonen-Figuren deterministisch: Sozialbeweis,
+Standard-Werbesektionen und gestapelte Handlungsaufforderungen. Der Preflight gewichtet
+solche Befunde. Am Prüfstein-Werbetext mit sieben eingebauten Schablonen entfernt der
+aktuelle Stand ohne jeden Zusatz sechs von sieben, während die Fakten erhalten bleiben.
+
+Der Detektor erkennt allerdings Formulierungen, keine Bauformen. Bei Werbetexten mit
+unbekannten Schablonen, etwa frisch erzeugter KI-Werbung, feuert er deshalb oft nicht. Dann
+hält sich der Skill weiter zurück, weil Werbesprache werben darf und seine Schutzregeln den
+bewusst gesetzten Dreiklang nicht von der austauschbaren Schablone unterscheiden können.
+Für genau diese Fälle lässt sich der folgende Absatz an die Anweisung hängen:
 
 ```text
 Für persuasive Abschnitte gilt: Branchenüblichkeit und Label-Konvention schützen
@@ -385,7 +394,11 @@ andere Produkte übertragen ließe. Eine mehrgliedrige Figur bleibt jedoch stehe
 sobald eines ihrer Glieder eine Aussage macht, die nachprüfbar falsch sein könnte.
 ```
 
-Ein KI-Werbetext mit sieben eingebauten Schablonen diente als Prüfstein. Ohne den Zusatz verschwindet davon eine, mit ihm im Schnitt fünfeinhalb. Zur Gegenprobe lief derselbe Test auf einem menschlichen Werbetext aus derselben Branche, und dort blieben alle acht Substanzanker unberührt: Fachbegriffe, Zahlen und ein Dreiklang, den der Autor sichtlich mit Absicht gesetzt hat. Der Preis ist eine Eingriffstiefe von zwanzig statt neun Prozent, und wer viel ändert, ändert manchmal zu viel. Lies das Ergebnis darum gegen.
+Gemessen wurde dieser Zusatz vor Einführung des Detektors. Damals verschwand vom Prüfstein
+ohne ihn eine von sieben Schablonen, mit ihm im Schnitt fünfeinhalb. In der menschlichen
+Gegenprobe blieben alle acht Substanzanker unberührt. Der Preis ist eine höhere
+Eingriffstiefe von rund zwanzig statt rund neun Prozent. Wer viel ändert, ändert manchmal
+zu viel. Lies das Ergebnis darum gegen.
 
 ### Was du zurückbekommst
 
