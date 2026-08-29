@@ -369,10 +369,12 @@ class SkillStructureTests(unittest.TestCase):
 
     def test_readme_keeps_navigation_contracts(self):
         readme = read_utf8(ROOT / "README.md")
-        self.assertRegex(
+        self.assertIn(
+            "Alle früheren Versionen: [CHANGELOG.md](CHANGELOG.md)",
             readme,
-            r"<details>\s*<summary><strong>Ältere Versionen</strong></summary>",
         )
+        changelog = read_utf8(ROOT / "CHANGELOG.md")
+        self.assertIn("## Ältere Reihen", changelog)
 
         for anchor in [
             "warum-nutzen",
