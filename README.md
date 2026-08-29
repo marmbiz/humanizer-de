@@ -36,8 +36,10 @@ Ergibt die vollständige Prüfung keinen bearbeitungswürdigen Befund, lässt de
 |---|---|
 | „Darüber hinaus ist es von entscheidender Bedeutung, innovative Lösungen nahtlos zu implementieren.“ | „Neue Lösungen müssen sich sauber einführen lassen.“ |
 
+<img src="assets/beispiel-durchlauf.svg" alt="Beispiel-Durchlauf im Terminal: Der Skill findet vier Muster im Beispielsatz und liefert „Neue Lösungen müssen sich sauber einführen lassen.“ als Ergebnis." width="100%">
+
 <details>
-<summary><strong>So sieht der komplette Durchlauf aus</strong></summary>
+<summary><strong>Textfassung des Durchlaufs</strong></summary>
 
 > **Less machine. More voice.**
 > Ich prüfe Rhythmus, Belege und Stimme...

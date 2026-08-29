@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 620" role="img" aria-label="Beispiel-Durchlauf des Humanizers im Terminal: Aus „Darüber hinaus ist es von entscheidender Bedeutung, innovative Lösungen nahtlos zu implementieren.“ wird „Neue Lösungen müssen sich sauber einführen lassen.“">
+  <style>
+    text { font-family: 'SF Mono', SFMono-Regular, ui-monospace, Menlo, Consolas, 'Liberation Mono', monospace; font-size: 15px; fill: #c9d1d9; }
+    .prompt { fill: #8b949e; }
+    .brand { fill: #f0883e; font-weight: 700; }
+    .dim { fill: #8b949e; }
+    .label { fill: #e6edf3; font-weight: 700; }
+    .code { fill: #79c0ff; }
+    .del { fill: #f85149; }
+    .add { fill: #3fb950; }
+    .titlebar { fill: #8b949e; font-size: 13px; }
+  </style>
+  <rect x="0" y="0" width="880" height="620" rx="10" fill="#0d1117" stroke="#30363d" stroke-width="1"/>
+  <rect x="1" y="1" width="878" height="36" rx="9" fill="#161b22"/>
+  <rect x="1" y="28" width="878" height="10" fill="#161b22"/>
+  <circle cx="22" cy="19" r="6" fill="#ff5f57"/>
+  <circle cx="42" cy="19" r="6" fill="#febc2e"/>
+  <circle cx="62" cy="19" r="6" fill="#28c840"/>
+  <text class="titlebar" x="440" y="24" text-anchor="middle">humanizer-de</text>
+
+  <text x="24" y="70" class="prompt">&gt; „Darüber hinaus ist es von entscheidender Bedeutung, innovative Lösungen</text>
+  <text x="24" y="92" class="prompt">  nahtlos zu implementieren.“ humanisieren</text>
+
+  <text x="24" y="130" class="brand">Less machine. More voice.</text>
+  <text x="24" y="152" class="dim">Ich prüfe Rhythmus, Belege und Stimme...</text>
+
+  <text x="24" y="190"><tspan class="label">Modus:</tspan> Sachlich (angenommen — ein Satz ohne Kontext).</text>
+  <text x="24" y="212">Sammelcheck: <tspan class="code">insufficient_text</tspan>, daher reines Urteil.</text>
+
+  <text x="24" y="250" class="label">Gefundene Muster:</text>
+  <text x="24" y="274">• „Darüber hinaus“ — mechanischer Konnektor ohne inhaltliche Anknüpfung</text>
+  <text x="24" y="298">• „ist es von entscheidender Bedeutung“ — Wichtigkeits-Floskel (Muster 3)</text>
+  <text x="24" y="322">• „innovative Lösungen“ — KI-Marker-Vokabular plus Abstraktum (Muster 64/58)</text>
+  <text x="24" y="346">• „nahtlos … implementieren“ — Marker-Vokabel plus Anglizismus-Verb</text>
+
+  <text x="24" y="384" class="label">Geänderte Stellen:</text>
+  <text x="24" y="408" class="del">− Darüber hinaus ist es von entscheidender Bedeutung, innovative Lösungen</text>
+  <text x="24" y="430" class="del">  nahtlos zu implementieren.</text>
+  <text x="24" y="454" class="add">+ Neue Lösungen müssen sich sauber einführen lassen.</text>
+
+  <text x="24" y="492">Der Satz behauptet Wichtigkeit, nennt aber weder Lösung noch System.</text>
+  <text x="24" y="514">Deshalb bleibt die Neufassung bewusst schlicht.</text>
+
+  <text x="24" y="552"><tspan class="label">Belege:</tspan> Keine unbelegten Quellen.</text>
+  <text x="24" y="586"><tspan class="label">Kurzaudit:</tspan> Keine verbliebenen Tells. Restrisiko: „neue Lösungen“ bleibt</text>
+  <text x="24" y="608">abstrakt, weil der Input keinen Gegenstand liefert.</text>
+</svg>
