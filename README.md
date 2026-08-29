@@ -34,7 +34,36 @@ Ergibt die vollständige Prüfung keinen bearbeitungswürdigen Befund, lässt de
 
 | Vorher | Nachher |
 |---|---|
-| „Darüber hinaus ist es von entscheidender Bedeutung, innovative Lösungen nahtlos zu implementieren.“ | „Innovative Lösungen müssen reibungslos eingeführt werden.“ |
+| „Darüber hinaus ist es von entscheidender Bedeutung, innovative Lösungen nahtlos zu implementieren.“ | „Neue Lösungen müssen sich sauber einführen lassen.“ |
+
+<details>
+<summary><strong>So sieht der komplette Durchlauf aus</strong></summary>
+
+> **Less machine. More voice.**
+> Ich prüfe Rhythmus, Belege und Stimme...
+
+**Modus:** Sachlich (angenommen — ein Satz ohne Kontext). Sammelcheck: `insufficient_text`, daher reines Urteil.
+
+**Gefundene Muster:**
+
+- „Darüber hinaus“ — mechanischer Konnektor ohne inhaltliche Anknüpfung
+- „ist es von entscheidender Bedeutung“ — Wichtigkeits-Floskel (Muster 3), sagt nichts, was das Verb nicht könnte
+- „innovative Lösungen“ — KI-Marker-Vokabular plus Abstraktum ohne Gegenstand (Muster 64/58)
+- „nahtlos … implementieren“ — Marker-Vokabel plus Anglizismus-Verb, wo „einführen“ reicht
+
+**Geänderte Stellen:**
+
+| Vorher | Nachher |
+|---|---|
+| Darüber hinaus ist es von entscheidender Bedeutung, innovative Lösungen nahtlos zu implementieren. | Neue Lösungen müssen sich sauber einführen lassen. |
+
+Der Satz trägt keine prüfbare Substanz — er behauptet Wichtigkeit, nennt aber weder Lösung noch System. Deshalb bleibt die Neufassung bewusst schlicht. Mit Kontext (welche Lösung, wo eingeführt?) wird daraus ein konkreter Satz.
+
+**Belege:** Keine unbelegten Quellen.
+
+**Kurzaudit:** Keine verbliebenen Tells. Restrisiko: „neue Lösungen“ bleibt abstrakt, weil der Input keinen Gegenstand liefert.
+
+</details>
 
 Du brauchst dafür zunächst weder Python noch Zusatzsoftware. Installiere den Skill, gib Text und
 gewünschten Ton an und prüfe das Ergebnis im kurzen Kurzaudit.
