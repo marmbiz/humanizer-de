@@ -205,7 +205,7 @@ class SkillStructureTests(unittest.TestCase):
 
         self.assertIn("permissions:\n  contents: read", workflow)
         self.assertIn("--fail-on never", workflow)
-        self.assertIn("actions/upload-artifact@v4", workflow)
+        self.assertIn("actions/upload-artifact@v7", workflow)
         self.assertNotIn("pull_request_target", workflow)
         self.assertNotRegex(workflow, r"(?m)^\s*(?:issues|pull-requests):\s*write\s*$")
 
