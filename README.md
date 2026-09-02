@@ -470,6 +470,10 @@ python3 scripts/humanizer_two_pass.py \
   --max-budget-usd 2
 ```
 
+Mit installiertem spaCy und deutschem Modell aktiviert `--precise` zusätzlich die bestehenden
+Fehlalarmfilter im Sammelcheck und im Evidence-Gate. Das Flag ist optional; ohne spaCy fällt der
+Runner auf die unveränderten Standardprüfungen zurück und protokolliert den inaktiven Status.
+
 Alternativ läuft derselbe Vertrag über eine angemeldete lokale Codex-CLI:
 
 ```bash

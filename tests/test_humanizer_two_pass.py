@@ -572,7 +572,7 @@ class HumanizerTwoPassTests(unittest.TestCase):
                 mock.patch.object(
                     two_pass, "deterministic_audit", return_value={"preflight": {}, "findings": []}
                 ),
-                mock.patch.object(two_pass, "evidence_gate", return_value=[]),
+                mock.patch.object(two_pass, "evidence_gate", return_value=([], {"mode": "default"})),
                 mock.patch("builtins.print"),
             ):
                 code = two_pass.main(
@@ -631,15 +631,21 @@ class HumanizerTwoPassTests(unittest.TestCase):
             out = temp / "out"
             source.write_bytes(original.encode("utf-8"))
 
-            def deterministic_audit(path, _mode):
+            def deterministic_audit(path, _mode, precise=False):
                 self.assertEqual(path, out / "normalized.md")
                 self.assertEqual(path.read_text(encoding="utf-8"), normalized)
-                return {"preflight": {}, "findings": []}
+                self.assertTrue(precise)
+                return {
+                    "preflight": {},
+                    "findings": [],
+                    "precise": {"requested": True, "active": False, "reason": "spacy_missing"},
+                }
 
-            def evidence_gate(before, _after, _out):
+            def evidence_gate(before, _after, _out, precise=False):
                 self.assertEqual(before, out / "normalized.md")
                 self.assertEqual(before.read_text(encoding="utf-8"), normalized)
-                return []
+                self.assertTrue(precise)
+                return [], {"mode": "default"}
 
             with (
                 mock.patch.object(two_pass, "run_model", return_value=(audit, None)) as run,
@@ -647,7 +653,9 @@ class HumanizerTwoPassTests(unittest.TestCase):
                 mock.patch.object(two_pass, "evidence_gate", side_effect=evidence_gate),
                 mock.patch("builtins.print"),
             ):
-                code = two_pass.main(["--file", str(source), "--out-dir", str(out)])
+                code = two_pass.main(
+                    ["--file", str(source), "--out-dir", str(out), "--precise"]
+                )
 
             self.assertEqual(code, 0)
             self.assertIn(normalized, run.call_args.args[0])
@@ -668,6 +676,15 @@ class HumanizerTwoPassTests(unittest.TestCase):
             )
             self.assertEqual(report["protected_violations"], [])
             self.assertEqual(report["verification"]["typography"], {'"': -1, "“": 1})
+            self.assertEqual(
+                report["precise"],
+                {
+                    "requested": True,
+                    "active": False,
+                    "reason": "spacy_missing",
+                    "evidence_extraction_policy": {"mode": "default"},
+                },
+            )
 
     def test_main_rejects_apply_stage_contract_violation(self):
         original = "Fakt 42 bleibt.\n"
@@ -698,7 +715,7 @@ class HumanizerTwoPassTests(unittest.TestCase):
                 mock.patch.object(
                     two_pass, "deterministic_audit", return_value={"preflight": {}, "findings": []}
                 ),
-                mock.patch.object(two_pass, "evidence_gate", return_value=[]),
+                mock.patch.object(two_pass, "evidence_gate", return_value=([], {"mode": "default"})),
                 mock.patch("builtins.print"),
             ):
                 code = two_pass.main(["--file", str(source), "--out-dir", str(out)])
@@ -908,7 +925,7 @@ class HumanizerTwoPassTests(unittest.TestCase):
                 mock.patch.object(
                     two_pass, "deterministic_audit", return_value={"preflight": {}, "findings": []}
                 ),
-                mock.patch.object(two_pass, "evidence_gate", return_value=[]),
+                mock.patch.object(two_pass, "evidence_gate", return_value=([], {"mode": "default"})),
                 mock.patch("builtins.print"),
             ):
                 code = two_pass.main(["--file", str(source), "--out-dir", str(out)])
@@ -937,6 +954,27 @@ class HumanizerTwoPassTests(unittest.TestCase):
             with mock.patch("sys.stderr"), self.assertRaises(SystemExit):
                 two_pass.parse_args(["--file", str(source), "--out-dir", str(out)])
 
+    def test_deterministic_audit_forwards_precise(self):
+        completed = mock.Mock(
+            returncode=0,
+            stderr="",
+            stdout=json.dumps(
+                {
+                    "summary": {
+                        "preflight": {},
+                        "precise": {"requested": True, "active": False, "reason": "spacy_missing"},
+                    },
+                    "findings": [],
+                }
+            ),
+        )
+
+        with mock.patch.object(two_pass.subprocess, "run", return_value=completed) as run:
+            report = two_pass.deterministic_audit(Path("text.md"), "sachlich", precise=True)
+
+        self.assertIn("--precise", run.call_args.args[0])
+        self.assertEqual(report["precise"]["reason"], "spacy_missing")
+
     def test_evidence_gate_checks_semantic_strengthening(self):
         with tempfile.TemporaryDirectory() as temp_name:
             temp = Path(temp_name)
@@ -947,9 +985,12 @@ class HumanizerTwoPassTests(unittest.TestCase):
             before.write_text("Die Methode kann helfen.\n", encoding="utf-8")
             after.write_text("Die Methode beweist den Erfolg.\n", encoding="utf-8")
 
-            blockers = two_pass.evidence_gate(before, after, out)
+            blockers, policy = two_pass.evidence_gate(before, after, out, precise=True)
 
             self.assertIn("authority_strengthened", {item["kind"] for item in blockers})
+            self.assertIn(policy["mode"], {"default", "spacy_ner"})
+            report = json.loads((out / "evidence-report.json").read_text(encoding="utf-8"))
+            self.assertTrue(report["precise"]["requested"])
 
     def test_invalid_utf8_writes_failure_report(self):
         with tempfile.TemporaryDirectory() as temp_name:

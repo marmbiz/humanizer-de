@@ -723,9 +723,12 @@ def run_model(
     return structured, cost
 
 
-def deterministic_audit(source: Path, mode: str) -> dict[str, Any]:
+def deterministic_audit(source: Path, mode: str, precise: bool = False) -> dict[str, Any]:
+    command = [sys.executable, str(HUMANIZER_AUDIT), "--file", str(source), "--mode", mode]
+    if precise:
+        command.append("--precise")
     completed = subprocess.run(
-        [sys.executable, str(HUMANIZER_AUDIT), "--file", str(source), "--mode", mode],
+        command,
         env=subprocess_env(),
         text=True,
         encoding="utf-8",
@@ -736,15 +739,33 @@ def deterministic_audit(source: Path, mode: str) -> dict[str, Any]:
         raise RuntimeError(f"deterministic audit failed: {completed.stderr.strip()}")
     try:
         report = json.loads(completed.stdout)
-        return {"preflight": report["summary"]["preflight"], "findings": report["findings"]}
+        result = {"preflight": report["summary"]["preflight"], "findings": report["findings"]}
+        if precise:
+            result["precise"] = report["summary"]["precise"]
+        return result
     except (json.JSONDecodeError, KeyError, TypeError) as error:
         raise RuntimeError(f"deterministic audit returned invalid JSON: {error}") from error
 
 
-def evidence_gate(original_path: Path, result_path: Path, out_dir: Path) -> list[dict[str, Any]]:
+def evidence_gate(
+    original_path: Path,
+    result_path: Path,
+    out_dir: Path,
+    precise: bool = False,
+) -> tuple[list[dict[str, Any]], dict[str, str]]:
     ledger_path = out_dir / "evidence-ledger.json"
+    write_command = [
+        sys.executable,
+        str(EVIDENCE_LINT),
+        "--before-file",
+        str(original_path),
+        "--write-ledger",
+        str(ledger_path),
+    ]
+    if precise:
+        write_command.append("--precise")
     write = subprocess.run(
-        [sys.executable, str(EVIDENCE_LINT), "--before-file", str(original_path), "--write-ledger", str(ledger_path)],
+        write_command,
         env=subprocess_env(),
         text=True,
         encoding="utf-8",
@@ -753,17 +774,20 @@ def evidence_gate(original_path: Path, result_path: Path, out_dir: Path) -> list
     )
     if write.returncode:
         raise RuntimeError(f"evidence ledger failed: {write.stderr.strip()}")
+    compare_command = [
+        sys.executable,
+        str(EVIDENCE_LINT),
+        "--before-file",
+        str(original_path),
+        "--after-file",
+        str(result_path),
+        "--fail-on",
+        "never",
+    ]
+    if precise:
+        compare_command.append("--precise")
     compare = subprocess.run(
-        [
-            sys.executable,
-            str(EVIDENCE_LINT),
-            "--before-file",
-            str(original_path),
-            "--after-file",
-            str(result_path),
-            "--fail-on",
-            "never",
-        ],
+        compare_command,
         env=subprocess_env(),
         text=True,
         encoding="utf-8",
@@ -774,7 +798,9 @@ def evidence_gate(original_path: Path, result_path: Path, out_dir: Path) -> list
         raise RuntimeError(f"evidence comparison failed: {compare.stderr.strip()}")
     report = json.loads(compare.stdout)
     write_json(out_dir / "evidence-report.json", report)
-    return [finding for finding in report["findings"] if finding.get("severity") == "blocker"]
+    policy = json.loads(ledger_path.read_text(encoding="utf-8"))["extraction_policy"]
+    blockers = [finding for finding in report["findings"] if finding.get("severity") == "blocker"]
+    return blockers, policy
 
 
 def parse_args(argv: list[str]) -> argparse.Namespace:
@@ -784,6 +810,11 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--mode", choices=("locker", "sachlich", "formal"), default="sachlich")
     parser.add_argument("--provider", choices=("claude", "codex"), default="claude")
     parser.add_argument("--model")
+    parser.add_argument(
+        "--precise",
+        action="store_true",
+        help="spaCy-gestützte Verfeinerung, wenn installiert; sonst wirkungslos",
+    )
     parser.add_argument("--timeout", type=int, default=1200)
     parser.add_argument("--max-budget-usd", type=float)
     args = parser.parse_args(argv)
@@ -867,7 +898,7 @@ def main(argv: list[str] | None = None) -> int:
         if unicode_fix.returncode:
             raise RuntimeError(f"unicode normalization failed: {unicode_fix.stderr.strip()}")
         normalized = normalized_path.read_bytes().decode("utf-8")
-        preflight = deterministic_audit(normalized_path, args.mode)
+        preflight = deterministic_audit(normalized_path, args.mode, precise=args.precise)
         write_json(args.out_dir / "preflight.json", preflight)
         with tempfile.TemporaryDirectory(prefix="humanizer-two-pass-") as temp_name:
             temp = Path(temp_name)
@@ -926,7 +957,12 @@ def main(argv: list[str] | None = None) -> int:
         candidate_path = args.out_dir / "candidate.md"
         candidate_path.write_bytes(proposed.encode("utf-8"))
         violations = apply_violations + protected_violations(normalized, proposed, ledger)
-        blockers = evidence_gate(normalized_path, candidate_path, args.out_dir)
+        blockers, evidence_policy = evidence_gate(
+            normalized_path,
+            candidate_path,
+            args.out_dir,
+            precise=args.precise,
+        )
         accepted = not violations and not blockers
         revised_path = args.out_dir / ("result.md" if accepted else "rejected.md")
         candidate_path.replace(revised_path)
@@ -1002,6 +1038,11 @@ def main(argv: list[str] | None = None) -> int:
             "started_utc": started.isoformat(),
             "finished_utc": datetime.now(timezone.utc).isoformat(),
         }
+        if args.precise:
+            report["precise"] = {
+                **preflight["precise"],
+                "evidence_extraction_policy": evidence_policy,
+            }
         write_json(args.out_dir / "report.json", report)
         print(json.dumps(report, ensure_ascii=True, indent=2))
         return 0 if accepted else 1
