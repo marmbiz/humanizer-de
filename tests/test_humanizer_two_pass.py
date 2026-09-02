@@ -14,6 +14,38 @@ SPEC.loader.exec_module(two_pass)
 
 
 class HumanizerTwoPassTests(unittest.TestCase):
+    def run_structure_case(self, original, candidate, replacement, proposed=None):
+        audit = {
+            "register": "sachlich",
+            "candidates": [candidate],
+            "advisories": [],
+            "protected": {"facts": [], "quotes": [], "terms": [], "persona": []},
+        }
+        edits = {"edits": [{"candidate_id": candidate["id"], "replacement": replacement}]}
+        apply = two_pass.apply_edits if proposed is None else lambda *_args: proposed
+        with tempfile.TemporaryDirectory() as temp_name:
+            temp = Path(temp_name)
+            source = temp / "source.md"
+            out = temp / "out"
+            source.write_bytes(original.encode("utf-8"))
+            with (
+                mock.patch.object(two_pass, "run_model", side_effect=[(audit, None), (edits, None)]),
+                mock.patch.object(two_pass, "apply_edits", side_effect=apply),
+                mock.patch.object(
+                    two_pass, "deterministic_audit", return_value={"preflight": {}, "findings": []}
+                ),
+                mock.patch.object(
+                    two_pass,
+                    "evidence_gate",
+                    return_value=({"findings": []}, {"mode": "default"}),
+                ),
+                mock.patch("builtins.print"),
+            ):
+                code = two_pass.main(["--file", str(source), "--out-dir", str(out)])
+            report = json.loads((out / "report.json").read_text(encoding="utf-8"))
+            output = out / ("result.md" if report["accepted"] else "rejected.md")
+            return code, report, output.read_text(encoding="utf-8")
+
     def test_write_json_uses_utf8_bytes_with_lf(self):
         path = mock.Mock()
 
@@ -109,6 +141,108 @@ class HumanizerTwoPassTests(unittest.TestCase):
             ),
             ["terms: anchor count changed: 'Enzympräparat'"],
         )
+
+    def test_main_reports_unchanged_structure_for_accepted_rewrite(self):
+        candidate = {
+            "id": "c1",
+            "source": "smarte",
+            "patterns": ["2"],
+            "reason": "Floskel",
+            "goal": "streichen",
+            "action": "delete",
+            "scope": "phrase",
+        }
+
+        code, report, output = self.run_structure_case(
+            "Die smarte Lösung.\n", candidate, ""
+        )
+
+        self.assertEqual(code, 0)
+        self.assertTrue(report["structure"]["ok"])
+        self.assertEqual(report["structure"]["differences"], [])
+        self.assertEqual(output, "Die Lösung.\n")
+
+    def test_main_rejects_added_heading_as_structure_drift(self):
+        original = "Warum X die richtige Wahl ist\nInhalt.\n"
+        proposed = "# Warum X die richtige Wahl ist\nInhalt.\n"
+        candidate = {
+            "id": "c1",
+            "source": "Warum X die richtige Wahl ist\n",
+            "patterns": ["64"],
+            "reason": "Schablone",
+            "goal": "glätten",
+            "action": "rewrite",
+            "scope": "heading",
+        }
+
+        code, report, output = self.run_structure_case(
+            original, candidate, "# Warum X die richtige Wahl ist\n", proposed
+        )
+
+        self.assertEqual(code, 1)
+        self.assertFalse(report["structure"]["ok"])
+        self.assertEqual(report["structure"]["differences"][0]["kind"], "heading_added")
+        self.assertEqual(report["protected_violations"][0]["kind"], "structure_drift")
+        self.assertEqual(output, proposed)
+
+    def test_main_rejects_changed_link_target_as_structure_drift(self):
+        original = "Mehr steht in der [Dokumentation](https://example.com/alt).\n"
+        replacement = "Mehr steht in der [Dokumentation](https://example.com/neu).\n"
+        candidate = {
+            "id": "c1",
+            "source": original,
+            "patterns": ["64"],
+            "reason": "Floskel",
+            "goal": "glätten",
+            "action": "rewrite",
+            "scope": "sentence",
+        }
+
+        code, report, output = self.run_structure_case(original, candidate, replacement)
+
+        self.assertEqual(code, 1)
+        self.assertEqual(report["structure"]["differences"][0]["kind"], "link_target_changed")
+        self.assertEqual(report["protected_violations"][0]["kind"], "structure_drift")
+        self.assertEqual(output, replacement)
+
+    def test_main_rejects_changed_code_block_as_structure_drift(self):
+        original = "```python\nprint('alt')\n```\n"
+        replacement = "print('neu')\n"
+        candidate = {
+            "id": "c1",
+            "source": "print('alt')\n",
+            "patterns": ["64"],
+            "reason": "Floskel",
+            "goal": "glätten",
+            "action": "rewrite",
+            "scope": "heading",
+        }
+
+        code, report, output = self.run_structure_case(original, candidate, replacement)
+
+        self.assertEqual(code, 1)
+        self.assertEqual(report["structure"]["differences"][0]["kind"], "code_changed")
+        self.assertEqual(report["protected_violations"][0]["kind"], "structure_drift")
+        self.assertEqual(output, "```python\nprint('neu')\n```\n")
+
+    def test_main_accepts_prose_rewrite_with_unchanged_inline_code(self):
+        original = "Der Befehl `make test` ist unnötig kompliziert.\n"
+        replacement = "Der Befehl `make test` ist einfach.\n"
+        candidate = {
+            "id": "c1",
+            "source": original,
+            "patterns": ["64"],
+            "reason": "Floskel",
+            "goal": "glätten",
+            "action": "rewrite",
+            "scope": "sentence",
+        }
+
+        code, report, output = self.run_structure_case(original, candidate, replacement)
+
+        self.assertEqual(code, 0)
+        self.assertEqual(report["structure"], {"ok": True, "differences": []})
+        self.assertEqual(output, replacement)
 
     def test_candidate_contract_rejects_ambiguous_overlap_and_unknown_edits(self):
         candidate = {"id": "c1", "source": "aa", "patterns": ["9"], "reason": "Form", "goal": "ändern", "action": "rewrite", "scope": "phrase"}
