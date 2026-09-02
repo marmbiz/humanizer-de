@@ -37,7 +37,7 @@ Locker bedeutet nicht erfunden persönlich. Stimme darf nur aus Schreibprobe, Nu
 Sollkorridore für die Metriken aus `scripts/style_profile.py`. Schema pro Profil:
 `{"<metric>": {"min": x}}`, `{"max": x}` oder beides; Grenzen sind inklusiv. Die Werte sind
 konservativ aus den kalibrierten Schwellen in `scripts/rhythm_lint.py` und
-`scripts/register_lint.py` abgeleitet — unbelegte Korridore fehlen bewusst.
+`scripts/register_lint.py` abgeleitet: Unbelegte Korridore fehlen bewusst.
 `style_profile.py --target <profil>` ergänzt den Report um einen `delta`-Block
 (`value`, `range`, `in_range` je Korridor-Metrik), ohne Aggregat-Score oder Note.
 

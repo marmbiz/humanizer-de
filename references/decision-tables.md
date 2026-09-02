@@ -17,10 +17,10 @@ Nutze diese Tabellen vor `references/patterns.md`, wenn Befunde überlappen. Sie
 
 | Situation | Muster | Aktion |
 |---|---:|---|
-| Keine konkrete Quelle, nur "Studien zeigen", "Beobachter sagen", "Experten meinen" | 11 | Zuschreibung entfernen oder `[ECHTE QUELLE NOETIG]` markieren |
+| Keine konkrete Quelle, nur "Studien zeigen", "Beobachter sagen", "Experten meinen" | 11 | Zuschreibung entfernen oder `[ECHTE QUELLE NÖTIG]` markieren |
 | Link sieht konkret aus, ist aber defekt oder im Material nicht prüfbar | 25 | `[LINK NICHT VERIFIZIERT]` markieren; nicht blind löschen, wenn externe Prüfung fehlt |
 | Quelle sieht konkret aus, ist aber formal ungültig, erfunden, unverifizierbar oder mit KI-Tracking-Artefakt versehen | 26 | Entfernen oder `[QUELLE NICHT VERIFIZIERT]`; keine Ersatzquelle erfinden |
-| Quelle existiert und wurde geprüft, belegt die konkrete Aussage aber nicht | 42 | Aussage an Quelle anpassen, Quelle ersetzen oder `[BELEG PRUEFEN]` |
+| Quelle existiert und wurde geprüft, belegt die konkrete Aussage aber nicht | 42 | Aussage an Quelle anpassen, Quelle ersetzen oder `[BELEG PRÜFEN]` |
 | Quelle fehlt oder schweigt, Text ergänzt Motive, Herkunft, Privatleben oder Plausibilität | 53 | Spekulation entfernen oder "keine Angaben im Material" schreiben |
 | Quelle ist nicht prüfbar | nicht 42 | Keine Beleginkongruenz behaupten; 26/53 nur bei eigenen Indikatoren |
 
@@ -41,7 +41,7 @@ Nutze diese Tabellen vor `references/patterns.md`, wenn Befunde überlappen. Sie
 | Schluss- oder Zusammenfassungsphrase im Absatz | 5 | Satz umformulieren oder entfernen, Substanz erhalten |
 | Explizite `Fazit`-/`Zusammenfassung`-Sektion im falschen Kontext | 6 | Sektion integrieren oder entfernen, wenn sie artefaktisch ist |
 | Generischer Einzeiler direkt nach einer Überschrift | 34 | Entfernen oder in den nächsten Absatz integrieren |
-| Ganzer Standardabschnitt mit Allgemeinplätzen ohne konkrete Substanz | 44 | Konkretisieren, integrieren, umwidmen oder `[SUBSTANZ PRUEFEN]` |
+| Ganzer Standardabschnitt mit Allgemeinplätzen ohne konkrete Substanz | 44 | Konkretisieren, integrieren, umwidmen oder `[SUBSTANZ PRÜFEN]` |
 | Absätze/Sektionen/Listen durchgehend gleich lang und symmetrisch | 61 | Gewichtung an Substanz koppeln; umverteilen, nichts erfinden |
 | Bewertender Abschlusssatz ohne neue Information am Absatzende | 62 | Streichen; Absatz darf offen enden |
 | Schlusssatz zieht echte neue Folgerung | nicht 62 | Stehen lassen |
@@ -56,7 +56,7 @@ Nutze diese Tabellen vor `references/patterns.md`, wenn Befunde überlappen. Sie
 | Werbesprache oder Superlative ("atemberaubend", "einzigartig") | 2 | Entfernen oder sachlich ersetzen |
 | Persuasive Einschub-Floskel ("Im Kern", "In Wirklichkeit") | 32 | Floskel streichen, Aussage direkt stellen |
 | Aphoristische Schablone ersetzt eine konkrete Behauptung ("X ist die Sprache des Y", "X wird zur Falle") | 56 | Durch die gemeinte konkrete Behauptung ersetzen |
-| Hypernym/Nominalstil ersetzt eine im Text belegte Konkretion | 58 | Konkretisieren aus Text/Kontext oder `[KONKRETION NOETIG]`; nichts erfinden |
+| Hypernym/Nominalstil ersetzt eine im Text belegte Konkretion | 58 | Konkretisieren aus Text/Kontext oder `[KONKRETION NÖTIG]`; nichts erfinden |
 | Rotierende Bezeichnungen für denselben Referenten | 60 | Grundwort + Pronomen; max. eine Beiname-Variante mit Mehrwert |
 | Frequenz-Marker-Vokabeln in Häufung ("beleuchten", "spannend", "nahtlos", "Landschaft" figurativ) | 64 | Durch gewöhnliches Wort ersetzen; fachgebundene Verwendung stehen lassen |
 | Ersatzkonstruktion statt "ist"/"hat" ("fungiert als", "verfügt über") in Häufung | 65 | Auf Kopula zurückführen, wenn keine Information verloren geht |

@@ -11,13 +11,13 @@ Vollständiger Musterkatalog für Humanizer (Deutsch) v5.25.0. Nur bei konkreter
 | 3 | Redaktionelle Kommentare und Meta-Sprache | HIGH | "es ist wichtig zu bemerken", "es sollte hervorgehoben werden" |
 | 4 | Mechanische Konjunktionen | HIGH | "darüber hinaus", "außerdem", "ferner", "ebenfalls" |
 | 5 | Abschnitts-Zusammenfassungen | HIGH | "zusammenfassend", "insgesamt", "kurz gesagt" |
-| 6 | Unpassendes "Fazit" | MEDIUM | "== Fazit ==", "== Zusammenfassung ==" |
+| 6 | Unpassendes „Fazit“ | MEDIUM | "== Fazit ==", "== Zusammenfassung ==" |
 | 7 | Schlussfolgerungen mit zu starker Dichotomie | MEDIUM | "Trotz X... steht Y vor Z", "Obwohl... jedoch..."; 3-Takt-Schablone "Lob→Herausforderungen→Ausblick" |
 | 8 | Negative Parallelismen und abgehackte Verneinungen | MEDIUM | "nicht nur... sondern auch", "kein Raten.", symmetrische Satzstrukturen |
 | 9 | Trikolon und schematische Aufzählungen (Regel der Drei) | MEDIUM | Tripel-Aufzählungen ohne echten Grund |
 | 10 | Oberflächliche Analysen mit Partizip I | HIGH | "gewährleistend", "hervorhebend", "ermöglichend" |
 | 11 | Vage Autoritäten | HIGH | "Branchenberichte zeigen", "Manche argumentieren" |
-| 12 | Falsche Erweiterung ("von... bis") | MEDIUM | "von traditionellen bis modernen" |
+| 12 | Falsche Erweiterung („von... bis“) | MEDIUM | "von traditionellen bis modernen" |
 | 13 | Übermäßige Fettschrift | MEDIUM | **wichtige Wörter** in Absätzen fett |
 | 14 | Falsche Listen | LOW | `•` statt `-`, Markdown-Syntax statt Wikitext |
 | 15 | Emojis vor Überschriften | LOW | "🎓 Bildung", "📊 Statistiken" |
@@ -42,7 +42,7 @@ Vollständiger Musterkatalog für Humanizer (Deutsch) v5.25.0. Nur bei konkreter
 | 34 | Fragmentierte Überschriften | LOW | Generischer Einzeiler nach Überschrift ("Geschwindigkeit zählt.") |
 | 35 | Rhetorische Fragen als Fake-Engagement | MEDIUM | "Aber was bedeutet das?", "Haben Sie sich jemals gefragt?" |
 | 36 | Universelle Menschheitserfahrungs-Eröffnung | MEDIUM | "Seit jeher", "Seit Anbeginn der Zivilisation", "Schon immer" |
-| 37 | "In der heutigen X-Welt" Framing | MEDIUM | "In der heutigen digitalen Welt", "Im Zeitalter der..." |
+| 37 | „In der heutigen X-Welt“ Framing | MEDIUM | "In der heutigen digitalen Welt", "Im Zeitalter der..." |
 | 38 | Aspirativer Unternehmensschluss | MEDIUM | "bestens aufgestellt", "die Möglichkeiten sind grenzenlos" |
 | 39 | Passivkonstruktionen und subjektlose Fragmente | MEDIUM | "wurde durchgeführt", "es wird empfohlen", "Keine Konfiguration nötig." |
 | 40 | Konditional-Stapel | MEDIUM | "Wenn das Argument stimmt, und wenn die Evidenz...", gehäufte "wenn"-Klauseln |
@@ -209,7 +209,7 @@ Häufige Indikatoren:
 
 ✓ Besser: "Mit drei Universitäten, einem Krankenhaus und einer Bibliothek ist die Region gut versorgt."
 
-#### 6. Unpassendes "Fazit" [MEDIUM]
+#### 6. Unpassendes „Fazit“ [MEDIUM]
 <!-- haltbarkeit: kern -->
 <!-- pass: 3 -->
 **Problem:** Wikipedia-Artikel enden mit explizitem "Fazit", was unpassend ist.
@@ -350,7 +350,7 @@ Keine Quelle erfinden. Entweder: echte Quelle einfügen wenn bekannt, Zuschreibu
 
 ✓ Besser: "Der Markt wächst. [ECHTE QUELLE NÖTIG]"
 
-#### 12. Falsche Erweiterung ("von... bis") [MEDIUM]
+#### 12. Falsche Erweiterung („von... bis“) [MEDIUM]
 <!-- haltbarkeit: kern -->
 <!-- pass: 3 -->
 **Problem:** "Von X bis Y" figurativ verwendet, wo es nicht passt. Die "Ob du X oder Y bist"-Alternative ist dieselbe falsche Spannweite in Anrede-Form; Test: Lassen sich X und Y themenfremd austauschen, ohne dass die Satzlogik bricht?
@@ -961,7 +961,7 @@ Häufige Indikatoren:
 
 ✓ Besser: "Die Digitalisierung hat die Kommunikationswege grundlegend verändert."
 
-#### 37. "In der heutigen X-Welt" Framing [MEDIUM]
+#### 37. „In der heutigen X-Welt“ Framing [MEDIUM]
 <!-- haltbarkeit: kern -->
 <!-- pass: 2 -->
 

@@ -22,7 +22,7 @@ im Arbeitsverzeichnis. Die Datei ist optional; fehlt sie, gelten die Basis-Korri
   (`min`/`max`). Nur Metriken aus dem Stilprofil-Report sind zulässig; unbekannte Profile,
   Metriken oder kaputte Korridore erzeugen eine Warnung und werden ignoriert.
 - `notes` sind datierte, freitextliche Regeln. Niemals Nutzertexte oder Textauszüge
-  speichern — das Profil hält Regeln fest, keine Korpusse.
+  speichern: Das Profil hält Regeln fest, keine Korpusse.
 
 ## Leseweg
 
@@ -37,8 +37,8 @@ liest bei beiden Skripten einen abweichenden Ort (explizit fehlender Pfad ist ei
 
 Nur führen, wenn der Nutzer im Lauf Änderungen zurückgenommen oder wiederholt in dieselbe
 Richtung korrigiert hat (etwa Partikeln behalten, kürzere Sätze bevorzugt). Dann am Ende
-einmal strukturiert fragen, ob diese Regel gemerkt werden soll — konkret benennen, welcher
-Korridor oder welche Notiz sich ändern würde.
+einmal strukturiert fragen, ob diese Regel gemerkt werden soll (konkret benennen, welcher
+Korridor oder welche Notiz sich ändern würde).
 
 Bei Zustimmung `profile.json` aktualisieren:
 

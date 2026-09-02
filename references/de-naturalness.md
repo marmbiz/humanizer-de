@@ -5,22 +5,22 @@ Diese Karten operationalisieren die Muster 7, 8, 13, 45, 54, 55, 58, 60, 61, 63,
 ## Deixis und Sprecherposition
 
 - Signal: Der Text wechselt zwischen `ich`, `wir`, `man`, neutraler Darstellung und direkter Anrede oder versteckt jede Verantwortlichkeit in Passiv/`man`, obwohl der Texttyp eine klare Sprecherposition braucht.
-- Schlechter Reflex: Ich-, Wir- oder Du-Stimme einbauen, weil das "menschlicher" klingt.
+- Schlechter Reflex: Ich-, Wir- oder Du-Stimme einbauen, weil das „menschlicher“ klingt.
 - Sicherer Eingriff: vorhandene Sprecherposition stabilisieren; unklare `man`-Sätze nur dann konkretisieren, wenn Akteur und Register im Input erkennbar sind.
 - Nicht anfassen: Formal-, Rechts-, Wissenschafts- und Behördentexte, in denen neutrale oder institutionelle Sprecherposition textsortentypisch ist.
 
 ## Diskursmarker und pragmatische Haltung
 
-- Signal: Jeder Absatz wird mit logischen Markern wie "daher", "somit", "darüber hinaus" oder "hingegen" verkettet, obwohl der Zusammenhang aus Inhalt und Reihenfolge schon klar ist.
-- Schlechter Reflex: Marker durch "ehrlich gesagt", "na ja", "eigentlich" oder andere Haltungssignale ersetzen.
+- Signal: Jeder Absatz wird mit logischen Markern wie „daher“, „somit“, „darüber hinaus“ oder „hingegen“ verkettet, obwohl der Zusammenhang aus Inhalt und Reihenfolge schon klar ist.
+- Schlechter Reflex: Marker durch „ehrlich gesagt“, „na ja“, „eigentlich“ oder andere Haltungssignale ersetzen.
 - Sicherer Eingriff: redundante Marker streichen oder Übergang über Thema-Rhema-Anschluss führen; im Locker-Modus höchstens ein passendes Haltungssignal, wenn Ton und Zielprofil es tragen.
 - Nicht anfassen: argumentative, wissenschaftliche oder juristische Texte, in denen explizite logische Marker die Leserführung verbessern.
 
 ## Verbalstil statt Nominalstil
 
-- Signal: Nominalketten wie "Durchführung der Analyse", "Nutzung von Daten", "Umsetzung der Maßnahmen" verdecken einen vorhandenen Akteur oder Prozess.
+- Signal: Nominalketten wie „Durchführung der Analyse“, „Nutzung von Daten“, „Umsetzung der Maßnahmen“ verdecken einen vorhandenen Akteur oder Prozess.
 - Schlechter Reflex: jedes abstrakte Substantiv in Umgangssprache übersetzen.
-- Sicherer Eingriff: nominalisierte Vorgänge in Verben zurückführen, wenn Akteur und Handlung im Text stehen: "die Analyse durchführen" -> "analysieren"; "die Nutzung von" -> "nutzen".
+- Sicherer Eingriff: nominalisierte Vorgänge in Verben zurückführen, wenn Akteur und Handlung im Text stehen: „die Analyse durchführen“ → „analysieren“; „die Nutzung von“ → „nutzen“.
 - Nicht anfassen: feste Fachbegriffe, Rechtsbegriffe, wissenschaftliche Terminologie oder bewusst verdichtete Überschriften.
 
 ## 7 Dichotomie-Zuspitzung
@@ -67,9 +67,9 @@ Diese Karten operationalisieren die Muster 7, 8, 13, 45, 54, 55, 58, 60, 61, 63,
 
 ## 58 Abstrakta und Hypernyme
 
-- Signal: Oberbegriffe wie "Maßnahmen", "Aspekte", "Lösungen" ersetzen eine im Text belegte konkrete Sache.
+- Signal: Oberbegriffe wie „Maßnahmen“, „Aspekte“, „Lösungen“ ersetzen eine im Text belegte konkrete Sache.
 - Schlechter Reflex: Beispiele erfinden.
-- Sicherer Eingriff: nur aus vorhandenen Ankern konkretisieren oder `[KONKRETION NOETIG]` markieren.
+- Sicherer Eingriff: nur aus vorhandenen Ankern konkretisieren oder `[KONKRETION NÖTIG]` markieren.
 - Nicht anfassen: echte Sammelbegriffe mit nachfolgender Liste oder fehlender Konkretion.
 
 ## 60 Synonym-Rotation
@@ -82,7 +82,7 @@ Diese Karten operationalisieren die Muster 7, 8, 13, 45, 54, 55, 58, 60, 61, 63,
 ## 63 Modalpartikeln
 
 - Signal: partikelarmes Nähe-Register oder Partikel-Überdosis.
-- Schlechter Reflex: "ja", "doch", "eben", "halt" über den Text streuen, um Menschlichkeit zu simulieren.
+- Schlechter Reflex: „ja“, „doch“, „eben“, „halt“ über den Text streuen, um Menschlichkeit zu simulieren.
 - Sicherer Eingriff: maximal eine passende Partikel pro Absatz im Locker-Modus.
 - Nicht anfassen: Sachlich/Formal.
 
@@ -96,17 +96,17 @@ Diese Karten operationalisieren die Muster 7, 8, 13, 45, 54, 55, 58, 60, 61, 63,
 
 ## 64 KI-Marker-Vokabular
 
-- Signal: Cluster aus Wörtern wie "beleuchten", "nahtlos", "vielschichtig", "ganzheitlich", "dynamische Landschaft".
+- Signal: Cluster aus Wörtern wie „beleuchten“, „nahtlos“, „vielschichtig“, „ganzheitlich“, „dynamische Landschaft“.
 - Schlechter Reflex: jedes Einzelwort bestrafen.
 - Sicherer Eingriff: gewöhnliche Wörter nutzen oder das gemeinte konkrete Feld benennen.
 - Nicht anfassen: fachgebundene Verwendung, zum Beispiel robuste Statistik oder dynamisches Routing.
 
 ## 65 Kopula-Vermeidung
 
-- Signal: gehäuftes "fungiert als", "stellt dar", "verfügt über", "zeichnet sich aus".
-- Schlechter Reflex: "ist" und "hat" vermeiden.
-- Sicherer Eingriff: auf "ist" oder "hat" zurückführen, wenn keine Information verloren geht.
-- Nicht anfassen: echte Funktionsbeschreibung, etwa "dient als Notausgang".
+- Signal: gehäuftes „fungiert als“, „stellt dar“, „verfügt über“, „zeichnet sich aus“.
+- Schlechter Reflex: „ist“ und „hat“ vermeiden.
+- Sicherer Eingriff: auf „ist“ oder „hat“ zurückführen, wenn keine Information verloren geht.
+- Nicht anfassen: echte Funktionsbeschreibung, etwa „dient als Notausgang“.
 
 ## Scriptseitige Carve-outs
 - `register_lint --precise` fängt anaphorisches satzinitiales „Sie“ und Blockquotes wie `> Bitte pruefen Sie das.` ab.
@@ -125,6 +125,6 @@ Diese Karten operationalisieren die Muster 7, 8, 13, 45, 54, 55, 58, 60, 61, 63,
 ## QGIR-Stop: akzeptable Textur
 
 - Signal: Nach einem Pass bleiben nur kleine Ecken, Registerspuren oder fachliche Gleichmäßigkeit.
-- Schlechter Reflex: noch eine Runde Politur, damit der Text "menschlicher" klingt.
+- Schlechter Reflex: noch eine Runde Politur, damit der Text „menschlicher“ klingt.
 - Sicherer Eingriff: stoppen und Restbefund als toleriert notieren.
 - Nicht anfassen: menschlich-holprige, aber belegtreue Sätze; formale Dichte; autorentypische Satzzeichen.

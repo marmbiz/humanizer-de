@@ -855,18 +855,18 @@ Der Skill arbeitet mit einem Katalog aus **72 KI-Schreibmustern** in 10 Kategori
 
 | # | Muster | Schwere |
 |---|--------|---------|
-| 1 | Übermäßige Betonung von Symbolik ("steht als Zeugnis") | HIGH |
-| 2 | Werbesprache und Superlative ("atemberaubend") | HIGH |
-| 3 | Redaktionelle Kommentare und Meta-Sprache ("es ist wichtig zu bemerken") | HIGH |
-| 4 | Mechanische Konjunktionen ("darüber hinaus", "außerdem") | HIGH |
-| 5 | Abschnitts-Zusammenfassungen ("insgesamt") | HIGH |
-| 6 | Unpassendes "Fazit" | MEDIUM |
+| 1 | Übermäßige Betonung von Symbolik („steht als Zeugnis“) | HIGH |
+| 2 | Werbesprache und Superlative („atemberaubend“) | HIGH |
+| 3 | Redaktionelle Kommentare und Meta-Sprache („es ist wichtig zu bemerken“) | HIGH |
+| 4 | Mechanische Konjunktionen („darüber hinaus“, „außerdem“) | HIGH |
+| 5 | Abschnitts-Zusammenfassungen („insgesamt“) | HIGH |
+| 6 | Unpassendes „Fazit“ | MEDIUM |
 | 7 | Schlussfolgerungen mit zu starker Dichotomie | MEDIUM |
 | 8 | Negative Parallelismen und abgehackte Verneinungen | MEDIUM |
 | 9 | Trikolon und schematische Aufzählungen (Regel der Drei) | MEDIUM |
 | 10 | Oberflächliche Analysen mit Partizip I | HIGH |
-| 11 | Vage Autoritäten ("Branchenberichte zeigen") | HIGH |
-| 12 | Falsche Erweiterung ("von... bis") | MEDIUM |
+| 11 | Vage Autoritäten („Branchenberichte zeigen“) | HIGH |
+| 12 | Falsche Erweiterung („von... bis“) | MEDIUM |
 | 58 | Abstrakta-Stapel und Hypernym-Präferenz | MEDIUM |
 | 60 | Synonym-Rotation für dieselbe Entität | MEDIUM |
 | 63 | Modalpartikel-Anomalie | LOW |
@@ -896,10 +896,10 @@ Der Skill arbeitet mit einem Katalog aus **72 KI-Schreibmustern** in 10 Kategori
 | # | Muster | Schwere |
 |---|--------|---------|
 | 17 | Briefartiges Schreiben | HIGH |
-| 18 | Kollaborative Kommunikation ("Ich hoffe, das hilft") | HIGH |
-| 19 | Hinweise auf Wissensgrenzen ("Stand Datum") | HIGH |
-| 20 | Prompt-Ablehnung ("Als KI kann ich nicht...") | HIGH |
-| 21 | Platzhaltertext ("[Name einfügen]") | HIGH |
+| 18 | Kollaborative Kommunikation („Ich hoffe, das hilft“) | HIGH |
+| 19 | Hinweise auf Wissensgrenzen („Stand Datum“) | HIGH |
+| 20 | Prompt-Ablehnung („Als KI kann ich nicht...“) | HIGH |
+| 21 | Platzhaltertext („[Name einfügen]“) | HIGH |
 | 22 | Links zu Suchanfragen statt Referenzen | HIGH |
 
 </details>
@@ -934,15 +934,15 @@ Der Skill arbeitet mit einem Katalog aus **72 KI-Schreibmustern** in 10 Kategori
 
 | # | Muster | Schwere |
 |---|--------|---------|
-| 32 | Persuasive Autoritäts-Floskeln ("Im Kern", "In Wirklichkeit") | MEDIUM |
-| 33 | Signposting und Ankündigungen ("Schauen wir uns an") | MEDIUM |
+| 32 | Persuasive Autoritäts-Floskeln („Im Kern“, „In Wirklichkeit“) | MEDIUM |
+| 33 | Signposting und Ankündigungen („Schauen wir uns an“) | MEDIUM |
 | 34 | Fragmentierte Überschriften (generischer Einzeiler nach Heading) | LOW |
-| 35 | Rhetorische Fragen als Fake-Engagement ("Aber was bedeutet das?") | MEDIUM |
-| 36 | Universelle Menschheitserfahrungs-Eröffnung ("Seit jeher...") | MEDIUM |
-| 37 | "In der heutigen X-Welt" Framing ("In der heutigen digitalen Welt") | MEDIUM |
-| 38 | Aspirativer Unternehmensschluss ("bestens aufgestellt") | MEDIUM |
-| 52 | Diff-verankertes Schreiben ("wurde jetzt ergänzt") | MEDIUM |
-| 56 | Aphorismus-Formeln ("X ist die Sprache des Y", "X wird zur Falle") | MEDIUM |
+| 35 | Rhetorische Fragen als Fake-Engagement („Aber was bedeutet das?“) | MEDIUM |
+| 36 | Universelle Menschheitserfahrungs-Eröffnung („Seit jeher...“) | MEDIUM |
+| 37 | „In der heutigen X-Welt“ Framing („In der heutigen digitalen Welt“) | MEDIUM |
+| 38 | Aspirativer Unternehmensschluss („bestens aufgestellt“) | MEDIUM |
+| 52 | Diff-verankertes Schreiben („wurde jetzt ergänzt“) | MEDIUM |
+| 56 | Aphorismus-Formeln („X ist die Sprache des Y“, „X wird zur Falle“) | MEDIUM |
 | 61 | Isometrisches Dokument | MEDIUM |
 | 62 | Markerloser Schließzwang | MEDIUM |
 | 67 | Ankündigungs-Spaltsatz | MEDIUM |
@@ -956,9 +956,9 @@ Der Skill arbeitet mit einem Katalog aus **72 KI-Schreibmustern** in 10 Kategori
 | # | Muster | Schwere |
 |---|--------|---------|
 | 39 | Passivkonstruktionen und subjektlose Fragmente | MEDIUM |
-| 40 | Konditional-Stapel ("Wenn X..., und wenn Y...") | MEDIUM |
+| 40 | Konditional-Stapel („Wenn X..., und wenn Y...“) | MEDIUM |
 | 41 | Fehlkalibriertes epistemisches Vertrauen | MEDIUM |
-| 53 | Lückenfüllende Spekulation ("hält sich bedeckt") | HIGH |
+| 53 | Lückenfüllende Spekulation („hält sich bedeckt“) | HIGH |
 | 59 | Erfundene Ich-Erfahrung und forcierte Lockerheit | HIGH |
 | 70 | Verantwortungsverschleierung durch falsche Agency | MEDIUM |
 | 72 | Pseudo-therapeutische Validierung | HIGH |
