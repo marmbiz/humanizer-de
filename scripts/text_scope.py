@@ -13,8 +13,9 @@ SCOPES = {DOCUMENT_PROSE, AUTHORED_PROSE, TYPOGRAPHIC_PROSE}
 
 BLOCKQUOTE_LINE_RE = re.compile(r"(?m)^[ \t]{0,3}>.*(?:\r?\n|$)")
 TABLE_LINE_RE = re.compile(r"(?m)^[ \t]*\|.*\|[ \t]*(?:\r?\n|$)")
+# Accepted edge case: prose like "Fazit: alles gut" can look like YAML when a closer follows.
 FRONTMATTER_RE = re.compile(
-    r"\A(?:\ufeff)?---[ \t]*\r?\n(?=[^\r\n]*[^ \t\r\n]).*?\r?\n(?:---|\.\.\.)[ \t]*(?=\r?\n|\Z)",
+    r"\A(?:\ufeff)?---[ \t]*\r?\n(?=[ \t]*[A-Za-z_][A-Za-z0-9_.-]*:(?:[ \t]|\r?\n)).*?\r?\n(?:---|\.\.\.)[ \t]*(?=\r?\n|\Z)",
     re.DOTALL,
 )
 FENCE_OPEN_LINE_RE = re.compile(r"^[ \t]{0,3}(?P<fence>`{3,}|~{3,})(?P<info>.*)$")

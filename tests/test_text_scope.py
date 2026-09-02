@@ -64,6 +64,15 @@ class TextScopeTests(unittest.TestCase):
         self.assertEqual(text_scope.protected_ranges(text), [])
         self.assertIn("ai_marker_cluster", {item["kind"] for item in german_pattern_lint.lint(text)["findings"]})
 
+    def test_leading_thematic_break_with_prose_is_not_frontmatter(self):
+        prose = "Wir beleuchten Aspekte. Wir beleuchten Prozesse. Wir beleuchten Lösungen."
+        for newline in ("\n", "\r\n"):
+            with self.subTest(newline=repr(newline)):
+                text = newline.join(("---", prose, "---", "Danach folgt Text.")) + newline
+
+                self.assertEqual(text_scope.protected_ranges(text), [])
+                self.assertIn(prose, text_scope.mask_text(text))
+
     def test_real_frontmatter_shapes_remain_protected(self):
         cases = (
             ("", "\n", "---"),
