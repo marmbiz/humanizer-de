@@ -191,7 +191,7 @@ Häufige Indikatoren:
 
 #### 5. Abschnitts-Zusammenfassungen [HIGH]
 <!-- haltbarkeit: kern -->
-<!-- pass: 2 -->
+<!-- pass: 3 -->
 **Problem:** Jeder Absatz wird automatisch zusammengefasst, statt natürlich zu fließen.
 
 Häufige Indikatoren:
@@ -323,7 +323,7 @@ Häufige Indikatoren:
 
 ❌ Schlecht: "Die Technologie ermöglicht, dass Unternehmen ihre Effizienz steigern, ihre Kosten senken und ihre Konkurrenzfähigkeit verbessern."
 
-✓ Besser: "Die Technologie hilft Unternehmen effizienter zu werden, Kosten zu senken und konkurrenzfähig zu bleiben."
+✓ Besser: "Die Technologie hilft Unternehmen, effizienter zu arbeiten und Kosten zu senken, damit sie konkurrenzfähig bleiben."
 
 #### 11. Vage Autoritäten [HIGH]
 <!-- haltbarkeit: kern -->
@@ -477,7 +477,7 @@ Häufige Indikatoren:
 <!-- haltbarkeit: kern -->
 <!-- pass: 3 -->
 
-**Problem:** Der Text beschreibt eine Sache über die Abgrenzung von etwas anderem statt direkt: "Es geht weniger um Geschwindigkeit als vielmehr um Vertrauen." Die Vergleichsschablone erzeugt Differenziertheits-Anmutung, sagt aber weniger als eine direkte Aussage — was "weniger" und "vielmehr" konkret bedeuten, bleibt offen und unprüfbar.
+**Problem:** Der Text beschreibt eine Sache über die Abgrenzung von etwas anderem statt direkt: "Es geht weniger um Geschwindigkeit als vielmehr um Vertrauen." Die Vergleichsschablone erzeugt Differenziertheits-Anmutung, sagt aber weniger als eine direkte Aussage. Was "weniger" und "vielmehr" konkret bedeuten, bleibt offen und unprüfbar.
 
 Häufige Indikatoren:
 - "weniger X als vielmehr Y"
@@ -498,13 +498,13 @@ Häufige Indikatoren:
 
 ❌ Schlecht: "Es geht weniger um das Werkzeug als vielmehr um die Haltung. Der Umbau fühlt sich eher wie ein Marathon als wie ein Sprint an."
 
-✓ Besser: "Das Werkzeug ist zweitrangig, die Haltung zählt. Der Umbau braucht Zeit."
+✓ Besser: "Der Umbau hängt von der Haltung ab und braucht Zeit. Das Werkzeug unterstützt ihn."
 
 ### Stil (5 Muster)
 
 #### 13. Übermäßige Fettschrift [MEDIUM]
 <!-- haltbarkeit: kern -->
-<!-- pass: 3 -->
+<!-- pass: 1 -->
 **Problem:** Bold wird für Emphasis statt für echte Struktur verwendet.
 
 Häufige Indikatoren:
@@ -594,7 +594,7 @@ Häufige Indikatoren:
 - Keine Selbstkorrektur, kein Nachtrag ("ach ja, noch was:")
 - Zahlen ausgeschrieben ("drei Vorfälle") statt Näherungsschreibweise ("~3 Vorfälle", "<10 min") im technischen Nähe-Register
 
-**Warum LLMs das tun:** Die Anweisung "schreib das locker" ändert im Modell primär Lexik und Grußformeln. Die antrainierte Dokumentarchitektur — Vollständigkeit, Gliederung, expliziter Abschluss — bleibt darunter bestehen.
+**Warum LLMs das tun:** Die Anweisung "schreib das locker" ändert im Modell primär Lexik und Grußformeln. Die antrainierte Dokumentarchitektur (Vollständigkeit, Gliederung, expliziter Abschluss) bleibt darunter bestehen.
 
 **Abgrenzung:** Muster 63 = Partikelarmut oder -überdosis (Wortebene). Muster 59 = erfundene Ich-Erfahrung und forcierte Mündlichkeit (Inhaltsebene). Muster 30 = Stilwechsel zwischen Absätzen. Muster 69 = polierte Satz- und Absatzarchitektur unter informeller Oberfläche (Strukturebene).
 
@@ -1072,7 +1072,7 @@ Häufige Indikatoren:
 <!-- haltbarkeit: kern -->
 <!-- pass: 3 -->
 
-**Problem:** Der Satz kündigt seine Aussage an, statt sie zu machen: "Was mich überrascht hat, war die Ladezeit." Die Spaltsatz-Konstruktion verpackt eine einfache Aussage in eine Enthüllungsgeste und hebt sie an, ohne Information hinzuzufügen. Der Doppelpunkt ist dabei nicht der Tell — die Ankündigungsstruktur ist es; sie funktioniert auch ganz ohne Signalwort und rutscht deshalb durch Floskel-Listen.
+**Problem:** Der Satz kündigt seine Aussage an, statt sie zu machen: "Was mich überrascht hat, war die Ladezeit." Die Spaltsatz-Konstruktion verpackt eine einfache Aussage in eine Enthüllungsgeste und hebt sie an, ohne Information hinzuzufügen. Der Doppelpunkt ist dabei nicht der Tell: Die Ankündigungsstruktur funktioniert auch ganz ohne Signalwort und rutscht deshalb durch Floskel-Listen.
 
 Häufige Indikatoren:
 - "Was mich überrascht hat, war ..."
@@ -1086,7 +1086,7 @@ Häufige Indikatoren:
 
 **Abgrenzung:** Muster 33 = Meta-Ankündigung mit Signal-Vokabular ("Schauen wir uns an", "Hier ist, was Sie wissen müssen"). Muster 32 = Autoritäts-Floskel vor einer vermeintlichen Einsicht ("Die eigentliche Frage ist"). Muster 67 = die syntaktische Ankündigung per Spaltsatz, ohne Meta-Vokabular.
 
-**Kein Problem, wenn:** Die Hervorhebung eine echte Informationsstruktur trägt — etwa als direkte Antwort auf eine zuvor aufgeworfene Frage — oder der Text gesprochene Sprache wiedergibt (Interview, Transkript). Ein einzelner Spaltsatz ist unkritisch; der Tell ist die Häufung.
+**Kein Problem, wenn:** Die Hervorhebung eine echte Informationsstruktur trägt, etwa als direkte Antwort auf eine zuvor aufgeworfene Frage, oder wenn der Text gesprochene Sprache wiedergibt (Interview, Transkript). Ein einzelner Spaltsatz ist unkritisch; der Tell ist die Häufung.
 
 **Lösung:** Die angekündigte Aussage direkt formulieren; das hervorzuhebende Element notfalls durch Wortstellung ans Satzende rücken.
 
@@ -1286,7 +1286,7 @@ Fehlt der echte Akteur im Material: keinen erfinden. Dann die offene Verantwortu
 
 #### 72. Pseudo-therapeutische Validierung [HIGH]
 <!-- haltbarkeit: jahrgang stand=2026-07 -->
-<!-- pass: 2 -->
+<!-- pass: 1 -->
 
 **Problem:** Der Text diagnostiziert ungefragt Gefühle, Selbstbild oder Vorgeschichte des Adressaten: "Du bist nicht zu sensibel", "Deine Gefühle sind völlig valide", "Du wurdest nur zu lange nicht ernst genommen". Das klingt fürsorglich, behauptet aber psychologische Tatsachen über eine reale Person, die der Text nicht belegen kann.
 
@@ -1568,7 +1568,7 @@ Häufige Indikatoren:
 
 ❌ Schlecht: "Das Team analysierte die Daten. Die Ergebnisse waren eindeutig. Die Conversion stieg um 25 Prozent. Das Projekt wurde im Budget abgeschlossen."
 
-✓ Besser: "Das Team analysierte die Daten. Das Ergebnis war eindeutig: Die Conversion stieg um 25 Prozent. Das Projekt blieb im Budget."
+✓ Besser: "Als das Team die Daten analysierte, war das Ergebnis eindeutig: Die Conversion stieg um 25 Prozent. Das Projekt blieb im Budget."
 
 #### 57. Markdown-Struktur-Artefakte [MEDIUM]
 <!-- haltbarkeit: jahrgang stand=2026-08 -->
