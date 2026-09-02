@@ -14,6 +14,24 @@ SPEC.loader.exec_module(two_pass)
 
 
 class HumanizerTwoPassTests(unittest.TestCase):
+    def test_finding_delta_preserves_duplicate_counts(self):
+        findings = [
+            {
+                "source": "rhythm",
+                "pattern": 61,
+                "kind": "connector_density",
+                "reason": "Konnektor-Dichte pro Absatz",
+                "paragraph": paragraph,
+            }
+            for paragraph in range(3)
+        ]
+
+        delta = two_pass.finding_delta(findings, findings[:1])
+
+        self.assertEqual(delta["resolved_findings"], findings[1:])
+        self.assertEqual(delta["persistent_findings"], findings[:1])
+        self.assertEqual(delta["introduced_findings"], [])
+
     def test_confirmation_only_discards_candidates_touching_quotes_or_persona(self):
         original = "Echt. Regional. Fakt 42 bleibt. Dynamisch und nahtlos."
         ledger = {

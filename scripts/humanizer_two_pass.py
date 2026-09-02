@@ -14,6 +14,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -750,18 +751,41 @@ def deterministic_audit(source: Path, mode: str, precise: bool = False) -> dict[
 
 
 def finding_delta(before: list[dict[str, Any]], after: list[dict[str, Any]]) -> dict[str, Any]:
+    """Compare findings as multisets.
+
+    ``count`` is excluded from identity because it measures magnitude, so changes stay persistent.
+    """
+
     def key(item: dict[str, Any]) -> tuple[object, object, object]:
         kind = item.get("kind") or str(item.get("summary", "")).partition(":")[0]
         return item.get("source"), item.get("pattern"), kind
 
-    before_keys = {key(item) for item in before}
-    after_keys = {key(item) for item in after}
+    remaining_after = Counter(key(item) for item in after)
+    resolved = []
+    for item in before:
+        item_key = key(item)
+        if remaining_after[item_key]:
+            remaining_after[item_key] -= 1
+        else:
+            resolved.append(item)
+
+    remaining_before = Counter(key(item) for item in before)
+    persistent = []
+    introduced = []
+    for item in after:
+        item_key = key(item)
+        if remaining_before[item_key]:
+            remaining_before[item_key] -= 1
+            persistent.append(item)
+        else:
+            introduced.append(item)
+
     return {
         "input_finding_count": len(before),
         "output_finding_count": len(after),
-        "resolved_findings": [item for item in before if key(item) not in after_keys],
-        "persistent_findings": [item for item in after if key(item) in before_keys],
-        "introduced_findings": [item for item in after if key(item) not in before_keys],
+        "resolved_findings": resolved,
+        "persistent_findings": persistent,
+        "introduced_findings": introduced,
     }
 
 
