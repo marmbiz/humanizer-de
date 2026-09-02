@@ -60,6 +60,7 @@ AUDIT_SCHEMA = {
                     "goal": {"type": "string", "minLength": 1},
                     "action": {"enum": ["delete", "rewrite"]},
                     "scope": {"enum": ["phrase", "sentence", "heading"]},
+                    "occurrence": {"type": "integer"},
                 },
                 "required": ["id", "source", "patterns", "reason", "goal", "action", "scope"],
                 "additionalProperties": False,
@@ -194,6 +195,12 @@ def ends_sentence(text: str, *, protect_abbreviations: bool = False) -> bool:
     return bool(re.search(rf"[.!?][{re.escape(SENTENCE_CLOSERS)}]*$", value.rstrip()))
 
 
+class CandidateAddressError(ValueError):
+    def __init__(self, reason: str, message: str):
+        super().__init__(message)
+        self.reason = reason
+
+
 def candidate_spans(text: str, candidates: list[dict[str, Any]]) -> dict[str, tuple[int, int, dict[str, Any]]]:
     spans: dict[str, tuple[int, int, dict[str, Any]]] = {}
     for candidate in candidates:
@@ -201,9 +208,20 @@ def candidate_spans(text: str, candidates: list[dict[str, Any]]) -> dict[str, tu
         found = anchor_occurrences(text, candidate["source"])
         if not candidate_id or candidate_id in spans:
             raise ValueError(f"duplicate or empty candidate id: {candidate_id!r}")
-        if len(found) != 1:
+        occurrence = candidate.get("occurrence")
+        if occurrence is None and len(found) > 1:
+            raise CandidateAddressError(
+                "ambiguous_source", f"candidate {candidate_id}: source occurs more than once"
+            )
+        if occurrence is not None and type(occurrence) is not int:
+            raise ValueError(f"candidate {candidate_id}: occurrence must be an integer")
+        if occurrence is not None and not 1 <= occurrence <= len(found):
+            raise CandidateAddressError(
+                "invalid_occurrence", f"candidate {candidate_id}: occurrence is outside source matches"
+            )
+        if not found:
             raise ValueError(f"candidate {candidate_id}: source must occur exactly once")
-        start, end = found[0]
+        start, end = found[(occurrence or 1) - 1]
         scope = candidate["scope"]
         if scope == "heading":
             line_start = text.rfind("\n", 0, start) + 1
@@ -243,6 +261,8 @@ def confirm_ledger(original: str, ledger: dict[str, Any]) -> dict[str, Any]:
     for candidate in ledger["candidates"]:
         try:
             candidate_spans(original, [candidate])
+        except CandidateAddressError as error:
+            discarded.append({"id": candidate["id"], "reason": error.reason})
         except ValueError:
             discarded.append({"id": candidate["id"], "reason": "invalid_candidate_contract"})
         else:
@@ -644,7 +664,7 @@ Der Host hat den vorgeschriebenen Sammelcheck bereits read-only ausgeführt. Fü
 Bestimme zuerst wortgleiche Schutzanker. Fakten, Zahlen, Namen, Zitate, Fachbegriffe, Code und Normen gehören in die passende Liste. Unter `persona` gehören außerdem inhaltstragende oder eigenwillige Autorenentscheidungen: markante Eröffnungen und Schlüsse, rhetorische Fragen, bewusstes Stakkato oder Trikolon, Slogans, Bilder, Ich-/Wir-Erfahrung und charakteristische Zuspitzungen. Jeder Anker ist die kleinste Spanne, die tatsächlich Schutz verdient: Steht eine Zahl oder ein Name in einer austauschbaren Werbeschablone, schütze nur Zahl oder Name in `facts`, nie allein deshalb den ganzen Satz als `persona`. Schütze nicht jede Werbeformel pauschal: austauschbare Schablonen ohne individuellen Gehalt bleiben Kandidaten. Wertadjektive wie „smart“, „intelligent“, „schnell“, „einfach“, „sicher“ oder „rechtssicher“ sind ohne benannte Funktion, Norm oder Messgröße weder Fakt noch Persona. Eine mehrgliedrige Werbefigur wird als Persona geschützt, sobald mindestens ein Glied selbst eine konkrete, nachprüfbar falsche Aussage machen könnte; ein Produktname, eine Zahl außerhalb der Glieder oder ein generisches Wertadjektiv genügt nicht. Im Zweifel hat Schutz Vorrang.
 
 Bestimme erst danach bestätigte KI-Schreibmuster. Quellenfragen kommen ausschließlich mit wortgleicher `source` und knapper `reason` in `advisories`, nie in die Rewrite-Kandidaten. Für jeden Kandidaten gilt:
-- `source` ist eine wortgleiche, im Original genau einmal vorkommende, direkt ersetzbare Spanne.
+- `source` ist eine wortgleiche, direkt ersetzbare Spanne; kommt sie im Original mehrfach vor, gibt `occurrence` (1-basiert) die gemeinte Fundstelle an, bei genau einer Fundstelle wird das Feld weggelassen oder auf `1` gesetzt.
 - Kandidaten überlappen weder einander noch Zitat-/Persona-Anker. Fakten und Begriffe dürfen in einer Rewrite-Spanne liegen, müssen aber erhalten bleiben.
 - Direkt benachbarte Teile derselben Schablone werden zu einer Spanne zusammengefasst, wenn einzelne Ersetzungen das alte Gerüst nur umetikettieren würden.
 - `patterns` nennt die einschlägigen Musternummern.
@@ -1185,6 +1205,16 @@ def main(argv: list[str] | None = None) -> int:
             raise RuntimeError(f"change verification failed: {verification_run.stderr.strip()}")
         verification_report = json.loads(verification_run.stdout)
         write_json(args.out_dir / "verify.json", verification_report)
+        edit_ids = {edit["candidate_id"] for edit in edits["edits"]}
+        skipped_candidates = [
+            {
+                "id": candidate["id"],
+                "source": candidate["source"].strip().replace("\n", " ")[:80],
+                "reason": "no_replacement",
+            }
+            for candidate in ledger["candidates"]
+            if candidate["id"] not in edit_ids
+        ]
 
         report = {
             "accepted": accepted,
@@ -1217,6 +1247,7 @@ def main(argv: list[str] | None = None) -> int:
             "discarded_advisory_count": len(ledger["discarded_advisories"]),
             "discarded_advisories": ledger["discarded_advisories"],
             "edit_count": len(edits["edits"]),
+            "skipped_candidates": skipped_candidates,
             "protected_violations": violations,
             "structure": structure,
             "evidence_findings": evidence_report["findings"],

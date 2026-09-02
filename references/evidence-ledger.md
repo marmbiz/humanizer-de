@@ -27,6 +27,8 @@ Diese Elemente dürfen durch Humanisierung nicht verschwinden, wandern oder ihre
 | `BLOCK_FAKE_REFERENCE` | nein | Quelle, DOI, ISBN, Aktenzeichen, Urteil, Link oder Zitat wirkt fabriziert oder trägt die Aussage nicht |
 | `BLOCK_UNGROUNDED_DETAIL` | nein | Neues Detail, Beispiel, Motiv, Zahl oder Ich-Erlebnis ohne Anker |
 
+Der Two-Pass-Runner (`humanizer_two_pass.py`) setzt nur `STYLE_ONLY`, `DROP_FLUFF` und `CLARIFY_WITH_EXISTING_EVIDENCE` satzweise um; `SPLIT_SENTENCE` und `MERGE_SENTENCE` bleiben dem direkten Skill-Edit vorbehalten.
+
 ## Factual-Reliability-Gate
 
 Konkrete Quellen sind nicht Dekoration. Eine Referenz muss existieren, formal plausibel sein und die konkrete Aussage tragen. Wenn das im aktuellen Material nicht prüfbar ist, markiere den Prüfstatus statt den Text glatter zu schreiben.

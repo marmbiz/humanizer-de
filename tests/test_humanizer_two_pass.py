@@ -336,6 +336,82 @@ class HumanizerTwoPassTests(unittest.TestCase):
             [{"id": "c1", "reason": "invalid_candidate_contract"}],
         )
 
+    def test_occurrence_addresses_duplicate_sentence_fixture(self):
+        original = "Jetzt starten. Dazwischen. Jetzt starten.\n"
+        candidate = {
+            "id": "c1",
+            "source": "Jetzt starten.",
+            "patterns": ["2"],
+            "reason": "CTA-Schablone",
+            "goal": "präzisieren",
+            "action": "rewrite",
+            "scope": "sentence",
+            "occurrence": 2,
+        }
+
+        ambiguous = two_pass.confirm_ledger(
+            original,
+            {
+                "register": "sachlich",
+                "candidates": [{key: value for key, value in candidate.items() if key != "occurrence"}],
+                "protected": {"facts": [], "quotes": [], "terms": [], "persona": []},
+            },
+        )
+        invalid = two_pass.confirm_ledger(
+            original,
+            {
+                "register": "sachlich",
+                "candidates": [{**candidate, "occurrence": 3}],
+                "protected": {"facts": [], "quotes": [], "terms": [], "persona": []},
+            },
+        )
+        code, report, output = self.run_structure_case(
+            original, candidate, "Später prüfen."
+        )
+
+        self.assertEqual(ambiguous["discarded_candidates"], [{"id": "c1", "reason": "ambiguous_source"}])
+        self.assertEqual(invalid["discarded_candidates"], [{"id": "c1", "reason": "invalid_occurrence"}])
+        self.assertEqual(code, 0)
+        self.assertTrue(report["accepted"])
+        self.assertEqual(output, "Jetzt starten. Dazwischen. Später prüfen.\n")
+
+    def test_occurrence_addresses_duplicate_heading_fixture(self):
+        original = "## Jetzt starten\nText.\n\n## Jetzt starten\nMehr Text.\n"
+        candidate = {
+            "id": "c1",
+            "source": "## Jetzt starten\n",
+            "patterns": ["2"],
+            "reason": "generische Überschrift",
+            "goal": "präzisieren",
+            "action": "rewrite",
+            "scope": "heading",
+            "occurrence": 2,
+        }
+
+        with tempfile.TemporaryDirectory() as temp_name:
+            source = Path(temp_name) / "source.md"
+            source.write_bytes(original.encode("utf-8"))
+            fixture = source.read_bytes().decode("utf-8")
+            confirmed = two_pass.confirm_ledger(
+                fixture,
+                {
+                    "register": "sachlich",
+                    "candidates": [candidate],
+                    "protected": {"facts": [], "quotes": [], "terms": [], "persona": []},
+                },
+            )
+            output = two_pass.apply_edits(
+                fixture,
+                confirmed,
+                {"edits": [{"candidate_id": "c1", "replacement": "## Voraussetzungen\n"}]},
+            )
+
+        self.assertEqual(confirmed["candidates"], [candidate])
+        self.assertEqual(
+            output,
+            "## Jetzt starten\nText.\n\n## Voraussetzungen\nMehr Text.\n",
+        )
+
     def test_empty_replacement_does_not_leave_double_space(self):
         ledger = {
             "candidates": [
@@ -711,7 +787,16 @@ class HumanizerTwoPassTests(unittest.TestCase):
                     "goal": "streichen",
                     "action": "delete",
                     "scope": "phrase",
-                }
+                },
+                {
+                    "id": "c2",
+                    "source": "intelligent",
+                    "patterns": ["64"],
+                    "reason": "Wertadjektiv",
+                    "goal": "streichen",
+                    "action": "delete",
+                    "scope": "phrase",
+                },
             ],
             "advisories": [
                 {"source": "Systeme", "reason": "Quelle nicht verifiziert"},
@@ -723,7 +808,7 @@ class HumanizerTwoPassTests(unittest.TestCase):
             temp = Path(temp_name)
             source = temp / "source.md"
             out = temp / "out"
-            source.write_text("Die smarten Systeme.\n", encoding="utf-8")
+            source.write_bytes("Die smarten Systeme.\nDas bleibt intelligent.\n".encode("utf-8"))
             shared_finding = {
                 "source": "rhythm",
                 "pattern": 55,
@@ -781,7 +866,10 @@ class HumanizerTwoPassTests(unittest.TestCase):
             self.assertEqual(run.call_count, 2)
             self.assertNotEqual(run.call_args_list[0].kwargs["cwd"], run.call_args_list[1].kwargs["cwd"])
             self.assertIn("BESTÄTIGTES LEDGER", run.call_args_list[1].args[0])
-            self.assertEqual((out / "result.md").read_text(encoding="utf-8"), "Die Systeme.\n")
+            self.assertEqual(
+                (out / "result.md").read_text(encoding="utf-8"),
+                "Die Systeme.\nDas bleibt intelligent.\n",
+            )
             diff = (out / "changes.diff").read_text(encoding="utf-8")
             self.assertIn("--- original.md", diff)
             self.assertIn("+++ result.md", diff)
@@ -809,6 +897,11 @@ class HumanizerTwoPassTests(unittest.TestCase):
             )
             self.assertEqual(confirmed["advisories"], report["advisories"])
             self.assertEqual(confirmed["discarded_advisories"], report["discarded_advisories"])
+            self.assertEqual(report["edit_count"], 1)
+            self.assertEqual(
+                report["skipped_candidates"],
+                [{"id": "c2", "source": "intelligent", "reason": "no_replacement"}],
+            )
             self.assertEqual(report["verification"]["identical"], verification["identical"])
             self.assertEqual(
                 report["verification"]["changed_ratio"], verification["tokens"]["changed_ratio"]

@@ -459,6 +459,9 @@ unter `unicode_fix` fest. Der erste, read-only Aufruf erstellt ein Ledger aus be
 Kandidaten und wortgleichen Schutzankern. Bleiben bestätigte Kandidaten übrig, liefert ein
 frischer zweiter Aufruf nur Ersetzungen dafür. Der Host setzt sie deterministisch ein.
 Teilüberschriften, Teilsätze, verschobene Schutzanker und neue Evidence-Blocker werden abgelehnt.
+Mehrfach vorkommende identische Sätze oder Überschriften adressiert das Audit-Ledger über das
+1-basierte Feld `occurrence`. Lässt das Rewrite-Modell einen bestätigten Kandidaten aus, führt
+`report.json` ihn unter `skipped_candidates` mit dem Grund `no_replacement`.
 
 Voraussetzung ist eine angemeldete lokale `claude`-CLI. Das Zielverzeichnis muss leer sein:
 
