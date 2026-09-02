@@ -411,6 +411,8 @@ Häufige Indikatoren:
 ❌ Schlecht (Nähe-Register, partikelfrei): "Du kennst das Problem. Die Lösung ist einfach. Du brauchst nur drei Schritte."
 ✓ Besser: "Du kennst das Problem ja. Die Lösung ist simpel: drei Schritte reichen schon."
 
+**Einordnung:** Partikel-Befunde sind Registerkontrolle, kein Herkunftssignal; echte Menschen setzen Modalpartikeln mindestens so oft wie naive Modelle.
+
 #### 64. KI-Marker-Vokabular [MEDIUM]
 <!-- haltbarkeit: jahrgang stand=2026-07 -->
 <!-- pass: 2 -->
@@ -505,7 +507,7 @@ Häufige Indikatoren:
 #### 13. Übermäßige Fettschrift [MEDIUM]
 <!-- haltbarkeit: kern -->
 <!-- pass: 1 -->
-**Problem:** Bold wird für Emphasis statt für echte Struktur verwendet.
+**Problem:** Bold wird für Emphasis statt für echte Struktur verwendet. `german_pattern_lint` meldet `bold_overdose` ab fünf Fett-Spannen im Dokument; darunter bleibt es Urteilssache.
 
 Häufige Indikatoren:
 - **wichtige Wörter** in Absätzen fett
