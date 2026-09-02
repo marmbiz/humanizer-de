@@ -700,7 +700,7 @@ class HumanizerTwoPassTests(unittest.TestCase):
             source.write_bytes(original.encode("utf-8"))
 
             def deterministic_audit(path, _mode, precise=False):
-                self.assertIn(path, (out / "normalized.md", out / "result.md"))
+                self.assertIn(path, (out / "normalized.md", out / "candidate.md"))
                 self.assertEqual(path.read_text(encoding="utf-8"), normalized)
                 self.assertTrue(precise)
                 return {
@@ -753,6 +753,42 @@ class HumanizerTwoPassTests(unittest.TestCase):
                     "evidence_extraction_policy": {"mode": "default"},
                 },
             )
+
+    def test_main_rejects_candidate_when_postflight_fails(self):
+        audit = {
+            "register": "sachlich",
+            "candidates": [],
+            "advisories": [],
+            "protected": {"facts": [], "quotes": [], "terms": [], "persona": []},
+        }
+        with tempfile.TemporaryDirectory() as temp_name:
+            temp = Path(temp_name)
+            source = temp / "source.md"
+            out = temp / "out"
+            source.write_bytes(b"Text.\n")
+            with (
+                mock.patch.object(two_pass, "run_model", return_value=(audit, None)),
+                mock.patch.object(
+                    two_pass,
+                    "deterministic_audit",
+                    side_effect=[
+                        {"preflight": {}, "findings": []},
+                        RuntimeError("postflight failed"),
+                    ],
+                ),
+                mock.patch.object(
+                    two_pass,
+                    "evidence_gate",
+                    return_value=({"findings": []}, {"mode": "default"}),
+                ),
+                mock.patch("builtins.print"),
+            ):
+                code = two_pass.main(["--file", str(source), "--out-dir", str(out)])
+
+            self.assertEqual(code, 2)
+            self.assertTrue((out / "failure.json").is_file())
+            self.assertFalse((out / "result.md").exists())
+            self.assertTrue((out / "rejected.md").is_file())
 
     def test_main_rejects_apply_stage_contract_violation(self):
         original = "Fakt 42 bleibt.\n"

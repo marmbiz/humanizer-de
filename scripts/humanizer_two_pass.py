@@ -881,6 +881,9 @@ def fail_run(out_dir: Path, started: datetime, error: Exception) -> int:
     candidate_path = out_dir / "candidate.md"
     if candidate_path.is_file():
         candidate_path.replace(out_dir / "rejected.md")
+    result_path = out_dir / "result.md"
+    if result_path.is_file():
+        result_path.replace(out_dir / "rejected.md")
     failure = {
         "accepted": False,
         "error_type": type(error).__name__,
@@ -1012,8 +1015,7 @@ def main(argv: list[str] | None = None) -> int:
         ]
         accepted = not violations and not blockers
         revised_path = args.out_dir / ("result.md" if accepted else "rejected.md")
-        candidate_path.replace(revised_path)
-        postflight = deterministic_audit(revised_path, args.mode, precise=args.precise)
+        postflight = deterministic_audit(candidate_path, args.mode, precise=args.precise)
         write_json(args.out_dir / "postflight.json", postflight)
         postflight_delta = finding_delta(preflight["findings"], postflight["findings"])
         spell_report = spell_lint.lint(original, proposed)
@@ -1028,7 +1030,7 @@ def main(argv: list[str] | None = None) -> int:
                 "--before-file",
                 str(original_path),
                 "--after-file",
-                str(revised_path),
+                str(candidate_path),
             ],
             env=subprocess_env(),
             text=True,
@@ -1099,6 +1101,7 @@ def main(argv: list[str] | None = None) -> int:
                 "evidence_extraction_policy": evidence_policy,
             }
         write_json(args.out_dir / "report.json", report)
+        candidate_path.replace(revised_path)
         print(json.dumps(report, ensure_ascii=True, indent=2))
         return 0 if accepted else 1
     except (KeyError, OSError, RuntimeError, TypeError, ValueError, subprocess.TimeoutExpired) as error:
