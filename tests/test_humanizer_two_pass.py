@@ -14,6 +14,15 @@ SPEC.loader.exec_module(two_pass)
 
 
 class HumanizerTwoPassTests(unittest.TestCase):
+    def test_write_json_uses_utf8_bytes_with_lf(self):
+        path = mock.Mock()
+
+        two_pass.write_json(path, {"text": "Grüße"})
+
+        payload = path.write_bytes.call_args.args[0]
+        self.assertEqual(payload, b'{\n  "text": "Gr\xc3\xbc\xc3\x9fe"\n}\n')
+        self.assertNotIn(b"\r", payload)
+
     def test_finding_delta_preserves_duplicate_counts(self):
         findings = [
             {
@@ -791,13 +800,14 @@ class HumanizerTwoPassTests(unittest.TestCase):
             self.assertTrue((out / "rejected.md").is_file())
 
     def test_main_rejects_apply_stage_contract_violation(self):
-        original = "Fakt 42 bleibt.\n"
+        original = 'Fakt 42 sagt „ja".\n'
+        normalized = "Fakt 42 sagt „ja“.\n"
         audit = {
             "register": "sachlich",
             "candidates": [
                 {
                     "id": "c1",
-                    "source": original,
+                    "source": normalized,
                     "patterns": ["64"],
                     "reason": "Form",
                     "goal": "glätten",
@@ -808,7 +818,7 @@ class HumanizerTwoPassTests(unittest.TestCase):
             "advisories": [],
             "protected": {"facts": ["42"], "quotes": [], "terms": [], "persona": []},
         }
-        edits = {"edits": [{"candidate_id": "c1", "replacement": "Fakt bleibt.\n"}]}
+        edits = {"edits": [{"candidate_id": "c1", "replacement": "Fakt sagt „ja“.\n"}]}
         with tempfile.TemporaryDirectory() as temp_name:
             temp = Path(temp_name)
             source = temp / "source.md"
@@ -824,13 +834,22 @@ class HumanizerTwoPassTests(unittest.TestCase):
                     "evidence_gate",
                     return_value=({"findings": []}, {"mode": "default"}),
                 ),
+                mock.patch.object(
+                    two_pass.spell_lint,
+                    "lint",
+                    return_value={"ok": True, "available": True, "findings": []},
+                ) as spell,
                 mock.patch("builtins.print"),
             ):
                 code = two_pass.main(["--file", str(source), "--out-dir", str(out)])
 
             self.assertEqual(code, 1)
-            self.assertEqual((out / "rejected.md").read_text(encoding="utf-8"), original)
-            self.assertEqual((out / "changes.diff").read_text(encoding="utf-8"), "")
+            self.assertEqual((out / "rejected.md").read_text(encoding="utf-8"), normalized)
+            spell.assert_called_once_with(normalized, normalized)
+            self.assertEqual(
+                json.loads((out / "spell-report.json").read_text(encoding="utf-8")),
+                {"ok": True, "available": True, "findings": []},
+            )
             self.assertTrue((out / "verify.json").is_file())
             report = json.loads((out / "report.json").read_text(encoding="utf-8"))
             self.assertFalse(report["accepted"])

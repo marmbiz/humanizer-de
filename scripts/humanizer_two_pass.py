@@ -122,7 +122,7 @@ def subprocess_env() -> dict[str, str]:
 
 
 def write_json(path: Path, value: object) -> None:
-    path.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    path.write_bytes((json.dumps(value, ensure_ascii=False, indent=2) + "\n").encode("utf-8"))
 
 
 def unified_diff(original: str, revised: str, revised_name: str) -> str:
@@ -1018,7 +1018,7 @@ def main(argv: list[str] | None = None) -> int:
         postflight = deterministic_audit(candidate_path, args.mode, precise=args.precise)
         write_json(args.out_dir / "postflight.json", postflight)
         postflight_delta = finding_delta(preflight["findings"], postflight["findings"])
-        spell_report = spell_lint.lint(original, proposed)
+        spell_report = spell_lint.lint(normalized, proposed)
         write_json(args.out_dir / "spell-report.json", spell_report)
         (args.out_dir / "changes.diff").write_bytes(
             unified_diff(original, proposed, revised_path.name).encode("utf-8")

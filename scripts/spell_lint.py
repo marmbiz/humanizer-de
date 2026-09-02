@@ -56,7 +56,7 @@ def availability_reason() -> str | None:
 
 
 def unavailable_report(reason: str) -> dict:
-    return {"available": False, "reason": reason, "findings": []}
+    return {"ok": True, "available": False, "reason": reason, "findings": []}
 
 
 def unknown_words(text: str) -> set[str]:

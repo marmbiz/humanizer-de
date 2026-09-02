@@ -39,7 +39,10 @@ class SpellLintTests(unittest.TestCase):
             exit_code, report = run_cli(["--before", "Das Team prüft.", "--after", "Das Team prüft."])
 
         self.assertEqual(exit_code, 0)
-        self.assertEqual(report, {"available": False, "reason": "hunspell_missing", "findings": []})
+        self.assertEqual(
+            report,
+            {"ok": True, "available": False, "reason": "hunspell_missing", "findings": []},
+        )
 
     def test_missing_dictionary_reports_unavailable_and_exits_zero(self):
         failed_probe = mock.Mock(returncode=1, stderr="Can't open affix or dictionary files", stdout="")
@@ -48,7 +51,10 @@ class SpellLintTests(unittest.TestCase):
                 exit_code, report = run_cli(["--before", "Das Team prüft.", "--after", "Das Team prüft."])
 
         self.assertEqual(exit_code, 0)
-        self.assertEqual(report, {"available": False, "reason": "dictionary_missing", "findings": []})
+        self.assertEqual(
+            report,
+            {"ok": True, "available": False, "reason": "dictionary_missing", "findings": []},
+        )
 
     def test_diff_unknowns_reports_only_new_after_words_sorted(self):
         finding = spell_lint.diff_unknowns({"Fachwort"}, {"Fachwort", "Zulu", "Alpha"})
