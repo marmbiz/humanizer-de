@@ -26,6 +26,135 @@ Fixtures müssen die öffentliche Regeloberfläche prüfen, nicht nur Hilfsfunkt
 an Regex, Schwelle, Severity, Meldung oder Scope gelten als materielle Regeländerung und
 erfordern einen neuen datierten Begründungseintrag.
 
+## Aufgenommen: M43-Homoglyph-Check mixed_script (2026-09-02)
+
+1. **Muster-ID, Kandidatenname und Zweck:** Muster 43, `mixed_script`. Der Befund macht
+   technische Homoglyph-Artefakte sichtbar: Ein einzelnes Wort enthält Buchstaben aus
+   mehreren Schriftsystemen, typischerweise einen kyrillischen oder griechischen
+   Doppelgänger in einem lateinischen Wort.
+2. **Texttypen, Modi und ausgeschlossene Spans:** Aktiv in allen Texttypen und Modi. Wie
+   `hidden_unicode` prüft der Befund den gesamten Text ohne Scope-Ausschluss, also auch
+   Code, URLs, Zitate sowie Markdown- und HTML-Syntax. Das ist nötig, weil Homoglyphen
+   gerade in technischen Bezeichnern und URL-Domains sicherheitsrelevant sein können.
+3. **Erkennungslogik:** `\w+` zerlegt den Text in Tokens; Bindestriche und Satzzeichen
+   trennen sie. Für jeden alphabetischen Codepoint wird das Präfix des von
+   `unicodedata.name` gelieferten Namens ausgewertet. Berücksichtigt werden `LATIN`,
+   `CYRILLIC` und `GREEK`. Ziffern, Satzzeichen, Unterstriche und Kombinationszeichen
+   tragen kein Schriftsystem und werden ignoriert. Ein Finding entsteht nur, wenn ein
+   Token Buchstaben aus mindestens zwei berücksichtigten Systemen enthält. Als fremd
+   meldet der Linter die Zeichen außerhalb des häufigsten Systems; bei Gleichstand hat
+   Latein Vorrang. Die Meldung nennt jedes unterschiedliche fremde Zeichen samt
+   Codepoint, der Span umfasst das vollständige Token.
+4. **Dokument-Schwelle:** Einzelfund. Ein einziges gemischtes Token genügt; rein
+   kyrillische oder rein griechische Wörter bleiben ohne Befund.
+5. **Fixtures:**
+
+   | Typ | Textfamilie | Erwartung |
+   |---|---|---|
+   | Positiv | `Anаlyse` mit kyrillischem `а` U+0430 | ein `mixed_script`-Finding auf dem ganzen Wort |
+   | Positiv | `Mοdell` mit griechischem `ο` U+03BF | ein `mixed_script`-Finding auf dem ganzen Wort |
+   | Positiv | `https://exаmple.org/pfad` mit kyrillischem `а` in der Domain | ein `mixed_script`-Finding auf `exаmple` trotz URL-Scope |
+   | Negativ | `Fußgänger` | kein Befund; Umlaute und `ß` sind lateinisch |
+   | Negativ | `Полностью` | kein Befund; das Wort ist vollständig kyrillisch |
+   | Negativ | `Café` | kein Befund; `é` ist lateinisch |
+   | Grenzfall | `H2O` | kein Befund; die Ziffer wird ignoriert, beide Buchstaben sind lateinisch |
+   | Grenzfall | `Café` mit U+0301 | kein Befund; das Kombinationszeichen wird ignoriert |
+
+6. **Fehlalarmfamilien und Fehlalarm-Erwartung:** Echte gemischte Fachbezeichner,
+   mathematische Notation, Marken und technische Identifikatoren können absichtlich
+   griechische, kyrillische und lateinische Buchstaben in einem Token verbinden. In
+   gewöhnlicher deutscher Prosa ist die Fehlalarm-Erwartung niedrig, in mathematischen,
+   multilingualen und technischen Texten höher. Die rekursive FP-Messung über alle 59
+   Markdown-Dateien in `research/base-rates/human/` ergab 0 `mixed_script`-Treffer in
+   0 Dateien; es waren daher keine Funddateien zu nennen.
+7. **Severity, Meldung und erlaubte Aktion:** Im Sammelcheck `warning`, wie die übrigen
+   Befunde aus `unicode_lint.py`. Die Meldung folgt dem Schema `Mixed scripts in word
+   „Wort“; foreign characters: Zeichen (U+XXXX). Review manually.` Erlaubt sind Prüfung
+   und manueller Hinweis. `--fix` verändert diesen Kind nicht, weil nur der Autor das
+   beabsichtigte Zeichen kennt; ein Auto-Rewrite ist verboten.
+8. **Keine Autorschaft:** Aus einem Treffer darf nicht abgeleitet werden, ob ein Mensch
+   oder ein Sprachmodell den Text verfasst hat. Der Befund beschreibt ausschließlich ein
+   technisches Zeichenartefakt.
+9. **Version und Begründung:** 2026-09-02, Zielversion 5.27.0. Die bisherige
+   `hidden_unicode`-Prüfung erkennt unsichtbare Codepoints, aber keine sichtbaren
+   Doppelgänger aus fremden Schriftsystemen. Der neue `kind` schließt diese Lücke als
+   manuell zu prüfende Erweiterung der Muster-43-Familie ohne automatische Korrektur.
+
+## Aufgenommen: M20/M24/M26-Artefakt-Detektor (2026-09-02)
+
+1. **Muster-ID, Name, Zweck:** Die Muster 20, 24 und 26 liefern den gemeinsamen Befund
+   `ai_artifact`. M20 erfasst enge Prompt-Ablehnungs- und Chatbot-Floskeln, M24 technische
+   Tool-, Zitier-, Export- und Reasoning-Reste, M26 direkte `utm_source`-Fingerabdrücke von
+   KI-Diensten. Der Detektor findet unverarbeitete Fremdkörper, bevor der Stilpass beginnt.
+2. **Texttypen, Modi, ausgeschlossene Spans:** Aktiv in Locker, Sachlich und Formal sowie in
+   allen Texttypen. Es gibt absichtlich keine ausgeschlossenen Spans: Geprüft wird der
+   Rohtext einschließlich Frontmatter, Codeblöcken, Inline-Code, URLs, Blockquotes,
+   Anführungszeichen sowie Markdown- und HTML-Syntax. Der vorhandene Mention-Mechanismus
+   greift nicht. Artefakte sind Fremdkörper, keine Wörter; `oaicite` bleibt auch in
+   Backticks oder in einem erklärenden Satz ein Fund. Dadurch feuert die Regel bewusst auf
+   Dokumentation der Artefakte.
+3. **Regex:** Die drei Python-Regexe laufen case-insensitiv; M24 nutzt für den
+   Thinking-Block zusätzlich einen lokalen Mehrzeilenanker.
+
+   M24:
+
+   ```regex
+   contentReference(?:\s*\[\s*oaicite(?::[^\]\s]+)?\s*\])?|oaicite(?::[\w.-]+)?|oai_(?:cite|citation)|citeturn\d+(?:(?:search|image|news|file)\d+)?|turn\d+(?:search|image|news)\d+|iturn\d+image\d+|(?-i:\b[A-ZÄÖÜ][\wÄÖÜäöüß.-]{2,63}\+\d+\b)|attributableIndex|\[cite:\s?\d+(?:\s*,\s*\d+)*\]?|\[citation:\s*\d+(?:\s*,\s*\d+)*\]?|\[span_\d+\]\[(?:start|end)_span\]|\((?:start|end)_span\)|grok_render_citation_card_json|\bgrok_card\b|<grok-card\b|<grok:render\b|【\d+†L\d+(?:-\d+)?】?|\[(?:attached_file|web):\d+\]|ppl-ai-file-upload|:::writing\{|(?m:^[ \t]*>[ \t]*\*\*Thinking\*\*)|\[\^\d+\^\]|_\[unsupported block:\s*(?:think|search)\]_|</?think\b[^>]*>|\[\[\d+\]\](?:[ \t]*\[\[\d+\]\])+|ich\s+muss\s+das\s+Schritt\s+für\s+Schritt\s+durchdenken|zuerst\s+prüfe\s+ich,\s+was\s+der\s+Nutzer\s+wirklich\s+will
+   ```
+
+   M26:
+
+   ```regex
+   utm_source=(?:chatgpt(?:\.com)?|openai|claude\.ai|gemini\.google\.com|perplexity\.ai|copilot\.com)(?=&|$|[^\w.])
+   ```
+
+   M20:
+
+   ```regex
+   als\s+KI-Sprachmodell\b|als\s+KI-Modell\b|als\s+KI\s+kann\s+ich\s+nicht\b|ich\s+kann\s+keine\s+aktuelle[n]?\s+Information(?:en)?\s+bereitstellen\b|das\s+liegt\s+außerhalb\s+meiner\s+Fähigkeiten\b
+   ```
+
+4. **Dokument-Schwelle:** Ein einzelner Regex-Treffer genügt. Pro getroffenem
+   Katalogmuster entsteht ein `ai_artifact`-Befund; bei mehreren Kategorien entstehen
+   getrennte Befunde mit `pattern` 20, 24 oder 26. `evidence` enthält jeden gefundenen
+   String in Textreihenfolge, `spans` die parallelen Python-Codepoint-Offsets im Rohtext.
+5. **Fixtures:**
+
+   | Typ | Textfamilie | Erwartung |
+   |---|---|---|
+   | Positiv | ChatGPT-Zitierrest `(turn0search0)` | `ai_artifact`, M24 |
+   | Positiv | Gemini-Rest `[cite: 3]` | `ai_artifact`, M24 |
+   | Positiv | URL mit `utm_source=chatgpt.com` | `ai_artifact`, M26 |
+   | Negativ | URL mit `utm_source=newsletter` | kein Befund |
+   | Negativ | „cite“ als normales Wort | kein Befund |
+   | Negativ | Menschliche Rede „Ich hoffe, das hilft dir weiter“ | kein Befund; Schluss- und Entschuldigungsfloskeln bleiben judgment-only |
+   | Grenzfall | Erklärender Satz mit Inline-Code `oaicite` | Befund; Use-Mention schützt Artefakte nicht |
+   | Grenzfall | `utm_source=chatgpt.computer` | kein Befund; die Hostgrenze verhindert den Präfixtreffer |
+
+6. **Fehlalarmfamilien und FP-Messung:** Technische Dokumentation, Testdaten und
+   sicherheitsbezogene Erklärtexte nennen Artefakte absichtlich und werden dennoch
+   gemeldet. Echte Support- oder Dialogtexte verwenden „Es tut mir leid, aber“ und „Ich
+   hoffe, das hilft“ menschlich; beide Formen stehen deshalb nicht im Regex, sondern bleiben
+   judgment-only im Katalog. M20 meldet nur ausdrückliche KI-Selbstbezüge. Die Syntax- und
+   UTM-Formen haben eine sehr niedrige, M20 eine niedrige qualitative Fehlalarm-Erwartung. Die
+   rekursive Messung vom 2026-09-02 über `research/base-rates/human/**/*.md` ergab **4
+   Stringtreffer in 1 von 59 Dateien**, zusammengefasst in zwei Befunden. Alle vier stehen
+   als dokumentierende Use-Mentions im eigenen Humanizer-Artikel: `oaicite`,
+   `contentReference`, `turn0search0` und „Als KI-Modell“. Der
+   bestehende FP-Korpus blieb ohne neuen Befund; seine Baseline wurde nicht verändert.
+7. **Severity, Meldung, Aktion:** `warning`; der gefundene String steht in `evidence`, sein
+   Originalspan in `spans`. Erlaubt sind Prüfung und vollständiges Entfernen eines echten
+   Exportrests oder die bewusste Bestätigung einer dokumentierenden Erwähnung. Es gibt
+   keinen Auto-Rewrite.
+8. **Autorschaft:** Ein Treffer belegt einen Textfremdkörper oder eine katalogisierte
+   Floskel, aber nicht die Verfasserschaft. Aus `ai_artifact` darf ausdrücklich nicht
+   abgeleitet werden, ob ein Mensch oder ein Sprachmodell den Text verfasst hat.
+9. **Versionsdatum und Begründung:** Aufgenommen am 2026-09-02 als Roadmap-Etappe 7. Die
+   Formen standen bereits in den Katalogmustern 20, 24 und 26, fehlten aber vollständig im
+   deterministischen Pfad. Einzelfunde sind hier günstiger und trennschärfer als weitere
+   Stilheuristiken. Die materielle Regelaufnahme verlangt beim Release einen Minor-Bump;
+   dieser begrenzte Parallellauf ändert keine Versionsdateien.
+
 ## Auslieferung: Patch-Bump-Pflicht
 
 Installierte Plugins sind auf die Versionsnummer aus `plugin.json` gepinnt. Claude Code und

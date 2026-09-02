@@ -52,6 +52,63 @@ AI_MARKERS = (
     "digitale landschaft",
     "zusammenspiel",
 )
+AI_ARTIFACT_PATTERNS = (
+    (
+        24,
+        re.compile(
+            r"(?:"
+            r"contentReference(?:\s*\[\s*oaicite(?::[^\]\s]+)?\s*\])?"
+            r"|oaicite(?::[\w.-]+)?"
+            r"|oai_(?:cite|citation)"
+            r"|citeturn\d+(?:(?:search|image|news|file)\d+)?"
+            r"|turn\d+(?:search|image|news)\d+"
+            r"|iturn\d+image\d+"
+            r"|(?-i:\b[A-ZÄÖÜ][\wÄÖÜäöüß.-]{2,63}\+\d+\b)"
+            r"|attributableIndex"
+            r"|\[cite:\s?\d+(?:\s*,\s*\d+)*\]?"
+            r"|\[citation:\s*\d+(?:\s*,\s*\d+)*\]?"
+            r"|\[span_\d+\]\[(?:start|end)_span\]"
+            r"|\((?:start|end)_span\)"
+            r"|grok_render_citation_card_json"
+            r"|\bgrok_card\b"
+            r"|<grok-card\b"
+            r"|<grok:render\b"
+            r"|【\d+†L\d+(?:-\d+)?】?"
+            r"|\[(?:attached_file|web):\d+\]"
+            r"|ppl-ai-file-upload"
+            r"|:::writing\{"
+            r"|(?m:^[ \t]*>[ \t]*\*\*Thinking\*\*)"
+            r"|\[\^\d+\^\]"
+            r"|_\[unsupported block:\s*(?:think|search)\]_"
+            r"|</?think\b[^>]*>"
+            r"|\[\[\d+\]\](?:[ \t]*\[\[\d+\]\])+"
+            r"|ich\s+muss\s+das\s+Schritt\s+für\s+Schritt\s+durchdenken"
+            r"|zuerst\s+prüfe\s+ich,\s+was\s+der\s+Nutzer\s+wirklich\s+will"
+            r")",
+            re.IGNORECASE,
+        ),
+    ),
+    (
+        26,
+        re.compile(
+            r"utm_source=(?:chatgpt(?:\.com)?|openai|claude\.ai|gemini\.google\.com|"
+            r"perplexity\.ai|copilot\.com)(?=&|$|[^\w.])",
+            re.IGNORECASE,
+        ),
+    ),
+    (
+        20,
+        re.compile(
+            # Bewusst ohne „Es tut mir leid, aber“ und „Ich hoffe, das hilft“: beides ist
+            # in E-Mails, Foren und Dialogen normales menschliches Deutsch; die Formen
+            # bleiben judgment-only im Katalog (M17/M20).
+            r"(?:als\s+KI-Sprachmodell\b|als\s+KI-Modell\b|als\s+KI\s+kann\s+ich\s+nicht\b"
+            r"|ich\s+kann\s+keine\s+aktuelle[n]?\s+Information(?:en)?\s+bereitstellen\b"
+            r"|das\s+liegt\s+außerhalb\s+meiner\s+Fähigkeiten\b)",
+            re.IGNORECASE,
+        ),
+    ),
+)
 AD_QUANTITY_PATTERN = (
     r"(?:(?i:über|ueber|mehr\s+als)\s+)?\d+(?:[.\u00a0 ]\d{3})*"
     r"(?![ \t]*(?:(?i:prozent)\b|%))"
@@ -403,6 +460,21 @@ def lint(text: str, mode: str = "sachlich", precise: bool = False) -> dict:
     status, nlp = precise_context(precise)
     clean_text = register_lint.strip_protected(text)
     findings: list[dict] = []
+
+    # Absichtlich Rohtext und kein mention_ranges: Artefakte sind Fremdkörper,
+    # keine Wörter; ein Treffer in Backticks ist deshalb genauso ein Treffer.
+    for pattern, artifact_re in AI_ARTIFACT_PATTERNS:
+        matches = list(artifact_re.finditer(text))
+        if matches:
+            findings.append(
+                {
+                    "pattern": pattern,
+                    "kind": "ai_artifact",
+                    "severity": "warning",
+                    "evidence": [match.group() for match in matches],
+                    "spans": text_scope.serialize_spans([match.span() for match in matches]),
+                }
+            )
 
     ai_hits, ai_spans = collect_marker_hits(clean_text, AI_MARKERS)
     if sum(ai_hits.values()) >= 3:

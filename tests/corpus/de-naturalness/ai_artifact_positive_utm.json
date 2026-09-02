@@ -1,0 +1,1 @@
+{"mode": "sachlich", "text": "Quelle: https://example.org/studie?utm_source=chatgpt.com&ref=antwort", "expect_kinds": ["ai_artifact"]}

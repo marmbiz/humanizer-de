@@ -41,6 +41,98 @@ class GermanPatternLintTests(unittest.TestCase):
         text = "Der Text beleuchtet das vielschichtige Zusammenspiel in einer dynamischen Landschaft."
         self.assertIn("ai_marker_cluster", kinds(german_pattern_lint.lint(text)))
 
+    def test_ai_artifact_forms_map_to_catalog_patterns(self):
+        cases = {
+            24: (
+                "contentReference[oaicite:0]",
+                "oai_cite",
+                "oai_citation",
+                "citeturn0news0",
+                "citeturn1file0",
+                "turn0search0",
+                "turn0image0",
+                "iturn0image0",
+                "Wikipedia+1",
+                "ISO+3",
+                "attributableIndex",
+                "[cite: 3, 12, 13]",
+                "[citation:1]",
+                "[span_1][start_span]",
+                "(end_span)",
+                "grok_render_citation_card_json",
+                "grok_card",
+                '<grok-card data-id="1">',
+                '<grok:render id="1">',
+                "【85†L261-269】",
+                "[attached_file:1]",
+                "[web:1]",
+                "ppl-ai-file-upload",
+                ':::writing{variant="document"}',
+                "> **Thinking**",
+                "[^1^]",
+                "_[unsupported block: think]_",
+                "<think>",
+                "[[1]] [[2]]",
+                "Ich muss das Schritt für Schritt durchdenken",
+                "Zuerst prüfe ich, was der Nutzer wirklich will",
+                "Der String `oaicite` ist ein Artefakt.",
+            ),
+            26: (
+                "https://example.org/?utm_source=chatgpt.com&x=1",
+                "https://example.org/?utm_source=openai",
+                "https://example.org/?utm_source=claude.ai",
+                "https://example.org/?utm_source=gemini.google.com",
+                "https://example.org/?utm_source=perplexity.ai",
+                "https://example.org/?utm_source=copilot.com",
+            ),
+            20: (
+                "Als KI-Sprachmodell kann ich das nicht.",
+                "Als KI-Modell lehne ich das ab.",
+                "Als KI kann ich nicht helfen.",
+                "Ich kann keine aktuelle Information bereitstellen.",
+                "Das liegt außerhalb meiner Fähigkeiten.",
+            ),
+        }
+
+        for pattern, texts in cases.items():
+            for text in texts:
+                with self.subTest(pattern=pattern, text=text):
+                    findings = [
+                        item
+                        for item in german_pattern_lint.lint(text)["findings"]
+                        if item["kind"] == "ai_artifact"
+                    ]
+                    self.assertEqual({item["pattern"] for item in findings}, {pattern})
+                    self.assertTrue(all(item["severity"] == "warning" for item in findings))
+
+    def test_ai_artifact_spans_reference_raw_crlf_text_and_url(self):
+        text = (
+            "Quelle\r\n(`contentReference[oaicite:0]`)\r\n"
+            "https://example.org/a?utm_source=chatgpt.com&x=1"
+        )
+        findings = [
+            item
+            for item in german_pattern_lint.lint(text)["findings"]
+            if item["kind"] == "ai_artifact"
+        ]
+
+        self.assertEqual({item["pattern"] for item in findings}, {24, 26})
+        for finding in findings:
+            self.assertEqual(
+                [text[span["start"]:span["end"]] for span in finding["spans"]],
+                finding["evidence"],
+            )
+
+    def test_ai_artifact_boundaries_avoid_near_matches(self):
+        text = (
+            "Das Wort cite ist ein Verb. "
+            "Die Formel lautet abc+1. "
+            "https://example.org/?utm_source=newsletter "
+            "https://example.org/?utm_source=chatgpt.computer "
+            "„Ich hoffe, das hilft dir weiter“, sagte Mara."
+        )
+        self.assertNotIn("ai_artifact", kinds(german_pattern_lint.lint(text)))
+
     def test_ai_marker_stem_overrides_keep_existing_verb_forms(self):
         text = (
             "Der Bericht beleuchtet die Messung. Forschende können in die Methode "
