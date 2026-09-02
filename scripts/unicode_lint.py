@@ -48,6 +48,8 @@ CLOSE_DE_SINGLE = "\u2018"
 WRONG_CLOSE_SINGLE = "\u2019"
 OPEN_EN = "\u201c"
 ASCII_QUOTE = '"'
+SCRIPT_PREFIXES = ("LATIN", "CYRILLIC", "GREEK")
+WORD_RE = re.compile(r"\w+", re.UNICODE)
 
 
 def is_hidden_char(char: str) -> bool:
@@ -162,6 +164,42 @@ def add_finding(findings: list[dict], pattern: int, kind: str, index: int, char:
             "spans": text_scope.serialize_spans([(index, index + 1)]),
         }
     )
+
+
+def scan_mixed_scripts(text: str) -> list[dict]:
+    findings = []
+    for match in WORD_RE.finditer(text):
+        letters = []
+        for char in match.group():
+            if not char.isalpha():
+                continue
+            name = unicodedata.name(char, "")
+            script = next((prefix for prefix in SCRIPT_PREFIXES if name.startswith(prefix)), None)
+            if script:
+                letters.append((char, script))
+
+        scripts = [script for _, script in letters]
+        if len(set(scripts)) < 2:
+            continue
+
+        counts = {script: scripts.count(script) for script in set(scripts)}
+        base_script = max(counts, key=lambda script: (counts[script], script == "LATIN"))
+        foreign = list(dict.fromkeys(char for char, script in letters if script != base_script))
+        details = ", ".join(f"{char} ({codepoint(char)})" for char in foreign)
+        word = match.group()
+        findings.append(
+            {
+                "pattern": 43,
+                "kind": "mixed_script",
+                "index": match.start(),
+                "char": "".join(foreign),
+                "codepoint": ", ".join(codepoint(char) for char in foreign),
+                "name": ", ".join(unicodedata.name(char, "UNKNOWN") for char in foreign),
+                "message": f"Mixed scripts in word „{word}“; foreign characters: {details}. Review manually.",
+                "spans": text_scope.serialize_spans([match.span()]),
+            }
+        )
+    return findings
 
 
 def preceding_word(text: str, index: int) -> str:
@@ -320,6 +358,7 @@ def lint(text: str) -> list[dict]:
     for index, char in enumerate(text):
         if is_hidden_at(text, index):
             add_finding(findings, 43, "hidden_unicode", index, char, "Remove hidden Unicode character.")
+    findings.extend(scan_mixed_scripts(text))
 
     quote_findings, _, quote_styles = scan_quotes(text, in_range)
     findings.extend(quote_findings)

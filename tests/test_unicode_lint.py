@@ -47,6 +47,34 @@ class UnicodeLintTests(unittest.TestCase):
         self.assertTrue(any(item["pattern"] == 43 for item in findings))
         self.assertEqual(unicode_lint.fix(text), "AlphaBeta")
 
+    def test_mixed_script_words_are_reported_without_fixing(self):
+        cases = (
+            ("Die Anаlyse stimmt.", "Anаlyse", "а", "U+0430"),
+            ("Das Mοdell passt.", "Mοdell", "ο", "U+03BF"),
+            ("https://exаmple.org/pfad", "exаmple", "а", "U+0430"),
+        )
+        for text, word, foreign, codepoint in cases:
+            with self.subTest(word=word):
+                findings = [item for item in unicode_lint.lint(text) if item["kind"] == "mixed_script"]
+                self.assertEqual(len(findings), 1)
+                self.assertEqual(findings[0]["pattern"], 43)
+                self.assertEqual(findings[0]["spans"], [{"start": text.index(word), "end": text.index(word) + len(word)}])
+                self.assertIn(word, findings[0]["message"])
+                self.assertIn(foreign, findings[0]["message"])
+                self.assertIn(codepoint, findings[0]["message"])
+                self.assertEqual(unicode_lint.fix(text), text)
+
+    def test_single_script_words_are_not_reported(self):
+        for text in ("Fußgänger", "Полностью", "Café"):
+            with self.subTest(text=text):
+                self.assertFalse(any(item["kind"] == "mixed_script" for item in unicode_lint.lint(text)))
+
+    def test_mixed_script_ignored_character_boundaries(self):
+        # Ziffern und kombinierende Zeichen tragen kein Schriftsystem.
+        for text in ("H2O", "Cafe\u0301"):
+            with self.subTest(text=text):
+                self.assertFalse(any(item["kind"] == "mixed_script" for item in unicode_lint.lint(text)))
+
     def test_emoji_zwj_sequence_is_preserved(self):
         for text in ("👨‍👩‍👧‍👦", "👩‍💻", "👩🏽‍💻", "❤️‍🔥"):
             with self.subTest(text=text):
