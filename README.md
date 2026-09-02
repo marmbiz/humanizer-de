@@ -498,8 +498,12 @@ Abgelehnte Vorschläge heißen `rejected.md`, und `report.json` nennt Schutzverl
 die Datei leer. Danach vergleicht `verify_changes.py` die ausgelieferte Fassung mit dem echten
 Original. Den vollständigen Nachweis enthält `verify.json`. In `report.json` steht unter
 `verification` die Kurzfassung aus Identität, Änderungsquote und Typografie-Deltas.
-`normalized.md`, `verify.json`, Audit, Ledger, Modellantworten und Hashes bleiben zur Nachprüfung
-im Zielverzeichnis.
+Ein zweiter deterministischer Sammelcheck schreibt `postflight.json`; der Hauptreport trennt
+behobene, verbliebene und neu entstandene Befundklassen, ohne daraus ein neues Stil-Gate zu
+machen. Evidence-Warnings bleiben ebenfalls sichtbar. `spell-report.json` warnt optional vor
+neu eingeführten, Hunspell unbekannten Wörtern und meldet sich ohne Hunspell als inaktiv ab.
+`normalized.md`, die Prüfberichte, Audit, Ledger, Modellantworten und Hashes bleiben zur
+Nachprüfung im Zielverzeichnis.
 Der Text wird an den jeweiligen Modellanbieter übertragen. Die Quellenprüfung bleibt eine
 unvollständige Nebenprüfung. Die harten Gates schützen erkennbare Anker, ersetzen aber keine
 fachliche Endabnahme.

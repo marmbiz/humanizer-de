@@ -25,11 +25,13 @@ if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
 import rhythm_lint
+import spell_lint
 
 EVIDENCE_LINT = ROOT / "scripts" / "evidence_lint.py"
 HUMANIZER_AUDIT = ROOT / "scripts" / "humanizer_audit.py"
 UNICODE_LINT = ROOT / "scripts" / "unicode_lint.py"
 VERIFY_CHANGES = ROOT / "scripts" / "verify_changes.py"
+SPELL_LINT = ROOT / "scripts" / "spell_lint.py"
 PATTERNS = ROOT / "references" / "patterns.md"
 SENTENCE_CLOSERS = "\"'„“‚‘”’«»‹›"
 MARKDOWN_STRUCTURE_RE = re.compile(
@@ -747,12 +749,28 @@ def deterministic_audit(source: Path, mode: str, precise: bool = False) -> dict[
         raise RuntimeError(f"deterministic audit returned invalid JSON: {error}") from error
 
 
+def finding_delta(before: list[dict[str, Any]], after: list[dict[str, Any]]) -> dict[str, Any]:
+    def key(item: dict[str, Any]) -> tuple[object, object, object]:
+        kind = item.get("kind") or str(item.get("summary", "")).partition(":")[0]
+        return item.get("source"), item.get("pattern"), kind
+
+    before_keys = {key(item) for item in before}
+    after_keys = {key(item) for item in after}
+    return {
+        "input_finding_count": len(before),
+        "output_finding_count": len(after),
+        "resolved_findings": [item for item in before if key(item) not in after_keys],
+        "persistent_findings": [item for item in after if key(item) in before_keys],
+        "introduced_findings": [item for item in after if key(item) not in before_keys],
+    }
+
+
 def evidence_gate(
     original_path: Path,
     result_path: Path,
     out_dir: Path,
     precise: bool = False,
-) -> tuple[list[dict[str, Any]], dict[str, str]]:
+) -> tuple[dict[str, Any], dict[str, str]]:
     ledger_path = out_dir / "evidence-ledger.json"
     write_command = [
         sys.executable,
@@ -799,8 +817,7 @@ def evidence_gate(
     report = json.loads(compare.stdout)
     write_json(out_dir / "evidence-report.json", report)
     policy = json.loads(ledger_path.read_text(encoding="utf-8"))["extraction_policy"]
-    blockers = [finding for finding in report["findings"] if finding.get("severity") == "blocker"]
-    return blockers, policy
+    return report, policy
 
 
 def parse_args(argv: list[str]) -> argparse.Namespace:
@@ -871,6 +888,7 @@ def main(argv: list[str] | None = None) -> int:
                 HUMANIZER_AUDIT,
                 UNICODE_LINT,
                 EVIDENCE_LINT,
+                SPELL_LINT,
                 VERIFY_CHANGES,
             )
         }
@@ -957,15 +975,25 @@ def main(argv: list[str] | None = None) -> int:
         candidate_path = args.out_dir / "candidate.md"
         candidate_path.write_bytes(proposed.encode("utf-8"))
         violations = apply_violations + protected_violations(normalized, proposed, ledger)
-        blockers, evidence_policy = evidence_gate(
+        evidence_report, evidence_policy = evidence_gate(
             normalized_path,
             candidate_path,
             args.out_dir,
             precise=args.precise,
         )
+        blockers = [
+            finding
+            for finding in evidence_report["findings"]
+            if finding.get("severity") == "blocker"
+        ]
         accepted = not violations and not blockers
         revised_path = args.out_dir / ("result.md" if accepted else "rejected.md")
         candidate_path.replace(revised_path)
+        postflight = deterministic_audit(revised_path, args.mode, precise=args.precise)
+        write_json(args.out_dir / "postflight.json", postflight)
+        postflight_delta = finding_delta(preflight["findings"], postflight["findings"])
+        spell_report = spell_lint.lint(original, proposed)
+        write_json(args.out_dir / "spell-report.json", spell_report)
         (args.out_dir / "changes.diff").write_bytes(
             unified_diff(original, proposed, revised_path.name).encode("utf-8")
         )
@@ -1021,7 +1049,10 @@ def main(argv: list[str] | None = None) -> int:
             "discarded_advisories": ledger["discarded_advisories"],
             "edit_count": len(edits["edits"]),
             "protected_violations": violations,
+            "evidence_findings": evidence_report["findings"],
             "evidence_blockers": blockers,
+            "postflight": postflight_delta,
+            "spell": spell_report,
             "verification": {
                 "identical": verification_report["identical"],
                 "changed_ratio": verification_report["tokens"]["changed_ratio"],

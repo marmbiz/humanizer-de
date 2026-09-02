@@ -563,6 +563,39 @@ class HumanizerTwoPassTests(unittest.TestCase):
             source = temp / "source.md"
             out = temp / "out"
             source.write_text("Die smarten Systeme.\n", encoding="utf-8")
+            shared_finding = {
+                "source": "rhythm",
+                "pattern": 55,
+                "severity": "warning",
+                "summary": "repeated sentence openers: 2 clusters",
+            }
+            preflight = {
+                "preflight": {},
+                "findings": [
+                    shared_finding,
+                    {
+                        "source": "german_pattern",
+                        "pattern": 64,
+                        "kind": "ai_marker_cluster",
+                        "severity": "warning",
+                        "summary": "marker cluster",
+                    },
+                ],
+            }
+            postflight = {
+                "preflight": {},
+                "findings": [
+                    shared_finding,
+                    {
+                        "source": "unicode",
+                        "pattern": 46,
+                        "kind": "straight_quote",
+                        "severity": "warning",
+                        "summary": "straight quote",
+                    },
+                ],
+            }
+            evidence_warning = {"kind": "proper_name_added", "severity": "warning"}
             with (
                 mock.patch.object(
                     two_pass,
@@ -570,9 +603,13 @@ class HumanizerTwoPassTests(unittest.TestCase):
                     side_effect=[(audit, None), ({"edits": [{"candidate_id": "c1", "replacement": ""}]}, None)],
                 ) as run,
                 mock.patch.object(
-                    two_pass, "deterministic_audit", return_value={"preflight": {}, "findings": []}
+                    two_pass, "deterministic_audit", side_effect=[preflight, postflight]
                 ),
-                mock.patch.object(two_pass, "evidence_gate", return_value=([], {"mode": "default"})),
+                mock.patch.object(
+                    two_pass,
+                    "evidence_gate",
+                    return_value=({"findings": [evidence_warning]}, {"mode": "default"}),
+                ),
                 mock.patch("builtins.print"),
             ):
                 code = two_pass.main(
@@ -615,6 +652,19 @@ class HumanizerTwoPassTests(unittest.TestCase):
             self.assertEqual(
                 report["verification"]["changed_ratio"], verification["tokens"]["changed_ratio"]
             )
+            self.assertEqual(report["evidence_findings"], [evidence_warning])
+            self.assertEqual(report["evidence_blockers"], [])
+            self.assertEqual(report["postflight"]["persistent_findings"], [shared_finding])
+            self.assertEqual(report["postflight"]["resolved_findings"], preflight["findings"][1:])
+            self.assertEqual(report["postflight"]["introduced_findings"], postflight["findings"][1:])
+            self.assertEqual(
+                report["spell"],
+                json.loads((out / "spell-report.json").read_text(encoding="utf-8")),
+            )
+            self.assertEqual(
+                postflight,
+                json.loads((out / "postflight.json").read_text(encoding="utf-8")),
+            )
 
     def test_main_normalizes_before_freezing_protected_anchors(self):
         original = 'Er sagt „Wort".\n'
@@ -632,7 +682,7 @@ class HumanizerTwoPassTests(unittest.TestCase):
             source.write_bytes(original.encode("utf-8"))
 
             def deterministic_audit(path, _mode, precise=False):
-                self.assertEqual(path, out / "normalized.md")
+                self.assertIn(path, (out / "normalized.md", out / "result.md"))
                 self.assertEqual(path.read_text(encoding="utf-8"), normalized)
                 self.assertTrue(precise)
                 return {
@@ -645,7 +695,7 @@ class HumanizerTwoPassTests(unittest.TestCase):
                 self.assertEqual(before, out / "normalized.md")
                 self.assertEqual(before.read_text(encoding="utf-8"), normalized)
                 self.assertTrue(precise)
-                return [], {"mode": "default"}
+                return {"findings": []}, {"mode": "default"}
 
             with (
                 mock.patch.object(two_pass, "run_model", return_value=(audit, None)) as run,
@@ -715,7 +765,11 @@ class HumanizerTwoPassTests(unittest.TestCase):
                 mock.patch.object(
                     two_pass, "deterministic_audit", return_value={"preflight": {}, "findings": []}
                 ),
-                mock.patch.object(two_pass, "evidence_gate", return_value=([], {"mode": "default"})),
+                mock.patch.object(
+                    two_pass,
+                    "evidence_gate",
+                    return_value=({"findings": []}, {"mode": "default"}),
+                ),
                 mock.patch("builtins.print"),
             ):
                 code = two_pass.main(["--file", str(source), "--out-dir", str(out)])
@@ -925,7 +979,11 @@ class HumanizerTwoPassTests(unittest.TestCase):
                 mock.patch.object(
                     two_pass, "deterministic_audit", return_value={"preflight": {}, "findings": []}
                 ),
-                mock.patch.object(two_pass, "evidence_gate", return_value=([], {"mode": "default"})),
+                mock.patch.object(
+                    two_pass,
+                    "evidence_gate",
+                    return_value=({"findings": []}, {"mode": "default"}),
+                ),
                 mock.patch("builtins.print"),
             ):
                 code = two_pass.main(["--file", str(source), "--out-dir", str(out)])
@@ -985,11 +1043,10 @@ class HumanizerTwoPassTests(unittest.TestCase):
             before.write_text("Die Methode kann helfen.\n", encoding="utf-8")
             after.write_text("Die Methode beweist den Erfolg.\n", encoding="utf-8")
 
-            blockers, policy = two_pass.evidence_gate(before, after, out, precise=True)
+            report, policy = two_pass.evidence_gate(before, after, out, precise=True)
 
-            self.assertIn("authority_strengthened", {item["kind"] for item in blockers})
+            self.assertIn("authority_strengthened", {item["kind"] for item in report["findings"]})
             self.assertIn(policy["mode"], {"default", "spacy_ner"})
-            report = json.loads((out / "evidence-report.json").read_text(encoding="utf-8"))
             self.assertTrue(report["precise"]["requested"])
 
     def test_invalid_utf8_writes_failure_report(self):
