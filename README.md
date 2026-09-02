@@ -851,7 +851,7 @@ davon wird zusammen mit dem Skill installiert oder automatisch aktiviert.
 
 ## 72 Muster in 10 Kategorien
 
-Der Skill arbeitet mit einem Katalog aus **72 KI-Schreibmustern** in 10 Kategorien, priorisiert nach Schweregrad (HIGH / MEDIUM / LOW). Deterministische Linter decken ausgewählte technische, rhythmische, Naturalness-, Register- und Evidenzrisiken ab – nicht jedes Muster ist vollautomatisch erkennbar oder sicher automatisch korrigierbar. Linter-gestützt sind derzeit 17 Muster (2, 4, 8, 13, 16, 39, 43, 44, 46, 54, 55, 58, 61, 63–65 sowie ein advisory Kandidatenhinweis für 72; Muster 2 und 44: Teilaspekte, Muster 39: Erkennung im Präzisionspfad mit spaCy, kein Gate-Anschluss) plus Register-, Rhythmus- und Evidenz-Checks. Die übrigen Muster prüft das Modell anhand des Katalogs. Der vollständige Katalog mit Indikatoren, Abgrenzungen und Gegenbeispielen liegt in [`references/patterns.md`](references/patterns.md). Für den schnellen Blick ohne Katalog fasst [`assets/checkliste-ki-tells.md`](assets/checkliste-ki-tells.md) zehn typische Tells auf einer Seite zusammen.
+Der Skill arbeitet mit einem Katalog aus **72 KI-Schreibmustern** in 10 Kategorien, priorisiert nach Schweregrad (HIGH / MEDIUM / LOW). Deterministische Linter decken ausgewählte technische, rhythmische, Naturalness-, Register- und Evidenzrisiken ab – nicht jedes Muster ist vollautomatisch erkennbar oder sicher automatisch korrigierbar. Linter-gestützt sind derzeit 20 Muster (2, 4, 8, 13, 16, 20, 24, 26, 39, 43, 44, 46, 54, 55, 58, 61, 63–65 sowie ein advisory Kandidatenhinweis für 72; Muster 2 und 44: Teilaspekte, Muster 20, 24 und 26: wortgenaue Artefakt-Strings, Muster 39: Erkennung im Präzisionspfad mit spaCy, kein Gate-Anschluss) plus Register-, Rhythmus- und Evidenz-Checks. Die übrigen Muster prüft das Modell anhand des Katalogs. Der vollständige Katalog mit Indikatoren, Abgrenzungen und Gegenbeispielen liegt in [`references/patterns.md`](references/patterns.md). Für den schnellen Blick ohne Katalog fasst [`assets/checkliste-ki-tells.md`](assets/checkliste-ki-tells.md) zehn typische Tells auf einer Seite zusammen.
 
 <details>
 <summary><strong>Sprache und Tonfall (19 Muster)</strong></summary>
@@ -1167,23 +1167,21 @@ GitHub Release.
 
 ## Was ist neu?
 
-- **5.26.0** - Der Two-Pass-Runner kennt jetzt `--precise` und prüft sein Ergebnis nach. Mit
-  installiertem spaCy schaltet das Flag die bekannten Fehlalarmfilter auch im Sammelcheck und
-  im Evidence-Gate des Runners ein, und wo spaCy fehlt, bleibt es wirkungslos und der Report
-  vermerkt das. Nach dem Rewrite läuft ein zweiter Sammelcheck über die gelieferte Fassung,
-  dazu ein Rechtschreibvergleich gegen den normalisierten Eingang, und der Report zeigt,
-  welche Befunde verschwunden, geblieben oder neu sind, gleichartige Befunde dabei einzeln
-  gezählt. Drei Reparaturen sichern den Ablauf ab. Erst wenn alle Artefakte geschrieben sind,
-  wird der Kandidat zu `result.md`, sodass neben einer `failure.json` nie ein angenommenes
-  Ergebnis liegt. JSON-Artefakte enden überall mit LF. Beginnt ein Text mit einer Trennlinie
-  `---`, gilt sie nur noch als Frontmatter, wenn ein YAML-Schlüssel folgt, denn vorher konnte
-  ein solcher Anfang den ganzen Text aus der Prüfung nehmen. In SKILL.md fällt doppelte
-  Anleitung weg, Pass 0 ist in Triage und Werkzeugdetails geteilt, und der Runner steht als
-  optionales Werkzeug in der Referenzliste. Die ausgelieferten Referenzen folgen nun der
-  eigenen Typografie: deutsche Anführungszeichen, keine Gedankenstrich-Einschübe,
-  Markierungsstrings einheitlich mit Umlaut. Drei Katalogbeispiele rissen selbst ein
-  Nachbarmuster. Sie sind umgebaut. Die Muster 5, 13 und 72 liegen jetzt im Pass ihrer
-  Overlap-Partner.
+- **5.27.0** - Drei neue deterministische Prüfungen und ein neues Gate im Two-Pass-Runner.
+  Wortgenau erkennt der Sammelcheck jetzt KI-Werkzeugreste: Zitierreste von ChatGPT, Gemini,
+  Grok, DeepSeek und Perplexity, stehen gebliebene Reasoning-Fragmente,
+  `utm_source`-Fingerabdrücke von KI-Diensten und ausdrückliche Selbstbezüge eines
+  Sprachmodells (Muster 20, 24 und 26). Ein Treffer genügt. Weil ein Artefakt kein Wort ist,
+  schützen auch Backticks nicht davor. In `unicode_lint` fällt zusätzlich auf, wenn ein Wort
+  Buchstaben aus zwei Schriftsystemen mischt, etwa ein kyrillisches a in einem lateinischen
+  Wort (Muster 43). Im Two-Pass-Runner lehnt ein Struktur-Gate jedes Ergebnis ab, das
+  Überschriften, Links oder Codeblöcke hinzufügt, entfernt oder verändert. Damit ist die
+  Formatierungsblindheit der Eingriffstiefe geschlossen. Mehrfach vorkommende Sätze lassen sich
+  über `occurrence` einzeln adressieren, und ausgelassene Kandidaten stehen als
+  `skipped_candidates` im Report. Für den Skill selbst gilt neu, dass Overlap-Partner im Pass
+  des zuerst bearbeiteten Musters mitentschieden werden. Im Katalog steht jetzt die
+  Linter-Schwelle für Fettschrift, und Partikel-Befunde gelten dort als Registerkontrolle,
+  nicht als Herkunftssignal.
 
 Alle früheren Versionen: [CHANGELOG.md](CHANGELOG.md)
 

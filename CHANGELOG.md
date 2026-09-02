@@ -3,6 +3,24 @@
 Der neueste Eintrag steht im README unter [„Was ist neu?“](README.md#was-ist-neu).
 Hier stehen alle früheren Versionen; die GitHub-Releases konservieren die Originalnotizen.
 
+- **5.26.0** - Der Two-Pass-Runner kennt jetzt `--precise` und prüft sein Ergebnis nach. Mit
+  installiertem spaCy schaltet das Flag die bekannten Fehlalarmfilter auch im Sammelcheck und
+  im Evidence-Gate des Runners ein, und wo spaCy fehlt, bleibt es wirkungslos und der Report
+  vermerkt das. Nach dem Rewrite läuft ein zweiter Sammelcheck über die gelieferte Fassung,
+  dazu ein Rechtschreibvergleich gegen den normalisierten Eingang, und der Report zeigt,
+  welche Befunde verschwunden, geblieben oder neu sind, gleichartige Befunde dabei einzeln
+  gezählt. Drei Reparaturen sichern den Ablauf ab. Erst wenn alle Artefakte geschrieben sind,
+  wird der Kandidat zu `result.md`, sodass neben einer `failure.json` nie ein angenommenes
+  Ergebnis liegt. JSON-Artefakte enden überall mit LF. Beginnt ein Text mit einer Trennlinie
+  `---`, gilt sie nur noch als Frontmatter, wenn ein YAML-Schlüssel folgt, denn vorher konnte
+  ein solcher Anfang den ganzen Text aus der Prüfung nehmen. In SKILL.md fällt doppelte
+  Anleitung weg, Pass 0 ist in Triage und Werkzeugdetails geteilt, und der Runner steht als
+  optionales Werkzeug in der Referenzliste. Die ausgelieferten Referenzen folgen nun der
+  eigenen Typografie: deutsche Anführungszeichen, keine Gedankenstrich-Einschübe,
+  Markierungsstrings einheitlich mit Umlaut. Drei Katalogbeispiele rissen selbst ein
+  Nachbarmuster. Sie sind umgebaut. Die Muster 5, 13 und 72 liegen jetzt im Pass ihrer
+  Overlap-Partner.
+
 - **5.25.0** - Nach einem Repo-Audit räumt diese Version Ehrlichkeits- und Robustheitsfunde
   auf. Durchgängig beschreibt die Dokumentation der Quellen- und Faktenprüfung jetzt ihren
   echten Umfang: erkennbare Anker, konservativer Abgleich, unvollständige Nebenprüfung. Der

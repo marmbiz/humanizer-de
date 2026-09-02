@@ -164,7 +164,7 @@ dagegen den Default-Branch und sehen jede Änderung sofort. Ohne Bump laufen bei
 also auseinander.
 
 Deshalb gilt: Jede inhaltliche Änderung an ausgelieferten Dateien — Linter-Regeln,
-`SKILL.md`, `references/`, `assets/`, `agents/` — bekommt im selben Commit-Zug mindestens
+`SKILL.md`, `references/`, `assets/`, `agents/`, `scripts/` — bekommt im selben Commit-Zug mindestens
 einen Patch-Bump. Reine Reparaturen an Tests, Entwicklerdoku oder interner Steuerung
 brauchen keinen.
 
