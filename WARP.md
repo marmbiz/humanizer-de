@@ -1,4 +1,4 @@
-# WARP - Humanizer (Deutsch) Entwicklerleitfaden (v5.25.0)
+# WARP - Humanizer (Deutsch) Entwicklerleitfaden (v5.26.0)
 
 WARP = Workflow, Architecture, References, Principles.
 
@@ -35,7 +35,8 @@ humanizer-de/
 │   ├── spell_lint.py                # neue unbekannte Hunspell-Wörter vor/nach Rewrite prüfen
 │   ├── style_profile.py             # rohe Stilmetriken ohne Interpretation ausgeben
 │   ├── syntax_lint.py               # optionale spaCy-Syntaxmetriken ausgeben
-│   └── text_scope.py                # Modul für offsettreue Markdown-Textbereiche (kein CLI)
+│   ├── text_scope.py                # Modul für offsettreue Markdown-Textbereiche (kein CLI)
+│   └── verify_changes.py            # Änderungsnachweis zwischen Original und gelieferter Fassung
 ├── tests/
 │   ├── test_skill_structure.py
 │   ├── test_patterns_catalog.py
@@ -150,7 +151,7 @@ Der README-Abschnitt „Was ist neu?“ trägt nur den Eintrag der aktuellen Ver
 
 Bei jedem Version-Bump:
 
-1. Version und Changelog synchronisieren: `SKILL.md`, `.claude-plugin/plugin.json`, `.codex-plugin/plugin.json`, `references/patterns.md`, `references/decision-tables.md`, `docs/coverage-matrix.md`, `README.md`, `WARP.md`, `CITATION.cff` und `tests/test_skill_structure.py`. Dabei wandert der bisherige README-Eintrag aus „Was ist neu?“ nach oben in `CHANGELOG.md`; der neue Eintrag ersetzt ihn im README. `.claude-plugin/marketplace.json` trägt bewusst kein `version`-Feld; `assets/checkliste-ki-tells.md` synchronisiert die Musterzahl, nicht die Version.
+1. Version und Changelog synchronisieren: `SKILL.md`, `.claude-plugin/plugin.json`, `.codex-plugin/plugin.json`, `references/patterns.md`, `references/decision-tables.md`, `docs/coverage-matrix.md`, `README.md`, `WARP.md`, `CITATION.cff`, `tests/test_skill_structure.py` und `tests/test_doctor.py`. Dabei wandert der bisherige README-Eintrag aus „Was ist neu?“ nach oben in `CHANGELOG.md`; der neue Eintrag ersetzt ihn im README. `.claude-plugin/marketplace.json` trägt bewusst kein `version`-Feld; `assets/checkliste-ki-tells.md` synchronisiert die Musterzahl, nicht die Version.
 2. `make verify` ausführen.
 3. Änderungen auf `main` bringen (direkter Push oder Pull Request) und den CI-Lauf auf `main` mit `gh run list` prüfen.
 4. Erst nach grüner CI Tag `vX.Y.Z` auf den neuesten Commit setzen und pushen.
