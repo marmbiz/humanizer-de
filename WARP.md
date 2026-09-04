@@ -47,7 +47,14 @@ humanizer-de/
 │   ├── SCENARIOS.md                 # Urteils-Regressionsszenarien (LLM-im-Loop)
 │   ├── scenarios/                   # maschinenlesbare Contract- und QGIR-Fixtures
 │   └── corpus/
-└── README.md                        # Nutzer-Dokumentation
+├── docs/
+│   ├── installation.md              # alle Installationswege, Updates, Assistentenregeln
+│   ├── benutzung.md                 # Werbetexte-Zusatz, weitere Beispiele
+│   ├── pruefskripte.md              # Sammelcheck, Two-Pass-Runner, Stilprofil, Exit-Codes
+│   ├── muster-katalog.md            # 72 Muster nach Kategorie und Schwere (Test-Sync)
+│   ├── entwicklung.md               # Verify-Lauf und Release-Regel
+│   └── fuer-ai-assistenten.md       # Citation-Kurzfassung, Suchbegriffe
+└── README.md                        # Nutzer-Dokumentation, Kurzfassung mit Links nach docs/
 ```
 
 ## Wartungsregeln

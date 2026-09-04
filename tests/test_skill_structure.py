@@ -344,28 +344,40 @@ class SkillStructureTests(unittest.TestCase):
         self.assertIn("schlechter werden können", readme)
 
     def test_readme_examples_preserve_claim_boundaries(self):
-        readme = read_utf8(ROOT / "README.md")
-
-        self.assertNotIn("wendet sie auf das Rewrite an", readme)
-        self.assertNotIn("in 8 Ländern mit einem Umsatz von 50 Millionen Euro", readme)
-        self.assertNotIn("in\ndiesem Zeitraum", readme)
+        for path in (ROOT / "README.md", ROOT / "docs" / "benutzung.md"):
+            text = read_utf8(path)
+            with self.subTest(path=path.name):
+                self.assertNotIn("wendet sie auf das Rewrite an", text)
+                self.assertNotIn("in 8 Ländern mit einem Umsatz von 50 Millionen Euro", text)
+                self.assertNotIn("in\ndiesem Zeitraum", text)
 
     def test_readme_install_onboarding_is_explicit(self):
+        # README traegt nur die empfohlenen Wege; alle Details liegen in
+        # docs/installation.md und muessen dort vollstaendig bleiben.
         readme = read_utf8(ROOT / "README.md")
         installation = readme.split("## Installation", 1)[1].split("## Benutzung", 1)[0]
+        install_doc = read_utf8(ROOT / "docs" / "installation.md")
 
-        self.assertIn("### Was dabei installiert wird", installation)
+        self.assertIn("codex plugin marketplace add marmbiz/humanizer-de", installation)
+        self.assertIn("/plugin install humanizer-de@humanizer-de", installation)
         self.assertIn("**Nicht installiert werden:**", installation)
-        self.assertIn("### Installation prüfen (alle Wege)", installation)
-        self.assertIn("### Version und Updates", installation)
-        self.assertIn("https://code.claude.com/docs/en/discover-plugins", installation)
-        self.assertIn("https://learn.chatgpt.com/docs/plugins", installation)
-        self.assertNotIn("mkdir -p ~/.codex/skills", installation)
+        self.assertIn("### Funktioniert es?", installation)
+        self.assertIn("docs/installation.md", installation)
 
-        self.assertIn("### Installationsregeln für Assistenten", readme)
-        self.assertIn("Keine Zusatzsoftware ohne Zustimmung", readme)
-        self.assertIn("`$HOME/.claude/skills/humanizer-de/`", readme)
-        self.assertIn("Aktivierung nicht behaupten", readme)
+        self.assertIn("## Was dabei installiert wird", install_doc)
+        self.assertIn("**Nicht installiert werden:**", install_doc)
+        self.assertIn("## Installation prüfen (alle Wege)", install_doc)
+        self.assertIn("## Version und Updates", install_doc)
+        self.assertIn("https://code.claude.com/docs/en/discover-plugins", install_doc)
+        self.assertIn("https://learn.chatgpt.com/docs/plugins", install_doc)
+        for text in (installation, install_doc):
+            self.assertNotIn("mkdir -p ~/.codex/skills", text)
+
+        self.assertIn("## Installationsregeln für Assistenten", install_doc)
+        self.assertIn("Keine Zusatzsoftware ohne Zustimmung", install_doc)
+        self.assertIn("`$HOME/.claude/skills/humanizer-de/`", install_doc)
+        self.assertIn("Aktivierung nicht behaupten", install_doc)
+        self.assertIn("docs/installation.md#installationsregeln-für-assistenten", readme)
 
     def test_readme_keeps_navigation_contracts(self):
         readme = read_utf8(ROOT / "README.md")

@@ -14,9 +14,10 @@ CATEGORY_BLOCK_RE = re.compile(
 
 
 def readme_catalog_section():
-    text = (ROOT / "README.md").read_text(encoding="utf-8")
-    section = text.split("## 72 Muster in 10 Kategorien", 1)[1]
-    return re.split(r"\n## ", section, maxsplit=1)[0]
+    # Der Katalog liegt seit der README-Kuerzung in docs/muster-katalog.md;
+    # README.md verlinkt ihn nur noch.
+    text = (ROOT / "docs" / "muster-katalog.md").read_text(encoding="utf-8")
+    return text.split("# 72 Muster in 10 Kategorien", 1)[1]
 
 
 def pattern_headings():
@@ -56,7 +57,7 @@ class ReadmePatternsSyncTests(unittest.TestCase):
         self.assertEqual(
             sorted(rows),
             list(range(1, EXPECTED_PATTERN_COUNT + 1)),
-            "README-Katalog enthält nicht genau die Muster 1..72",
+            "Katalog in docs/muster-katalog.md enthält nicht genau die Muster 1..72",
         )
         for pattern_id in range(1, EXPECTED_PATTERN_COUNT + 1):
             readme_title, readme_severity = rows[pattern_id]

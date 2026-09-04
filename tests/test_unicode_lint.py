@@ -28,6 +28,12 @@ class UnicodeLintTests(unittest.TestCase):
             *sorted((ROOT / "references").glob("*.md")),
             *sorted((ROOT / "assets").glob("*.md")),
             ROOT / "docs" / "coverage-matrix.md",
+            ROOT / "docs" / "installation.md",
+            ROOT / "docs" / "benutzung.md",
+            ROOT / "docs" / "pruefskripte.md",
+            ROOT / "docs" / "muster-katalog.md",
+            ROOT / "docs" / "entwicklung.md",
+            ROOT / "docs" / "fuer-ai-assistenten.md",
         )
 
         for path in paths:
