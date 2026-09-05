@@ -125,8 +125,13 @@ Ohne Terminal geht es über die Weboberfläche. Unter **Einstellungen → Capabi
 „Code execution and file creation“ eingeschaltet sein, sonst erscheint der Skills-Bereich
 nicht. Danach unter **Customize → Skills → Add → Upload a skill** das Paket
 [`humanizer-de.zip`](https://github.com/marmbiz/humanizer-de/releases/latest/download/humanizer-de.zip)
-vom neuesten Release hochladen. Was im Archiv steckt und wie sich seine Prüfsumme nachrechnen
-lässt: [docs/installation.md](docs/installation.md#claude-im-browser-claudeai).
+vom neuesten Release hochladen. Der ganze Weg, vom Skills-Menü bis zum fertigen Upload, in
+elf Sekunden:
+
+https://github.com/user-attachments/assets/c567f29e-f37b-4323-b308-f04276eb9081
+
+Was im Archiv steckt und wie sich seine Prüfsumme nachrechnen lässt:
+[docs/installation.md](docs/installation.md#claude-im-browser-claudeai).
 
 **Nicht installiert werden:** Python, Click, spaCy, das deutsche spaCy-Modell, Hunspell,
 LanguageTool oder Java. Solche Pakete dürfen nur nach ausdrücklicher Zustimmung separat
