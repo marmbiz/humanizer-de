@@ -466,7 +466,7 @@ einem eigenständigen System für deutschsprachige Texte mit eigenem Versionssch
 
 Projektcode und eigenständiges Projektmaterial stehen unter der [MIT License](LICENSE).
 Der adaptierte Musterkatalog in `references/patterns.md` und die entsprechenden
-Katalogbeschreibungen und Tabellen in diesem README und in `docs/muster-katalog.md` stehen unter
+Katalogbeschreibungen in diesem README und die Tabellen in `docs/muster-katalog.md` stehen unter
 [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
 
 Copyright-, Quellen-, Änderungshinweise und der genaue Lizenzumfang stehen in

@@ -1,6 +1,6 @@
 # 72 Muster in 10 Kategorien
 
-Der Skill arbeitet mit einem Katalog aus **72 KI-Schreibmustern** in 10 Kategorien, priorisiert nach Schweregrad (HIGH / MEDIUM / LOW). Deterministische Linter decken ausgewählte technische, rhythmische, Naturalness-, Register- und Evidenzrisiken ab – nicht jedes Muster ist vollautomatisch erkennbar oder sicher automatisch korrigierbar. Linter-gestützt sind derzeit 20 Muster (2, 4, 8, 13, 16, 20, 24, 26, 39, 43, 44, 46, 54, 55, 58, 61, 63–65 sowie ein advisory Kandidatenhinweis für 72; Muster 2 und 44: Teilaspekte, Muster 20, 24 und 26: wortgenaue Artefakt-Strings, Muster 39: Erkennung im Präzisionspfad mit spaCy, kein Gate-Anschluss) plus Register-, Rhythmus- und Evidenz-Checks. Die übrigen Muster prüft das Modell anhand des Katalogs. Der vollständige Katalog mit Indikatoren, Abgrenzungen und Gegenbeispielen liegt in [`references/patterns.md`](../references/patterns.md). Für den schnellen Blick ohne Katalog fasst [`assets/checkliste-ki-tells.md`](../assets/checkliste-ki-tells.md) zehn typische Tells auf einer Seite zusammen.
+Übersicht aller 72 Muster nach Kategorie und Schweregrad (HIGH / MEDIUM / LOW). Welche Muster Linter-gestützt sind und wie der Katalog aufgebaut ist, steht in der [README](../README.md#72-muster-in-10-kategorien). Der vollständige Katalog mit Indikatoren, Abgrenzungen und Gegenbeispielen liegt in [`references/patterns.md`](../references/patterns.md).
 
 <details>
 <summary><strong>Sprache und Tonfall (19 Muster)</strong></summary>

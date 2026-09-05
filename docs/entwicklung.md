@@ -2,19 +2,13 @@
 
 Für Beiträge gilt [CONTRIBUTING.md](../CONTRIBUTING.md), für die Entwicklerarbeit am Skill [WARP.md](../WARP.md). Hier stehen der Verify-Lauf und die Release-Regel.
 
-Für lokale Release-Prüfung:
-
-```bash
-make verify
-```
-
-Das führt die Unit-Tests einschließlich der maschinenlesbaren Scenario-Contracts, Unicode-/Rhythmus-Smoke-Tests, Evidence-, Register- und Naturalness-Fixtures sowie `git diff --check` aus.
+Den Verify-Lauf (`make verify`) beschreibt die [README](../README.md#entwicklung-und-verifikation).
 
 Einzelchecks, Detection-Snapshot, Exit-Codes und das Evidence-Gate einzeln: [pruefskripte.md](pruefskripte.md#einzelchecks).
 
 ## Release-Regel
 
-Der Abschnitt **Was ist neu?** zeigt die aktuelle Version und ältere Minor-Reihen als
+Der README-Abschnitt [**Was ist neu?**](../README.md#was-ist-neu) zeigt die aktuelle Version und ältere Minor-Reihen als
 Meilensteine. Ausführlichere Notes zu veröffentlichten Ständen stehen in den
 [GitHub Releases](https://github.com/marmbiz/humanizer-de/releases).
 

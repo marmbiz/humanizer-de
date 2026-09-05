@@ -73,6 +73,13 @@ class ReadmePatternsSyncTests(unittest.TestCase):
                 f"README-Schwere für Muster {pattern_id} weicht ab",
             )
 
+    def test_readme_links_the_moved_catalog(self):
+        readme = (ROOT / "README.md").read_text(encoding="utf-8")
+        section = readme.split("## 72 Muster in 10 Kategorien", 1)[1]
+        section = re.split(r"\n## ", section, maxsplit=1)[0]
+        self.assertIn("](docs/muster-katalog.md)", section)
+        self.assertTrue((ROOT / "docs" / "muster-katalog.md").exists())
+
     def test_readme_category_counts_match_rows(self):
         section = readme_catalog_section()
         blocks = CATEGORY_BLOCK_RE.findall(section)
