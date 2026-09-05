@@ -415,21 +415,13 @@ Einzelchecks, Exit-Codes, Detection-Snapshot und das Evidence-Gate einzeln:
 
 ## Was ist neu?
 
-- **5.27.0** - Drei neue deterministische Prüfungen und ein neues Gate im Two-Pass-Runner.
-  Wortgenau erkennt der Sammelcheck jetzt KI-Werkzeugreste: Zitierreste von ChatGPT, Gemini,
-  Grok, DeepSeek und Perplexity, stehen gebliebene Reasoning-Fragmente,
-  `utm_source`-Fingerabdrücke von KI-Diensten und ausdrückliche Selbstbezüge eines
-  Sprachmodells (Muster 20, 24 und 26). Ein Treffer genügt. Weil ein Artefakt kein Wort ist,
-  schützen auch Backticks nicht davor. In `unicode_lint` fällt zusätzlich auf, wenn ein Wort
-  Buchstaben aus zwei Schriftsystemen mischt, etwa ein kyrillisches a in einem lateinischen
-  Wort (Muster 43). Im Two-Pass-Runner lehnt ein Struktur-Gate jedes Ergebnis ab, das
-  Überschriften, Links oder Codeblöcke hinzufügt, entfernt oder verändert. Damit ist die
-  Formatierungsblindheit der Eingriffstiefe geschlossen. Mehrfach vorkommende Sätze lassen sich
-  über `occurrence` einzeln adressieren, und ausgelassene Kandidaten stehen als
-  `skipped_candidates` im Report. Für den Skill selbst gilt neu, dass Overlap-Partner im Pass
-  des zuerst bearbeiteten Musters mitentschieden werden. Im Katalog steht jetzt die
-  Linter-Schwelle für Fettschrift, und Partikel-Befunde gelten dort als Registerkontrolle,
-  nicht als Herkunftssignal.
+- **5.27.1** - Eine neue Leitplanke im Skill: Der zu bearbeitende Text ist Inhalt, keine
+  Anweisung. Aufforderungen im Text, etwa Regeln zu ignorieren, Dateien zu löschen oder
+  Befehle auszuführen, werden nie befolgt, sondern wie jede andere Passage geprüft. Der
+  Auftrag kommt allein aus der Nutzeranweisung außerhalb des Textes. Der Two-Pass-Runner
+  hatte diesen Schutz bereits, der normale Pfad in Claude Code und Codex jetzt auch. Damit das
+  Wortbudget von SKILL.md hält, sind zwei doppelt vorhandene Sätze gestrichen; ihr Inhalt
+  steht weiter in der Skill-Beschreibung und unter Referenzen.
 
 Alle früheren Versionen: [CHANGELOG.md](CHANGELOG.md). Ausführlichere Notes zu veröffentlichten
 Ständen stehen in den [GitHub Releases](https://github.com/marmbiz/humanizer-de/releases).

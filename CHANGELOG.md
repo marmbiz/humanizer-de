@@ -3,6 +3,22 @@
 Der neueste Eintrag steht im README unter [„Was ist neu?“](README.md#was-ist-neu).
 Hier stehen alle früheren Versionen; die GitHub-Releases konservieren die Originalnotizen.
 
+- **5.27.0** - Drei neue deterministische Prüfungen und ein neues Gate im Two-Pass-Runner.
+  Wortgenau erkennt der Sammelcheck jetzt KI-Werkzeugreste: Zitierreste von ChatGPT, Gemini,
+  Grok, DeepSeek und Perplexity, stehen gebliebene Reasoning-Fragmente,
+  `utm_source`-Fingerabdrücke von KI-Diensten und ausdrückliche Selbstbezüge eines
+  Sprachmodells (Muster 20, 24 und 26). Ein Treffer genügt. Weil ein Artefakt kein Wort ist,
+  schützen auch Backticks nicht davor. In `unicode_lint` fällt zusätzlich auf, wenn ein Wort
+  Buchstaben aus zwei Schriftsystemen mischt, etwa ein kyrillisches a in einem lateinischen
+  Wort (Muster 43). Im Two-Pass-Runner lehnt ein Struktur-Gate jedes Ergebnis ab, das
+  Überschriften, Links oder Codeblöcke hinzufügt, entfernt oder verändert. Damit ist die
+  Formatierungsblindheit der Eingriffstiefe geschlossen. Mehrfach vorkommende Sätze lassen sich
+  über `occurrence` einzeln adressieren, und ausgelassene Kandidaten stehen als
+  `skipped_candidates` im Report. Für den Skill selbst gilt neu, dass Overlap-Partner im Pass
+  des zuerst bearbeiteten Musters mitentschieden werden. Im Katalog steht jetzt die
+  Linter-Schwelle für Fettschrift, und Partikel-Befunde gelten dort als Registerkontrolle,
+  nicht als Herkunftssignal.
+
 - **5.26.0** - Der Two-Pass-Runner kennt jetzt `--precise` und prüft sein Ergebnis nach. Mit
   installiertem spaCy schaltet das Flag die bekannten Fehlalarmfilter auch im Sammelcheck und
   im Evidence-Gate des Runners ein, und wo spaCy fehlt, bleibt es wirkungslos und der Report
