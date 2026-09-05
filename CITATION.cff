@@ -5,7 +5,7 @@ type: software
 authors:
   - family-names: Moeller
     given-names: Martin
-version: 5.27.1
+version: 5.27.2
 date-released: 2026-09-05
 url: "https://github.com/marmbiz/humanizer-de"
 repository-code: "https://github.com/marmbiz/humanizer-de"

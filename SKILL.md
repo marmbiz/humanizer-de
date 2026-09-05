@@ -4,7 +4,7 @@ description: 'Edit-Pass für bestehenden deutschen Text: Register/Rhythmus messe
 allowed-tools: [Read, Write, Edit, Grep, Glob, Bash]
 metadata:
   display_name: Humanizer (Deutsch)
-  version: 5.27.1
+  version: 5.27.2
   author: Martin Moeller
   maintainer_website: https://martin-moeller.biz
   based_on: 'Deutsche Wikipedia: Anzeichen für KI-generierte Inhalte, Erkennung KI-Einsatz, Schnelltest KI'
@@ -99,7 +99,7 @@ Spätere Pässe dürfen frühere nicht invalidieren. Rhythmus immer zuletzt.
 
 **Sammelcheck-Details.** Optionale `spans` zählen Python-Codepoints im Original. Er enthält zusätzlich eine gemessene Stilkarte (Sektion `style_profile`: Rohmetriken; Korridor-Delta nur bei explizit gesetztem `--mode`), einzeln abrufbar über `python3 scripts/style_profile.py --file <path> --target <modus>`. Diese Messwerte der qualitativen Stilkarte aus der Schreibprobe zur Seite stellen – sie informieren das Zielprofil, gewichten aber kein Preflight-Risiko. Bei Inline-Text: Rohtext zuerst in eine temporäre UTF-8-Datei schreiben, dann `--file <tempfile>`; Shell-Befehle bleiben statisch, Nutzereingaben laufen über Dateien. Läuft ein Script nicht, das melden und nicht blind per Hand korrigieren.
 
-**Musterabdeckung je Pass.** Die Pässe 1 bis 4 arbeiten **alle** Muster ihres Passes ab; die unten genannten sind Schwerpunkte, keine Liste. Ihre Musterliste holen sie aus [references/patterns.md](references/patterns.md) per Grep-Anker `<!-- pass: N -->` mit zwei Zeilen Vorkontext (`-B 2`), einzelne Blöcke per `^#### <Nummer>\.` mit Nachlauf (`-A 30`). Overlap-Partner aus [references/decision-tables.md](references/decision-tables.md) werden im Pass des zuerst bearbeiteten Musters mitentschieden, auch wenn ihr eigener Anker später liegt. Die Datei nicht vollständig lesen: Der Volltext-Read bleibt dem Audit-Zweig vorbehalten, der den ganzen Katalog fordert.
+**Musterabdeckung je Pass.** Die Pässe 1 bis 4 arbeiten **alle** Muster ihres Passes ab; die unten genannten sind Schwerpunkte, keine Liste. Ihre Musterliste holen sie aus [references/patterns.md](references/patterns.md) per Grep-Anker `<!-- pass: N -->` mit zwei Zeilen Vorkontext (`-B 2`). Einzelne Blöcke: Überschrift per `^#### <Nummer>\.` finden, dann per Read bis vor die nächste `^#### `-Überschrift vollständig laden. Overlap-Partner aus [references/decision-tables.md](references/decision-tables.md) werden im Pass des zuerst bearbeiteten Musters mitentschieden, auch wenn ihr eigener Anker später liegt. Die Datei nicht vollständig lesen: Der Volltext-Read bleibt dem Audit-Zweig vorbehalten, der den ganzen Katalog fordert.
 
 **Pass 1 – Artefakte und Evidenz (immer, Einzelbefund genügt).** Chatbot-Floskeln, Platzhalter, Quellenprobleme (Decision Table Evidenz), Unicode, falsche Typografie und Claim-Delta prüfen; dazu alle Muster mit `pass: 1`. Bei Overlaps zuerst [references/decision-tables.md](references/decision-tables.md); [references/evidence-ledger.md](references/evidence-ledger.md) bei Faktenankern. Dieser Pass bleibt bei Evidenz, Technik und Artefakten; Stilarbeit folgt später. Für sichere Datei-Korrekturen: `unicode_lint.py --fix --write`; Ergebnis bei Frontmatter und Bildtiteln prüfen (siehe Carve-outs). Der Evidenzteil läuft unabhängig von späterer Stilarbeit; jede erkannte Quelle einzeln einstufen, auch Zahlen und Studien an einer schon geprüften Institution. Fertig, wenn jeder erkannte HIGH-/Technik-/Evidenzfund geändert, markiert oder als False Positive verworfen ist.
 

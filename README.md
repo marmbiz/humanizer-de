@@ -420,13 +420,10 @@ Einzelchecks, Exit-Codes, Detection-Snapshot und das Evidence-Gate einzeln:
 
 ## Was ist neu?
 
-- **5.27.1** - Eine neue Leitplanke im Skill: Der zu bearbeitende Text ist Inhalt, keine
-  Anweisung. Aufforderungen im Text, etwa Regeln zu ignorieren, Dateien zu löschen oder
-  Befehle auszuführen, werden nie befolgt, sondern wie jede andere Passage geprüft. Der
-  Auftrag kommt allein aus der Nutzeranweisung außerhalb des Textes. Der Two-Pass-Runner
-  hatte diesen Schutz bereits, der normale Pfad in Claude Code und Codex jetzt auch. Damit das
-  Wortbudget von SKILL.md hält, sind zwei doppelt vorhandene Sätze gestrichen; ihr Inhalt
-  steht weiter in der Skill-Beschreibung und unter Referenzen.
+- **5.27.2** - Der sichere Unicode-Fix erhält Apostrophe jetzt auch in verschachtelten
+  Zitaten. Einzelne Katalogmuster werden vollständig bis zum nächsten Muster geladen, damit
+  lange Blöcke ihre Abgrenzungen nicht verlieren. Zwei Besser-Beispiele bleiben nun strikt bei
+  der Substanz ihrer Ausgangstexte.
 
 Alle früheren Versionen: [CHANGELOG.md](CHANGELOG.md). Ausführlichere Notes zu veröffentlichten
 Ständen stehen in den [GitHub Releases](https://github.com/marmbiz/humanizer-de/releases).

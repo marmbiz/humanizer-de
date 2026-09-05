@@ -286,7 +286,7 @@ def scan_quotes(text: str, in_range) -> tuple[list[dict], dict[int, str], set[st
                     "Wrong German closing quote without matching U+201E opener.",
                 )
         elif char == WRONG_CLOSE_SINGLE:
-            if single_openers:
+            if single_openers and not looks_like_german_apostrophe(text, index):
                 single_openers.pop()
                 replacements[index] = CLOSE_DE_SINGLE
                 add_finding(

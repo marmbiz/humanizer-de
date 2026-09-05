@@ -195,6 +195,17 @@ class UnicodeLintTests(unittest.TestCase):
         self.assertTrue(any(item["kind"] == "wrong_single_german_closing_quote" for item in unicode_lint.lint(text)))
         self.assertEqual(ord(fixed[-1]), 0x2018)
 
+    def test_apostrophe_inside_nested_quote_is_not_rewritten(self):
+        texts = (
+            "„Sie fragte: ‚Wie geht’s dir?‘“",
+            "„Sie sagte: ‚Das ist Hans’ Auto.‘“",
+        )
+
+        for text in texts:
+            with self.subTest(text=text):
+                self.assertEqual(unicode_lint.lint(text), [])
+                self.assertEqual(unicode_lint.fix(text), text)
+
     def test_english_curly_quote_pair_is_reported(self):
         text = chr(0x201C) + "Text" + chr(0x201D)
         self.assertTrue(any(item["kind"] == "english_curly_quotes" for item in unicode_lint.lint(text)))

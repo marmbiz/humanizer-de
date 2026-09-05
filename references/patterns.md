@@ -1,6 +1,6 @@
 # Humanizer-de Pattern Catalog
 
-Vollständiger Musterkatalog für Humanizer (Deutsch) v5.27.1. Nur bei konkreter Musterdiagnose, Audit oder Grenzfällen laden.
+Vollständiger Musterkatalog für Humanizer (Deutsch) v5.27.2. Nur bei konkreter Musterdiagnose, Audit oder Grenzfällen laden.
 
 ## Kurzreferenz
 
@@ -1019,7 +1019,7 @@ Häufige Indikatoren:
 
 ❌ Schlecht: "Die Plattform wurde jetzt um KI-gestützte Empfehlungen erweitert, die die alte manuelle Auswahl ersetzen."
 
-✓ Besser: "Die Plattform empfiehlt passende Inhalte automatisch auf Basis des Nutzerverhaltens."
+✓ Besser: "Die Plattform verwendet KI-gestützte Empfehlungen anstelle der manuellen Auswahl."
 
 #### 56. Aphorismus-Formeln [MEDIUM]
 <!-- haltbarkeit: kern -->
@@ -1648,7 +1648,7 @@ Den Subtitel/Nachsatz *nicht* entfernen, solange er echte, nicht-redundante Info
 ✓ Besser (Schema aufbrechen, Varianz zulassen – ein Doppelpunkt unter dreien ist unkritisch):
 - "Warum regulierte Branchen ihre Inhalte für KI umdenken müssen"
 - "Veraltete Archive: die zweite Zeitbombe"
-- "Wie KI-Kompression Warnhinweise aus Fachtexten entfernt"
+- "Was KI-Kompression aus Fachtexten macht"
 
 #### 55. Gleichförmiger Satzrhythmus [MEDIUM]
 <!-- haltbarkeit: kern -->
