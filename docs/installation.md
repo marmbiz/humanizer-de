@@ -45,9 +45,13 @@ mitgelieferten Skills zur Verfügung. Das entspricht dem aktuellen
 Diese Befehle werden in einer laufenden Claude-Code-Sitzung eingegeben (Slash-Commands), nicht im Terminal.
 
 ```bash
-/plugin marketplace add marmbiz/humanizer-de
+/plugin marketplace add https://github.com/marmbiz/humanizer-de.git
 /plugin install humanizer-de@humanizer-de
 ```
+
+Die HTTPS-Adresse benötigt keinen GitHub-SSH-Schlüssel. Falls die Kurzform
+`marmbiz/humanizer-de` mit `Permission denied (publickey)` scheitert, verwende die
+vollständige Adresse oben.
 
 Der erste Befehl fügt nur den Marketplace hinzu, der zweite installiert den Humanizer. Danach
 `/reload-plugins` ausführen, alternativ eine neue Claude-Code-Sitzung starten. Über `/plugin` lässt

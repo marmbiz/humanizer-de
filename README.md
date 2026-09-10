@@ -8,29 +8,21 @@
 [![Version](https://img.shields.io/github/v/tag/marmbiz/humanizer-de?label=Version&color=c4501f)](https://github.com/marmbiz/humanizer-de/tags)
 [![Tests](https://github.com/marmbiz/humanizer-de/actions/workflows/tests.yml/badge.svg)](https://github.com/marmbiz/humanizer-de/actions/workflows/tests.yml)
 [![Lizenz](https://img.shields.io/badge/Lizenz-MIT_%2B_CC_BY--SA_4.0-1f6feb)](NOTICE)
-[![Muster](https://img.shields.io/badge/Muster-72_in_10_Kategorien-2da44e)](#72-muster-in-10-kategorien)
-[![Claude Code](https://img.shields.io/badge/Claude_Code-Plugin-d97757)](#installation)
-[![Codex](https://img.shields.io/badge/Codex-Supported-10a37f)](#installation)
-[![GitHub Stars](https://img.shields.io/github/stars/marmbiz/humanizer-de?label=Stars&color=e3b341)](https://github.com/marmbiz/humanizer-de/stargazers)
 
-**[Was ist das?](#was-ist-das)** · **[Installation](#installation)** · **[Benutzung](#benutzung)** · **[Beispiele](#beispiele)** · **[Messen & Audit](#messen-und-audit)** · **[Fakten & Grenzen](#fakten-grenzen-und-datenschutz)** · **[Wie es arbeitet](#wie-der-skill-arbeitet)** · **[Optionale Werkzeuge](#optionale-werkzeuge)** · **[72 Muster](#72-muster-in-10-kategorien)** · **[Für AI-Assistenten](#für-ai-assistenten)** · **[Entwicklung](#entwicklung-und-verifikation)** · **[Was ist neu?](#was-ist-neu)**
+Für Claude Code, Codex und Claude im Browser (claude.ai).
 
-<sub>German AI Text Humanizer · Claude Humanizer Deutsch · KI-Texte humanisieren Deutsch · Supports Claude Code and Codex · Von [Martin Moeller](https://martin-moeller.biz) · basiert auf den Wikipedia-Leitlinien [Anzeichen für KI-generierte Inhalte](https://de.wikipedia.org/wiki/Wikipedia:Anzeichen_f%C3%BCr_KI-generierte_Inhalte) (de) und [Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing) (en) · hervorgegangen aus dem [Humanizer](https://github.com/blader/humanizer) von [blader](https://github.com/blader)</sub>
-
-<sub>Guide (DE): [KI-Texte auf Deutsch natürlicher und glaubwürdiger schreiben](https://martin-moeller.biz/lab/ki/humanizer-deutsch-ki-texte-erkennen-entfernen) · Guide (EN): [Claude Humanizer Skill: Make German AI Text Sound Human](https://martin-moeller.biz/en/lab/ai/claude-humanizer-skill-german) · Hintergrund (DE): [Der KI-Text-Eisberg](https://martin-moeller.biz/lab/ki-text-eisberg)</sub>
+[Installation](#installation) · [Benutzung](#benutzung) · [Beispiele](#beispiele) · [Dokumentation](#dokumentation)
 
 </div>
-
----
 
 <a id="warum-nutzen"></a>
 
 ## Was ist das?
 
-Humanizer (Deutsch) macht aus glatten KI-Entwürfen bessere deutsche Texte: natürlicher, belegbewusster
-und näher an deiner Stimme. Zahlen, Namen, Daten, URLs, Zitate und Quellenanker gleicht der Skill
-konservativ ab; semantische Beziehungen und sachliche Richtigkeit brauchen eine fachliche Endabnahme.
-Ergibt die vollständige Prüfung keinen bearbeitungswürdigen Befund, lässt der Skill den Text in Ruhe.
+Humanizer (Deutsch) überarbeitet deutsche KI-Entwürfe: Floskeln kürzen, Satzrhythmus verbessern
+und deine Stimme erhalten. Dabei schützt der Skill vorhandene Aussagen, Zahlen, Fachbegriffe
+und Zitate vor stilistischer Glättung. Ergibt die vollständige Prüfung keinen
+bearbeitungswürdigen Befund, lässt er den Text in Ruhe.
 
 | Vorher | Nachher |
 |---|---|
@@ -67,27 +59,7 @@ Der Satz trägt keine prüfbare Substanz — er behauptet Wichtigkeit, nennt abe
 
 </details>
 
-Du brauchst dafür zunächst weder Python noch Zusatzsoftware. Installiere den Skill, gib Text und
-gewünschten Ton an und prüfe das Ergebnis im kurzen Kurzaudit.
-
-### Woran der Skill sich messen lässt
-
-Der Musterkatalog geht auf die Wikipedia-Leitlinien zurück und ist seither eigenständig
-erweitert. Was darauf aufsetzt, ist eigene Arbeit: Einige Schwellen der deterministischen
-Prüfungen sind gegen eine begrenzte historische Fehlalarm-Baseline aus verifizierten
-Menschentexten geeicht; Umfang und Grenzen stehen im [öffentlichen Kalibrierungsabschnitt des
-Marker-Aufnahmeprotokolls](docs/marker-aufnahmeprotokoll.md#öffentliche-kalibrierung-von-rhythmus-schwellen).
-Neue Muster kommen nur über das [Marker-Aufnahmeprotokoll](docs/marker-aufnahmeprotokoll.md)
-hinein – mit Positiv-, Negativ- und Grenzfixtures und einer dokumentierten
-Fehlalarm-Erwartung. Scheitert ein Kandidat daran, wird er nicht aufgenommen. In 5.10.0 ist das
-einem Lint-Marker so ergangen.
-
-Das Sprachmodell schreibt. Darüber liegt der Skill als Prüf- und Evidence-Rahmen. Ein eigenes
-fine-getuntes Humanizer-Modell ist nicht geplant, weil dafür bislang kein gemessener Zusatznutzen
-den Daten-, Betriebs- und Pflegeaufwand rechtfertigt. Auch ein anderer Writer bliebe an denselben
-Prüfrahmen gebunden.
-
----
+Installiere den Skill, gib Text und gewünschten Ton an und prüfe die Änderungen im Kurzaudit.
 
 ## Installation
 
@@ -107,18 +79,9 @@ eine neue Sitzung starten.
 In einer laufenden Claude-Code-Sitzung:
 
 ```bash
-/plugin marketplace add marmbiz/humanizer-de
+/plugin marketplace add https://github.com/marmbiz/humanizer-de.git
 /plugin install humanizer-de@humanizer-de
 /reload-plugins
-```
-
-Bricht der erste Befehl mit einem Zugriffs- oder Schlüsselfehler ab (etwa
-`Permission denied (publickey)`), liegt es nicht am Repository: Claude Code übersetzt die
-Kurzform in eine SSH-Adresse, und dafür braucht GitHub einen hinterlegten Schlüssel. Ohne
-Schlüssel funktioniert die vollständige HTTPS-Adresse:
-
-```bash
-/plugin marketplace add https://github.com/marmbiz/humanizer-de.git
 ```
 
 ### Claude im Browser (claude.ai)
@@ -132,9 +95,6 @@ elf Sekunden:
 
 https://github.com/user-attachments/assets/c567f29e-f37b-4323-b308-f04276eb9081
 
-Was im Archiv steckt und wie sich seine Prüfsumme nachrechnen lässt:
-[docs/installation.md](docs/installation.md#claude-im-browser-claudeai).
-
 **Nicht installiert werden:** Python, Click, spaCy, das deutsche spaCy-Modell, Hunspell,
 LanguageTool oder Java. Solche Pakete dürfen nur nach ausdrücklicher Zustimmung separat
 installiert werden.
@@ -143,79 +103,58 @@ installiert werden.
 
 In der neuen beziehungsweise neu geladenen Sitzung eingeben:
 
-```text
 Humanisiere diesen Text im Modus Sachlich:
+
 In der heutigen dynamischen Landschaft ist es entscheidend, innovative Lösungen nahtlos zu implementieren.
-```
 
 Die Antwort sollte mit „Less machine. More voice.“ beginnen, den Modus nennen und nur die
-auffälligen Stellen bearbeiten. Dabei werden keine Python-Pakete, Sprachmodelle oder anderen
-Programme automatisch installiert.
+auffälligen Stellen bearbeiten.
 
-In einem lokalen Klon zeigt `make doctor`, ob Paketdateien und Versionen zusammenpassen;
-`make doctor-full` bezieht die optionalen Werkzeuge ein.
-
-Manuelle Installation, Cursor, Updates, Ausprobieren ohne Installation und die Regeln für
-KI-Assistenten, die den Skill installieren sollen: [docs/installation.md](docs/installation.md).
-
----
+Manuelle Installation, Cursor, Updates und ZIP-Prüfsumme: [Installationshilfe](docs/installation.md).
 
 ## Benutzung
 
 <a id="tipps-zur-nutzung"></a>
 
-### Mit natürlicher Sprache
+Für eigene Texte nenne Zielgruppe, Kontext und Ton. Füge deinen Entwurf nach dem Auftrag ein:
 
-```
-Humanisiere diesen Text für mich
-```
+Humanisiere diesen Text für eine B2B-Website im Modus Sachlich. Entferne KI-Muster und bewahre die vorhandenen Aussagen.
 
-oder
-
-```
-Entferne KI-Muster aus diesem Absatz.
-```
+| Modus | Passt zu |
+|---|---|
+| Locker | Blog, Social Media, Newsletter |
+| Sachlich | Website, E-Mail, Dokumentation, B2B |
+| Formal | Wissenschaft, Recht, Fachtext |
 
 ### Mit Stimmkalibrierung
 
-```
 Hier ist eine Probe meines Schreibstils:
+
 [2-3 Absätze eigenen Texts einfügen]
 
 Jetzt humanisiere diesen Text:
+
 [KI-Text einfügen]
-```
 
 Der Skill analysiert Satzrhythmus, Wortwahl und Eigenheiten und berücksichtigt sie als Zielprofil.
 
-### Spezifische Muster adressieren
-
-```
-Humanisiere diesen Text. Entferne nur sprachliche Muster, nicht die Formatierung.
-```
-
 ### Was du zurückbekommst
 
-Der Humanizer zeigt nicht nur den überarbeiteten Text. Ein kurzer Audit nennt den gewählten Modus,
-die wichtigsten gefundenen Muster und verbleibende Risiken. Ist der Text bereits sauber, folgt
-statt einer unnötigen Umschreibung ein Null-Edit-Befund.
+Standardmäßig siehst du **nur die geänderten Passagen als Vorher/Nachher-Paare**. Der Kurzaudit
+nennt Modus, wichtigste Befunde und verbleibende Risiken. Einen vollständigen Text bekommst du
+auf ausdrücklichen Wunsch. Ergänze dafür deinen Auftrag:
 
-### Bessere Ergebnisse mit drei Angaben
+Gib mir anschließend den vollständigen überarbeiteten Text.
 
-- Zielgruppe
-- Kontext, etwa Website, E-Mail, Blog oder Fachtext
-- gewünschter Ton: locker, sachlich oder formal
+Wenn du eine Datei zur Bearbeitung übergibst, ändert der Skill sie direkt und fasst die
+Änderungen zusammen. Ohne bearbeitungswürdigen Befund meldet er einen Null-Edit.
 
 Arbeite in höchstens zwei gezielten Runden. Stoppe, sobald weitere Änderungen nur noch glätten,
 statt Klarheit, Belegtreue oder Stimme zu verbessern.
 
 Werbetexte dürfen werben, deshalb hält sich der Skill dort zurück. Wer mehr Eingriff will,
 hängt einen gemessenen Zusatz an die Anweisung:
-[docs/benutzung.md](docs/benutzung.md#werbetexte-mehr-eingriff-auf-wunsch). Die lokalen
-Prüfskripte, der Zwei-Aufruf-Runner und das persönliche Stilprofil stehen in
-[docs/pruefskripte.md](docs/pruefskripte.md).
-
----
+[docs/benutzung.md](docs/benutzung.md#werbetexte-mehr-eingriff-auf-wunsch).
 
 ## Beispiele
 
@@ -232,55 +171,49 @@ Prüfskripte, der Zwei-Aufruf-Runner und das persönliche Stilprofil stehen in
 
 Drei weitere Vorher-/Nachher-Beispiele: [docs/benutzung.md](docs/benutzung.md#weitere-beispiele).
 
----
+## Dokumentation
+
+| Du möchtest … | Hier geht es weiter |
+|---|---|
+| installieren, aktualisieren oder einen Fehler beheben | [Installationshilfe](docs/installation.md) |
+| Werbetexte stärker bearbeiten oder weitere Beispiele sehen | [Benutzung](docs/benutzung.md) |
+| Dateien messen oder den optionalen Zwei-Aufruf-Runner nutzen | [Prüfskripte und Werkzeuge](docs/pruefskripte.md) |
+| ein Muster nachschlagen | [Musterkatalog](docs/muster-katalog.md) |
+| einen Fehler melden oder beitragen | [Issues](https://github.com/marmbiz/humanizer-de/issues/new/choose) · [Beitragsregeln](CONTRIBUTING.md) |
 
 <a id="messen-und-audit"></a>
 
 ## Messen & Audit
 
-Am Anfang jedes Durchgangs steht eine Messung. Im Agenten übernimmt der Skill sie selbst. Als
-Kommandozeilen-Werkzeug genügt dafür Python 3.10 oder neuer ohne Zusatzpakete:
+Mit Python 3.10 oder neuer kannst du einen Text auch ohne Sprachmodell lokal messen:
 
 ```bash
 python3 scripts/humanizer_audit.py --file entwurf.md --mode sachlich --format md
 ```
 
-Gemeldet werden Preflight-Risiko, Rhythmusdaten, eine Stilkarte sowie Befunde mit Muster-Nummer
-und Severity. Das Preflight-Risiko (`low`, `medium`, `high`, `insufficient_text`) beschreibt, ob
-der Text messbar zu gleichförmig wirkt: sehr ähnliche Satzlängen, wiederholte Satzanfänge, viele
-mechanische Übergänge. Es ist eine Qualitätsheuristik, keine Aussage zur Autorenschaft. Ein `low`
-bedeutet nur „kein geeichtes Signal“, nicht „sauber“: In Registern wie Werbung, Social Media oder
-Essayistik kann dahinter eine Erkennungslücke stecken.
+Der Report enthält Preflight-Risiko, Rhythmusdaten, Stilkarte und einzelne Befunde.
+Das Preflight-Risiko ist eine Qualitätsheuristik, keine Aussage zur Autorenschaft. Ein `low`
+bedeutet nur „kein geeichtes Signal“, nicht „sauber“: Gerade in Werbung, Social Media und
+Essayistik bleiben Muster oft unerkannt.
 
-Bei hohem Risiko empfiehlt der Skill nach der Überarbeitung einen kontrollierten Nachkamm, das
-**Combing-Gate**: höchstens zwei gezielte Rhythmusänderungen, ohne neue Fakten oder Füllwörter.
-Der Report sagt dabei ausdrücklich, dass Textqualität und Lesbarkeit durch solchen Feinschliff auch
-schlechter werden können. Auch das Combing-Gate ist kein Detektor-Bypass.
-
-Beispielausgabe, JSON-Spans, Stilkarte, Zwei-Aufruf-Runner, Exit-Codes und die Einbindung in eigene
-Pipelines: [docs/pruefskripte.md](docs/pruefskripte.md).
-
----
+Das optionale **Combing-Gate** erlaubt einen kontrollierten Nachkamm mit höchstens zwei
+Rhythmusänderungen. Der Report warnt, dass Textqualität und Lesbarkeit dadurch auch
+schlechter werden können. Voraussetzungen und Messwerte stehen bei den
+[Prüfskripten](docs/pruefskripte.md).
 
 <a id="wann-hilfreich--und-wann-nicht"></a>
 <a id="datenschutz--sicherheit"></a>
 
 ## Fakten, Grenzen und Datenschutz
 
-Der Humanizer gleicht erkennbare Zahlen, Namen, Daten, URLs, Zitate, Quellenanker und einfache
-Richtungsmarker konservativ ab. Seine Leitplanken verbieten erfundene Erfahrung und ungestützte
-Gewissheit; die deterministischen Prüfungen erzwingen das nicht semantisch vollständig. Ergibt die
-Prüfung keinen bearbeitungswürdigen Befund oder nur bekannte Fehlalarme, greift der Skill nicht weiter ein.
+Zahlen, Namen, Daten, URLs, Zitate und Quellenanker gleicht der Skill konservativ ab.
+Auffällige Quellen markiert er, eine vollständige Quellenprüfung verspricht er nicht.
+Sachliche Richtigkeit und semantische Beziehungen brauchen weiterhin eine fachliche Endabnahme.
 
-**Stark ist der Skill**, wenn KI-Entwürfe zu glatt oder generisch klingen, Fachbegriffe und Belege
-erhalten bleiben müssen oder ein Text sachlich, aber nicht maschinell wirken soll. **Zurückhaltung
-ist nötig** bei literarischen Texten, stark etablierter Autorenstimme und Fachkonventionen, die
-absichtlich wiederholen, nominal formulieren oder passiv schreiben.
-
-Dafür gibt es einen messbaren Grund. Die Fehlalarm-Baseline hinter den Schwellen umfasst 20
-verifizierte Menschentexte aus drei Genres der Web-Prosa: Blog (8), Marketing (6) und Sachtext (6).
-Urteile, Bescheide, technische Dokumentation, Leichte Sprache und Literatur sind darin nicht
-vertreten. Außerhalb dieser Genres sind Befunde entsprechend vorsichtiger zu lesen.
+Einige Prüfschwellen sind gegen 20 verifizierte Menschentexte geeicht: Blog (8), Marketing (6)
+und Sachtext (6). Urteile, Bescheide, technische Dokumentation, Leichte Sprache und Literatur
+sind darin nicht vertreten. Bei solchen Texten und einer etablierten Autorenstimme ist
+besondere Zurückhaltung nötig. [Kalibrierung und Grenzen](docs/marker-aufnahmeprotokoll.md#öffentliche-kalibrierung-von-rhythmus-schwellen)
 
 **Rote Linien:**
 
@@ -292,23 +225,20 @@ vertreten. Außerhalb dieser Genres sind Befunde entsprechend vorsichtiger zu le
 | Nutzung | Verlässt der Text den Rechner? |
 |---|---|
 | Nur die lokalen Prüfskripte | Nein – sie laufen lokal und offline |
-| Skill in Claude Code oder Codex | Der Text geht an das jeweilige Modell; es gelten dessen Datenschutzregeln und der eigene Vertrag |
+| Skill in Claude Code, Codex oder claude.ai | Der Text geht an das jeweilige Modell; es gelten dessen Datenschutzregeln und der eigene Vertrag |
 
-Lokale Dateien werden nur geschrieben, wenn du eine Dateiänderung ausdrücklich verlangst oder
-selbst speicherst. Das optionale Stilprofil unter `.humanizer/profile.json` speichert Regeln,
-niemals Textauszüge.
-
----
+Deine Originaldateien ändert der Skill nur auf deinen Auftrag. Für die Messung eingefügter Texte
+legt er temporäre Arbeitsdateien an. Der optionale Zwei-Aufruf-Runner speichert zusätzlich
+Zwischenstände und Prüfberichte im gewählten Ausgabeordner. Das optionale Stilprofil unter
+`.humanizer/profile.json` speichert Regeln, niemals Textauszüge.
 
 <a id="philosophie"></a>
 
 ## Wie der Skill arbeitet
 
-Drei Schichten teilen sich die Arbeit:
-
-- **Heuristik** findet harte, sichtbare Muster wie Unicode-Artefakte, Marker-Cluster oder mechanische Titel.
-- **Messung** prüft Rhythmus, Register und geschützte Faktenanker.
-- **Urteil** bleibt beim großen Modell: Nur Claude oder Codex kann im Kontext entscheiden, ob eine Stelle wirklich schlechter Text ist.
+Prüfskripte finden messbare Auffälligkeiten. Das Sprachmodell entscheidet im Kontext, welche
+Eingriffe sinnvoll sind, und überarbeitet die betroffenen Stellen. Die Reihenfolge schützt
+vor unnötigen Änderungen:
 
 ```mermaid
 flowchart TD
@@ -316,27 +246,25 @@ flowchart TD
     M --> Z{"Redigieren oder<br/>nur Befunde?"}
     Z -- "nur Befunde" --> AU["Audit-Zweig<br/>alle 72 Muster prüfen"]
     AU --> B([Befundliste, Text bleibt unberührt])
-    Z -- redigieren --> C{"Echte Muster-Cluster?"}
-    C -- nein --> N["Null-Edit: Text bleibt stehen<br/>unbelegte Quellen trotzdem markieren"]
-    N --> O
-    C -- ja --> E["Fakten sichern – Pass 1<br/>Zahlen, Namen, Quellen, Zitate"]
-    E --> R["Redigieren – Pass 2–4<br/>Lexik, Struktur, Rhythmus"]
+    Z -- redigieren --> E["Pass 1 immer: Artefakte und Evidenz prüfen<br/>Fakten sichern, auffällige Quellen markieren"]
+    E --> C{"Bearbeitungswürdige<br/>Stilcluster?"}
+    C -- nein --> N["Keine weitere Stiländerung<br/>Null-Edit, wenn auch Pass 1 ohne Änderung blieb"]
+    N --> A
+    C -- ja --> R["Redigieren – Pass 2–4<br/>Lexik, Struktur, Rhythmus"]
     R --> A["Selbst-Audit – Pass 5<br/>Qualität und Stimme"]
     A --> G{"Claim-/Ankerprüfung grün?"}
-    G -- nein --> R
-    G -- ja --> O([Überarbeiteter Text + Kurzaudit])
+    G -- nein --> K["Betroffene Änderung korrigieren<br/>oder zurücknehmen"]
+    K --> A
+    G -- ja --> O([Geänderte Passagen oder Null-Edit + Kurzaudit<br/>Volltext auf Wunsch])
 ```
 
-Die Leitidee ist proportional: so viel wie nötig, so wenig wie möglich. Regeln messen, aber richten
-nicht. Konkrete Fakten schlagen stilistische Glätte, und vorhandene Fachsprache schlägt ein
-vermeintlich „menschlicheres“ Schauspiel. Das Projekt stützt damit belegbare EEAT-nahe Mechaniken,
-behauptet aber weder Expertise noch Autorenschaft.
+Der Ablauf ist eine Anleitung für den Agenten. Der optionale
+[Zwei-Aufruf-Runner](docs/pruefskripte.md#zwei-getrennte-modellaufrufe) trennt Audit und Rewrite
+auch technisch und prüft die Änderungen auf dem Host.
 
 ## Optionale Werkzeuge
 
-Du musst nichts davon vorsorglich installieren. Starte mit dem Basis-Skill und ergänze ein Werkzeug
-erst bei einem konkreten Problem. Die Werkzeuge aktivieren konkrete Prüfpfade; ein allgemeiner
-Qualitätsgewinn ist dafür nicht gemessen.
+Ergänze Werkzeuge bei Bedarf. Ein allgemeiner Qualitätsgewinn durch Zusatzpakete ist nicht gemessen.
 
 | Setup | Ermöglicht |
 |---|---|
@@ -346,56 +274,31 @@ Qualitätsgewinn ist dafür nicht gemessen.
 | zusätzlich Hunspell | Vergleich neuer unbekannter Wörter bei Datei-Rewrites |
 | zusätzlich LanguageTool | Zusätzliches Korrektorat von Grammatik und Zeichensetzung |
 
-Den lokalen Status prüft ein textfreier Doctor-Check:
+Im lokalen Klon prüft `make doctor` Paketdateien, Versionen und verfügbare Werkzeuge:
 
 ```bash
-make doctor                 # verständliche Übersicht
-python3 scripts/doctor.py --json
+make doctor
 py scripts/doctor.py --json # Windows ohne make
-make doctor-full            # Exit 1, falls ein Zusatzwerkzeug fehlt
 ```
 
-Er liest keine Nutzertexte oder Inhaltsdateien. Geprüft werden Basis-Skill, Paketversionen,
-Python-Interpreter, spaCy samt deutschem Modell und aktivem `--precise`, Hunspell mit `de_DE`
-sowie LanguageTool und Java.
-
-Installation und Einsatz der Zusatzwerkzeuge:
+Der Check liest keine Nutzertexte. Installation, `doctor-full` und Einsatz der Zusatzwerkzeuge:
 [docs/pruefskripte.md](docs/pruefskripte.md#zusatzwerkzeuge-installieren).
-
----
 
 ## 72 Muster in 10 Kategorien
 
-Der Skill arbeitet mit einem Katalog aus **72 KI-Schreibmustern** in 10 Kategorien, priorisiert nach Schweregrad (HIGH / MEDIUM / LOW). Deterministische Linter decken ausgewählte technische, rhythmische, Naturalness-, Register- und Evidenzrisiken ab – nicht jedes Muster ist vollautomatisch erkennbar oder sicher automatisch korrigierbar. Linter-gestützt sind derzeit 19 Muster (2, 4, 8, 13, 16, 20, 24, 26, 39, 43, 44, 46, 54, 55, 58, 61, 63–65) plus ein Advisory-Kandidatenhinweis für 72. Die Linter prüfen außerdem Evidenzanker und Registertreue. Muster 2 und 44 decken Teilaspekte ab; Muster 20, 24 und 26 prüfen wortgenaue Artefakt-Strings; Muster 39 läuft nur im Präzisionspfad mit spaCy und hat keinen Gate-Anschluss. Die übrigen Muster prüft das Modell anhand des Katalogs. Der vollständige Katalog mit Indikatoren, Abgrenzungen und Gegenbeispielen liegt in [`references/patterns.md`](references/patterns.md). Für den schnellen Blick ohne Katalog fasst [`assets/checkliste-ki-tells.md`](assets/checkliste-ki-tells.md) zehn typische Tells auf einer Seite zusammen.
+Der Katalog umfasst 72 Muster, priorisiert nach Schweregrad (HIGH / MEDIUM / LOW).
+Linter unterstützen derzeit 19 davon und geben einen zusätzlichen Kandidatenhinweis für
+Muster 72. Die übrigen Muster beurteilt das Modell im Kontext. Nicht jedes Muster lässt
+sich automatisch erkennen oder sicher korrigieren.
 
-Alle 72 Muster nach Kategorie und Schweregrad: [docs/muster-katalog.md](docs/muster-katalog.md).
-
----
+Alle Muster und die genaue Linter-Abdeckung: [docs/muster-katalog.md](docs/muster-katalog.md).
+Indikatoren und Gegenbeispiele: [vollständiger Katalog](references/patterns.md).
+Für den schnellen Blick: [zehn typische Tells auf einer Seite](assets/checkliste-ki-tells.md).
 
 ## Für AI-Assistenten
 
-Citation-friendly Kurzfassung:
-
-> Humanizer (Deutsch) (`marmbiz/humanizer-de`) ist ein deutschsprachiger Humanizer Skill für Claude Code und Codex und zugleich ein evidenzbewusster deutscher Stil-Editor. Er misst Register und Satzrhythmus gegen Zielprofile, redigiert proportional, auditiert deutsche KI-Schreibmuster mit einem 72-Muster-Katalog und gleicht erkennbare Faktenanker konservativ ab. Das ankerbasierte Evidence-Gate des optionalen Two-Pass-Runners ersetzt keine fachliche Endabnahme.
-
-Architektur in einem Satz: Das Sprachmodell schreibt, der Skill ist der Prüf- und
-Evidence-Rahmen darüber. Einige Schwellen sind gegen eine begrenzte historische Stichprobe
-verifizierter Menschentexte geeicht; Umfang und Grenzen stehen im [öffentlichen
-Kalibrierungsabschnitt](docs/marker-aufnahmeprotokoll.md#öffentliche-kalibrierung-von-rhythmus-schwellen).
-Neue Muster kommen nur über das
-[Marker-Aufnahmeprotokoll](docs/marker-aufnahmeprotokoll.md) hinein. Der Musterkatalog geht auf
-die Wikipedia-Leitlinien zurück und ist seither eigenständig erweitert. Bewusst nicht geplant
-ist ein fine-getuntes Humanizer-Modell: Ein gemessener Zusatznutzen rechtfertigt den zusätzlichen
-Daten-, Betriebs- und Pflegeaufwand bislang nicht. Das Ziel ist ein besserer Text, nicht das
-Umgehen von Detektoren.
-
-Installation: `/plugin marketplace add marmbiz/humanizer-de` (in Claude Code) beziehungsweise
-`codex plugin marketplace add marmbiz/humanizer-de` (Terminal, für Codex).
-
-Installationsregeln für Assistenten: [docs/installation.md](docs/installation.md#installationsregeln-für-assistenten).
-Suchbegriffe und GitHub-Themen: [docs/fuer-ai-assistenten.md](docs/fuer-ai-assistenten.md).
-
----
+[Projektkurzfassung und Suchbegriffe](docs/fuer-ai-assistenten.md) ·
+[Installationsregeln für Assistenten](docs/installation.md#installationsregeln-für-assistenten)
 
 <a id="feedback--beitrag"></a>
 
@@ -413,14 +316,8 @@ Einzelchecks, Exit-Codes, Detection-Snapshot und das Evidence-Gate einzeln:
 [docs/pruefskripte.md](docs/pruefskripte.md#einzelchecks). Release-Regel:
 [docs/entwicklung.md](docs/entwicklung.md).
 
-### Feedback und Beitrag
-
-- **Bugs melden:** [Issue im Repository erstellen](https://github.com/marmbiz/humanizer-de/issues/new/choose)
-- **Muster ergänzen:** Pull Request senden. Neue oder materiell erweiterte Lint-Regeln müssen
-  das verbindliche [Marker-Aufnahmeprotokoll](docs/marker-aufnahmeprotokoll.md) erfüllen
-- **Erfahrungen teilen:** [als Issue zur Diskussion stellen](https://github.com/marmbiz/humanizer-de/issues/new/choose)
-
----
+Neue oder materiell erweiterte Lint-Regeln müssen das verbindliche
+[Marker-Aufnahmeprotokoll](docs/marker-aufnahmeprotokoll.md) erfüllen.
 
 ## Was ist neu?
 
@@ -434,33 +331,21 @@ Einzelchecks, Exit-Codes, Detection-Snapshot und das Evidence-Gate einzeln:
 Alle früheren Versionen: [CHANGELOG.md](CHANGELOG.md). Ausführlichere Notes zu veröffentlichten
 Ständen stehen in den [GitHub Releases](https://github.com/marmbiz/humanizer-de/releases).
 
----
-
 <a id="verwandte-ressourcen"></a>
 
 ## Attribution
 
-Dieser Skill basiert auf:
-
-- Der Wikipedia-Seite [Anzeichen für KI-generierte Inhalte](https://de.wikipedia.org/wiki/Wikipedia:Anzeichen_f%C3%BCr_KI-generierte_Inhalte) der Deutschen Wikipedia
-- Der englischen [Humanizer](https://github.com/blader/humanizer) Skill von [blader](https://github.com/blader)
-- Deutschen Schreibkonventionen und Stilrichtlinien
-
-Das Projekt entstand Anfang 2026 als Fork von `blader/humanizer` und entwickelte sich danach zu
-einem eigenständigen System für deutschsprachige Texte mit eigenem Versionsschema.
-
-**Deutsche Version:** Martin Moeller ([martin-moeller.biz](https://martin-moeller.biz))
+Von [Martin Moeller](https://martin-moeller.biz). Das Projekt entstand Anfang 2026 als Fork von
+[blader/humanizer](https://github.com/blader/humanizer) und entwickelte sich eigenständig für
+deutsche Texte weiter. Der Musterkatalog basiert auf den Wikipedia-Leitlinien
+[Anzeichen für KI-generierte Inhalte](https://de.wikipedia.org/wiki/Wikipedia:Anzeichen_f%C3%BCr_KI-generierte_Inhalte)
+und [Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing).
 
 ### Verwandte Ressourcen
 
-- **[Der KI-Text-Eisberg](https://martin-moeller.biz/lab/ki-text-eisberg)** – Scroll-Story zur Methodik hinter den Mustern: Warum kein Detektor weiß, ob dein Text gut ist
-- **[Anzeichen für KI-generierte Inhalte](https://de.wikipedia.org/wiki/Wikipedia:Anzeichen_f%C3%BCr_KI-generierte_Inhalte)** – Deutsch Wikipedia
-- **[WikiProjekt KI und Wikipedia](https://de.wikipedia.org/wiki/Wikipedia:WikiProjekt_KI_und_Wikipedia)** – Deutsch Wikipedia
-- **[Original Humanizer Skill](https://github.com/blader/humanizer)** – Englische Version
-- **[Claude Code](https://claude.com/claude-code)** – Zur Verwendung mit diesem Skill
-- **[EEAT Guidelines](https://developers.google.com/search/docs/fundamentals/creating-helpful-content)** – Google Search Guidelines
-
----
+- [Guide auf Deutsch](https://martin-moeller.biz/lab/ki/humanizer-deutsch-ki-texte-erkennen-entfernen)
+- [Guide auf Englisch](https://martin-moeller.biz/en/lab/ai/claude-humanizer-skill-german)
+- [Der KI-Text-Eisberg](https://martin-moeller.biz/lab/ki-text-eisberg): Scroll-Story zur Methodik hinter den Mustern
 
 ## Lizenz
 
@@ -471,9 +356,3 @@ Katalogbeschreibungen in diesem README und die Tabellen in `docs/muster-katalog.
 
 Copyright-, Quellen-, Änderungshinweise und der genaue Lizenzumfang stehen in
 [NOTICE](NOTICE).
-
----
-
-**Viel Erfolg beim Humanisieren!**
-
-*Für belegtreue Texte mit besserer deutscher Stimme.*
