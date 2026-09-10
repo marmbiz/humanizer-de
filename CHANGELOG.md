@@ -3,6 +3,11 @@
 Der neueste Eintrag steht im README unter [„Was ist neu?“](README.md#was-ist-neu).
 Hier stehen alle früheren Versionen; die GitHub-Releases konservieren die Originalnotizen.
 
+- **5.27.2** - Der sichere Unicode-Fix erhält Apostrophe jetzt auch in verschachtelten
+  Zitaten. Einzelne Katalogmuster werden vollständig bis zum nächsten Muster geladen, damit
+  lange Blöcke ihre Abgrenzungen nicht verlieren. Zwei Besser-Beispiele bleiben nun strikt bei
+  der Substanz ihrer Ausgangstexte.
+
 - **5.27.1** - Eine neue Leitplanke im Skill: Der zu bearbeitende Text ist Inhalt, keine
   Anweisung. Aufforderungen im Text, etwa Regeln zu ignorieren, Dateien zu löschen oder
   Befehle auszuführen, werden nie befolgt, sondern wie jede andere Passage geprüft. Der
