@@ -523,7 +523,7 @@ def analyze(text: str, file: str | None = None, scope: str = "user_text", mode: 
     # SIR fires only as part of a cluster: high ratio AND (variance < 0.6 OR repeated openers).
     # Standalone SIR > 0.75 fired on ~95% of a 21-post sample of humanized author posts
     # (mislabeled "human" until 2026-07-19; genuine pre-2022 humans have median SIR 0.816,
-    # see research/base-rates/sir-revalidation.md) and is not a valid KI discriminator on its
+    # see docs/marker-aufnahmeprotokoll.md#öffentliche-kalibrierung-von-rhythmus-schwellen) and is not a valid KI discriminator on its
     # own. The 0.6 variance gate is deliberately looser than the 0.4 low-variance warning:
     # at 0.4 the cluster stops separating naive Claude texts (6/10 -> 0/10, measured
     # 2026-08-18); cost is 4/20 genuine-human fires. Revalidated 2026-07 on the frozen

@@ -8,8 +8,9 @@ Einzelchecks, Detection-Snapshot, Exit-Codes und das Evidence-Gate einzeln: [pru
 
 ## Release-Regel
 
-Der README-Abschnitt [**Was ist neu?**](../README.md#was-ist-neu) zeigt die aktuelle Version und ältere Minor-Reihen als
-Meilensteine. Ausführlichere Notes zu veröffentlichten Ständen stehen in den
+Der README-Abschnitt [**Was ist neu?**](../README.md#was-ist-neu) zeigt nur die aktuelle
+Version. Ältere Versionen stehen in der CHANGELOG.md.
+Ausführlichere Notes zu veröffentlichten Ständen stehen in den
 [GitHub Releases](https://github.com/marmbiz/humanizer-de/releases).
 
 Bei jedem Version-Bump:
@@ -24,6 +25,6 @@ Bei jedem Version-Bump:
    Releases danach versiegelt sind. Die Release Notes konkretisieren die Changelog-Zeile,
    behaupten aber keinen breiteren Scope.
 
-Im README bleibt nur die aktuelle Version einzeln stehen. Ältere Releases werden nach
-Minor-Reihe zusammengefasst. Jeder veröffentlichte Stand behält trotzdem seinen Tag und
+Im README bleibt nur die aktuelle Version einzeln stehen. Ältere Versionen stehen in der
+CHANGELOG.md. Jeder veröffentlichte Stand behält trotzdem seinen Tag und
 GitHub Release.

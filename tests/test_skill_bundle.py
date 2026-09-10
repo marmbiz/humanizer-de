@@ -61,9 +61,16 @@ class SkillBundleTests(unittest.TestCase):
 
     def test_referenced_scripts_are_bundled(self):
         skill = read_utf8(ROOT / "SKILL.md")
-        referenced = set(re.findall(r"(?:scripts/)?(\w+_lint\.py|\w+_audit\.py|doctor\.py|style_profile\.py)", skill))
+        referenced = set(re.findall(r"\b([\w.-]+\.py)\b", skill))
         self.assertTrue(referenced, "SKILL.md nennt kein Script")
+        # The host-controlled runner needs local CLIs and is deliberately not uploadable.
+        repo_only = {"humanizer_two_pass.py"}
+        runner_lines = [line for line in skill.splitlines() if "scripts/humanizer_two_pass.py" in line]
+        self.assertTrue(runner_lines, "SKILL.md muss die repo-only Runner-Ausnahme nennen")
+        self.assertTrue(any("nicht im Claude.ai-Bundle" in line for line in runner_lines), runner_lines)
         for name in sorted(referenced):
+            if name in repo_only:
+                continue
             self.assertIn(f"{BUNDLE_NAME}/scripts/{name}", self.names, name)
 
     def test_license_and_notice_travel_with_the_bundle(self):

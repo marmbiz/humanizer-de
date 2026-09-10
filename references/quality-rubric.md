@@ -19,7 +19,8 @@ Das Urteil trifft das Modell im Kontext und belegt es mit Stellen aus dem Text.
 Default ist minimal-invasiv: Wenn der Text sauber ist, bleibt es beim Null-Edit. Die Rubrik
 erzeugt keinen Arbeitsauftrag, nur weil eine Formulierung auch anders möglich wäre.
 
-Auf ausdrücklichen Nutzerwunsch (etwa „gründlich“ oder `--quality`) darf der Skill Richtung
+Auf ausdrücklichen Nutzerwunsch (etwa „gründlich“ oder das Skill-Schlüsselwort `--quality`)
+darf der Skill Richtung
 Zielprofil und Rubrik iterieren. Diese zusätzliche Tiefe bleibt im QGIR-Rahmen: Pass-Limits,
 Claim-Lock, Persona-Lock, Registertreue und Proportionalität gelten unverändert.
 

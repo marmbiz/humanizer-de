@@ -40,6 +40,7 @@ python3 scripts/run_review_eval.py tests/scenarios
 | 25 | Sachlich | Ein ausdrücklicher Tiefenwunsch wird als Vollrewrite oder Faktenfreibrief missverstanden. |
 | 26 | Sachlich | Bereits sauberer Kontrolltext wird trotz Null-Edit-Regel unnötig poliert. |
 | 27 | Locker | Ein mechanisch unauffälliger historischer Blogstand behält ein Cluster aus englischen Kollokationen und deutscher Anschlussgrammatik. |
+| 28 | Sachlich | Ein sauberer technischer Text behält Stil und Fakten, markiert aber eine unbelegte Quelle. |
 | 29 | Locker | Eine Häufung abstrakter „tragen“-Metaphern wird kontextabhängig variiert, ohne etablierte oder konkrete Kollokationen anzutasten. |
 
 Die Szenarien 14 bis 18 (QGIR-Contracts) existieren nur als maschinenlesbare Fixtures in `tests/scenarios/` und laufen ausschließlich über den Runner; sie haben bewusst keinen Eintrag in dieser Datei.
@@ -520,6 +521,20 @@ mit Score 0 melden, weil M45 bewusst keinen ungeeichten Regex-Detektor besitzt.
 **Warum dieses Szenario zählt:** Frühere Humanizer-Pässe entfernten messbare Oberflächenmuster,
 ließen aber dieselben harten Transfers über mehrere Versionen stehen. Der Fall verhindert,
 dass ein grüner Linter-Bericht mit idiomatisch abgeschlossenem Deutsch verwechselt wird.
+
+## Szenario 28: Sauberer Text mit unbelegter Quelle (Sachlich)
+
+**Skill-Modus:** Sachlich
+**Erwartetes Verhalten:** Stil unverändert lassen, die unbelegte Quelle im Belege-Block markieren und keine Quelle erfinden. Der Contract prüft, dass der Text unverändert bleibt; erfundene Quelldetails gelten als `new_factual_anchor` und `unnecessary_edit`.
+
+**Relevante Muster:** Quellenprüfung als Nebenprüfung; kein stilistischer Tell.
+
+## Szenario 29: Abstraktes „tragen“-Cluster (Locker)
+
+**Skill-Modus:** Locker
+**Erwartetes Verhalten:** Das abstrakte Cluster kontextabhängig variieren, ohne „Verantwortung tragen“ oder das konkrete Tragen eines Kartons anzutasten. Das Wort darf nicht pauschal verboten und nicht überall durch dieselbe Ersetzung ersetzt werden.
+
+**Relevante Muster:** Lokales Lexik- und Kollokationsurteil; etablierte und konkrete Verwendungen bleiben geschützt.
 
 ## Neue Szenarien hinzufügen
 

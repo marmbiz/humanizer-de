@@ -116,6 +116,10 @@ class SkillStructureTests(unittest.TestCase):
         self.assertLessEqual(len(description), 220)
         self.assertIn("bestehenden deutschen Text", description)
         self.assertIn("deutschen Text humanisieren", description)
+        wrapper = read_utf8(ROOT / "skills" / "humanizer-de" / "SKILL.md")
+        wrapper_description = re.search(r"^description:\s*(.+)$", wrapper, re.MULTILINE)
+        self.assertIsNotNone(wrapper_description)
+        self.assertEqual(wrapper_description.group(1), description)
 
     def test_trigger_eval_fixture_is_wellformed(self):
         cases = json.loads(read_utf8(ROOT / "tests" / "trigger_eval.json"))

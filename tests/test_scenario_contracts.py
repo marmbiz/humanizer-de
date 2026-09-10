@@ -1,5 +1,6 @@
 import importlib.util
 import json
+import re
 import subprocess
 import sys
 import tempfile
@@ -54,6 +55,18 @@ class ScenarioContractTests(unittest.TestCase):
                 self.assertIn("id", scenario)
                 self.assertIn("quality_risks", scenario)
                 self.assertIn("output_contract", scenario)
+
+    def test_documented_scenario_ids_match_contract_matrix(self):
+        docs = (ROOT / "tests" / "SCENARIOS.md").read_text(encoding="utf-8")
+        matrix = docs.split("## Coverage-Matrix", 1)[1].split("Die Szenarien 14 bis 18", 1)[0]
+        documented_matrix_ids = {int(value) for value in re.findall(r"\|\s*(\d+)\s*\|", matrix)}
+        contract_ids = {
+            run_review_eval.load_scenario(path)["id"]
+            for path in run_review_eval.scenario_files(SCENARIOS)
+        } - set(range(14, 19))
+        heading_ids = {int(value) for value in re.findall(r"(?m)^## Szenario (\d+):", docs)}
+        self.assertEqual(documented_matrix_ids, contract_ids)
+        self.assertEqual(heading_ids, contract_ids)
 
     def test_qgir_scenarios_have_quality_contracts(self):
         qgir_files = [file_path for file_path in run_review_eval.scenario_files(SCENARIOS) if "qgir" in file_path.name]

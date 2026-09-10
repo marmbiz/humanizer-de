@@ -212,7 +212,7 @@ die Entwickler-Testsuite.
 ## Ausprobieren ohne Installation
 
 Die deterministischen Prüfskripte laufen auch ohne installierten Skill – zwei Befehle,
-Python 3 genügt, keine Zusatzpakete:
+Python 3.10 oder neuer genügt, keine Zusatzpakete:
 
 ```bash
 git clone --depth 1 https://github.com/marmbiz/humanizer-de.git && cd humanizer-de

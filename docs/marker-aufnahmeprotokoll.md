@@ -26,6 +26,29 @@ Fixtures müssen die öffentliche Regeloberfläche prüfen, nicht nur Hilfsfunkt
 an Regex, Schwelle, Severity, Meldung oder Scope gelten als materielle Regeländerung und
 erfordern einen neuen datierten Begründungseintrag.
 
+## Öffentliche Kalibrierung von Rhythmus-Schwellen
+
+Die Rhythmus-Schwellen sind gegen eine begrenzte historische Stichprobe kalibriert, nicht gegen
+alle deutschen Textsorten. In der historischen Messung vom 2026-07-19 mit 20 verifizierten
+Menschentexten aus der Zeit vor 2022 lag der
+Median der subjektinitialen Sätze bei 0,816; vier Texte lagen über 0,85. Die mediane Satzlänge
+lag bei 15,5 Wörtern. Zum Vergleich lagen zehn humanisierte KI-Texte bei 0,891 und acht über
+0,85; 20 naive KI-Texte bei 0,853 und zehn über 0,85. Die humanisierten KI-Texte sind keine
+Menschenbaseline.
+
+Die beiden M55-Befunde zur Satzlängenvarianz und zum Subjektanteil setzen mindestens acht Sätze voraus. Der Linter meldet bei `stddev/mean < 0,4` allein
+oder bei `subject_initial_ratio > 0,85` nur zusammen mit `stddev/mean < 0,6` oder mindestens
+zwei wiederholten Satzanfängen. Eine konkrete Clusterprüfung vom 2026-08-18 ergab vier von
+20 Menschentexten, sechs von zehn Claude-Texten und drei von zehn GPT-Texten; mit dem strengeren
+Tor 0,4 erkannte sie keinen der zehn Claude-Texte. Diese kleinen Genre-Mixe begründen die
+Schwellen, sind aber kein allgemeiner Recall-, Precision- oder Optimalitätsnachweis.
+
+Die öffentliche synthetische Fehlalarm-Baseline liegt in `tests/fp_corpus/baseline.json` und
+ist über Corpus-Tests und `make detection-snapshot` reproduzierbar. Sie ist getrennt von der
+historischen Menschenkalibrierung. Originaltexte und lizenzgebundene Rohdaten werden nicht
+ausgeliefert; die Angaben oben sind verdichtete Messberichte. Aus keinem Treffer folgt eine
+Aussage über menschliche oder maschinelle Autorschaft.
+
 ## Aufgenommen: M43-Homoglyph-Check mixed_script (2026-09-02)
 
 1. **Muster-ID, Kandidatenname und Zweck:** Muster 43, `mixed_script`. Der Befund macht
@@ -64,9 +87,8 @@ erfordern einen neuen datierten Begründungseintrag.
    mathematische Notation, Marken und technische Identifikatoren können absichtlich
    griechische, kyrillische und lateinische Buchstaben in einem Token verbinden. In
    gewöhnlicher deutscher Prosa ist die Fehlalarm-Erwartung niedrig, in mathematischen,
-   multilingualen und technischen Texten höher. Die rekursive FP-Messung über alle 59
-   Markdown-Dateien in `research/base-rates/human/` ergab 0 `mixed_script`-Treffer in
-   0 Dateien; es waren daher keine Funddateien zu nennen.
+   multilingualen und technischen Texten höher. Die interne rekursive Messung vom 2026-09-02
+   über 59 Markdown-Dateien ergab keinen `mixed_script`-Treffer.
 7. **Severity, Meldung und erlaubte Aktion:** Im Sammelcheck `warning`, wie die übrigen
    Befunde aus `unicode_lint.py`. Die Meldung folgt dem Schema `Mixed scripts in word
    „Wort“; foreign characters: Zeichen (U+XXXX). Review manually.` Erlaubt sind Prüfung
@@ -136,8 +158,8 @@ erfordern einen neuen datierten Begründungseintrag.
    gemeldet. Echte Support- oder Dialogtexte verwenden „Es tut mir leid, aber“ und „Ich
    hoffe, das hilft“ menschlich; beide Formen stehen deshalb nicht im Regex, sondern bleiben
    judgment-only im Katalog. M20 meldet nur ausdrückliche KI-Selbstbezüge. Die Syntax- und
-   UTM-Formen haben eine sehr niedrige, M20 eine niedrige qualitative Fehlalarm-Erwartung. Die
-   rekursive Messung vom 2026-09-02 über `research/base-rates/human/**/*.md` ergab **4
+   UTM-Formen haben eine sehr niedrige, M20 eine niedrige qualitative Fehlalarm-Erwartung. Eine
+   interne rekursive Messung vom 2026-09-02 ergab **4
    Stringtreffer in 1 von 59 Dateien**, zusammengefasst in zwei Befunden. Alle vier stehen
    als dokumentierende Use-Mentions im eigenen Humanizer-Artikel: `oaicite`,
    `contentReference`, `turn0search0` und „Als KI-Modell“. Der
@@ -300,7 +322,7 @@ im Marktplatz-Eintrag.
    Satzgrenzen-Form („kein X. Sondern Y.“) und ein ODER-Pfad für Kurztexte unter 500
    Wörtern sind bewusst nicht aufgenommen: 0 Korpus-Belege bzw. keine FP-Baseline für
    das Zielregister — beide warten auf das Werbe-/Social-Korpus
-   (research/base-rates/NEXT.md, Abschnitt Kurztext-Befund).
+   (interner Messbericht, Abschnitt Kurztext-Befund).
    Nachtrag nach Review vom selben Tag: Der Satzend-Anker bekam zwei Guards (Leerraum-
    Lookahead gegen Dezimal-/Tausender-/Domain-Punkte, Lookbehind gegen Einzelzeichen-
    Token für Abkürzungs- und Ordinalpunkte), das Wert-Präfix des Fakten-Carve-outs
@@ -430,7 +452,7 @@ Versehen.
    Das ist der Beleg, dass der Detektor ein reales deutsches Signal fasst, kein aus dem
    Englischen entliehenes. Bemerkenswert die Gegenrichtung: GPT verrät sich stattdessen an
    geringerer Satzlängen-Streuung (Muster 55). Die beiden Modelle haben verschiedene
-   Fingerabdrücke — Rohdaten in `research/base-rates/NEXT.md`.
+   Fingerabdrücke — Rohdaten bleiben intern.
 10. **Version und Begründung:** 2026-08-11, aufgenommen mit 5.18.0. Neues Erkennungsverhalten,
     wo Muster 16 zuvor judgment-only war — Minor-Bump, Präzedenz v5.8.0 (Muster 8/13).
     Aufnahme nach byte-identischer FP-Baseline und einer Nullmessung über 20 Basisraten- plus

@@ -4,7 +4,8 @@ WARP = Workflow, Architecture, References, Principles.
 
 ## Architektur
 
-`SKILL.md` ist nicht mehr die Musterquelle. Seit v3.5 ist es ein schlanker Runtime-Router.
+`SKILL.md` ist die kanonische SOP und nicht die Musterquelle. Der Plugin-Eintrag unter
+`skills/humanizer-de/SKILL.md` ist nur der schlanke Runtime-Router.
 Der folgende Baum zeigt die zentralen Dateien, nicht den vollständigen Repository-Inhalt:
 
 ```text
@@ -80,6 +81,8 @@ Wenn ein Muster geändert oder ergänzt wird:
 Keine neuen Muster in Patch-Releases verstecken. Ab v4.0.0 nutzt das Projekt eigenes SemVer ohne Fork-Suffix und trackt keine Upstream-Versionen mehr: neue Muster und neue optionale Workflow-Modi sind Minor-Bumps, Breaking-Änderungen an Ablauf oder Output-Format sind Major-Bumps.
 
 ## Unicode und Quotes
+
+Die Prüfskripte setzen Python 3.10 oder neuer voraus.
 
 Muster 43 und 46 sind scriptgestützt:
 

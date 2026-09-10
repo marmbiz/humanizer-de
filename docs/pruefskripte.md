@@ -1,30 +1,39 @@
 # Prüfskripte: Messen, Runner, Stilprofil, Exit-Codes
 
-Alles, was mit Python 3 lokal läuft: der Sammelcheck, die Stilkarte, der Zwei-Aufruf-Runner, das persönliche Stilprofil, die Zusatzwerkzeuge, Einzelchecks und Exit-Codes. Die Kurzfassung steht in der [README](../README.md#messen-und-audit).
+Alles, was mit Python 3.10 oder neuer lokal läuft: der Sammelcheck, die Stilkarte, der Zwei-Aufruf-Runner, das persönliche Stilprofil, die Zusatzwerkzeuge, Einzelchecks und Exit-Codes. Die Kurzfassung steht in der [README](../README.md#messen-und-audit).
 
 ## Messen und Audit
 
 Am Anfang jedes Durchgangs steht eine Messung. Im Agenten übernimmt der Skill sie selbst. Als
-Kommandozeilen-Werkzeug genügt dafür Python 3 ohne Zusatzpakete. Gemeldet werden
+Kommandozeilen-Werkzeug genügt dafür Python 3.10 oder neuer ohne Zusatzpakete. Gemeldet werden
 Preflight-Risiko, Rhythmusdaten, eine Stilkarte sowie Befunde mit Muster-Nummer und Severity.
-Unten steht eine gekürzte Fassung, vollständig nennt die Ausgabe zusätzlich Modus, Datei und
-alle leeren Prüfsektionen:
+Das folgende Beispiel läuft auf einer mitgelieferten Testdatei:
 
 ```text
-$ python3 scripts/humanizer_audit.py --file entwurf.md --mode sachlich --format md
+$ python3 scripts/humanizer_audit.py --file tests/fp_corpus/a_anaphoric_sie.md --mode sachlich --format md --no-profile
 
-Preflight: risk=low, score=0, recommendation=no_rewrite_or_local_edit_only
+Mode: sachlich
+File: tests/fp_corpus/a_anaphoric_sie.md
+Preflight: risk=low, score=0, recommendation=no_rewrite_or_local_edit_only, combing_auto=false, quality_risk=may_degrade_text_quality, drivers=none
 Calibration: risk=low means no calibrated signal fired, not that the text is clean. Signal coverage is weakest for advertising, social-media and essay/thought-leadership registers, where AI patterns can pass unseen.
-Rhythm: sentences=12, mean=13.5, stddev/mean=0.434, subject_initial=0.5, connectors=0
-StyleProfile: words=162, nominal_style_ratio=0.0, type_token_ratio=0.772, particles=0
+Rhythm: sentences=9, mean=12.667, stddev=7.703, stddev/mean=0.608, short/medium/long=0.444/0.556/0.0, complexity_var=4.765, subject_initial=0.889, connectors=0, headings=0, colon_headings=0, uniform_paragraphs=false
+StyleProfile: words=114, nominal_style_ratio=0.877, type_token_ratio=0.842, particles=0, emojis=0, delta_out_of_range=none
 Findings:
 unicode:
-- warning pattern 43 hidden_unicode x1 spans=245:246: Remove hidden Unicode character.
-- warning pattern 46 wrong_german_closing_quote x1 spans=385:386: Use U+201C after U+201E, not U+201D.
+- none
+rhythm:
+- none
+german_pattern:
+- none
+register:
+- warning pattern 0 mixed_address spans=0:2,117:120,284:286,464:467,557:559: Possible Du/Sie address mix; verify that capitalized forms are direct address, not anaphora or quoted voice.
+syntax:
+- none
 ```
 
-Sagt der Bericht `no_rewrite_or_local_edit_only`, bleibt der Text bis auf die zwei
-Einzelbefunde in Ruhe. Die Calibration-Zeile erscheint bei jedem `low`-Befund und erinnert
+Sagt der Bericht `no_rewrite_or_local_edit_only`, bleibt der Text stilistisch in Ruhe; die
+gemeldete mögliche Anrede-Mischung ist bei dieser Fixture auf anaphorisches „Sie“ zu prüfen.
+Die Calibration-Zeile erscheint bei jedem `low`-Befund und erinnert
 daran, dass ein stilles Ergebnis nur „kein geeichtes Signal“ bedeutet. In Registern wie
 Werbung, Social Media oder Essayistik kann dahinter auch eine Erkennungslücke stecken. Die
 Ausgaben sind Verdacht, kein Urteil, und ausdrücklich keine
@@ -53,7 +62,8 @@ ignoriert es.
 
 ### Zwei getrennte Modellaufrufe
 
-Der optionale Runner trennt Audit und Rewrite auch technisch. Vor dem Audit sichert er die
+Der optionale Runner trennt Audit und Rewrite auch technisch. Er ist ein Repository-/Plugin-
+Werkzeug und nicht Bestandteil des Claude.ai-Bundles. Vor dem Audit sichert er die
 unveränderte Eingabe als `original.md` und erzeugt daraus `normalized.md`, das
 `unicode_lint --fix --write` konservativ bereinigt. Alle folgenden Schritte einschließlich
 Schutzankern und Evidence-Gate arbeiten auf dieser Fassung, und `report.json` hält den Eingriff

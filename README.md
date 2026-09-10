@@ -73,9 +73,11 @@ gewünschten Ton an und prüfe das Ergebnis im kurzen Kurzaudit.
 ### Woran der Skill sich messen lässt
 
 Der Musterkatalog geht auf die Wikipedia-Leitlinien zurück und ist seither eigenständig
-erweitert. Was darauf aufsetzt, ist eigene Arbeit: Die Schwellen der deterministischen
-Prüfungen sind gegen eine Fehlalarm-Baseline aus verifizierten Menschentexten geeicht, und
-neue Muster kommen nur über das [Marker-Aufnahmeprotokoll](docs/marker-aufnahmeprotokoll.md)
+erweitert. Was darauf aufsetzt, ist eigene Arbeit: Einige Schwellen der deterministischen
+Prüfungen sind gegen eine begrenzte historische Fehlalarm-Baseline aus verifizierten
+Menschentexten geeicht; Umfang und Grenzen stehen im [öffentlichen Kalibrierungsabschnitt des
+Marker-Aufnahmeprotokolls](docs/marker-aufnahmeprotokoll.md#öffentliche-kalibrierung-von-rhythmus-schwellen).
+Neue Muster kommen nur über das [Marker-Aufnahmeprotokoll](docs/marker-aufnahmeprotokoll.md)
 hinein – mit Positiv-, Negativ- und Grenzfixtures und einer dokumentierten
 Fehlalarm-Erwartung. Scheitert ein Kandidat daran, wird er nicht aufgenommen. In 5.10.0 ist das
 einem Lint-Marker so ergangen.
@@ -237,7 +239,7 @@ Drei weitere Vorher-/Nachher-Beispiele: [docs/benutzung.md](docs/benutzung.md#we
 ## Messen & Audit
 
 Am Anfang jedes Durchgangs steht eine Messung. Im Agenten übernimmt der Skill sie selbst. Als
-Kommandozeilen-Werkzeug genügt dafür Python 3 ohne Zusatzpakete:
+Kommandozeilen-Werkzeug genügt dafür Python 3.10 oder neuer ohne Zusatzpakete:
 
 ```bash
 python3 scripts/humanizer_audit.py --file entwurf.md --mode sachlich --format md
@@ -364,7 +366,7 @@ Installation und Einsatz der Zusatzwerkzeuge:
 
 ## 72 Muster in 10 Kategorien
 
-Der Skill arbeitet mit einem Katalog aus **72 KI-Schreibmustern** in 10 Kategorien, priorisiert nach Schweregrad (HIGH / MEDIUM / LOW). Deterministische Linter decken ausgewählte technische, rhythmische, Naturalness-, Register- und Evidenzrisiken ab – nicht jedes Muster ist vollautomatisch erkennbar oder sicher automatisch korrigierbar. Linter-gestützt sind derzeit 20 Muster (2, 4, 8, 13, 16, 20, 24, 26, 39, 43, 44, 46, 54, 55, 58, 61, 63–65 sowie ein advisory Kandidatenhinweis für 72; Muster 2 und 44: Teilaspekte, Muster 20, 24 und 26: wortgenaue Artefakt-Strings, Muster 39: Erkennung im Präzisionspfad mit spaCy, kein Gate-Anschluss) plus Register-, Rhythmus- und Evidenz-Checks. Die übrigen Muster prüft das Modell anhand des Katalogs. Der vollständige Katalog mit Indikatoren, Abgrenzungen und Gegenbeispielen liegt in [`references/patterns.md`](references/patterns.md). Für den schnellen Blick ohne Katalog fasst [`assets/checkliste-ki-tells.md`](assets/checkliste-ki-tells.md) zehn typische Tells auf einer Seite zusammen.
+Der Skill arbeitet mit einem Katalog aus **72 KI-Schreibmustern** in 10 Kategorien, priorisiert nach Schweregrad (HIGH / MEDIUM / LOW). Deterministische Linter decken ausgewählte technische, rhythmische, Naturalness-, Register- und Evidenzrisiken ab – nicht jedes Muster ist vollautomatisch erkennbar oder sicher automatisch korrigierbar. Linter-gestützt sind derzeit 19 Muster (2, 4, 8, 13, 16, 20, 24, 26, 39, 43, 44, 46, 54, 55, 58, 61, 63–65) plus ein Advisory-Kandidatenhinweis für 72. Die Linter prüfen außerdem Evidenzanker und Registertreue. Muster 2 und 44 decken Teilaspekte ab; Muster 20, 24 und 26 prüfen wortgenaue Artefakt-Strings; Muster 39 läuft nur im Präzisionspfad mit spaCy und hat keinen Gate-Anschluss. Die übrigen Muster prüft das Modell anhand des Katalogs. Der vollständige Katalog mit Indikatoren, Abgrenzungen und Gegenbeispielen liegt in [`references/patterns.md`](references/patterns.md). Für den schnellen Blick ohne Katalog fasst [`assets/checkliste-ki-tells.md`](assets/checkliste-ki-tells.md) zehn typische Tells auf einer Seite zusammen.
 
 Alle 72 Muster nach Kategorie und Schweregrad: [docs/muster-katalog.md](docs/muster-katalog.md).
 
@@ -377,8 +379,10 @@ Citation-friendly Kurzfassung:
 > Humanizer (Deutsch) (`marmbiz/humanizer-de`) ist ein deutschsprachiger Humanizer Skill für Claude Code und Codex und zugleich ein evidenzbewusster deutscher Stil-Editor. Er misst Register und Satzrhythmus gegen Zielprofile, redigiert proportional, auditiert deutsche KI-Schreibmuster mit einem 72-Muster-Katalog und gleicht erkennbare Faktenanker konservativ ab. Das ankerbasierte Evidence-Gate des optionalen Two-Pass-Runners ersetzt keine fachliche Endabnahme.
 
 Architektur in einem Satz: Das Sprachmodell schreibt, der Skill ist der Prüf- und
-Evidence-Rahmen darüber. Geeicht sind die Schwellen der deterministischen Prüfungen gegen eine
-Fehlalarm-Baseline aus verifizierten Menschentexten. Neue Muster kommen nur über das
+Evidence-Rahmen darüber. Einige Schwellen sind gegen eine begrenzte historische Stichprobe
+verifizierter Menschentexte geeicht; Umfang und Grenzen stehen im [öffentlichen
+Kalibrierungsabschnitt](docs/marker-aufnahmeprotokoll.md#öffentliche-kalibrierung-von-rhythmus-schwellen).
+Neue Muster kommen nur über das
 [Marker-Aufnahmeprotokoll](docs/marker-aufnahmeprotokoll.md) hinein. Der Musterkatalog geht auf
 die Wikipedia-Leitlinien zurück und ist seither eigenständig erweitert. Bewusst nicht geplant
 ist ein fine-getuntes Humanizer-Modell: Ein gemessener Zusatznutzen rechtfertigt den zusätzlichen
