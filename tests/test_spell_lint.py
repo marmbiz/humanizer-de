@@ -56,6 +56,25 @@ class SpellLintTests(unittest.TestCase):
             {"ok": True, "available": False, "reason": "dictionary_missing", "findings": []},
         )
 
+    def test_hunspell_timeout_reports_unavailable_and_exits_zero(self):
+        timeout = spell_lint.subprocess.TimeoutExpired(["hunspell"], 10)
+        with mock.patch.object(spell_lint.shutil, "which", return_value="hunspell"):
+            with mock.patch.object(spell_lint, "run_hunspell", side_effect=timeout):
+                exit_code, report = run_cli(["--before", "Alt", "--after", "Neu"])
+
+        self.assertEqual(exit_code, 0)
+        self.assertEqual(report["reason"], "hunspell_timeout")
+
+    def test_hunspell_failure_during_compare_reports_unavailable(self):
+        with mock.patch.object(spell_lint.shutil, "which", return_value="hunspell"):
+            with mock.patch.object(spell_lint, "run_hunspell", side_effect=[
+                spell_lint.subprocess.CompletedProcess([], 0, "", ""),
+                RuntimeError("hunspell failed"),
+            ]):
+                report = spell_lint.lint("Alt", "Neu")
+
+        self.assertEqual(report, {"ok": True, "available": False, "reason": "hunspell_error", "findings": []})
+
     def test_diff_unknowns_reports_only_new_after_words_sorted(self):
         finding = spell_lint.diff_unknowns({"Fachwort"}, {"Fachwort", "Zulu", "Alpha"})
 

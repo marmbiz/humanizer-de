@@ -77,6 +77,15 @@ class DoctorTests(unittest.TestCase):
         report = json.loads(stdout.getvalue())
         self.assertTrue(report["ok"])
 
+    def test_operational_error_returns_exit_two_without_traceback(self):
+        with mock.patch.object(doctor, "build_report", side_effect=OSError("manifest vanished")):
+            stderr = io.StringIO()
+            with mock.patch("sys.stderr", stderr):
+                exit_code = doctor.main(["--json"])
+        self.assertEqual(exit_code, 2)
+        self.assertIn("manifest vanished", stderr.getvalue())
+        self.assertNotIn("Traceback", stderr.getvalue())
+
     def test_require_full_exits_one_for_partial_installation(self):
         report = {
             "name": "humanizer-de",

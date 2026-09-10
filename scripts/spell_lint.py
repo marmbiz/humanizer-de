@@ -19,6 +19,7 @@ from cli_output import handle_cli_input_errors, print_json, read_user_text, requ
 
 
 DICTIONARY = "de_DE"
+HUNSPELL_TIMEOUT = 10
 WORD_RE = re.compile(r"[^\W\d_]+(?:[-'][^\W\d_]+)*", re.UNICODE)
 
 
@@ -34,6 +35,7 @@ def run_hunspell(text: str, binary: str | None = None) -> subprocess.CompletedPr
         capture_output=True,
         text=True,
         encoding="utf-8",
+        timeout=HUNSPELL_TIMEOUT,
         check=False,
     )
 
@@ -45,8 +47,10 @@ def availability_reason() -> str | None:
 
     try:
         result = run_hunspell("Test\n", binary=binary)
-    except Exception:
-        return "dictionary_missing"
+    except subprocess.TimeoutExpired:
+        return "hunspell_timeout"
+    except (OSError, UnicodeError):
+        return "hunspell_error"
 
     if result.returncode != 0:
         return "dictionary_missing"
@@ -83,7 +87,12 @@ def lint(before: str, after: str) -> dict:
     if reason is not None:
         return unavailable_report(reason)
 
-    finding = diff_unknowns(unknown_words(before), unknown_words(after))
+    try:
+        finding = diff_unknowns(unknown_words(before), unknown_words(after))
+    except subprocess.TimeoutExpired:
+        return unavailable_report("hunspell_timeout")
+    except (OSError, UnicodeError, RuntimeError):
+        return unavailable_report("hunspell_error")
     findings = [finding] if finding is not None else []
     return {"ok": not findings, "available": True, "findings": findings}
 

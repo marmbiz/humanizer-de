@@ -228,6 +228,21 @@ class UnicodeLintTests(unittest.TestCase):
         text = "Hans" + chr(0x2019) + " Auto"
         self.assertEqual(unicode_lint.lint(text), [])
 
+    def test_preceding_word_keeps_existing_apostrophe_boundaries(self):
+        text = "Hans’ Auto des Projekts’ Status"
+        self.assertEqual(unicode_lint.preceding_word(text, text.index("’")), "Hans")
+        self.assertEqual(unicode_lint.preceding_word(text, text.rindex("’")), "Projekts")
+
+    def test_preceding_word_does_not_copy_the_prefix(self):
+        class NoPrefixSlice(str):
+            def __getitem__(self, key):
+                if isinstance(key, slice) and key.start is None and key.stop is not None:
+                    raise AssertionError("preceding_word copied the whole prefix")
+                return super().__getitem__(key)
+
+        text = NoPrefixSlice("Wort’ Name")
+        self.assertEqual(unicode_lint.preceding_word(text, text.index("’")), "Wort")
+
     def test_ascii_quotes_are_reported_not_normalized(self):
         text = '"Text"'
         self.assertTrue(any(item["kind"] == "straight_quote" for item in unicode_lint.lint(text)))

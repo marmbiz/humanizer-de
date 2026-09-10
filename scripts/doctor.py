@@ -19,7 +19,7 @@ SCRIPT_DIR = ROOT / "scripts"
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
-from cli_output import print_json, print_text, text_for_stdout
+from cli_output import CliInputError, print_json, print_text, text_for_stdout
 
 
 SUCCESS_STATUSES = {"ok", "available", "active"}
@@ -73,7 +73,10 @@ def run_command(
 
 
 def read_json(path: Path) -> dict[str, Any]:
-    return json.loads(path.read_text(encoding="utf-8"))
+    data = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(data, dict):
+        raise CliInputError(f"{path}: expected a JSON object")
+    return data
 
 
 def skill_version(path: Path) -> str | None:
@@ -482,8 +485,12 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
 
 
 def main(argv: list[str] | None = None) -> int:
-    args = parse_args(sys.argv[1:] if argv is None else argv)
-    report = build_report()
+    try:
+        args = parse_args(sys.argv[1:] if argv is None else argv)
+        report = build_report()
+    except (CliInputError, OSError, UnicodeError, json.JSONDecodeError) as error:
+        print(f"error: doctor failed: {error}", file=sys.stderr)
+        return 2
     if args.json:
         print_json(report)
     else:

@@ -34,6 +34,8 @@ UNICODE_LINT = ROOT / "scripts" / "unicode_lint.py"
 VERIFY_CHANGES = ROOT / "scripts" / "verify_changes.py"
 SPELL_LINT = ROOT / "scripts" / "spell_lint.py"
 PATTERNS = ROOT / "references" / "patterns.md"
+# Freeze every local script and runtime data file so changed helpers cannot slip past.
+STYLE_TARGETS = ROOT / "references" / "style-targets.json"
 SENTENCE_CLOSERS = "\"'„“‚‘”’«»‹›"
 MARKDOWN_STRUCTURE_RE = re.compile(
     r"([ \t]{4,}|\t+|[ \t]{0,3}(?:#{1,6}[ \t]+|>[ \t]*|(?:[-+*]|\d+[.)])[ \t]+(?:\[[ xX]\][ \t]+)?))"
@@ -124,6 +126,12 @@ def subprocess_env() -> dict[str, str]:
 
 def write_json(path: Path, value: object) -> None:
     path.write_bytes((json.dumps(value, ensure_ascii=False, indent=2) + "\n").encode("utf-8"))
+
+
+def runtime_files() -> tuple[Path, ...]:
+    return (ROOT / "SKILL.md", PATTERNS, STYLE_TARGETS) + tuple(
+        sorted(SCRIPT_DIR.glob("*.py"))
+    )
 
 
 def unified_diff(original: str, revised: str, revised_name: str) -> str:
@@ -1057,17 +1065,7 @@ def main(argv: list[str] | None = None) -> int:
         normalized_path = args.out_dir / "normalized.md"
         normalized_path.write_bytes(original.encode("utf-8"))
         runtime_hashes = {
-            path: hashlib.sha256(path.read_bytes()).hexdigest()
-            for path in (
-                Path(__file__),
-                ROOT / "SKILL.md",
-                PATTERNS,
-                HUMANIZER_AUDIT,
-                UNICODE_LINT,
-                EVIDENCE_LINT,
-                SPELL_LINT,
-                VERIFY_CHANGES,
-            )
+            path: hashlib.sha256(path.read_bytes()).hexdigest() for path in runtime_files()
         }
     except (OSError, UnicodeError) as error:
         return fail_run(args.out_dir, started, error)

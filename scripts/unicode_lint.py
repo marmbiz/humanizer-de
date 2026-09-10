@@ -203,8 +203,10 @@ def scan_mixed_scripts(text: str) -> list[dict]:
 
 
 def preceding_word(text: str, index: int) -> str:
-    match = re.search(r"[\wÄÖÜäöüß]+$", text[:index], re.UNICODE)
-    return match.group(0) if match else ""
+    end = index
+    while end and (text[end - 1].isalnum() or text[end - 1] == "_"):
+        end -= 1
+    return text[end:index]
 
 
 def looks_like_german_apostrophe(text: str, index: int) -> bool:
