@@ -2,6 +2,9 @@ import importlib.util
 import json
 import tempfile
 import unittest
+from contextlib import redirect_stderr
+import io
+from unittest import mock
 from pathlib import Path
 
 
@@ -33,6 +36,15 @@ class DetectionSnapshotTests(unittest.TestCase):
 
             self.assertEqual(exit_code, 0)
             self.assertEqual(json.loads(output.read_text(encoding="utf-8"))["revision"], "abc123")
+
+    def test_operational_error_returns_exit_two_without_traceback(self):
+        with mock.patch.object(detection_snapshot, "build_snapshot", side_effect=OSError("fixture vanished")):
+            stderr = io.StringIO()
+            with redirect_stderr(stderr):
+                exit_code = detection_snapshot.main([])
+        self.assertEqual(exit_code, 2)
+        self.assertIn("fixture vanished", stderr.getvalue())
+        self.assertNotIn("Traceback", stderr.getvalue())
 
 
 if __name__ == "__main__":

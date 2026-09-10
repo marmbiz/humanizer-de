@@ -23,6 +23,7 @@ from cli_output import (
     print_json,
     read_json_object,
     read_user_text,
+    CliInputError,
 )
 import doctor
 import fp_corpus_report
@@ -51,7 +52,11 @@ def golden_contracts() -> list[dict]:
     results = []
     for input_path in sorted(CORPUS_DIR.glob("case_*_input.md")):
         expected_path = input_path.with_name(input_path.name.replace("_input.md", "_expected.json"))
-        expected = read_json_object(expected_path, label="golden expectation")
+        expected = read_json_object(
+            expected_path,
+            label="golden expectation",
+            required=("unicode_patterns", "rhythm_patterns"),
+        )
         text = read_user_text(input_path)
         actual_by_source = {
             "unicode": {item["pattern"] for item in fp_corpus_report.unicode_lint.lint(text)},
@@ -65,7 +70,11 @@ def golden_contracts() -> list[dict]:
                 {
                     "fixture": relative(input_path),
                     "source": source,
-                    **contract(set(expected[key]), actual_by_source[source], exact=False),
+                    **contract(
+                        set(expected[key]),
+                        actual_by_source[source],
+                        exact=True,
+                    ),
                 }
             )
     return results
@@ -75,6 +84,8 @@ def kind_contracts(directory: Path, source: str, checker: FixtureChecker) -> lis
     results = []
     for path in sorted(directory.glob("*.json")):
         data = read_json_object(path, label="fixture", required=("text",))
+        if not isinstance(data.get("expect_kinds", []), list):
+            raise CliInputError(f"{path}: fixture expect_kinds must be a list")
         checked = checker(path)
         actual = {item["kind"] for item in checked["report"]["findings"]}
         results.append(
@@ -161,13 +172,17 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
 
 @handle_cli_input_errors
 def main(argv: list[str] | None = None) -> int:
-    args = parse_args(sys.argv[1:] if argv is None else argv)
-    snapshot = build_snapshot(args.revision)
-    if args.output is None:
-        print_json(snapshot)
-    else:
-        atomic_write_text(args.output, json_for_stdout(snapshot) + "\n")
-    return 0
+    try:
+        args = parse_args(sys.argv[1:] if argv is None else argv)
+        snapshot = build_snapshot(args.revision)
+        if args.output is None:
+            print_json(snapshot)
+        else:
+            atomic_write_text(args.output, json_for_stdout(snapshot) + "\n")
+        return 0
+    except (OSError, UnicodeError) as error:
+        print(f"error: detection snapshot failed: {error}", file=sys.stderr)
+        return 2
 
 
 if __name__ == "__main__":

@@ -10,6 +10,16 @@ ROOT = Path(__file__).resolve().parents[1]
 MAKE = shutil.which("make")
 
 
+class MakefileContractTests(unittest.TestCase):
+    def test_lint_and_bench_targets_have_their_declared_policies(self):
+        makefile = (ROOT / "Makefile").read_text(encoding="utf-8")
+        self.assertIn("scripts/rhythm_lint.py --text", makefile)
+        self.assertIn("--fail-on any", makefile)
+        self.assertIn("bench               CPU-Benchmarks ausführen (nur Hinweis, kein Gate)", makefile)
+        self.assertIn("$(PYTHON) scripts/bench.py\n", makefile)
+        self.assertNotIn("scripts/bench.py --check", makefile)
+
+
 @unittest.skipUnless(os.name != "nt" and MAKE, "POSIX make is not available")
 class LanguageToolTargetTests(unittest.TestCase):
     def run_lt(

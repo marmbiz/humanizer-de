@@ -1,4 +1,5 @@
 {
   "unicode_patterns": [],
-  "rhythm_patterns": [4, 54]
+  "rhythm_patterns": [4, 54, 55],
+  "note": "M55: 11 Sätze, stddev/mean 0,245; zuvor durch Teilmengenprüfung nicht festgeschrieben."
 }

@@ -39,15 +39,8 @@ class CorpusTests(unittest.TestCase):
                 expected_unicode = set(expected["unicode_patterns"])
                 expected_rhythm = set(expected["rhythm_patterns"])
 
-                if expected_unicode:
-                    self.assertTrue(expected_unicode.issubset(unicode_patterns))
-                else:
-                    self.assertEqual(unicode_patterns, set())
-
-                if expected_rhythm:
-                    self.assertTrue(expected_rhythm.issubset(rhythm_patterns))
-                else:
-                    self.assertEqual(rhythm_patterns, set())
+                self.assertEqual(unicode_patterns, expected_unicode)
+                self.assertEqual(rhythm_patterns, expected_rhythm)
 
                 ranges = expected.get("style_profile_ranges")
                 if ranges:

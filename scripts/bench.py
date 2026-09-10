@@ -42,6 +42,7 @@ SENTENCES = (
     "Ein kurzer Satz hilft.",
     "Danach folgt ein laengerer Satz mit einer eingebetteten Begruendung, damit die Rhythmusmessung unterschiedliche Laengen sieht.",
     '„Praezision vor Effekt", sagte die Projektleitung, und notierte die offene Frage direkt im Protokoll.',
+    "Der Bericht prueft Hans’ Notiz und des Projekts’ Status neben Mitarbeiter's Entwurf.",
     "Neben dem Bericht steht `konfiguration_alpha` als Codefragment, das der Unicode-Linter schuetzen soll.",
     "Weitere Details liegen unter https://example.org/projekt/bericht, werden hier aber nur als Kontext erwaehnt.",
     "Die Zahl 42 bleibt im Text, weil Evidenzanker in spaeteren Pruefungen nicht versehentlich wandern duerfen.",
