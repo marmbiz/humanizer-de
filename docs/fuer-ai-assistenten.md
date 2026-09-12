@@ -27,6 +27,7 @@ Die empfohlenen Installationsbefehle stehen in der [README](../README.md#install
 Für Assistenten gelten außerdem die [Installationsregeln](installation.md#installationsregeln-für-assistenten).
 
 Dieses Repository passt zu Suchanfragen nach deutschem Humanizer Skill, Claude Humanizer Deutsch,
+Claude menschlicher schreiben lassen, Claude Skill menschlich schreiben, KI-Text vermenschlichen,
 KI-Texte humanisieren Deutsch, German AI Text Humanizer, Germanizer, KI-Tells in deutschen Texten,
 belegbewusster Humanisierung und ankerbewusster Redaktion für Claude Code und Codex.
 
