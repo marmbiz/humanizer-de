@@ -5,11 +5,15 @@
   <img src="assets/humanizer-de-hero.png" alt="humanizer-de – German AI text humanizer und evidenzbewusster deutscher Stil-Editor. Less machine. More voice." width="100%">
 </picture>
 
-[![Version](https://img.shields.io/github/v/tag/marmbiz/humanizer-de?label=Version&color=c4501f)](https://github.com/marmbiz/humanizer-de/tags)
-[![Tests](https://github.com/marmbiz/humanizer-de/actions/workflows/tests.yml/badge.svg)](https://github.com/marmbiz/humanizer-de/actions/workflows/tests.yml)
-[![Lizenz](https://img.shields.io/badge/Lizenz-MIT_%2B_CC_BY--SA_4.0-1f6feb)](NOTICE)
+# Weniger Maschine. Mehr Stimme.
 
+Deutsche KI-Entwürfe redigieren, ohne Fakten, Fachbegriffe und Autorenstimme zu glätten.
 Für Claude Code, Codex und Claude im Browser (claude.ai).
+
+[![Version](https://img.shields.io/github/v/tag/marmbiz/humanizer-de?label=Version&color=c4501f&style=flat-square)](https://github.com/marmbiz/humanizer-de/tags)
+[![Tests](https://img.shields.io/github/actions/workflow/status/marmbiz/humanizer-de/tests.yml?label=Tests&style=flat-square)](https://github.com/marmbiz/humanizer-de/actions/workflows/tests.yml)
+[![Muster](https://img.shields.io/badge/Muster-72_im_Katalog-c4501f?style=flat-square)](docs/muster-katalog.md)
+[![Lizenz](https://img.shields.io/badge/Lizenz-MIT_%2B_CC_BY--SA_4.0-1f6feb?style=flat-square)](NOTICE)
 
 [Installation](#installation) · [Benutzung](#benutzung) · [Beispiele](#beispiele) · [Dokumentation](#dokumentation)
 
@@ -24,9 +28,13 @@ und deine Stimme erhalten. Dabei schützt der Skill vorhandene Aussagen, Zahlen,
 und Zitate vor stilistischer Glättung. Ergibt die vollständige Prüfung keinen
 bearbeitungswürdigen Befund, lässt er den Text in Ruhe.
 
-| Vorher | Nachher |
-|---|---|
-| „Darüber hinaus ist es von entscheidender Bedeutung, innovative Lösungen nahtlos zu implementieren.“ | „Neue Lösungen müssen sich sauber einführen lassen.“ |
+```diff
+- Darüber hinaus ist es von entscheidender Bedeutung, innovative Lösungen nahtlos zu implementieren.
++ Neue Lösungen müssen sich sauber einführen lassen.
+```
+
+Erkannt: mechanischer Konnektor („Darüber hinaus“), Wichtigkeits-Floskel („von entscheidender
+Bedeutung“), Marker-Vokabular („innovative Lösungen“, „nahtlos implementieren“).
 
 <img src="assets/beispiel-durchlauf.svg" alt="Beispiel-Durchlauf im Terminal: Der Skill findet vier Muster im Beispielsatz und liefert „Neue Lösungen müssen sich sauber einführen lassen.“ als Ergebnis." width="100%">
 
@@ -95,9 +103,10 @@ elf Sekunden:
 
 https://github.com/user-attachments/assets/c567f29e-f37b-4323-b308-f04276eb9081
 
-**Nicht installiert werden:** Python, Click, spaCy, das deutsche spaCy-Modell, Hunspell,
-LanguageTool oder Java. Solche Pakete dürfen nur nach ausdrücklicher Zustimmung separat
-installiert werden.
+> [!NOTE]
+> **Nicht installiert werden:** Python, Click, spaCy, das deutsche spaCy-Modell, Hunspell,
+> LanguageTool oder Java. Solche Pakete dürfen nur nach ausdrücklicher Zustimmung separat
+> installiert werden.
 
 ### Funktioniert es?
 
@@ -160,14 +169,15 @@ hängt einen gemessenen Zusatz an die Anweisung:
 
 ### Werbesprache
 
-**Vorher:**
+```diff
+- Die atemberaubende Stadt mit ihrem reichen kulturellen Erbe zieht Besucher aus aller Welt an.
+- Die spektakulären Denkmäler sind ein Beweis für die künstlerische Brillanz vergangener Generationen.
++ Die Stadt zieht Besucher aus aller Welt an. Ihre Denkmäler zeigen die Handwerkskunst
++ vergangener Generationen.
+```
 
-> Die atemberaubende Stadt mit ihrem reichen kulturellen Erbe zieht Besucher aus aller Welt an.
-> Die spektakulären Denkmäler sind ein Beweis für die künstlerische Brillanz vergangener Generationen.
-
-**Nachher:**
-
-> Die Stadt zieht Besucher aus aller Welt an. Ihre Denkmäler zeigen die Handwerkskunst vergangener Generationen.
+Erkannt: Werbe-Superlative („atemberaubend“, „spektakulär“), leere Wertung („künstlerische
+Brillanz“). Die Aussage bleibt, die Aufladung fällt weg.
 
 Drei weitere Vorher-/Nachher-Beispiele: [docs/benutzung.md](docs/benutzung.md#weitere-beispiele).
 
@@ -192,9 +202,11 @@ python3 scripts/humanizer_audit.py --file entwurf.md --mode sachlich --format md
 ```
 
 Der Report enthält Preflight-Risiko, Rhythmusdaten, Stilkarte und einzelne Befunde.
-Das Preflight-Risiko ist eine Qualitätsheuristik, keine Aussage zur Autorenschaft. Ein `low`
-bedeutet nur „kein geeichtes Signal“, nicht „sauber“: Gerade in Werbung, Social Media und
-Essayistik bleiben Muster oft unerkannt.
+
+> [!WARNING]
+> Das Preflight-Risiko ist eine Qualitätsheuristik, keine Aussage zur Autorenschaft. Ein `low`
+> bedeutet nur „kein geeichtes Signal“, nicht „sauber“: Gerade in Werbung, Social Media und
+> Essayistik bleiben Muster oft unerkannt.
 
 Das optionale **Combing-Gate** erlaubt einen kontrollierten Nachkamm mit höchstens zwei
 Rhythmusänderungen. Der Report warnt, dass Textqualität und Lesbarkeit dadurch auch
@@ -215,12 +227,13 @@ und Sachtext (6). Urteile, Bescheide, technische Dokumentation, Leichte Sprache 
 sind darin nicht vertreten. Bei solchen Texten und einer etablierten Autorenstimme ist
 besondere Zurückhaltung nötig. [Kalibrierung und Grenzen](docs/marker-aufnahmeprotokoll.md#öffentliche-kalibrierung-von-rhythmus-schwellen)
 
-**Rote Linien:**
-
-- Kein Detektor-Bypass und keine Garantie für Herkunfts-Scores.
-- Keine fingierte Autorenschaft, Erfahrung, Quelle oder Zahl.
-- Messwerte beschreiben Textmerkmale, nie den tatsächlichen Autor.
-- Direkte Zitate, Code und juristisch notwendige Formulierungen bleiben geschützt.
+> [!IMPORTANT]
+> **Rote Linien:**
+>
+> - Kein Detektor-Bypass und keine Garantie für Herkunfts-Scores.
+> - Keine fingierte Autorenschaft, Erfahrung, Quelle oder Zahl.
+> - Messwerte beschreiben Textmerkmale, nie den tatsächlichen Autor.
+> - Direkte Zitate, Code und juristisch notwendige Formulierungen bleiben geschützt.
 
 | Nutzung | Verlässt der Text den Rechner? |
 |---|---|
@@ -240,6 +253,15 @@ Prüfskripte finden messbare Auffälligkeiten. Das Sprachmodell entscheidet im K
 Eingriffe sinnvoll sind, und überarbeitet die betroffenen Stellen. Die Reihenfolge schützt
 vor unnötigen Änderungen:
 
+1. **Messen** (Pass 0): Rhythmus, Register und Preflight-Risiko erheben.
+2. **Sichern** (Pass 1): Fakten und Zitate festhalten, auffällige Quellen markieren. Ohne
+   bearbeitungswürdigen Stilcluster endet der Lauf hier als Null-Edit.
+3. **Redigieren und prüfen** (Pass 2–5): Lexik, Struktur und Rhythmus überarbeiten, danach
+   Selbst-Audit gegen Claims und Anker.
+
+<details>
+<summary><strong>Vollständiges Flussdiagramm ansehen</strong></summary>
+
 ```mermaid
 flowchart TD
     T([Eingabetext]) --> M["Messen – Pass 0<br/>Rhythmus, Register, Preflight"]
@@ -257,6 +279,8 @@ flowchart TD
     K --> A
     G -- ja --> O([Geänderte Passagen oder Null-Edit + Kurzaudit<br/>Volltext auf Wunsch])
 ```
+
+</details>
 
 Der Ablauf ist eine Anleitung für den Agenten. Der optionale
 [Zwei-Aufruf-Runner](docs/pruefskripte.md#zwei-getrennte-modellaufrufe) trennt Audit und Rewrite
