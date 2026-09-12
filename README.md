@@ -2,7 +2,7 @@
 
 <picture>
   <source type="image/webp" srcset="assets/humanizer-de-hero.webp">
-  <img src="assets/humanizer-de-hero.png" alt="humanizer-de – German AI text humanizer und evidenzbewusster deutscher Stil-Editor. Less machine. More voice." width="100%">
+  <img src="assets/humanizer-de-hero.png" alt="humanizer-de – Skill, um Claude menschlicher schreiben zu lassen: German AI text humanizer und evidenzbewusster deutscher Stil-Editor für Claude und Codex. Less machine. More voice." width="100%">
 </picture>
 
 # humanizer-de: Claude menschlicher schreiben lassen
