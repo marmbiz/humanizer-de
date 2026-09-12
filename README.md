@@ -5,10 +5,12 @@
   <img src="assets/humanizer-de-hero.png" alt="humanizer-de – German AI text humanizer und evidenzbewusster deutscher Stil-Editor. Less machine. More voice." width="100%">
 </picture>
 
-# Weniger Maschine. Mehr Stimme.
+# humanizer-de: Claude menschlicher schreiben lassen
 
-Deutsche KI-Entwürfe redigieren, ohne Fakten, Fachbegriffe und Autorenstimme zu glätten.
-Für Claude Code, Codex und Claude im Browser (claude.ai).
+**Schluss mit KI-Bürokratie und hölzernen Sätzen.**
+
+Ein Skill für **Claude Code**, **Codex** und **Claude.ai**, der deutsche KI-Entwürfe redigiert,
+typische Phrasen streicht und deine Schreibstimme bewahrt.
 
 [![Version](https://img.shields.io/github/v/tag/marmbiz/humanizer-de?label=Version&color=c4501f&style=flat-square)](https://github.com/marmbiz/humanizer-de/tags)
 [![Tests](https://img.shields.io/github/actions/workflow/status/marmbiz/humanizer-de/tests.yml?label=Tests&style=flat-square)](https://github.com/marmbiz/humanizer-de/actions/workflows/tests.yml)
@@ -19,14 +21,20 @@ Für Claude Code, Codex und Claude im Browser (claude.ai).
 
 </div>
 
+- **Satzrhythmus statt Floskeln:** Löst Wichtigkeits-Floskeln und Nominalstil auf und mischt
+  die Satzlängen, statt jeden Satz gleich lang zu bauen.
+- **Fakten- und Quellentreue:** Kein Detector-Bypassing, keine erfundenen Zitate. Zahlen, Namen
+  und Zitate bleiben stehen; auffällige Quellen markiert der Skill, statt sie wegzuglätten.
+- **72 deutsche KI-Muster:** von „Darüber hinaus“ bis „künstlerische Brillanz“. 19 davon messen
+  lokale Prüfskripte deterministisch, die übrigen beurteilt das Modell im Kontext.
+
 <a id="warum-nutzen"></a>
 
 ## Was ist das?
 
-Humanizer (Deutsch) überarbeitet deutsche KI-Entwürfe: Floskeln kürzen, Satzrhythmus verbessern
-und deine Stimme erhalten. Dabei schützt der Skill vorhandene Aussagen, Zahlen, Fachbegriffe
-und Zitate vor stilistischer Glättung. Ergibt die vollständige Prüfung keinen
-bearbeitungswürdigen Befund, lässt er den Text in Ruhe.
+Humanizer (Deutsch) ist ein Edit-Pass für bestehenden deutschen Text, kein Textgenerator.
+Er schützt vorhandene Aussagen, Zahlen, Fachbegriffe und Zitate vor stilistischer Glättung.
+Ergibt die vollständige Prüfung keinen bearbeitungswürdigen Befund, lässt er den Text in Ruhe.
 
 ```diff
 - Darüber hinaus ist es von entscheidender Bedeutung, innovative Lösungen nahtlos zu implementieren.
