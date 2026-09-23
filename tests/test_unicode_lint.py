@@ -228,6 +228,32 @@ class UnicodeLintTests(unittest.TestCase):
         text = "Hans" + chr(0x2019) + " Auto"
         self.assertEqual(unicode_lint.lint(text), [])
 
+    def test_word_initial_elision_apostrophes_are_not_quote_findings(self):
+        text = "Hast du ’ne Minute? Das ist ’n Problem. ’s ist spät."
+        self.assertEqual(unicode_lint.lint(text), [])
+        self.assertEqual(unicode_lint.fix(text), text)
+
+    def test_word_initial_apostrophe_directly_after_opening_quote(self):
+        text = "„’s ist spät“, sagte sie."
+        self.assertEqual(unicode_lint.lint(text), [])
+        self.assertEqual(unicode_lint.fix(text), text)
+
+    def test_word_initial_apostrophe_before_digit(self):
+        text = "die ’90er"
+        self.assertEqual(unicode_lint.lint(text), [])
+        self.assertEqual(unicode_lint.fix(text), text)
+
+    def test_wrong_closing_quote_after_single_opener_is_still_reported(self):
+        text = "Er sagte ‚ja’ und ging."
+        findings = unicode_lint.lint(text)
+        self.assertTrue(any(item["kind"] == "wrong_single_german_closing_quote" for item in findings))
+        self.assertEqual(unicode_lint.fix(text), "Er sagte ‚ja‘ und ging.")
+
+    def test_nested_single_quote_with_word_initial_apostrophe_is_valid(self):
+        text = "„Er sagte: ‚Das war’s.‘ Dann ging er.“"
+        self.assertEqual(unicode_lint.lint(text), [])
+        self.assertEqual(unicode_lint.fix(text), text)
+
     def test_preceding_word_keeps_existing_apostrophe_boundaries(self):
         text = "Hans’ Auto des Projekts’ Status"
         self.assertEqual(unicode_lint.preceding_word(text, text.index("’")), "Hans")

@@ -209,15 +209,23 @@ def preceding_word(text: str, index: int) -> str:
     return text[end:index]
 
 
+WORD_INITIAL_APOSTROPHE_OPENERS = (OPEN_DE, OPEN_DE_SINGLE, "(", "[")
+
+
 def looks_like_german_apostrophe(text: str, index: int) -> bool:
     word = preceding_word(text, index)
-    if not word:
-        return False
-    lower_word = word.lower()
-    if lower_word.endswith(("s", "x", "z", "ce")):
-        return True
     next_char = text[index + 1] if index + 1 < len(text) else ""
-    return bool(next_char and next_char.isalpha())
+    if word:
+        lower_word = word.lower()
+        if lower_word.endswith(("s", "x", "z", "ce")):
+            return True
+        return bool(next_char and next_char.isalpha())
+    # Word-initial elision, e.g. "’s", "’n", "’ne", "’rum", "’90er": only after
+    # text start, whitespace, or an opening quote/bracket, and only when a
+    # letter or digit follows directly.
+    prev_char = text[index - 1] if index > 0 else ""
+    at_word_start = index == 0 or prev_char.isspace() or prev_char in WORD_INITIAL_APOSTROPHE_OPENERS
+    return bool(at_word_start and next_char and next_char.isalnum())
 
 
 def scan_quotes(text: str, in_range) -> tuple[list[dict], dict[int, str], set[str]]:
