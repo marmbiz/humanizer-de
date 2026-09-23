@@ -3,6 +3,12 @@
 Der neueste Eintrag steht im README unter [„Was ist neu?“](README.md#was-ist-neu).
 Hier stehen alle früheren Versionen; die GitHub-Releases konservieren die Originalnotizen.
 
+- **5.27.3** - Der Unicode-Linter prüft auch apostrophreiche Texte ohne quadratische Laufzeit.
+  Im Two-Pass-Runner umfasst die Laufzeitprüfung nun sämtliche lokalen Python-Skripte und die
+  Stilziele. Hunspell-Ausfälle werden mit Grund gemeldet, ohne den optionalen Check zum
+  Abbruchgrund zu machen. Die CI prüft auch unter Windows den vollständigen Verify-Lauf und
+  führt den Hunspell-Pfad aus. Bundle-Verweise, Szenariodokumentation und Kalibrierungsangaben
+  sind abgeglichen; fixierte Golden-Testtexte erlauben keine zusätzlichen Befunde mehr.
 - **5.27.2** - Der sichere Unicode-Fix erhält Apostrophe jetzt auch in verschachtelten
   Zitaten. Einzelne Katalogmuster werden vollständig bis zum nächsten Muster geladen, damit
   lange Blöcke ihre Abgrenzungen nicht verlieren. Zwei Besser-Beispiele bleiben nun strikt bei

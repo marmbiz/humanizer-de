@@ -362,12 +362,11 @@ Neue oder materiell erweiterte Lint-Regeln müssen das verbindliche
 
 ## Was ist neu?
 
-- **5.27.3** - Der Unicode-Linter prüft auch apostrophreiche Texte ohne quadratische Laufzeit.
-  Im Two-Pass-Runner umfasst die Laufzeitprüfung nun sämtliche lokalen Python-Skripte und die
-  Stilziele. Hunspell-Ausfälle werden mit Grund gemeldet, ohne den optionalen Check zum
-  Abbruchgrund zu machen. Die CI prüft auch unter Windows den vollständigen Verify-Lauf und
-  führt den Hunspell-Pfad aus. Bundle-Verweise, Szenariodokumentation und Kalibrierungsangaben
-  sind abgeglichen; fixierte Golden-Testtexte erlauben keine zusätzlichen Befunde mehr.
+- **5.27.4** - Apostrophe am Wortanfang wie in „’s ist spät“ oder „Hast du ’ne Minute?“ gelten im
+  Unicode-Linter nicht mehr als falsches Anführungszeichen. Im README stehen die Beispiel-Prompts
+  wieder in kopierbaren Code-Blöcken. Seit dieser Version prüft die CI den Skill-Kopf zusätzlich mit
+  einem echten YAML-Parser. Den Inhalts-Audit für geänderte Markdown-Dateien startet jetzt auch
+  jeder Push auf `main`, nicht nur ein Pull Request.
 
 Alle früheren Versionen: [CHANGELOG.md](CHANGELOG.md). Ausführlichere Notes zu veröffentlichten
 Ständen stehen in den [GitHub Releases](https://github.com/marmbiz/humanizer-de/releases).
