@@ -23,8 +23,9 @@ typische Phrasen streicht und deine Schreibstimme bewahrt.
 
 - **Satzrhythmus statt Floskeln:** Löst Wichtigkeits-Floskeln und Nominalstil auf und mischt
   die Satzlängen, statt jeden Satz gleich lang zu bauen.
-- **Fakten- und Quellentreue:** Kein Detector-Bypassing, keine erfundenen Zitate. Zahlen, Namen
-  und Zitate bleiben stehen; auffällige Quellen markiert der Skill, statt sie wegzuglätten.
+- **Fakten- und Quellentreue:** Zahlen, Namen und Zitate bleiben stehen. Auffällige Quellen
+  markiert der Skill, statt sie wegzuglätten. Er erfindet keine Zitate und ist kein Werkzeug
+  für Detector-Bypassing.
 - **72 deutsche KI-Muster:** von „Darüber hinaus“ bis „künstlerische Brillanz“. 19 davon messen
   lokale Prüfskripte deterministisch, die übrigen beurteilt das Modell im Kontext.
 
@@ -120,9 +121,11 @@ https://github.com/user-attachments/assets/c567f29e-f37b-4323-b308-f04276eb9081
 
 In der neuen beziehungsweise neu geladenen Sitzung eingeben:
 
+```text
 Humanisiere diesen Text im Modus Sachlich:
 
 In der heutigen dynamischen Landschaft ist es entscheidend, innovative Lösungen nahtlos zu implementieren.
+```
 
 Die Antwort sollte mit „Less machine. More voice.“ beginnen, den Modus nennen und nur die
 auffälligen Stellen bearbeiten.
@@ -135,7 +138,9 @@ Manuelle Installation, Cursor, Updates und ZIP-Prüfsumme: [Installationshilfe](
 
 Für eigene Texte nenne Zielgruppe, Kontext und Ton. Füge deinen Entwurf nach dem Auftrag ein:
 
+```text
 Humanisiere diesen Text für eine B2B-Website im Modus Sachlich. Entferne KI-Muster und bewahre die vorhandenen Aussagen.
+```
 
 | Modus | Passt zu |
 |---|---|
@@ -145,6 +150,7 @@ Humanisiere diesen Text für eine B2B-Website im Modus Sachlich. Entferne KI-Mus
 
 ### Mit Stimmkalibrierung
 
+```text
 Hier ist eine Probe meines Schreibstils:
 
 [2-3 Absätze eigenen Texts einfügen]
@@ -152,6 +158,7 @@ Hier ist eine Probe meines Schreibstils:
 Jetzt humanisiere diesen Text:
 
 [KI-Text einfügen]
+```
 
 Der Skill analysiert Satzrhythmus, Wortwahl und Eigenheiten und berücksichtigt sie als Zielprofil.
 
@@ -161,7 +168,9 @@ Standardmäßig siehst du **nur die geänderten Passagen als Vorher/Nachher-Paar
 nennt Modus, wichtigste Befunde und verbleibende Risiken. Einen vollständigen Text bekommst du
 auf ausdrücklichen Wunsch. Ergänze dafür deinen Auftrag:
 
+```text
 Gib mir anschließend den vollständigen überarbeiteten Text.
+```
 
 Wenn du eine Datei zur Bearbeitung übergibst, ändert der Skill sie direkt und fasst die
 Änderungen zusammen. Ohne bearbeitungswürdigen Befund meldet er einen Null-Edit.
@@ -217,8 +226,8 @@ Der Report enthält Preflight-Risiko, Rhythmusdaten, Stilkarte und einzelne Befu
 > Essayistik bleiben Muster oft unerkannt.
 
 Das optionale **Combing-Gate** erlaubt einen kontrollierten Nachkamm mit höchstens zwei
-Rhythmusänderungen. Der Report warnt, dass Textqualität und Lesbarkeit dadurch auch
-schlechter werden können. Voraussetzungen und Messwerte stehen bei den
+Rhythmusänderungen. Dass Textqualität und Lesbarkeit dadurch auch schlechter werden können,
+meldet der Report ausdrücklich. Voraussetzungen und Messwerte stehen bei den
 [Prüfskripten](docs/pruefskripte.md).
 
 <a id="wann-hilfreich--und-wann-nicht"></a>
