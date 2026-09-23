@@ -296,7 +296,7 @@ die erwarteten, gefundenen, fehlenden und zusätzlichen Treffer sowie einen Fixt
 bewusst report-only: kein globaler Recall-/F1-Score und kein Release-Gate.
 
 Die Workflow-Vorlage [`.github/workflows/content-audit.yml`](../.github/workflows/content-audit.yml)
-führt diesen Snapshot bei passenden Pull Requests aus und auditiert geänderte Markdown-Dateien
+führt diesen Snapshot bei passenden Pushes auf `main` und bei Pull Requests aus und auditiert geänderte Markdown-Dateien
 mit `--fail-on never`. Sie lädt die JSON-Berichte als Artefakt hoch und schreibt nur die Anzahl
 geprüfter Dateien in die Job-Zusammenfassung. Es gibt keine PR-Kommentare, keine Modellaufrufe
 und keine Schreibberechtigung für Repository-Inhalte.

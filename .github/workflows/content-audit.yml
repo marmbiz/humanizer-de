@@ -1,6 +1,13 @@
 name: content audit
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - "**.md"
+      - "scripts/**"
+      - "tests/corpus/**"
+      - "tests/fp_corpus/**"
   pull_request:
     paths:
       - "**.md"
@@ -23,9 +30,12 @@ jobs:
           python-version: "3.12"
       - name: Build advisory reports
         env:
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
         run: |
           set -euo pipefail
+          if ! git cat-file -e "${BASE_SHA}^{commit}" 2>/dev/null; then
+            BASE_SHA="$(git rev-parse "${GITHUB_SHA}~1")"
+          fi
           mkdir -p humanizer-reports
           python scripts/detection_snapshot.py \
             --revision "$GITHUB_SHA" \
