@@ -3,6 +3,11 @@
 Der neueste Eintrag steht im README unter [„Was ist neu?“](README.md#was-ist-neu).
 Hier stehen alle früheren Versionen; die GitHub-Releases konservieren die Originalnotizen.
 
+- **5.27.4** - Apostrophe am Wortanfang wie in „’s ist spät“ oder „Hast du ’ne Minute?“ gelten im
+  Unicode-Linter nicht mehr als falsches Anführungszeichen. Im README stehen die Beispiel-Prompts
+  wieder in kopierbaren Code-Blöcken. Seit dieser Version prüft die CI den Skill-Kopf zusätzlich mit
+  einem echten YAML-Parser. Den Inhalts-Audit für geänderte Markdown-Dateien startet jetzt auch
+  jeder Push auf `main`, nicht nur ein Pull Request.
 - **5.27.3** - Der Unicode-Linter prüft auch apostrophreiche Texte ohne quadratische Laufzeit.
   Im Two-Pass-Runner umfasst die Laufzeitprüfung nun sämtliche lokalen Python-Skripte und die
   Stilziele. Hunspell-Ausfälle werden mit Grund gemeldet, ohne den optionalen Check zum

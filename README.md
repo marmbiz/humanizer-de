@@ -364,11 +364,13 @@ Neue oder materiell erweiterte Lint-Regeln müssen das verbindliche
 
 ## Was ist neu?
 
-- **5.27.4** - Apostrophe am Wortanfang wie in „’s ist spät“ oder „Hast du ’ne Minute?“ gelten im
-  Unicode-Linter nicht mehr als falsches Anführungszeichen. Im README stehen die Beispiel-Prompts
-  wieder in kopierbaren Code-Blöcken. Seit dieser Version prüft die CI den Skill-Kopf zusätzlich mit
-  einem echten YAML-Parser. Den Inhalts-Audit für geänderte Markdown-Dateien startet jetzt auch
-  jeder Push auf `main`, nicht nur ein Pull Request.
+- **5.28.0** - Quellen prüft der Skill jetzt in zwei getrennten Schritten. Pass 1 bleibt im Text:
+  Er markiert fehlende Fußnoten, zu starke Aussagen und Zahlen, die nicht aufgehen, öffnet aber keine
+  Quelle mehr. Wer die Belege gegen die Originale halten will, bekommt auf ausdrücklichen Wunsch einen
+  Quellen-Sweep, der erst nach Pass 5 auf der Endfassung läuft, möglichst in einem Subagenten mit
+  frischem Kontext. Damit bleibt der Stilteil bei der Sache. Geprüfte Aussagen verschiebt danach kein
+  Rewrite mehr. Am Ende trägt jede Aussage einen Status: `bestätigt`, `abweichend`, `nicht prüfbar`
+  oder `fehlt`.
 
 Alle früheren Versionen: [CHANGELOG.md](CHANGELOG.md). Ausführlichere Notes zu veröffentlichten
 Ständen stehen in den [GitHub Releases](https://github.com/marmbiz/humanizer-de/releases).
