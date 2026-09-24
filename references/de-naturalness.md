@@ -112,7 +112,7 @@ Diese Karten operationalisieren die Muster 7, 8, 13, 45, 54, 55, 58, 60, 61, 63,
 - `register_lint --precise` fängt anaphorisches satzinitiales „Sie“ und Blockquotes wie `> Bitte pruefen Sie das.` ab.
 - `german_pattern_lint --precise` fängt `stellt`-Vollverb- und Satzgrenzen-Fälle wie `stellt sicher. ... legte er dar` ab.
 - `evidence_lint --precise` filtert Einzeltoken-`proper_name`-Fehlalarme wie `hat Relevanz`.
-- Use-Mention bei Muster 64 ist seit P-AP-4 immer abgefangen, auch ohne `--precise`: `"nahtlos"` als Wortbeispiel zählt nicht.
+- Use-Mention bei Muster 64 wird auch ohne `--precise` abgefangen: `"nahtlos"` als Wortbeispiel zählt nicht.
 
 ## DACH-Regionalstil
 

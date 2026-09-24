@@ -265,8 +265,7 @@ Häufige Indikatoren:
 - Umkehr-Parallelismus: "lieber präzise falsch als vage richtig" (gespiegelte Begriffspaare als Pointe)
 - Verstärker-Abschwächer-Opposition: "X akribisch, Y kaum"
 - Diagnose-Schablone: "X hat kein Y-Problem, X hat ein Z-Problem" – die Umdeutung ersetzt die
-  Diagnose, statt sie zu belegen. Vor allem in Social-Media-Prosa; in deutschem Sachtext
-  bislang nicht gemessen (0 Treffer im 50-Texte-Korpus, 2026-08-14)
+  Diagnose, statt sie zu belegen. Vor allem in Social-Media-Prosa.
 
 **Warum LLMs das tun:** Rhetorische Effekte aus literarischen Quellen. Die abgehackten Fragmente imitieren knappen Werbetext.
 
