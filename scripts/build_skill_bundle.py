@@ -29,7 +29,7 @@ BUNDLE_FILES = (
     "assets/checkliste-ki-tells.md",
 )
 
-# The nine files SKILL.md routes into.
+# The ten files SKILL.md routes into.
 BUNDLE_REFERENCES = (
     "de-naturalness.md",
     "decision-tables.md",
@@ -38,6 +38,7 @@ BUNDLE_REFERENCES = (
     "qgir.md",
     "quality-rubric.md",
     "register-profiles.md",
+    "source-sweep.md",
     "style-targets.json",
     "user-profile.md",
 )

@@ -35,6 +35,8 @@ Konkrete Quellen sind nicht Dekoration. Eine Referenz muss existieren, formal pl
 
 Markiere auffällige unbelegte oder erfundene Quellen auch ohne weitere Änderung. Die Prüfung
 bleibt eine unvollständige Nebenprüfung und verspricht keine vollständige Quelleninventur.
+Quellen werden hier nicht geöffnet. Die externe Prüfung gegen die Originale läuft auf Wunsch
+als Quellen-Sweep nach Pass 5 auf der Endfassung ([source-sweep.md](source-sweep.md)).
 
 Prüfe besonders:
 

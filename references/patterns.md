@@ -703,7 +703,7 @@ Häufige Indikatoren:
 
 **Warum LLMs das tun:** Kann keine echten Werte generieren, hinterlässt Platzhalter.
 
-**Lösung:** Entfernen. Füllen nur, wenn der tatsächliche Wert aus dem übergebenen Kontext sicher ableitbar ist; externe Recherche liegt außerhalb des Skill-Umfangs. Im Zweifel entfernen.
+**Lösung:** Entfernen. Füllen nur, wenn der tatsächliche Wert aus dem übergebenen Kontext sicher ableitbar ist; externe Recherche gehört höchstens in den optionalen Quellen-Sweep (`references/source-sweep.md`). Im Zweifel entfernen.
 
 #### 22. Links zu Suchanfragen statt Referenzen [HIGH]
 <!-- haltbarkeit: jahrgang stand=2026-07 -->
@@ -717,7 +717,7 @@ Häufige Indikatoren:
 
 **Warum LLMs das tun:** Kann keine echte URL recherchieren.
 
-**Lösung:** Entfernen. Ersetzen nur, wenn eine echte, im Kontext vorhandene Quelle verfügbar ist; eigene Web-Recherche liegt außerhalb des Skill-Umfangs. Eine Quelle zu erfinden ist verboten (siehe Leitplanken).
+**Lösung:** Entfernen. Ersetzen nur, wenn eine echte, im Kontext vorhandene Quelle verfügbar ist; eigene Web-Recherche gehört höchstens in den optionalen Quellen-Sweep (`references/source-sweep.md`). Eine Quelle zu erfinden ist verboten (siehe Leitplanken).
 
 ### Auszeichnungstext (6 Muster)
 
@@ -774,7 +774,7 @@ Häufige Indikatoren:
 
 **Warum LLMs das tun:** Halluziniert Artikel-Titel.
 
-**Lösung:** Mit den verfügbaren Mitteln prüfen (Syntax, Plausibilität, interne Konsistenz, offensichtliche Tippfehler im übergebenen Kontext). Bei nachweisbarem Defekt: korrigieren oder entfernen. Externe Online-Verifikation eines Links liegt außerhalb des Skill-Umfangs – in diesem Fall mit [LINK NICHT VERIFIZIERT] markieren statt blind zu entfernen.
+**Lösung:** Mit den verfügbaren Mitteln prüfen (Syntax, Plausibilität, interne Konsistenz, offensichtliche Tippfehler im übergebenen Kontext). Bei nachweisbarem Defekt: korrigieren oder entfernen. Externe Online-Verifikation eines Links gehört nicht in Pass 1, sondern in den optionalen Quellen-Sweep (`references/source-sweep.md`). Bis dahin oder ohne Sweep mit [LINK NICHT VERIFIZIERT] markieren statt blind zu entfernen.
 
 #### 26. Zitatfabrikation und unverifizierbare Referenzen [HIGH]
 <!-- haltbarkeit: jahrgang stand=2026-08 -->
@@ -794,7 +794,7 @@ Häufige Indikatoren:
 
 **Warum LLMs das tun:** Kann keine echten Quellen recherchieren und erzeugt plausibel aussehende Referenzen aus dem Training.
 
-**Lösung:** Jede konkrete Referenz zuerst als ungeprüft behandeln. Mit den verfügbaren Mitteln prüfen: Format, interne Konsistenz, DOI-/ISBN-Prüfziffer, `utm_source`-Fingerabdrücke, Autor-Publikation-Kombinationen, Seiten-/Datumslogik und ob die Quelle im übergebenen Material die konkrete Aussage trägt. Externe Online-Verifikation liegt außerhalb des Skill-Umfangs – in diesem Fall mit [QUELLE NICHT VERIFIZIERT] markieren. Bei nachweisbarer Fabrikation: entfernen. Nie eine Ersatzquelle erfinden oder eine erkannte Falschquelle stilistisch kaschieren.
+**Lösung:** Jede konkrete Referenz zuerst als ungeprüft behandeln. Mit den verfügbaren Mitteln prüfen: Format, interne Konsistenz, DOI-/ISBN-Prüfziffer, `utm_source`-Fingerabdrücke, Autor-Publikation-Kombinationen, Seiten-/Datumslogik und ob die Quelle im übergebenen Material die konkrete Aussage trägt. Externe Online-Verifikation gehört nicht in Pass 1, sondern in den optionalen Quellen-Sweep (`references/source-sweep.md`). Bis dahin oder ohne Sweep mit [QUELLE NICHT VERIFIZIERT] markieren. Bei nachweisbarer Fabrikation: entfernen. Nie eine Ersatzquelle erfinden oder eine erkannte Falschquelle stilistisch kaschieren.
 
 ❌ Schlecht: "Eine Studie von Hartmann und Doyle (2021) zeigt, dass KI-Texte in 87 Prozent der Fälle erkannt werden."
 

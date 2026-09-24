@@ -237,6 +237,8 @@ meldet der Report ausdrücklich. Voraussetzungen und Messwerte stehen bei den
 
 Zahlen, Namen, Daten, URLs, Zitate und Quellenanker gleicht der Skill konservativ ab.
 Auffällige Quellen markiert er, eine vollständige Quellenprüfung verspricht er nicht.
+Auf Wunsch folgt am Ende ein Quellen-Sweep: Erst wenn Stilprüfung und Überarbeitung
+abgeschlossen sind, werden die zitierten Quellen gegen die Endfassung gehalten.
 Sachliche Richtigkeit und semantische Beziehungen brauchen weiterhin eine fachliche Endabnahme.
 
 Einige Prüfschwellen sind gegen 20 verifizierte Menschentexte geeicht: Blog (8), Marketing (6)
@@ -284,7 +286,7 @@ flowchart TD
     T([Eingabetext]) --> M["Messen – Pass 0<br/>Rhythmus, Register, Preflight"]
     M --> Z{"Redigieren oder<br/>nur Befunde?"}
     Z -- "nur Befunde" --> AU["Audit-Zweig<br/>alle 72 Muster prüfen"]
-    AU --> B([Befundliste, Text bleibt unberührt])
+    AU --> B([Befundliste, Text bleibt unberührt<br/>auf Wunsch danach: Quellen-Sweep])
     Z -- redigieren --> E["Pass 1 immer: Artefakte und Evidenz prüfen<br/>Fakten sichern, auffällige Quellen markieren"]
     E --> C{"Bearbeitungswürdige<br/>Stilcluster?"}
     C -- nein --> N["Keine weitere Stiländerung<br/>Null-Edit, wenn auch Pass 1 ohne Änderung blieb"]
@@ -294,7 +296,7 @@ flowchart TD
     A --> G{"Claim-/Ankerprüfung grün?"}
     G -- nein --> K["Betroffene Änderung korrigieren<br/>oder zurücknehmen"]
     K --> A
-    G -- ja --> O([Geänderte Passagen oder Null-Edit + Kurzaudit<br/>Volltext auf Wunsch])
+    G -- ja --> O([Geänderte Passagen oder Null-Edit + Kurzaudit<br/>Volltext auf Wunsch, danach optional Quellen-Sweep])
 ```
 
 </details>
