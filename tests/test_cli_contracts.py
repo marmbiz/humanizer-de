@@ -1,9 +1,12 @@
+import importlib
 import importlib.util
+import io
 import json
 import subprocess
 import sys
 import tempfile
 import unittest
+from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 from unittest import mock
 
@@ -25,6 +28,17 @@ class CliContractTests(unittest.TestCase):
         proc = self.run_script(name, *args)
         self.assertEqual(proc.returncode, 0, proc.stderr)
         return json.loads(proc.stdout)
+
+    def json_report_in_process(self, name: str, *args: str) -> dict | list:
+        if str(SCRIPTS) not in sys.path:
+            sys.path.insert(0, str(SCRIPTS))
+        module = importlib.import_module(Path(name).stem)
+        stdout = io.StringIO()
+        stderr = io.StringIO()
+        with redirect_stdout(stdout), redirect_stderr(stderr):
+            exit_code = module.main(list(args))
+        self.assertEqual(exit_code, 0, stderr.getvalue())
+        return json.loads(stdout.getvalue())
 
     def assert_usage_error(self, proc: subprocess.CompletedProcess[str]) -> None:
         self.assertEqual(proc.returncode, 2, proc.stderr)
@@ -265,8 +279,8 @@ von uns geprüft. Er sagte "Hallo".
                     crlf_args = [
                         arg.format(path=crlf_path, corpus=crlf_corpus) for arg in command
                     ]
-                    lf_report = self.json_report(*lf_args)
-                    crlf_report = self.json_report(*crlf_args)
+                    lf_report = self.json_report_in_process(*lf_args)
+                    crlf_report = self.json_report_in_process(*crlf_args)
                     self.assertEqual(
                         self.without_offsets_or_paths(lf_report),
                         self.without_offsets_or_paths(crlf_report),

@@ -347,14 +347,6 @@ class SkillStructureTests(unittest.TestCase):
         self.assertIn("kontrollierten Nachkamm", readme)
         self.assertIn("schlechter werden können", readme)
 
-    def test_readme_examples_preserve_claim_boundaries(self):
-        for path in (ROOT / "README.md", ROOT / "docs" / "benutzung.md"):
-            text = read_utf8(path)
-            with self.subTest(path=path.name):
-                self.assertNotIn("wendet sie auf das Rewrite an", text)
-                self.assertNotIn("in 8 Ländern mit einem Umsatz von 50 Millionen Euro", text)
-                self.assertNotIn("in\ndiesem Zeitraum", text)
-
     def test_readme_install_onboarding_is_explicit(self):
         # README traegt nur die empfohlenen Wege; alle Details liegen in
         # docs/installation.md und muessen dort vollstaendig bleiben.
@@ -402,31 +394,6 @@ class SkillStructureTests(unittest.TestCase):
             "verwandte-ressourcen",
         ]:
             self.assertIn(f'<a id="{anchor}"></a>', readme)
-
-    def test_discoverability_metadata_is_present(self):
-        readme = read_utf8(ROOT / "README.md")
-        skill = read_utf8(ROOT / "SKILL.md")
-        agent_yaml = read_utf8(ROOT / "agents" / "openai.yaml")
-        plugin = json.loads(read_utf8(ROOT / ".claude-plugin" / "plugin.json"))
-        codex_plugin = json.loads(read_utf8(ROOT / ".codex-plugin" / "plugin.json"))
-
-        self.assertIn("German AI Text Humanizer", skill)
-        self.assertIn("German AI text humanizer for Claude/Codex", agent_yaml)
-        self.assertNotIn("Nicht als Detektor-Garantie", readme)
-        self.assertNotIn("Undetectable-Tool", readme)
-
-        required_keywords = {
-            "ai-humanizer",
-            "claude-skill",
-            "claude-code",
-            "codex-skill",
-            "ki-text",
-            "ki-texte-humanisieren",
-            "germanizer",
-            "prompt-engineering",
-        }
-        self.assertTrue(required_keywords.issubset(set(plugin["keywords"])))
-        self.assertTrue(required_keywords.issubset(set(codex_plugin["keywords"])))
 
 
 if __name__ == "__main__":

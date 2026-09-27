@@ -231,17 +231,10 @@ def run_all(modules, precise=False):
     }
 
 
-def spacy_model_available():
-    try:
-        import spacy
-
-        spacy.load("de_core_news_sm")
-    except Exception:
-        return False
-    return True
-
-
-SPACY_MODEL_AVAILABLE = spacy_model_available()
+SPACY_MODEL_AVAILABLE = (
+    importlib.util.find_spec("spacy") is not None
+    and importlib.util.find_spec("de_core_news_sm") is not None
+)
 
 
 class PreciseFlagSnapshotTests(unittest.TestCase):

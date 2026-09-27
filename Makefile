@@ -33,6 +33,7 @@ eval-contracts:
 
 verify: test lint eval-contracts
 	git diff --check
+	git diff --cached --check
 
 skill-bundle:
 	$(PYTHON) scripts/build_skill_bundle.py

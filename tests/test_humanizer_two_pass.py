@@ -39,6 +39,11 @@ class HumanizerTwoPassTests(unittest.TestCase):
                     "evidence_gate",
                     return_value=({"findings": []}, {"mode": "default"}),
                 ),
+                mock.patch.object(
+                    two_pass.spell_lint,
+                    "lint",
+                    return_value={"ok": True, "available": True, "findings": []},
+                ),
                 mock.patch("builtins.print"),
             ):
                 code = two_pass.main(["--file", str(source), "--out-dir", str(out)])

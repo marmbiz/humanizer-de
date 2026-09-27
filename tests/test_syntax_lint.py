@@ -31,17 +31,10 @@ def run_cli(module, argv):
     return exit_code, json.loads(stdout.getvalue())
 
 
-def spacy_model_available():
-    try:
-        import spacy
-
-        spacy.load("de_core_news_sm")
-    except Exception:
-        return False
-    return True
-
-
-SPACY_MODEL_AVAILABLE = spacy_model_available()
+SPACY_PACKAGES_AVAILABLE = (
+    importlib.util.find_spec("spacy") is not None
+    and importlib.util.find_spec("de_core_news_sm") is not None
+)
 
 
 class SyntaxLintOptionalDependencyTests(unittest.TestCase):
@@ -74,8 +67,20 @@ class SyntaxLintOptionalDependencyTests(unittest.TestCase):
             self.assertIn(report["reason"], {"spacy_missing", "model_missing"})
 
 
-@unittest.skipUnless(SPACY_MODEL_AVAILABLE, "spaCy German model is not available")
 class SyntaxLintSpacyTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        if not SPACY_PACKAGES_AVAILABLE:
+            raise unittest.SkipTest("spaCy or its German model package is not installed")
+
+        nlp, reason = syntax_lint.load_nlp()
+        if nlp is None:
+            raise RuntimeError(f"spaCy German model failed to load: {reason or 'unknown reason'}")
+
+        patcher = mock.patch.object(syntax_lint, "load_nlp", return_value=(nlp, None))
+        patcher.start()
+        cls.addClassCleanup(patcher.stop)
+
     def test_markdown_structure_does_not_create_subjectless_fragments(self):
         text = """---
 title: Sauberer Artikel

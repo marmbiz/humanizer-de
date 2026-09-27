@@ -37,7 +37,26 @@ def write_bundle_fixture(root: Path, *, patterns_version: str = "1.0.0") -> None
 class DoctorTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.report = doctor.build_report()
+        python = [
+            doctor.check("python", "Python", "available", required=True, version="3.12.0"),
+            doctor.check("spacy", "spaCy", "available", required=False, version="3.8.7"),
+            doctor.check("german_model", "Deutsch-Modell", "available", required=False, version="3.8.0"),
+            doctor.check("precise", "--precise", "active", required=False),
+        ]
+        hunspell = [
+            doctor.check("hunspell", "Hunspell", "available", required=False, version="1.7.2"),
+            doctor.check("hunspell_de", "de_DE-Wörterbuch", "available", required=False),
+        ]
+        languagetool = [
+            doctor.check("languagetool", "LanguageTool", "available", required=False, version="6.6"),
+            doctor.check("java", "Java", "available", required=False, version="21.0.2"),
+        ]
+        with (
+            mock.patch.object(doctor, "python_checks", return_value=python),
+            mock.patch.object(doctor, "hunspell_checks", return_value=hunspell),
+            mock.patch.object(doctor, "languagetool_checks", return_value=languagetool),
+        ):
+            cls.report = doctor.build_report()
 
     def test_report_checks_base_and_optional_toolchain_without_user_text(self):
         report = self.report

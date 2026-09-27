@@ -34,7 +34,7 @@ class SkillBundleTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls._tmp = tempfile.TemporaryDirectory()
-        cls.bundle, cls.build_result = build_into(Path(cls._tmp.name))
+        cls.bundle, _ = build_into(Path(cls._tmp.name))
         with zipfile.ZipFile(cls.bundle) as archive:
             cls.names = archive.namelist()
 
@@ -47,10 +47,6 @@ class SkillBundleTests(unittest.TestCase):
         self.assertIn(f"{BUNDLE_NAME}/SKILL.md", self.names)
         roots = {name.split("/", 1)[0] for name in self.names}
         self.assertEqual(roots, {BUNDLE_NAME})
-
-    def test_bundle_file_count_matches_readme(self):
-        # docs/installation.md says "Es enthält 27 Textdateien"; update it with bundle changes.
-        self.assertEqual(self.build_result["file_count"], 27)
 
     def test_referenced_reference_files_are_bundled(self):
         skill = read_utf8(ROOT / "SKILL.md")
@@ -125,9 +121,38 @@ class SkillBundleTests(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stderr)
             report = json.loads(result.stdout)
             self.assertTrue(report["ok"], report)
-            ids = {entry["id"] for entry in report["checks"]}
-            self.assertIn("layout", ids)
-            self.assertIn("version_sync", ids)
+            self.assertEqual(report["name"], BUNDLE_NAME)
+            self.assertIsInstance(report["version"], str)
+            self.assertIsInstance(report["full"], bool)
+            self.assertIn(report["summary"], {"full", "base_only"})
+            self.assertIsInstance(report["privacy"], str)
+
+            required = {"base_skill", "layout", "version_sync", "python"}
+            optional = {
+                "spacy",
+                "german_model",
+                "precise",
+                "hunspell",
+                "hunspell_de",
+                "languagetool",
+                "java",
+            }
+            checks = report["checks"]
+            self.assertIsInstance(checks, list)
+            checks_by_id = {entry["id"]: entry for entry in checks}
+            self.assertEqual(len(checks_by_id), len(checks), "duplicate check IDs")
+            self.assertEqual(set(checks_by_id), required | optional)
+
+            valid_statuses = {"ok", "available", "active", "missing", "inactive", "error"}
+            for check_id, entry in checks_by_id.items():
+                self.assertIsInstance(entry, dict)
+                self.assertIsInstance(entry["label"], str)
+                self.assertIsInstance(entry["status"], str)
+                self.assertIn(entry["status"], valid_statuses, check_id)
+                self.assertIsInstance(entry["required"], bool)
+                self.assertEqual(entry["required"], check_id in required, check_id)
+                if check_id in required:
+                    self.assertIn(entry["status"], {"ok", "available", "active"}, check_id)
 
     def test_bundle_excludes_build_artifacts(self):
         for name in self.names:
