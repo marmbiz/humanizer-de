@@ -3,6 +3,13 @@
 Der neueste Eintrag steht im README unter [„Was ist neu?“](README.md#was-ist-neu).
 Hier stehen alle früheren Versionen; die GitHub-Releases konservieren die Originalnotizen.
 
+- **5.28.0** - Quellen prüft der Skill jetzt in zwei getrennten Schritten. Pass 1 bleibt im Text:
+  Er markiert fehlende Fußnoten, zu starke Aussagen und Zahlen, die nicht aufgehen, öffnet aber keine
+  Quelle mehr. Wer die Belege gegen die Originale halten will, bekommt auf ausdrücklichen Wunsch einen
+  Quellen-Sweep, der erst nach Pass 5 auf der Endfassung läuft, möglichst in einem Subagenten mit
+  frischem Kontext. Damit bleibt der Stilteil bei der Sache. Geprüfte Aussagen verschiebt danach kein
+  Rewrite mehr. Am Ende trägt jede Aussage einen Status: `bestätigt`, `abweichend`, `nicht prüfbar`
+  oder `fehlt`.
 - **5.27.4** - Apostrophe am Wortanfang wie in „’s ist spät“ oder „Hast du ’ne Minute?“ gelten im
   Unicode-Linter nicht mehr als falsches Anführungszeichen. Im README stehen die Beispiel-Prompts
   wieder in kopierbaren Code-Blöcken. Seit dieser Version prüft die CI den Skill-Kopf zusätzlich mit

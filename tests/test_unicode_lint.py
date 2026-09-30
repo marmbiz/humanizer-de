@@ -292,6 +292,76 @@ class UnicodeLintTests(unittest.TestCase):
         text = '`"code"`'
         self.assertEqual(unicode_lint.lint(text), [])
 
+    def test_multibacktick_and_indented_code_are_not_rewritten(self):
+        texts = (
+            '``a ` „Hallo" b``',
+            '` unmatched ``„Hallo"``',
+            r'\``„Hallo`',
+            r'\```„Hallo"``',
+            "    expected = '„Hallo\"'",
+        )
+
+        for text in texts:
+            with self.subTest(text=text):
+                self.assertEqual(unicode_lint.fix(text), text)
+
+    def test_inline_code_spans_are_line_scoped_around_headings(self):
+        prose = '`unmatched\n# Prose „Hallo" `'
+        code = '` unmatched\n# Überschrift\n`„Hallo"`\n'
+
+        self.assertIn('„Hallo“', unicode_lint.fix(prose))
+        self.assertEqual(unicode_lint.fix(code), code)
+
+    def test_backticks_inside_closed_code_span_do_not_protect_later_prose(self):
+        text = '``a ` b`` Prosa „Hallo" ` Ende'
+
+        self.assertIn('Prosa „Hallo“', unicode_lint.fix(text))
+
+    def test_backslash_does_not_escape_backticks_inside_inline_code(self):
+        text = '``a \\``` „Hallo"``'
+
+        self.assertEqual(unicode_lint.fix(text), text)
+
+    def test_non_crlf_separators_do_not_split_markdown_lines(self):
+        for separator in ("\u2028", "\v", "\f"):
+            texts = (f'`a{separator}„Hallo"`', f'    code{separator}„Hallo"')
+            for text in texts:
+                with self.subTest(separator=repr(separator), text=text):
+                    self.assertEqual(unicode_lint.fix(text), text)
+
+    def test_nbsp_line_does_not_hide_indented_prose(self):
+        texts = (
+            "Text\n\u00a0\n    Prosa „Hallo\"",
+            "    code\n\u00a0\n    Prosa „Hallo\"",
+        )
+
+        for text in texts:
+            with self.subTest(text=text):
+                self.assertIn("Prosa „Hallo“", unicode_lint.fix(text))
+
+    def test_nested_list_prose_is_fixed_but_nested_code_is_preserved(self):
+        code = "          expected = '„Hallo\"'"
+        text = f"- Parent\nlazy continuation\n\n    Prosa „Hallo\"\n\n\t- „Hallo\"\n\n\t\tProsa „Hallo\"\n\n{code}"
+        fixed = unicode_lint.fix(text)
+
+        self.assertIn("    Prosa „Hallo“", fixed)
+        self.assertIn("\t- „Hallo“", fixed)
+        self.assertIn("\t\tProsa „Hallo“", fixed)
+        self.assertIn('- „Hallo“', fixed)
+        self.assertIn(code, fixed)
+
+        code_exit = "- Parent\n\n      code\noutside\n\n    expected = '„Hallo\"'\n"
+        self.assertEqual(unicode_lint.fix(code_exit), code_exit)
+
+        oversized_padding = '-     code\n\n    Prosa „Hallo"'
+        self.assertIn('Prosa „Hallo“', unicode_lint.fix(oversized_padding))
+
+        bare_marker = '-\n    Text\n\n    Prosa „Hallo"'
+        self.assertIn('Prosa „Hallo“', unicode_lint.fix(bare_marker))
+
+        empty_padded_marker = '-    \n    Text.\n\n    Prosa „Hallo"'
+        self.assertIn('Prosa „Hallo“', unicode_lint.fix(empty_padded_marker))
+
     def test_tilde_fenced_code_is_protected_from_quote_findings(self):
         text = '~~~python\nprint("x")\n~~~'
         self.assertEqual(unicode_lint.lint(text), [])
@@ -382,6 +452,24 @@ class UnicodeLintTests(unittest.TestCase):
 
         self.assertEqual(proc.returncode, 2)
         self.assertIn("--write requires --fix and --file", proc.stderr)
+
+    @unittest.skipIf(os.name == "nt", "symlink creation is not portable on Windows CI")
+    def test_write_rejects_symlink_even_when_no_fix_is_needed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp) / "target.md"
+            link = Path(tmp) / "link.md"
+            target.write_text("Unproblematic Prosa.", encoding="utf-8")
+            link.symlink_to(target)
+            proc = subprocess.run(
+                [sys.executable, str(SCRIPT), "--file", str(link), "--fix", "--write"],
+                capture_output=True,
+                text=True,
+            )
+
+            self.assertEqual(proc.returncode, 2)
+            self.assertIn("--write refuses symlink input", proc.stderr)
+            self.assertTrue(link.is_symlink())
+            self.assertEqual(target.read_text(encoding="utf-8"), "Unproblematic Prosa.")
 
     def test_atomic_fix_write_preserves_crlf_and_leaves_no_temp_file(self):
         raw = "Er sagte „Hallo”.\r\nZweite Zeile.\r\n"

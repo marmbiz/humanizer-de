@@ -424,6 +424,8 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     require_file(parser, args.file, "--file")
     if args.write and (not args.fix or not args.file):
         parser.error("--write requires --fix and --file")
+    if args.write and args.file.is_symlink():
+        parser.error("--write refuses symlink input")
     return args
 
 

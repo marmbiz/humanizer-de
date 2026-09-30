@@ -55,6 +55,8 @@ def read_user_text(path: Path) -> str:
 
 
 def atomic_write_text(path: Path, text: str, *, newline: str | None = None) -> None:
+    if path.is_symlink():
+        raise CliInputError(f"{path}: refusing to replace symlink")
     temp_path = None
     mode = stat.S_IMODE(path.stat().st_mode) if path.exists() else None
     try:

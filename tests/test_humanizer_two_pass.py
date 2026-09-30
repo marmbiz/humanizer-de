@@ -242,6 +242,550 @@ class HumanizerTwoPassTests(unittest.TestCase):
         self.assertEqual(report["protected_violations"][0]["kind"], "structure_drift")
         self.assertEqual(output, replacement)
 
+    def test_main_rejects_swapped_link_targets_as_structure_drift(self):
+        original = "[Alpha](https://a.example) und [Beta](https://b.example).\n"
+        replacement = "[Alpha](https://b.example) und [Beta](https://a.example).\n"
+        candidate = {
+            "id": "c1",
+            "source": original,
+            "patterns": ["64"],
+            "reason": "Floskel",
+            "goal": "glätten",
+            "action": "rewrite",
+            "scope": "sentence",
+        }
+
+        code, report, output = self.run_structure_case(original, candidate, replacement)
+
+        self.assertEqual(code, 1)
+        self.assertEqual(report["structure"]["differences"][0]["kind"], "link_association_changed")
+        self.assertEqual(report["protected_violations"][0]["kind"], "structure_drift")
+        self.assertEqual(output, replacement)
+
+    def test_main_accepts_moved_links_with_targets_attached(self):
+        original = "[Alpha](https://a.example) und [Beta](https://b.example).\n"
+        replacement = "[Beta](https://b.example) und [Alpha](https://a.example).\n"
+        candidate = {
+            "id": "c1",
+            "source": original,
+            "patterns": ["64"],
+            "reason": "Floskel",
+            "goal": "glätten",
+            "action": "rewrite",
+            "scope": "sentence",
+        }
+
+        code, report, output = self.run_structure_case(original, candidate, replacement)
+
+        self.assertEqual(code, 0)
+        self.assertTrue(report["structure"]["ok"])
+        self.assertEqual(output, replacement)
+
+    def test_main_accepts_authorized_heading_delete(self):
+        original = "# Warum X die richtige Wahl ist\nInhalt.\n"
+        candidate = {
+            "id": "c1",
+            "source": "# Warum X die richtige Wahl ist\n",
+            "patterns": ["64"],
+            "reason": "Schablone",
+            "goal": "streichen",
+            "action": "delete",
+            "scope": "heading",
+        }
+
+        code, report, output = self.run_structure_case(original, candidate, "")
+
+        self.assertEqual(code, 0)
+        self.assertTrue(report["structure"]["ok"])
+        self.assertEqual(output, "Inhalt.\n")
+
+    def test_main_accepts_authorized_heading_rewrite(self):
+        original = "# Warum X die richtige Wahl ist\nInhalt.\n"
+        candidate = {
+            "id": "c1",
+            "source": "# Warum X die richtige Wahl ist\n",
+            "patterns": ["64"],
+            "reason": "Schablone",
+            "goal": "konkretisieren",
+            "action": "rewrite",
+            "scope": "heading",
+        }
+
+        code, report, output = self.run_structure_case(
+            original, candidate, "# Warum X passt\n"
+        )
+
+        self.assertEqual(code, 0)
+        self.assertTrue(report["structure"]["ok"])
+        self.assertEqual(output, "# Warum X passt\nInhalt.\n")
+
+    def test_main_rejects_heading_rewrites_in_html_technical_regions(self):
+        candidate = {
+            "id": "c1",
+            "source": "# example comment\n",
+            "patterns": ["64"],
+            "reason": "Schablone",
+            "goal": "konkretisieren",
+            "action": "rewrite",
+            "scope": "heading",
+        }
+        wrappers = (
+            "<pre>\n{}\n</pre>\n",
+            "<script>\n{}\n</script>\n",
+            "<style>\n{}\n</style>\n",
+            "<textarea>\n{}\n</textarea>\n",
+            "<!--\n{}\n-->\n",
+        )
+
+        for wrapper in wrappers:
+            for action, replacement in (("rewrite", "# changed\n"), ("delete", "")):
+                with self.subTest(wrapper=wrapper, action=action):
+                    original = wrapper.format("# example comment")
+                    candidate["action"] = action
+                    code, report, output = self.run_structure_case(
+                        original, candidate, replacement
+                    )
+
+                    self.assertEqual(code, 1)
+                    self.assertFalse(report["accepted"])
+                    self.assertFalse(report["structure"]["ok"])
+                    self.assertEqual(
+                        output,
+                        original.replace(
+                            "# example comment\n", replacement or "\n"
+                        ),
+                    )
+
+    def test_main_accepts_heading_rewrites_after_html_literals_in_code(self):
+        candidate = {
+            "id": "c1",
+            "source": "# Generic\n",
+            "patterns": ["64"],
+            "reason": "Schablone",
+            "goal": "konkretisieren",
+            "action": "rewrite",
+            "scope": "heading",
+        }
+        originals = (
+            "`<pre>`\n\n# Generic\nText.\n",
+            "`<!--`\n\n# Generic\nText.\n",
+            "```html\n<pre>\n```\n\n# Generic\nText.\n",
+            "```html\n<!--\n```\n\n# Generic\nText.\n",
+            "---\nexample: <pre>\n---\n\n# Generic\nText.\n",
+            "---\nexample: <!--\n---\n\n# Generic\nText.\n",
+        )
+
+        for original in originals:
+            with self.subTest(original=original):
+                code, report, output = self.run_structure_case(
+                    original, candidate, "# Better\n"
+                )
+
+                self.assertEqual(code, 0)
+                self.assertTrue(report["accepted"])
+                self.assertTrue(report["structure"]["ok"])
+                self.assertEqual(output, original.replace("# Generic\n", "# Better\n"))
+
+    def test_main_rejects_heading_rewrites_inside_commonmark_type6_blocks(self):
+        candidate = {
+            "id": "c1",
+            "source": "# generic\n",
+            "patterns": ["64"],
+            "reason": "Schablone",
+            "goal": "konkretisieren",
+            "action": "rewrite",
+            "scope": "heading",
+        }
+
+        for tag in ("div", "table", "iframe"):
+            originals = (
+                f"<{tag}>\n# generic\n</{tag}>\n",
+                f"<{tag}>\n`literal`\n# generic\n</{tag}>\n",
+            )
+            for original in originals:
+                with self.subTest(tag=tag, original=original):
+                    code, report, _ = self.run_structure_case(
+                        original, candidate, "# changed\n"
+                    )
+
+                    self.assertEqual(code, 1)
+                    self.assertFalse(report["accepted"])
+                    self.assertFalse(report["structure"]["ok"])
+
+    def test_main_rejects_heading_rewrite_inside_custom_tag_without_blank(self):
+        candidate = {
+            "id": "c1",
+            "source": "# generic\n",
+            "patterns": ["64"],
+            "reason": "Schablone",
+            "goal": "konkretisieren",
+            "action": "rewrite",
+            "scope": "heading",
+        }
+
+        for original in (
+            "<custom-widget>\n# generic\n</custom-widget>\n",
+            '<custom-widget title="a > b">\n# generic\n</custom-widget>\n',
+        ):
+            with self.subTest(original=original):
+                code, report, _ = self.run_structure_case(
+                    original, candidate, "# changed\n"
+                )
+
+                self.assertEqual(code, 1)
+                self.assertFalse(report["accepted"])
+                self.assertFalse(report["structure"]["ok"])
+
+    def test_main_does_not_treat_spaced_raw_close_as_terminator(self):
+        original = "<pre>\n</pre >\n# generic\n</pre>\n"
+        candidate = {
+            "id": "c1",
+            "source": "# generic\n",
+            "patterns": ["64"],
+            "reason": "Schablone",
+            "goal": "konkretisieren",
+            "action": "rewrite",
+            "scope": "heading",
+        }
+
+        code, report, _ = self.run_structure_case(original, candidate, "# changed\n")
+
+        self.assertEqual(code, 1)
+        self.assertFalse(report["accepted"])
+        self.assertFalse(report["structure"]["ok"])
+
+    def test_main_rejects_heading_rewrite_inside_multiline_html_openers(self):
+        candidate = {
+            "id": "c1",
+            "source": "# generic\n",
+            "patterns": ["64"],
+            "reason": "Schablone",
+            "goal": "konkretisieren",
+            "action": "rewrite",
+            "scope": "heading",
+        }
+        originals = (
+            '<pre\n  class="example">\n# generic\n</pre>\n',
+            '<div\n  class="example">\n# generic\n</div>\n',
+        )
+
+        for original in originals:
+            with self.subTest(original=original):
+                code, report, _ = self.run_structure_case(
+                    original, candidate, "# changed\n"
+                )
+
+                self.assertEqual(code, 1)
+                self.assertFalse(report["accepted"])
+                self.assertFalse(report["structure"]["ok"])
+
+    def test_main_rejects_heading_delete_that_changes_indented_code_scope(self):
+        original = "- item\n# generic\n\n    print('hello')\n"
+        candidate = {
+            "id": "c1",
+            "source": "# generic\n",
+            "patterns": ["64"],
+            "reason": "Schablone",
+            "goal": "streichen",
+            "action": "delete",
+            "scope": "heading",
+        }
+
+        code, report, output = self.run_structure_case(original, candidate, "")
+
+        self.assertEqual(code, 1)
+        self.assertFalse(report["accepted"])
+        self.assertTrue(
+            any(
+                difference["kind"] == "indented_code_removed"
+                for difference in report["structure"]["differences"]
+            )
+        )
+        self.assertEqual(output, "- item\n\n    print('hello')\n")
+
+    def test_main_accepts_heading_after_commonmark_html_block_terminators(self):
+        candidate = {
+            "id": "c1",
+            "source": "# generic\n",
+            "patterns": ["64"],
+            "reason": "Schablone",
+            "goal": "konkretisieren",
+            "action": "rewrite",
+            "scope": "heading",
+        }
+        originals = (
+            "<div>\n# earlier\n</div>\n\n# generic\nText.\n",
+            "<custom-widget>\n\n# generic\nText.\n",
+        )
+
+        for original in originals:
+            with self.subTest(original=original):
+                code, report, output = self.run_structure_case(
+                    original, candidate, "# Better\n"
+                )
+
+                self.assertEqual(code, 0)
+                self.assertTrue(report["accepted"])
+                self.assertTrue(report["structure"]["ok"])
+                self.assertEqual(output, original.replace("# generic\n", "# Better\n"))
+
+    def test_main_rejects_heading_rewrites_inside_commonmark_types_three_to_five(self):
+        candidate = {
+            "id": "c1",
+            "source": "# generic\n",
+            "patterns": ["64"],
+            "reason": "Schablone",
+            "goal": "konkretisieren",
+            "action": "rewrite",
+            "scope": "heading",
+        }
+        originals = (
+            "<?xml\n# generic\n?>\n",
+            "<![CDATA[\n# generic\n]]>\n",
+            "<!DOCTYPE html\n# generic\n>\n",
+        )
+
+        for original in originals:
+            with self.subTest(original=original):
+                code, report, _ = self.run_structure_case(
+                    original, candidate, "# changed\n"
+                )
+
+                self.assertEqual(code, 1)
+                self.assertFalse(report["accepted"])
+                self.assertFalse(report["structure"]["ok"])
+
+    def test_plain_atx_heading_authorization_rejects_tabs_and_embedded_cr(self):
+        self.assertFalse(two_pass.is_plain_atx_heading("\t# generic\n"))
+        self.assertFalse(two_pass.is_plain_atx_heading("# generic\rnext\n"))
+        self.assertFalse(two_pass.is_plain_atx_heading("#\n"))
+
+    def test_main_rejects_level_change_for_empty_atx_heading(self):
+        original = "#\nText.\n"
+        candidate = {
+            "id": "c1",
+            "source": "#\n",
+            "patterns": ["64"],
+            "reason": "Schablone",
+            "goal": "konkretisieren",
+            "action": "rewrite",
+            "scope": "heading",
+        }
+
+        code, report, output = self.run_structure_case(original, candidate, "##\n")
+
+        self.assertEqual(code, 1)
+        self.assertEqual(report["structure"]["differences"][0]["kind"], "heading_changed")
+        self.assertEqual(output, "##\nText.\n")
+
+    def test_main_rejects_tab_indented_code_heading_delete(self):
+        original = "\t# Generic\nText.\n"
+        candidate = {
+            "id": "c1",
+            "source": "\t# Generic\n",
+            "patterns": ["64"],
+            "reason": "Schablone",
+            "goal": "streichen",
+            "action": "delete",
+            "scope": "heading",
+        }
+
+        code, report, output = self.run_structure_case(original, candidate, "")
+
+        self.assertEqual(code, 1)
+        self.assertFalse(report["accepted"])
+        self.assertEqual(output, "Text.\n")
+
+    def test_main_rejects_link_target_change_in_technical_heading(self):
+        original = "# [Alpha](https://a.example) und [Beta](https://b.example)\n"
+        replacement = "# [Alpha](https://b.example) und [Beta](https://a.example)\n"
+        candidate = {
+            "id": "c1",
+            "source": original,
+            "patterns": ["64"],
+            "reason": "Schablone",
+            "goal": "konkretisieren",
+            "action": "rewrite",
+            "scope": "heading",
+        }
+
+        code, report, output = self.run_structure_case(original, candidate, replacement)
+
+        self.assertEqual(code, 1)
+        self.assertEqual(report["structure"]["differences"][0]["kind"], "heading_changed")
+        self.assertEqual(output, replacement)
+
+    def test_main_rejects_reference_link_removal_in_technical_heading(self):
+        original = "# [Alpha][a]\n\n[a]: https://a.example\n"
+        replacement = "# Alpha\n\n[a]: https://a.example\n"
+        candidate = {
+            "id": "c1",
+            "source": "# [Alpha][a]\n",
+            "patterns": ["64"],
+            "reason": "Schablone",
+            "goal": "konkretisieren",
+            "action": "rewrite",
+            "scope": "heading",
+        }
+
+        code, report, output = self.run_structure_case(original, candidate, "# Alpha\n")
+
+        self.assertEqual(code, 1)
+        self.assertEqual(report["structure"]["differences"][0]["kind"], "heading_changed")
+        self.assertEqual(output, replacement)
+
+    def test_main_preserves_setext_neighbor_when_deleting_heading(self):
+        original = "Before\n# Generic\nAfter\n---\n"
+        candidate = {
+            "id": "c1",
+            "source": "# Generic\n",
+            "patterns": ["64"],
+            "reason": "Schablone",
+            "goal": "streichen",
+            "action": "delete",
+            "scope": "heading",
+        }
+
+        code, report, output = self.run_structure_case(original, candidate, "")
+
+        self.assertEqual(code, 0)
+        self.assertTrue(report["structure"]["ok"])
+        self.assertEqual(output, "Before\n\nAfter\n---\n")
+
+    def test_main_rejects_setext_heading_delete(self):
+        original = "Generic headline\n---\nText.\n"
+        candidate = {
+            "id": "c1",
+            "source": "Generic headline\n",
+            "patterns": ["64"],
+            "reason": "Schablone",
+            "goal": "streichen",
+            "action": "delete",
+            "scope": "heading",
+        }
+
+        code, report, output = self.run_structure_case(original, candidate, "")
+
+        self.assertEqual(code, 1)
+        self.assertEqual(report["structure"]["differences"][0]["kind"], "heading_removed")
+        self.assertEqual(output, "---\nText.\n")
+
+    def test_main_rejects_setext_title_rewrites(self):
+        original = "Generic headline\n---\nText.\n"
+        candidate = {
+            "id": "c1",
+            "source": "Generic headline\n",
+            "patterns": ["64"],
+            "reason": "Schablone",
+            "goal": "konkretisieren",
+            "action": "rewrite",
+            "scope": "heading",
+        }
+
+        for replacement in ("\n", "<div>\n"):
+            with self.subTest(replacement=replacement):
+                code, report, output = self.run_structure_case(
+                    original, candidate, replacement
+                )
+
+                self.assertEqual(code, 1)
+                self.assertTrue(report["structure"]["differences"])
+                self.assertEqual(output, replacement + "---\nText.\n")
+
+    def test_main_rejects_setext_underline_level_rewrite(self):
+        original = "Generic headline\n===\nText.\n"
+        candidate = {
+            "id": "c1",
+            "source": "===\n",
+            "patterns": ["64"],
+            "reason": "Schablone",
+            "goal": "konkretisieren",
+            "action": "rewrite",
+            "scope": "heading",
+        }
+
+        code, report, output = self.run_structure_case(original, candidate, "--\n")
+
+        self.assertEqual(code, 1)
+        self.assertEqual(report["structure"]["differences"][0]["kind"], "heading_changed")
+        self.assertEqual(output, "Generic headline\n--\nText.\n")
+
+    def test_main_rejects_nested_link_markup_removal_from_heading(self):
+        original = "# [Alpha [Beta]](https://example.com)\n"
+        replacement = "# Alpha Beta url\n"
+        candidate = {
+            "id": "c1",
+            "source": original,
+            "patterns": ["64"],
+            "reason": "Schablone",
+            "goal": "konkretisieren",
+            "action": "rewrite",
+            "scope": "heading",
+        }
+
+        code, report, output = self.run_structure_case(original, candidate, replacement)
+
+        self.assertEqual(code, 1)
+        self.assertEqual(report["structure"]["differences"][0]["kind"], "heading_changed")
+        self.assertEqual(output, replacement)
+
+    def test_main_rejects_multiline_reference_markup_removal_from_heading(self):
+        original = "# [Alpha][a]\n\n[a]:\n  https://a.example\n"
+        replacement = "# Alpha\n\n[a]:\n  https://a.example\n"
+        candidate = {
+            "id": "c1",
+            "source": "# [Alpha][a]\n",
+            "patterns": ["64"],
+            "reason": "Schablone",
+            "goal": "konkretisieren",
+            "action": "rewrite",
+            "scope": "heading",
+        }
+
+        code, report, output = self.run_structure_case(original, candidate, "# Alpha\n")
+
+        self.assertEqual(code, 1)
+        self.assertEqual(report["structure"]["differences"][0]["kind"], "heading_changed")
+        self.assertEqual(output, replacement)
+
+    def test_main_rejects_html_markup_added_to_plain_heading(self):
+        original = "# Plain heading\n"
+        replacement = "# <div>heading</div>\n"
+        candidate = {
+            "id": "c1",
+            "source": original,
+            "patterns": ["64"],
+            "reason": "Schablone",
+            "goal": "konkretisieren",
+            "action": "rewrite",
+            "scope": "heading",
+        }
+
+        code, report, output = self.run_structure_case(original, candidate, replacement)
+
+        self.assertEqual(code, 1)
+        self.assertEqual(report["structure"]["differences"][0]["kind"], "heading_changed")
+        self.assertEqual(output, replacement)
+
+    def test_main_rejects_inline_code_change_in_technical_heading(self):
+        original = "# Run `make test`\n"
+        replacement = "# Run `make check`\n"
+        candidate = {
+            "id": "c1",
+            "source": original,
+            "patterns": ["64"],
+            "reason": "Schablone",
+            "goal": "konkretisieren",
+            "action": "rewrite",
+            "scope": "heading",
+        }
+
+        code, report, output = self.run_structure_case(original, candidate, replacement)
+
+        self.assertEqual(code, 1)
+        self.assertEqual(report["structure"]["differences"][0]["kind"], "heading_changed")
+        self.assertEqual(output, replacement)
+
     def test_main_rejects_changed_code_block_as_structure_drift(self):
         original = "```python\nprint('alt')\n```\n"
         replacement = "print('neu')\n"

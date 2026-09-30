@@ -137,6 +137,71 @@ class TextScopeTests(unittest.TestCase):
         self.assertNotIn("Du bist", text_scope.mask_text(closed))
         self.assertNotIn("Du bist", text_scope.mask_text(unclosed))
 
+    def test_multibacktick_and_indented_code_are_protected(self):
+        inline = '``a ` „Hallo" b``'
+        indented = "    expected = '„Hallo\"'"
+        text = f"{inline}\n\n{indented}"
+        masked = text_scope.mask_text(text)
+
+        self.assertEqual(len(masked), len(text))
+        self.assertNotIn("Hallo", masked)
+        self.assertIn("\n\n", masked)
+
+    def test_escaped_backtick_does_not_open_code_span(self):
+        text = r"\` escaped delimiter"
+
+        self.assertEqual(text_scope.protected_ranges(text), [])
+
+    def test_list_continuation_with_four_spaces_remains_prose(self):
+        text = "- Punkt.\n\n    Die Fortsetzung bleibt Prosa."
+
+        self.assertIn("Die Fortsetzung bleibt Prosa.", text_scope.mask_text(text))
+
+    def test_nested_list_continuation_and_code_are_distinguished(self):
+        text = "- Parent\n\n    - „Hallo\"\n\n        Prosa bleibt erhalten.\n\n          expected = '„Hallo\"'"
+        masked = text_scope.mask_text(text)
+
+        self.assertIn('- „Hallo"', masked)
+        self.assertIn("Prosa bleibt erhalten.", masked)
+        self.assertNotIn("expected", masked)
+
+        lazy = "- Parent\nlazy continuation\n\n    Prosa bleibt erhalten."
+        self.assertIn("Prosa bleibt erhalten.", text_scope.mask_text(lazy))
+
+        tabbed = "- Parent\n\n\t- Child\n\n\t\tProsa bleibt erhalten.\n\n\t\t\tcode = '„Hallo\"'"
+        tabbed_masked = text_scope.mask_text(tabbed)
+        self.assertIn("Prosa bleibt erhalten.", tabbed_masked)
+        self.assertNotIn("code =", tabbed_masked)
+
+        exited = "- Parent\n\nProsa bleibt erhalten.\n\n    expected = '„Hallo\"'"
+        exited_masked = text_scope.mask_text(exited)
+        self.assertIn("Prosa bleibt erhalten.", exited_masked)
+        self.assertNotIn("expected", exited_masked)
+
+        heading_exit = "- Parent\n# Heading\n\n    expected = '„Hallo\"'"
+        self.assertNotIn("expected", text_scope.mask_text(heading_exit))
+
+        code_exit = "- Parent\n\n      code\noutside\n\n    expected = '„Hallo\"'\n"
+        self.assertNotIn("expected", text_scope.mask_text(code_exit))
+
+        oversized_padding = "-     code\n\n    Prosa bleibt erhalten."
+        self.assertIn("Prosa bleibt erhalten.", text_scope.mask_text(oversized_padding))
+
+        bare_marker = "-\n    Text\n\n    Prosa bleibt erhalten."
+        self.assertIn("Prosa bleibt erhalten.", text_scope.mask_text(bare_marker))
+
+        empty_padded_marker = "-    \n    Text.\n\n    Prosa bleibt erhalten."
+        self.assertIn("Prosa bleibt erhalten.", text_scope.mask_text(empty_padded_marker))
+
+    def test_nbsp_line_does_not_start_or_extend_indented_code(self):
+        before_code = "Text\n\u00a0\n    Prosa bleibt erhalten."
+        after_code = "    code\n\u00a0\n    Prosa bleibt erhalten."
+
+        self.assertIn("Prosa bleibt erhalten.", text_scope.mask_text(before_code))
+        after_code_masked = text_scope.mask_text(after_code)
+        self.assertIn("Prosa bleibt erhalten.", after_code_masked)
+        self.assertNotIn("code", after_code_masked)
+
     def test_authored_scope_excludes_every_blockquote_feature(self):
         quoted = "> Du prüfst ja unsere Datei. Senden Sie uns Ihre Fassung? 👩‍💻\n"
         text = "Sachliche eigene Prosa.\n\n" + quoted

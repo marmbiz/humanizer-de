@@ -41,6 +41,25 @@ MARKDOWN_STRUCTURE_RE = re.compile(
     r"([ \t]{4,}|\t+|[ \t]{0,3}(?:#{1,6}[ \t]+|>[ \t]*|(?:[-+*]|\d+[.)])[ \t]+(?:\[[ xX]\][ \t]+)?))"
 )
 THEMATIC_BREAK_RE = re.compile(r"[ \t]{0,3}(?:(?:\*[ \t]*){3,}|(?:-[ \t]*){3,}|(?:_[ \t]*){3,})$")
+COMMONMARK_BLOCK_TAGS = frozenset(
+    """
+    address article aside base basefont blockquote body caption center col colgroup dd details
+    dialog dir div dl dt fieldset figcaption figure footer form frame frameset h1 h2 h3 h4 h5 h6
+    head header hr html iframe legend li link main menu menuitem meta nav noframes ol optgroup
+    option p param search section summary table tbody td tfoot th thead title tr track ul
+    """.split()
+)
+HTML_TYPE1_START_RE = re.compile(
+    r"^[ ]{0,3}<(script|pre|style|textarea)(?=[ \t/>]|$)", re.IGNORECASE
+)
+HTML_TYPE6_START_RE = re.compile(
+    rf"^[ ]{{0,3}}</?(?:{'|'.join(sorted(COMMONMARK_BLOCK_TAGS))})(?=[ \t/>]|$)",
+    re.IGNORECASE,
+)
+HTML_TYPE7_LINE_RE = re.compile(
+    r"^[ ]{0,3}(?:</[A-Za-z][A-Za-z0-9-]*[ \t]*>|"
+    r"<[A-Za-z][A-Za-z0-9-]*(?:[ \t]+(?:[^<>\"']|\"[^\"]*\"|'[^']*')*)?[ \t]*/?>)[ \t]*$"
+)
 
 AUDIT_SCHEMA = {
     "type": "object",
@@ -365,6 +384,43 @@ def confirm_ledger(original: str, ledger: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def validate_heading_rewrite(candidate_id: str, source: str, replacement: str) -> None:
+    source_ending = "\r\n" if source.endswith("\r\n") else "\n" if source.endswith("\n") else ""
+    replacement_ending = "\r\n" if replacement.endswith("\r\n") else "\n" if replacement.endswith("\n") else ""
+    replacement_body = replacement[: -len(replacement_ending)] if replacement_ending else replacement
+    source_body = source[: -len(source_ending)] if source_ending else source
+    source_structure = MARKDOWN_STRUCTURE_RE.match(source_body)
+    replacement_structure = MARKDOWN_STRUCTURE_RE.match(replacement_body)
+    source_break = THEMATIC_BREAK_RE.fullmatch(source_body)
+    replacement_break = THEMATIC_BREAK_RE.fullmatch(replacement_body)
+    if (
+        source_ending != replacement_ending
+        or "\n" in replacement_body
+        or "\r" in replacement_body
+        or (source_structure.group(1) if source_structure else "")
+        != (replacement_structure.group(1) if replacement_structure else "")
+        or (source_break.group(0) if source_break else "")
+        != (replacement_break.group(0) if replacement_break else "")
+    ):
+        raise ValueError(f"heading rewrite changed line structure: {candidate_id}")
+
+
+def is_plain_atx_heading(text: str) -> bool:
+    body = text[: -2] if text.endswith("\r\n") else text[:-1] if text.endswith("\n") else text
+    return bool(re.fullmatch(r" {0,3}#{1,6}[ \t]+(?=[^ \t\r\n])[^\r\n]*", body)) and not re.search(
+        r"[\[\]`<>]", body
+    )
+
+
+def heading_delete_separator(original: str, start: int, end: int, source: str) -> str:
+    if start == 0 or end == len(original):
+        return ""
+    prefix, suffix = original[:start], original[end:]
+    if prefix.endswith(("\n\n", "\r\n\r\n")) or suffix.startswith(("\n", "\r")):
+        return ""
+    return "\r\n" if source.endswith("\r\n") else "\n" if source.endswith("\n") else ""
+
+
 def apply_edits(original: str, ledger: dict[str, Any], document: dict[str, Any]) -> str:
     spans = candidate_spans(original, ledger["candidates"])
     replacements: dict[str, str] = {}
@@ -378,6 +434,9 @@ def apply_edits(original: str, ledger: dict[str, Any], document: dict[str, Any])
         replacement = edit["replacement"]
         if candidate["action"] == "delete" and replacement:
             raise ValueError(f"delete-only candidate has non-empty replacement: {candidate_id}")
+        if candidate["action"] == "delete" and candidate["scope"] == "heading":
+            start, end, _ = spans[candidate_id]
+            replacement = heading_delete_separator(original, start, end, candidate["source"])
         if candidate["action"] == "rewrite" and not replacement:
             raise ValueError(f"rewrite candidate has empty replacement: {candidate_id}")
         if candidate["action"] == "rewrite" and candidate["scope"] in {"phrase", "sentence"}:
@@ -413,24 +472,7 @@ def apply_edits(original: str, ledger: dict[str, Any], document: dict[str, Any])
             ):
                 raise ValueError(f"{candidate['scope']} rewrite changed line structure: {candidate_id}")
         if candidate["action"] == "rewrite" and candidate["scope"] == "heading":
-            source_ending = "\r\n" if candidate["source"].endswith("\r\n") else "\n" if candidate["source"].endswith("\n") else ""
-            replacement_ending = "\r\n" if replacement.endswith("\r\n") else "\n" if replacement.endswith("\n") else ""
-            replacement_body = replacement[: -len(replacement_ending)] if replacement_ending else replacement
-            source_body = candidate["source"][: -len(source_ending)] if source_ending else candidate["source"]
-            source_structure = MARKDOWN_STRUCTURE_RE.match(source_body)
-            replacement_structure = MARKDOWN_STRUCTURE_RE.match(replacement_body)
-            source_break = THEMATIC_BREAK_RE.fullmatch(source_body)
-            replacement_break = THEMATIC_BREAK_RE.fullmatch(replacement_body)
-            if (
-                source_ending != replacement_ending
-                or "\n" in replacement_body
-                or "\r" in replacement_body
-                or (source_structure.group(1) if source_structure else "")
-                != (replacement_structure.group(1) if replacement_structure else "")
-                or (source_break.group(0) if source_break else "")
-                != (replacement_break.group(0) if replacement_break else "")
-            ):
-                raise ValueError(f"heading rewrite changed line structure: {candidate_id}")
+            validate_heading_rewrite(candidate_id, candidate["source"], replacement)
         if candidate["action"] == "rewrite":
             list_item = re.match(r"([ \t]*(?:[-+*]|\d+[.)])[ \t]+(?:\[[ xX]\][ \t]+)?)", candidate["source"])
             if list_item:
@@ -481,6 +523,139 @@ def apply_edits(original: str, ledger: dict[str, Any], document: dict[str, Any])
     return "".join(parts)
 
 
+def authorized_heading_baseline(original: str, ledger: dict[str, Any], document: dict[str, Any]) -> str:
+    replacements = {edit["candidate_id"]: edit["replacement"] for edit in document["edits"]}
+    candidates = [
+        candidate
+        for candidate in ledger["candidates"]
+        if candidate["scope"] == "heading" and candidate["id"] in replacements
+    ]
+    spans = candidate_spans(original, candidates)
+    baseline = original
+    for candidate_id, (start, end, candidate) in sorted(
+        spans.items(), key=lambda item: item[1][0], reverse=True
+    ):
+        if heading_in_protected_region(original, start, end):
+            continue
+        without_candidate = original[:start] + original[end:]
+        if not any(
+            difference["kind"].startswith("heading_")
+            for difference in structure_delta(original, without_candidate)["differences"]
+        ):
+            continue
+        replacement = replacements[candidate_id]
+        if candidate["action"] == "delete":
+            if replacement or not is_plain_atx_heading(candidate["source"]):
+                continue
+            replacement = heading_delete_separator(original, start, end, candidate["source"])
+        elif candidate["action"] == "rewrite":
+            if not is_plain_atx_heading(candidate["source"]) or not is_plain_atx_heading(
+                replacement
+            ):
+                continue
+            try:
+                validate_heading_rewrite(candidate_id, candidate["source"], replacement)
+            except ValueError:
+                continue
+        else:
+            continue
+        baseline = baseline[:start] + replacement + baseline[end:]
+    return baseline
+
+
+def commonmark_html_block_ranges(text: str) -> list[tuple[int, int]]:
+    lines = list(rhythm_lint.text_scope.markdown_lines(text))
+    ranges = []
+    index = 0
+    while index < len(lines):
+        line_start, line = lines[index]
+        body = line.rstrip("\r\n")
+        raw_start = HTML_TYPE1_START_RE.match(body)
+        terminator = None
+        search_start = line_start
+        if raw_start:
+            tag = raw_start.group(1)
+            terminator = re.compile(rf"</{tag}>", re.IGNORECASE)
+            search_start += raw_start.end()
+        else:
+            content = body.lstrip(" ")
+            indentation = len(body) - len(content)
+            if indentation <= 3 and content.startswith("<!--"):
+                terminator = re.compile(r"-->")
+                search_start += indentation + len("<!--")
+            elif indentation <= 3 and content.startswith("<?"):
+                terminator = re.compile(r"\?>")
+                search_start += indentation + len("<?")
+            elif indentation <= 3 and content.startswith("<![CDATA["):
+                terminator = re.compile(r"\]\]>")
+                search_start += indentation + len("<![CDATA[")
+            elif indentation <= 3 and re.match(r"<![A-Z]", content):
+                terminator = re.compile(r">")
+                search_start += indentation + 2
+
+        if terminator:
+            match = terminator.search(text, search_start)
+            end = match.end() if match else len(text)
+            ranges.append((line_start, end))
+            while index < len(lines) and lines[index][0] < end:
+                index += 1
+            continue
+
+        if HTML_TYPE6_START_RE.match(body):
+            next_index = index + 1
+            end = line_start + len(line)
+            while next_index < len(lines):
+                next_start, next_line = lines[next_index]
+                end = next_start + len(next_line)
+                next_index += 1
+                if not next_line.strip(" \t\r\n"):
+                    break
+            ranges.append((line_start, end))
+            index = next_index
+            continue
+
+        if HTML_TYPE7_LINE_RE.fullmatch(body):
+            next_index = index + 1
+            end = line_start + len(line)
+            while next_index < len(lines):
+                next_start, next_line = lines[next_index]
+                end = next_start + len(next_line)
+                next_index += 1
+                if not next_line.strip(" \t\r\n"):
+                    break
+            ranges.append((line_start, end))
+            index = next_index
+            continue
+
+        index += 1
+    return ranges
+
+
+def heading_in_protected_region(text: str, start: int, end: int) -> bool:
+    text_scope = rhythm_lint.text_scope
+    protected = text_scope.protected_ranges(text)
+    code_ranges = [
+        *text_scope.fenced_code_ranges(text),
+        *text_scope.inline_code_ranges(text),
+        *text_scope.indented_code_ranges(text),
+    ]
+    frontmatter = text_scope.FRONTMATTER_RE.search(text)
+    if frontmatter:
+        code_ranges.append(frontmatter.span())
+
+    masked = list(text)
+    for code_start, code_end in text_scope.merge_ranges(code_ranges):
+        for index in range(code_start, code_end):
+            if masked[index] not in {"\r", "\n"}:
+                masked[index] = "x"
+    html_search_text = "".join(masked)
+    protected.extend(commonmark_html_block_ranges(html_search_text))
+    return any(
+        start < protected_end and protected_start < end
+        for protected_start, protected_end in protected
+    )
+
+
 def protected_violations(original: str, result: str, ledger: dict[str, Any]) -> list[str]:
     violations = []
     for category, anchors in ledger["protected"].items():
@@ -502,7 +677,9 @@ def protected_violations(original: str, result: str, ledger: dict[str, Any]) -> 
     return violations
 
 
-def structure_delta(before: str, after: str) -> dict[str, Any]:
+def structure_delta(
+    before: str, after: str, *, heading_baseline: str | None = None
+) -> dict[str, Any]:
     """Schließt die Formatierungsblindheit der wortbasierten Eingriffstiefe."""
 
     def extract(text: str) -> dict[str, list[Any]]:
@@ -560,9 +737,11 @@ def structure_delta(before: str, after: str) -> dict[str, Any]:
             r"(?:[ \t]+(?:\"[^\"\r\n]*\"|'[^'\r\n]*'|\([^\)\r\n]*\)))?[ \t]*\)"
         )
         links = list(link_pattern.finditer(without_fences))
+        link_pairs = [
+            (match.group(1), match.group(2) or match.group(3)) for match in links
+        ]
         link_targets = [match.group(2) or match.group(3) for match in links]
         link_texts = [match.group(1) for match in links]
-
         inline_pattern = re.compile(r"(?<!`)(`+)(?!`)(.+?)(?<!`)\1(?!`)", re.DOTALL)
         inline_matches = list(inline_pattern.finditer(without_fences))
         inline_code = [match.group(2) for match in inline_matches]
@@ -579,14 +758,20 @@ def structure_delta(before: str, after: str) -> dict[str, Any]:
 
         return {
             "headings": headings,
+            "link_pairs": link_pairs,
             "link_targets": link_targets,
             "link_texts": link_texts,
             "fences": fences,
             "inline_code": inline_code,
+            "indented_code": [
+                text[start:end]
+                for start, end in rhythm_lint.text_scope.indented_code_ranges(text)
+            ],
         }
 
     old = extract(before)
     new = extract(after)
+    heading_old = extract(heading_baseline)["headings"] if heading_baseline is not None else old["headings"]
     differences: list[dict[str, Any]] = []
 
     def sequence_changes(kind: str, old_values: list[Any], new_values: list[Any]) -> None:
@@ -613,7 +798,7 @@ def structure_delta(before: str, after: str) -> dict[str, Any]:
                 for value in new_values[new_start + paired : new_end]
             )
 
-    def multiset_changes(kind: str, old_values: list[str], new_values: list[str]) -> None:
+    def multiset_changes(kind: str, old_values: list[Any], new_values: list[Any]) -> None:
         removed = list((Counter(old_values) - Counter(new_values)).elements())
         added = list((Counter(new_values) - Counter(old_values)).elements())
         paired = min(len(removed), len(added))
@@ -624,11 +809,17 @@ def structure_delta(before: str, after: str) -> dict[str, Any]:
         differences.extend({"kind": f"{kind}_removed", "before": value} for value in removed[paired:])
         differences.extend({"kind": f"{kind}_added", "after": value} for value in added[paired:])
 
-    sequence_changes("heading", old["headings"], new["headings"])
+    sequence_changes("heading", heading_old, new["headings"])
     multiset_changes("link_target", old["link_targets"], new["link_targets"])
     multiset_changes("link_text", old["link_texts"], new["link_texts"])
+    if (
+        Counter(old["link_texts"]) == Counter(new["link_texts"])
+        and Counter(old["link_targets"]) == Counter(new["link_targets"])
+    ):
+        multiset_changes("link_association", old["link_pairs"], new["link_pairs"])
     sequence_changes("code", old["fences"], new["fences"])
     multiset_changes("inline_code", old["inline_code"], new["inline_code"])
+    sequence_changes("indented_code", old["indented_code"], new["indented_code"])
     return {"ok": not differences, "differences": differences}
 
 
@@ -1149,7 +1340,12 @@ def main(argv: list[str] | None = None) -> int:
             raise RuntimeError("runtime files changed during the model calls")
         candidate_path = args.out_dir / "candidate.md"
         candidate_path.write_bytes(proposed.encode("utf-8"))
-        structure = structure_delta(normalized, proposed)
+        structure_baseline = (
+            authorized_heading_baseline(normalized, ledger, edits)
+            if not apply_violations
+            else normalized
+        )
+        structure = structure_delta(normalized, proposed, heading_baseline=structure_baseline)
         structure_violations = [
             {
                 "kind": "structure_drift",
