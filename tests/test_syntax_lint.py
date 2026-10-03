@@ -38,9 +38,6 @@ SPACY_PACKAGES_AVAILABLE = (
 
 
 class SyntaxLintOptionalDependencyTests(unittest.TestCase):
-    def test_module_import_does_not_require_spacy(self):
-        self.assertTrue(hasattr(syntax_lint, "main"))
-
     def test_missing_spacy_reports_unavailable_and_exits_zero(self):
         real_import = builtins.__import__
 

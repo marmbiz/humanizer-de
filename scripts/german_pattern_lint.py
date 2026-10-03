@@ -6,7 +6,6 @@ from __future__ import annotations
 import argparse
 import bisect
 import functools
-import importlib.util
 import re
 import sys
 from pathlib import Path
@@ -27,10 +26,7 @@ from cli_output import (
 import evidence_lint
 import register_lint
 import text_scope
-
-
-SYNTAX_SCRIPT = SCRIPT_DIR / "syntax_lint.py"
-_SYNTAX_LINT = None
+from syntax_lint import precise_context
 
 
 AI_MARKERS = (
@@ -270,36 +266,6 @@ ADDRESS_VALIDATION_MESSAGE = (
     "Kandidat für unbelegte Adressaten-Validierung: Kontext prüfen "
     "(Beratungsauftrag? Zitat? Sachklärung?)"
 )
-
-
-def load_syntax_lint():
-    global _SYNTAX_LINT
-    if _SYNTAX_LINT is not None:
-        return _SYNTAX_LINT
-
-    module = sys.modules.get("syntax_lint")
-    if module is None:
-        spec = importlib.util.spec_from_file_location("syntax_lint", SYNTAX_SCRIPT)
-        module = importlib.util.module_from_spec(spec)
-        sys.modules["syntax_lint"] = module
-        spec.loader.exec_module(module)
-
-    _SYNTAX_LINT = module
-    return module
-
-
-def precise_context(precise: bool) -> tuple[dict | None, object | None]:
-    if not precise:
-        return None, None
-
-    syntax_lint = load_syntax_lint()
-    if not hasattr(syntax_lint, "_HUMANIZER_PRECISE_CACHE"):
-        syntax_lint._HUMANIZER_PRECISE_CACHE = syntax_lint.load_nlp()
-
-    nlp, reason = syntax_lint._HUMANIZER_PRECISE_CACHE
-    if nlp is None:
-        return {"requested": True, "active": False, "reason": reason or "spacy_missing"}, None
-    return {"requested": True, "active": True}, nlp
 
 
 def marker_stem(marker: str) -> str:

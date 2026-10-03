@@ -91,9 +91,6 @@ class SpellLintTests(unittest.TestCase):
         self.assertIsNone(spell_lint.diff_unknowns({"Fachwort"}, {"Fachwort"}))
         self.assertIsNone(spell_lint.diff_unknowns({"Fachwort"}, set()))
 
-    def test_word_unknown_before_and_after_is_filtered(self):
-        self.assertIsNone(spell_lint.diff_unknowns({"Projektname"}, {"Projektname"}))
-
 
 @unittest.skipUnless(HUNSPELL_DE_AVAILABLE, "hunspell de_DE dictionary is not available")
 class SpellLintHunspellTests(unittest.TestCase):

@@ -3,6 +3,12 @@
 Der neueste Eintrag steht im README unter [„Was ist neu?“](README.md#was-ist-neu).
 Hier stehen alle früheren Versionen; die GitHub-Releases konservieren die Originalnotizen.
 
+- **5.28.1** - Sichere Korrekturen schützen jetzt auch eingerückte Codeblöcke und Inline-Code mit
+  mehreren Backticks. Im Two-Pass-Runner bleibt bei Links die Zuordnung zwischen Linktext und Ziel
+  erhalten. Außerdem lässt das Struktur-Gate freigegebene Änderungen an einfachen ATX-Überschriften
+  zu; Titel mit technischem Markup bleiben geschützt. Der Unicode-Fix verweigert Symlinks, damit er
+  die Verknüpfung nicht durch eine reguläre Datei ersetzt.
+
 - **5.28.0** - Quellen prüft der Skill jetzt in zwei getrennten Schritten. Pass 1 bleibt im Text:
   Er markiert fehlende Fußnoten, zu starke Aussagen und Zahlen, die nicht aufgehen, öffnet aber keine
   Quelle mehr. Wer die Belege gegen die Originale halten will, bekommt auf ausdrücklichen Wunsch einen

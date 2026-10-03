@@ -38,13 +38,13 @@ def relative(path: Path) -> str:
     return path.relative_to(ROOT).as_posix()
 
 
-def contract(expected: set, actual: set, *, exact: bool) -> dict:
+def contract(expected: set, actual: set) -> dict:
     return {
         "expected": sorted(expected),
         "actual": sorted(actual),
         "missing": sorted(expected - actual),
         "additional": sorted(actual - expected),
-        "contract_ok": actual == expected if exact else (expected <= actual if expected else not actual),
+        "contract_ok": actual == expected,
     }
 
 
@@ -70,11 +70,7 @@ def golden_contracts() -> list[dict]:
                 {
                     "fixture": relative(input_path),
                     "source": source,
-                    **contract(
-                        set(expected[key]),
-                        actual_by_source[source],
-                        exact=True,
-                    ),
+                    **contract(set(expected[key]), actual_by_source[source]),
                 }
             )
     return results
@@ -92,7 +88,7 @@ def kind_contracts(directory: Path, source: str, checker: FixtureChecker) -> lis
             {
                 "fixture": relative(path),
                 "source": source,
-                **contract(set(data.get("expect_kinds", [])), actual, exact=True),
+                **contract(set(data.get("expect_kinds", [])), actual),
             }
         )
     return results

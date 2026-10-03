@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 import argparse
-import importlib.util
+from functools import cache
 import sys
 from pathlib import Path
 from typing import Any
@@ -33,14 +33,20 @@ def load_nlp() -> tuple[Any | None, str | None]:
         return None, "model_missing"
 
 
-def load_sibling_module(name: str) -> Any:
-    module = sys.modules.get(name)
-    if module is None:
-        spec = importlib.util.spec_from_file_location(name, SCRIPT_DIR / f"{name}.py")
-        module = importlib.util.module_from_spec(spec)
-        sys.modules[name] = module
-        spec.loader.exec_module(module)
-    return module
+@cache
+def _precise_nlp() -> tuple[Any | None, str | None]:
+    """Share one model or unavailable result across the optional precision stage."""
+    return load_nlp()
+
+
+def precise_context(precise: bool) -> tuple[dict | None, Any | None]:
+    if not precise:
+        return None, None
+
+    nlp, reason = _precise_nlp()
+    if nlp is None:
+        return {"requested": True, "active": False, "reason": reason or "spacy_missing"}, None
+    return {"requested": True, "active": True}, nlp
 
 
 def mask_range(chars: list[str], start: int, end: int) -> None:
@@ -50,9 +56,10 @@ def mask_range(chars: list[str], start: int, end: int) -> None:
 
 
 def prose_text(text: str) -> str:
+    import unicode_lint
+    import rhythm_lint
+
     chars = list(text)
-    unicode_lint = load_sibling_module("unicode_lint")
-    rhythm_lint = load_sibling_module("rhythm_lint")
 
     for start, end in unicode_lint.protected_ranges(text):
         mask_range(chars, start, end)

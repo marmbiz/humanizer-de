@@ -408,7 +408,7 @@ def analyze_file(
     if precise:
         # nlp aus dem geteilten Prozess-Cache der Linter wiederverwenden,
         # damit das Modell pro Audit-Lauf nur einmal geladen wird.
-        _, cached_nlp = register_lint.precise_context(precise)
+        _, cached_nlp = syntax_lint.precise_context(precise)
         syntax_report = syntax_lint.lint(text, nlp=cached_nlp)
 
     counts = {

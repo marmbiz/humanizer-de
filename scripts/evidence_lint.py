@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import argparse
-import importlib.util
 import json
 import re
 import sys
@@ -15,6 +14,7 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
+from syntax_lint import precise_context
 from cli_output import (
     CliInputError,
     atomic_write_text,
@@ -27,8 +27,6 @@ from cli_output import (
 )
 
 
-SYNTAX_SCRIPT = SCRIPT_DIR / "syntax_lint.py"
-_SYNTAX_LINT = None
 LEDGER_SCHEMA_VERSION = 2
 LEGACY_LEDGER_SCHEMA_VERSIONS = {1}
 
@@ -201,36 +199,6 @@ COMMON_SENTENCE_STARTS = {
     "Ihr",
     "Ihre",
 }
-
-
-def load_syntax_lint():
-    global _SYNTAX_LINT
-    if _SYNTAX_LINT is not None:
-        return _SYNTAX_LINT
-
-    module = sys.modules.get("syntax_lint")
-    if module is None:
-        spec = importlib.util.spec_from_file_location("syntax_lint", SYNTAX_SCRIPT)
-        module = importlib.util.module_from_spec(spec)
-        sys.modules["syntax_lint"] = module
-        spec.loader.exec_module(module)
-
-    _SYNTAX_LINT = module
-    return module
-
-
-def precise_context(precise: bool) -> tuple[dict | None, object | None]:
-    if not precise:
-        return None, None
-
-    syntax_lint = load_syntax_lint()
-    if not hasattr(syntax_lint, "_HUMANIZER_PRECISE_CACHE"):
-        syntax_lint._HUMANIZER_PRECISE_CACHE = syntax_lint.load_nlp()
-
-    nlp, reason = syntax_lint._HUMANIZER_PRECISE_CACHE
-    if nlp is None:
-        return {"requested": True, "active": False, "reason": reason or "spacy_missing"}, None
-    return {"requested": True, "active": True}, nlp
 
 
 def precise_status(precise: bool) -> dict | None:

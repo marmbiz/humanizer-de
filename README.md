@@ -364,11 +364,12 @@ Neue oder materiell erweiterte Lint-Regeln müssen das verbindliche
 
 ## Was ist neu?
 
-- **5.28.1** - Sichere Korrekturen schützen jetzt auch eingerückte Codeblöcke und Inline-Code mit
-  mehreren Backticks. Im Two-Pass-Runner bleibt bei Links die Zuordnung zwischen Linktext und Ziel
-  erhalten. Außerdem lässt das Struktur-Gate freigegebene Änderungen an einfachen ATX-Überschriften
-  zu; Titel mit technischem Markup bleiben geschützt. Der Unicode-Fix verweigert Symlinks, damit er
-  die Verknüpfung nicht durch eine reguläre Datei ersetzt.
+- **5.28.2** - Die optionale Präzisionsstufe verwendet jetzt eine gemeinsame Lade- und Cache-Logik.
+  Dafür entfallen drei identische Modul-Loader. Auch der Hunspell-Check und der Detection-Snapshot
+  kommen mit weniger Hilfslogik aus, ohne ihre Ausgabeformate oder Prüfregeln zu ändern.
+  In der Testsuite ersetzen Verhaltensprüfungen die bisherigen Import- und Modulidentitäts-Assertions;
+  ein doppelter Rechtschreibtest entfällt. Der Entwicklerleitfaden verweist für die Verifikation
+  auf `make verify`.
 
 Alle früheren Versionen: [CHANGELOG.md](CHANGELOG.md). Ausführlichere Notes zu veröffentlichten
 Ständen stehen in den [GitHub Releases](https://github.com/marmbiz/humanizer-de/releases).

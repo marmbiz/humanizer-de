@@ -2,7 +2,9 @@ import builtins
 import importlib.util
 import io
 import json
+import subprocess
 import sys
+import tempfile
 import unittest
 from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
@@ -11,6 +13,20 @@ from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS = ROOT / "scripts"
+if str(SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(SCRIPTS))
+
+import evidence_lint
+import german_pattern_lint
+import humanizer_audit
+import register_lint
+import syntax_lint
+
+LINTERS = {
+    "register": register_lint,
+    "german_pattern": german_pattern_lint,
+    "evidence": evidence_lint,
+}
 
 TEXT = (
     "Du kannst die maßgeschneiderten Lösungen nahtlos beleuchten. "
@@ -188,23 +204,6 @@ EXPECTED_EVIDENCE_JSON = """{
 """
 
 
-def load_script(name):
-    script = SCRIPTS / f"{name}.py"
-    spec = importlib.util.spec_from_file_location(name, script)
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
-
-
-def load_linters():
-    sys.modules.pop("syntax_lint", None)
-    return {
-        "register": load_script("register_lint"),
-        "german_pattern": load_script("german_pattern_lint"),
-        "evidence": load_script("evidence_lint"),
-    }
-
-
 def run_cli(module, argv):
     stdout = io.StringIO()
     stderr = io.StringIO()
@@ -213,19 +212,19 @@ def run_cli(module, argv):
     return exit_code, stdout.getvalue(), json.loads(stdout.getvalue())
 
 
-def run_all(modules, precise=False):
+def run_all(precise=False):
     flag = ["--precise"] if precise else []
     return {
         "register": run_cli(
-            modules["register"],
+            LINTERS["register"],
             ["--text", TEXT, "--mode", "sachlich", "--expected-address", "du", *flag],
         ),
         "german_pattern": run_cli(
-            modules["german_pattern"],
+            LINTERS["german_pattern"],
             ["--text", TEXT, "--mode", "sachlich", *flag],
         ),
         "evidence": run_cli(
-            modules["evidence"],
+            LINTERS["evidence"],
             ["--before", BEFORE, "--after", AFTER, *flag],
         ),
     }
@@ -238,8 +237,34 @@ SPACY_MODEL_AVAILABLE = (
 
 
 class PreciseFlagSnapshotTests(unittest.TestCase):
+    def test_default_path_does_not_import_spacy(self):
+        result = subprocess.run(
+            [sys.executable, "-c", """
+import builtins
+attempts = []
+original_import = builtins.__import__
+
+def without_spacy(name, *args, **kwargs):
+    if name == 'spacy' or name.startswith('spacy.'):
+        attempts.append(name)
+        raise ModuleNotFoundError(name)
+    return original_import(name, *args, **kwargs)
+
+builtins.__import__ = without_spacy
+import evidence_lint, german_pattern_lint, register_lint, syntax_lint
+evidence_lint.lint('Der Text bleibt.', 'Der Text bleibt.')
+german_pattern_lint.lint('Der Text bleibt.')
+register_lint.lint('Der Text bleibt.')
+assert not attempts, attempts
+"""],
+            cwd=SCRIPTS,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+
     def test_reports_without_flag_match_snapshots(self):
-        results = run_all(load_linters())
+        results = run_all()
 
         self.assertEqual(results["register"][0], 1)
         self.assertEqual(results["register"][1], EXPECTED_REGISTER_JSON)
@@ -251,8 +276,9 @@ class PreciseFlagSnapshotTests(unittest.TestCase):
 
 class PreciseFlagMissingSpacyTests(unittest.TestCase):
     def test_precise_without_spacy_reports_inactive_and_keeps_findings(self):
-        modules = load_linters()
-        default_results = run_all(modules)
+        syntax_lint._precise_nlp.cache_clear()
+        self.addCleanup(syntax_lint._precise_nlp.cache_clear)
+        default_results = run_all()
 
         real_import = builtins.__import__
 
@@ -261,9 +287,8 @@ class PreciseFlagMissingSpacyTests(unittest.TestCase):
                 raise ModuleNotFoundError("No module named 'spacy'")
             return real_import(name, globals, locals, fromlist, level)
 
-        sys.modules.pop("syntax_lint", None)
         with mock.patch("builtins.__import__", side_effect=import_without_spacy):
-            precise_results = run_all(modules, precise=True)
+            precise_results = run_all(precise=True)
 
         for name, default_result in default_results.items():
             default_code, _, default_report = default_result
@@ -280,11 +305,20 @@ class PreciseFlagMissingSpacyTests(unittest.TestCase):
 
 @unittest.skipUnless(SPACY_MODEL_AVAILABLE, "spaCy German model is not available")
 class PreciseFlagSpacyTests(unittest.TestCase):
-    def test_precise_with_spacy_reports_active(self):
-        results = run_all(load_linters(), precise=True)
+    def test_precise_linters_and_audit_share_one_model_load(self):
+        syntax_lint._precise_nlp.cache_clear()
+        self.addCleanup(syntax_lint._precise_nlp.cache_clear)
+        with mock.patch.object(syntax_lint, "load_nlp", wraps=syntax_lint.load_nlp) as load_nlp:
+            results = run_all(precise=True)
+            with tempfile.TemporaryDirectory() as tmp:
+                path = Path(tmp) / "text.md"
+                path.write_text(TEXT, encoding="utf-8")
+                audit = humanizer_audit.analyze_file(path, "sachlich", precise=True)
 
         for _, _, report in results.values():
             self.assertEqual(report["precise"], {"requested": True, "active": True})
+        self.assertTrue(audit["syntax"]["available"])
+        load_nlp.assert_called_once_with()
 
 
 if __name__ == "__main__":

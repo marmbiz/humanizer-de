@@ -1,4 +1,4 @@
-# WARP - Humanizer (Deutsch) Entwicklerleitfaden (v5.28.1)
+# WARP - Humanizer (Deutsch) Entwicklerleitfaden (v5.28.2)
 
 WARP = Workflow, Architecture, References, Principles.
 
@@ -135,18 +135,15 @@ QGIR-Contracts liegen in `tests/scenarios/*qgir*.yaml`. Neue QGIR-Regeln zuerst 
 
 ## Verification
 
-Vor Release:
+Vor jedem Commit:
 
 ```bash
-python3 -m unittest discover -s tests
-python3 scripts/unicode_lint.py --text "AB"
-python3 scripts/unicode_lint.py --file SKILL.md
-python3 scripts/rhythm_lint.py --text "Kurzer Test. Noch ein Satz." --scope user_text --mode sachlich
-python3 scripts/evidence_lint.py --fixture tests/corpus/evidence
-python3 scripts/register_lint.py --fixture tests/corpus/register
-python3 scripts/german_pattern_lint.py --fixture tests/corpus/de-naturalness
-git diff --check
+make verify
 ```
+
+Der Aufruf bündelt Unit-Tests, Linter-Smoke-Tests, Szenario-Contracts und die
+Whitespace-Prüfung für Worktree und Index. Einzelchecks stehen in
+[docs/pruefskripte.md](docs/pruefskripte.md#einzelchecks).
 
 Zusätzlich manuell prüfen:
 

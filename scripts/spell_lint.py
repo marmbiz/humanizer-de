@@ -23,10 +23,6 @@ HUNSPELL_TIMEOUT = 10
 WORD_RE = re.compile(r"[^\W\d_]+(?:[-'][^\W\d_]+)*", re.UNICODE)
 
 
-def hunspell_binary() -> str | None:
-    return shutil.which("hunspell")
-
-
 def run_hunspell(text: str, binary: str | None = None) -> subprocess.CompletedProcess[str]:
     command = [binary or "hunspell", "-d", DICTIONARY, "-l"]
     return subprocess.run(
@@ -41,7 +37,7 @@ def run_hunspell(text: str, binary: str | None = None) -> subprocess.CompletedPr
 
 
 def availability_reason() -> str | None:
-    binary = hunspell_binary()
+    binary = shutil.which("hunspell")
     if binary is None:
         return "hunspell_missing"
 

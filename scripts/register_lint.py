@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import argparse
 from collections.abc import Iterable
-import importlib.util
 import re
 import sys
 from pathlib import Path
@@ -17,6 +16,7 @@ if str(SCRIPT_DIR) not in sys.path:
 
 import evidence_lint
 import text_scope
+from syntax_lint import precise_context
 from cli_output import (
     handle_cli_input_errors,
     print_json,
@@ -27,45 +27,12 @@ from cli_output import (
 )
 
 
-SYNTAX_SCRIPT = SCRIPT_DIR / "syntax_lint.py"
-_SYNTAX_LINT = None
-
 MODAL_PARTICLES = {"ja", "doch", "eben", "halt", "wohl", "mal", "schon", "ohnehin"}
 DU_FORMS = ("du", "dir", "dich", "dein", "deine", "deinen", "deinem", "deiner", "deines")
 SIE_FORMS = ("Sie", "Ihnen", "Ihr", "Ihre", "Ihren", "Ihrem", "Ihrer", "Ihres")
 WIR_FORMS = ("wir", "uns", "unser", "unsere", "unseren", "unserem", "unserer", "unseres")
 SIE_FORMS_RE = re.compile(rf"\b(?:{'|'.join(re.escape(form) for form in SIE_FORMS)})\b")
 EMOJI_RE = re.compile("[\u2600-\u27BF\U0001F300-\U0001FAFF]")
-
-
-def load_syntax_lint():
-    global _SYNTAX_LINT
-    if _SYNTAX_LINT is not None:
-        return _SYNTAX_LINT
-
-    module = sys.modules.get("syntax_lint")
-    if module is None:
-        spec = importlib.util.spec_from_file_location("syntax_lint", SYNTAX_SCRIPT)
-        module = importlib.util.module_from_spec(spec)
-        sys.modules["syntax_lint"] = module
-        spec.loader.exec_module(module)
-
-    _SYNTAX_LINT = module
-    return module
-
-
-def precise_context(precise: bool) -> tuple[dict | None, object | None]:
-    if not precise:
-        return None, None
-
-    syntax_lint = load_syntax_lint()
-    if not hasattr(syntax_lint, "_HUMANIZER_PRECISE_CACHE"):
-        syntax_lint._HUMANIZER_PRECISE_CACHE = syntax_lint.load_nlp()
-
-    nlp, reason = syntax_lint._HUMANIZER_PRECISE_CACHE
-    if nlp is None:
-        return {"requested": True, "active": False, "reason": reason or "spacy_missing"}, None
-    return {"requested": True, "active": True}, nlp
 
 
 def strip_protected(text: str, exclude_blockquotes: bool = False) -> str:

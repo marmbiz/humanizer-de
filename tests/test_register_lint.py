@@ -3,6 +3,7 @@ import importlib.util
 import unittest
 from contextlib import redirect_stdout
 from pathlib import Path
+from unittest import mock
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -190,17 +191,12 @@ class RegisterLintTests(unittest.TestCase):
         text = "Du prüfst die Daten.\n\n> Bitte prüfen Sie Ihre Angaben.\n\nDann passt es."
         default_report = register_lint.lint(text)
 
-        syntax_lint = register_lint.load_syntax_lint()
-        sentinel = object()
-        original = getattr(syntax_lint, "_HUMANIZER_PRECISE_CACHE", sentinel)
-        syntax_lint._HUMANIZER_PRECISE_CACHE = (None, "spacy_missing")
-        try:
+        import syntax_lint
+
+        syntax_lint._precise_nlp.cache_clear()
+        self.addCleanup(syntax_lint._precise_nlp.cache_clear)
+        with mock.patch.object(syntax_lint, "load_nlp", return_value=(None, "spacy_missing")):
             report = register_lint.lint(text, precise=True)
-        finally:
-            if original is sentinel:
-                del syntax_lint._HUMANIZER_PRECISE_CACHE
-            else:
-                syntax_lint._HUMANIZER_PRECISE_CACHE = original
 
         self.assertEqual(
             report["precise"],
