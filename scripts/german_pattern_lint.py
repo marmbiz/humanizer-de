@@ -276,11 +276,13 @@ def marker_stem(marker: str) -> str:
 
 @functools.lru_cache(maxsize=8)
 def mention_ranges(text: str) -> tuple[tuple[int, int], ...]:
-    ranges = [
-        match.span()
-        for pattern in evidence_lint.VALID_QUOTE_PATTERNS
-        for match in pattern.finditer(text)
-    ]
+    ranges = []
+    # Der Reihe nach auf einer maskierten Kopie: ein schon verbrauchtes
+    # Schlusszeichen darf kein zweites Paar bilden („Nein" … „Ja").
+    masked = text
+    for pattern in evidence_lint.VALID_QUOTE_PATTERNS:
+        ranges.extend(match.span() for match in pattern.finditer(masked))
+        masked = pattern.sub(lambda match: re.sub(r"[^\r\n]", " ", match.group()), masked)
     patterns = [
         r"```.*?```",
         r"`[^`\r\n]+`",

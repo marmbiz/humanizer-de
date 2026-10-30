@@ -842,6 +842,26 @@ class GermanPatternLintTests(unittest.TestCase):
         text = "**Alpha:** eins. **Beta:** zwei. **Gamma:** drei. **Delta:** vier. **Epsilon:** fünf."
         self.assertIn("bold_overdose", kinds(german_pattern_lint.lint(text)))
 
+    def test_bold_overdose_same_with_straight_closer_after_german_opener(self):
+        wrong = "Das Wort „Nein\" ist wichtig. **Eins** und **zwei** und **drei**. Dann „Ja\" sagen. **vier** **fünf** **sechs**."
+        right = wrong.replace("\"", "“")
+        wrong_kinds = kinds(german_pattern_lint.lint(wrong))
+        self.assertIn("bold_overdose", wrong_kinds)
+        self.assertEqual(wrong_kinds, kinds(german_pattern_lint.lint(right)))
+
+    def test_bold_overdose_ignores_bold_inside_quotes_with_correct_closers(self):
+        text = "Er sagte „**Eins** **zwei** **drei**“ und dann „**vier** **fünf** **sechs**“."
+        self.assertNotIn("bold_overdose", kinds(german_pattern_lint.lint(text)))
+
+    def test_straight_closer_quote_still_masks_its_content(self):
+        text = (
+            "Im Review ging es um Wörter wie „Nahtlos\", „beleuchten\" und "
+            "„maßgeschneidert\", nicht um ihren Einsatz im Text."
+        )
+        self.assertNotIn("ai_marker_cluster", kinds(german_pattern_lint.lint(text)))
+        text = "Er sagte „**Eins** **zwei** **drei** **vier** **fünf** **sechs**\" und ging."
+        self.assertNotIn("bold_overdose", kinds(german_pattern_lint.lint(text)))
+
     def test_bold_overdose_ignores_blockquote_voice(self):
         text = "\n".join(f"> **{word}**" for word in ("Alpha", "Beta", "Gamma", "Delta", "Epsilon"))
         self.assertNotIn("bold_overdose", kinds(german_pattern_lint.lint(text)))

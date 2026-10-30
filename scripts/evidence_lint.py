@@ -50,7 +50,7 @@ ANCHOR_PATTERNS = {
 }
 
 VALID_QUOTE_PATTERNS = (
-    re.compile(r"„([^„“]{3,})“"),
+    re.compile(r'„([^„“"]{3,})[“"]'),
     re.compile(r"‚([^‚‘]{3,})‘"),
     re.compile(r"“([^“”]{3,})”"),
     re.compile(r"«([^«»]{3,})»"),
