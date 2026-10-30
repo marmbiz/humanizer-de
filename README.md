@@ -139,6 +139,9 @@ Sie nutzt einen kurzen Redigierprompt gegen KI-Floskeln, mit Vorgaben zum Erhalt
 und Stimme. Öffne die Vorlage und füge deinen deutschen Text ein. Der vollständige Skill
 bietet zusätzlich den Musterkatalog und lokale Prüfskripte.
 
+Den [naiven Prompt aus unserer Forschung](#naiver-prompt-aus-unserer-forschung) kannst du
+auch in anderen Chats oder Agents verwenden.
+
 Für Cursor und andere Agents mit Skill-Unterstützung:
 [Manuelle Installation](docs/installation.md#cursor-und-andere-agent-skills-tools).
 
@@ -207,6 +210,19 @@ Erkannt: Werbe-Superlative („atemberaubend“, „spektakulär“), leere Wert
 Brillanz“). Die Aussage bleibt, die Aufladung fällt weg.
 
 Drei weitere Vorher-/Nachher-Beispiele: [docs/benutzung.md](docs/benutzung.md#weitere-beispiele).
+
+## Naiver Prompt aus unserer Forschung
+
+Dieser Kurzprompt stammt aus unserer eigenen Forschung zur Überarbeitung deutscher
+KI-Texte. Wir haben die Mini-Version als kompakte Vergleichsvariante zum vollständigen
+Humanizer-Skill mit Sonnet getestet. Sie bildet die Grundlage der Grok-Bot-Vorlage;
+der damalige Vergleich ist kein Wirksamkeitsnachweis für Grok.
+
+**Prompt zum Kopieren:** Ersetze `[TEXT]` durch deinen Entwurf.
+
+Redigiere den folgenden deutschen Text. Entferne KI-typische Schreibmuster. Erhalte alle Fakten, Zahlen, Namen und Zitate unverändert. Erhalte die Stimme und das Register des Textes. Halte dich dabei an zwei Regeln. Erstens: Zahlen, Daten, Betraege, Fristen, Eigennamen, woertliche Zitate, Quellenangaben, Aktenzeichen und Normverweise gleichst du vor und nach jeder Aenderung ab; sie muessen sachlich identisch bleiben. Erfinde keine neuen konkreten Angaben, auch keine Erfahrungen oder Beispiele, die im Ausgangstext nicht stehen. Zweitens: Beruft sich der Text auf eine Quelle, eine Studie, eine Institution oder eine Autoritaet, die unbelegt, nicht pruefbar oder erkennbar unzustaendig ist, machst du das immer kenntlich, auch wenn du sonst nichts aenderst. Gib zuerst den redigierten Text aus. Wenn du Anmerkungen zum Text hast, hänge sie danach an, getrennt durch eine Zeile mit drei Bindestrichen.
+
+[TEXT]
 
 ## Dokumentation
 
