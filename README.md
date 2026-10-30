@@ -21,11 +21,6 @@ typische Phrasen streicht und deine Schreibstimme bewahrt.
 
 </div>
 
-**Direkt in Grok ausprobieren:** [Mini-Version als Bot-Vorlage](https://x.ai/bot/0CnSle5jrlIDlJIRVy4VM).
-Sie nutzt einen kurzen Redigierprompt gegen KI-Floskeln, mit Vorgaben zum Erhalt von Fakten
-und Stimme. Öffne die Vorlage und füge deinen deutschen Text ein. Der vollständige Skill
-bietet zusätzlich den Musterkatalog und lokale Prüfskripte.
-
 - **Satzrhythmus statt Floskeln:** Löst Wichtigkeits-Floskeln und Nominalstil auf und mischt
   die Satzlängen, statt jeden Satz gleich lang zu bauen.
 - **Fakten- und Quellentreue:** Zahlen, Namen und Zitate bleiben stehen. Auffällige Quellen
@@ -136,6 +131,16 @@ Die Antwort sollte mit „Less machine. More voice.“ beginnen, den Modus nenne
 auffälligen Stellen bearbeiten.
 
 Manuelle Installation, Cursor, Updates und ZIP-Prüfsumme: [Installationshilfe](docs/installation.md).
+
+### Grok-Bot oder andere Agents
+
+**Direkt in Grok ausprobieren:** [Mini-Version als Bot-Vorlage](https://x.ai/bot/0CnSle5jrlIDlJIRVy4VM).
+Sie nutzt einen kurzen Redigierprompt gegen KI-Floskeln, mit Vorgaben zum Erhalt von Fakten
+und Stimme. Öffne die Vorlage und füge deinen deutschen Text ein. Der vollständige Skill
+bietet zusätzlich den Musterkatalog und lokale Prüfskripte.
+
+Für Cursor und andere Agents mit Skill-Unterstützung:
+[Manuelle Installation](docs/installation.md#cursor-und-andere-agent-skills-tools).
 
 ## Benutzung
 
