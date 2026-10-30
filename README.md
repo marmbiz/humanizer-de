@@ -390,12 +390,12 @@ Neue oder materiell erweiterte Lint-Regeln müssen das verbindliche
 
 ## Was ist neu?
 
-- **5.28.2** - Die optionale Präzisionsstufe verwendet jetzt eine gemeinsame Lade- und Cache-Logik.
-  Dafür entfallen drei identische Modul-Loader. Auch der Hunspell-Check und der Detection-Snapshot
-  kommen mit weniger Hilfslogik aus, ohne ihre Ausgabeformate oder Prüfregeln zu ändern.
-  In der Testsuite ersetzen Verhaltensprüfungen die bisherigen Import- und Modulidentitäts-Assertions;
-  ein doppelter Rechtschreibtest entfällt. Der Entwicklerleitfaden verweist für die Verifikation
-  auf `make verify`.
+- **5.28.3** - Steht nach einem deutschen Anführungszeichen unten ein gerades Schlusszeichen, wie in
+  `„Nein"`, blendet die Musterprüfung den folgenden Text nicht mehr als Zitat aus. Bisher konnten zwei
+  solche Zeichen ein falsches Paar bilden. Fettungen und andere Muster dazwischen fielen dann aus der
+  Zählung. Auch die Partikel-Warnung schlägt seltener an. In den Modi Sachlich und Formal meldet sie
+  sich erst bei einer echten Häufung von Modalpartikeln statt bei jeder einzelnen. Ein „doch“ am
+  Satzanfang oder nach einem Komma zählt nicht mehr mit, weil es dort als Konjunktion steht.
 
 Alle früheren Versionen: [CHANGELOG.md](CHANGELOG.md). Ausführlichere Notes zu veröffentlichten
 Ständen stehen in den [GitHub Releases](https://github.com/marmbiz/humanizer-de/releases).
