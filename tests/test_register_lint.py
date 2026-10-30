@@ -105,9 +105,34 @@ class RegisterLintTests(unittest.TestCase):
 
         self.assertEqual(profile_count, register_count)
 
-    def test_particles_outside_locker_are_reported(self):
+    def test_sparse_particles_in_sachlich_are_not_reported(self):
         report = register_lint.lint("Das ist ja schon wichtig.", mode="sachlich")
-        self.assertIn("particles_outside_locker", kinds(report))
+
+        self.assertEqual(report["features"]["modal_particle_count"], 2)
+        self.assertNotIn("particles_outside_locker", kinds(report))
+
+    def test_particles_spread_over_long_sachlich_text_are_not_reported(self):
+        text = "Das ist ja doch schon wichtig. Man könnte das eben prüfen. " + "Die Messung lief ohne Störung weiter. " * 90
+        report = register_lint.lint(text, mode="sachlich")
+
+        self.assertEqual(report["features"]["modal_particle_count"], 4)
+        self.assertNotIn("particles_outside_locker", kinds(report))
+
+    def test_adversative_doch_is_not_counted(self):
+        text = (
+            "Ich wollte früher gehen, doch es regnete stark. Wir blieben, doch der Abend wurde lang. "
+            "Sie rief an, doch niemand nahm ab. Das Spiel war vorbei, doch keiner ging heim. "
+            "Die Bahn kam, doch sie war voll."
+        )
+        report = register_lint.lint(text, mode="sachlich")
+
+        self.assertEqual(report["features"]["modal_particle_count"], 0)
+        self.assertNotIn("particles_outside_locker", kinds(report))
+
+    def test_doch_in_the_middle_field_still_counts(self):
+        report = register_lint.lint("Das ist doch klar.", mode="sachlich")
+
+        self.assertEqual(report["features"]["modal_particle_count"], 1)
 
     def test_non_particle_readings_are_not_counted(self):
         texts = (

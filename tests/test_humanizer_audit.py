@@ -589,7 +589,7 @@ class HumanizerAuditTests(unittest.TestCase):
     def test_particle_findings_come_from_register(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "text.md"
-            path.write_text("Das ist ja schon wichtig.", encoding="utf-8")
+            path.write_text("Das ist ja doch schon wichtig. Man könnte das eben mal prüfen.", encoding="utf-8")
 
             exit_code, report = run_json(["--file", str(path), "--mode", "sachlich"])
 

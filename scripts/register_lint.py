@@ -28,6 +28,8 @@ from cli_output import (
 
 
 MODAL_PARTICLES = {"ja", "doch", "eben", "halt", "wohl", "mal", "schon", "ohnehin"}
+PARTICLE_CLUSTER_MIN = 4
+PARTICLE_CLUSTER_PER_1000_WORDS = 8
 DU_FORMS = ("du", "dir", "dich", "dein", "deine", "deinen", "deinem", "deiner", "deines")
 SIE_FORMS = ("Sie", "Ihnen", "Ihr", "Ihre", "Ihren", "Ihrem", "Ihrer", "Ihres")
 WIR_FORMS = ("wir", "uns", "unser", "unsere", "unseren", "unserem", "unserer", "unseres")
@@ -70,6 +72,8 @@ def is_non_particle_reading(text: str, start: int, end: int, doc: object | None 
         re.search(r":\s*$", before)
         or (is_sentence_initial(text, start) and re.match(r"\s*(?:[,!.?]|$)", after))
     ):
+        return True
+    if word == "doch" and (is_sentence_initial(text, start) or re.search(r"[,;–—-]\s*$", before)):
         return True
     if word == "mal" and re.search(r"\d[\s-]*$", before):
         return True
@@ -285,12 +289,17 @@ def lint(text: str, mode: str = "sachlich", expected_address: str | None = None,
             "Profile expects neutral address, but direct address appears.",
             spans["du"] + spans["sie"] + spans["wir"],
         )
-    if mode in {"sachlich", "formal"} and found["modal_particle_count"]:
+    word_count = len(re.findall(r"\w+", clean_text))
+    if (
+        mode in {"sachlich", "formal"}
+        and found["modal_particle_count"] >= PARTICLE_CLUSTER_MIN
+        and found["modal_particle_count"] * 1000 >= PARTICLE_CLUSTER_PER_1000_WORDS * word_count
+    ):
         add(
             findings,
             "warning",
             "particles_outside_locker",
-            "Modal particles should not be added in Sachlich/Formal.",
+            "Modal particles cluster in Sachlich/Formal; keep only those that carry the author's voice and do not add new ones.",
             spans["particles"],
         )
     if mode == "formal" and found["emoji_count"]:

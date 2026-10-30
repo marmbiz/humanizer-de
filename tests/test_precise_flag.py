@@ -75,17 +75,6 @@ EXPECTED_REGISTER_JSON = """{
           "end": 77
         }
       ]
-    },
-    {
-      "severity": "warning",
-      "kind": "particles_outside_locker",
-      "message": "Modal particles should not be added in Sachlich/Formal.",
-      "spans": [
-        {
-          "start": 155,
-          "end": 157
-        }
-      ]
     }
   ]
 }
