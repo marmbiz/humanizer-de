@@ -21,6 +21,11 @@ typische Phrasen streicht und deine Schreibstimme bewahrt.
 
 </div>
 
+**Direkt in Grok ausprobieren:** [Mini-Version als Bot-Vorlage](https://x.ai/bot/0CnSle5jrlIDlJIRVy4VM).
+Sie nutzt einen kurzen Redigierprompt gegen KI-Floskeln, mit Vorgaben zum Erhalt von Fakten
+und Stimme. Öffne die Vorlage und füge deinen deutschen Text ein. Der vollständige Skill
+bietet zusätzlich den Musterkatalog und lokale Prüfskripte.
+
 - **Satzrhythmus statt Floskeln:** Löst Wichtigkeits-Floskeln und Nominalstil auf und mischt
   die Satzlängen, statt jeden Satz gleich lang zu bauen.
 - **Fakten- und Quellentreue:** Zahlen, Namen und Zitate bleiben stehen. Auffällige Quellen
