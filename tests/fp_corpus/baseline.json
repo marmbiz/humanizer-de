@@ -6,8 +6,7 @@
     "low sentence-length variance": 1
   },
   "tests/fp_corpus/c_stellt_full_verb.md": {
-    "copula_avoidance_cluster": 1,
-    "high subject-initial ratio": 1
+    "copula_avoidance_cluster": 1
   },
   "tests/fp_corpus/d_evidence_single_token_abstracta.json": {
     "added_proper_name": 1

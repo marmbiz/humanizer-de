@@ -94,6 +94,79 @@ INITIAL_FUNCTION_WORDS = SUBJUNCTIONS | {
     "wegen",
     "laut",
     "ab",
+    # contracted and further prepositions
+    "am", "im", "ins", "ans", "zum", "zur", "vom", "beim", "aufs", "fürs", "ums", "übers", "durchs",
+    "neben", "zwischen", "hinter", "innerhalb", "außerhalb", "oberhalb", "unterhalb", "entlang",
+    "gegenüber", "angesichts", "aufgrund", "anhand", "mithilfe", "mittels", "bezüglich",
+    "hinsichtlich", "infolge", "dank", "gemäß", "zufolge", "binnen", "seitens", "entgegen",
+    "abseits", "jenseits", "anlässlich", "mangels", "zwecks", "pro", "per", "samt", "inklusive",
+    "einschließlich", "statt", "anstatt", "anstelle", "außer", "ungeachtet", "zugunsten", "inmitten",
+    # further subordinators and question adverbs
+    "da", "obgleich", "obschon", "solange", "sobald", "sooft", "soweit", "wobei", "wohingegen",
+    "zumal", "ehe", "wie", "wenngleich", "je", "warum", "weshalb", "wieso", "wann", "wo", "wozu",
+    "woher", "wohin",
+    # articles and pronouns that cannot be nominative
+    "dem", "den", "des", "einem", "einen", "eines", "diesem", "diesen", "jedem", "jeden",
+    "meinem", "meinen", "deinem", "deinen", "seinem", "seinen", "ihrem", "ihren", "unserem",
+    "unseren", "eurem", "euren", "mir", "mich", "dir", "dich", "ihm", "ihn", "ihnen", "uns", "euch",
+    "wem", "wen", "wessen",
+    # time
+    "jetzt", "nun", "bald", "damals", "früher", "seither", "bisher", "bislang", "derzeit",
+    "aktuell", "momentan", "zurzeit", "kürzlich", "neulich", "jüngst", "zuletzt", "zuerst", "zuvor",
+    "vorher", "nachher", "anschließend", "daraufhin", "sofort", "gleich", "plötzlich", "endlich",
+    "lange", "längst", "oft", "meist", "meistens", "selten", "immer", "nie", "stets", "täglich",
+    "wöchentlich", "monatlich", "jährlich", "künftig", "zukünftig", "vorerst", "wieder", "erneut",
+    "morgens", "mittags", "abends", "nachts", "tagsüber", "montags", "dienstags", "mittwochs",
+    "donnerstags", "freitags", "samstags", "sonntags", "derweil", "zugleich", "parallel", "anfangs",
+    "letztlich", "letztendlich", "schlussendlich", "abschließend", "vorab", "nebenbei",
+    "zwischendurch", "bereits", "schon", "noch",
+    # place
+    "daheim", "überall", "nirgends", "nirgendwo", "oben", "unten", "draußen", "drinnen", "links",
+    "rechts", "vorne", "hinten", "dorthin", "dahin", "hierher", "weltweit", "bundesweit",
+    "deutschlandweit", "europaweit", "vielerorts", "mancherorts",
+    # connective and sentence adverbs
+    "deswegen", "also", "folglich", "somit", "demnach", "demzufolge", "ansonsten", "sonst", "jedoch",
+    "indes", "gleichwohl", "nichtsdestotrotz", "immerhin", "ohnehin", "sowieso", "übrigens",
+    "ferner", "weiterhin", "weiter", "zusätzlich", "ebenso", "genauso", "einerseits",
+    "andererseits", "andrerseits", "erstens", "zweitens", "drittens", "viertens", "fünftens",
+    "zwar", "freilich", "wohl", "überhaupt", "vielmehr", "umgekehrt", "entsprechend",
+    "dementsprechend", "insofern", "insoweit", "kurzum", "zusammenfassend", "insgesamt",
+    "grundsätzlich", "generell", "prinzipiell", "eigentlich", "tatsächlich", "wirklich",
+    "selbstverständlich", "sicher", "sicherlich", "gewiss", "zweifellos", "offenbar",
+    "offensichtlich", "anscheinend", "scheinbar", "wahrscheinlich", "vermutlich", "womöglich",
+    "eventuell", "hoffentlich", "leider", "gewöhnlich", "zumindest", "mindestens", "wenigstens",
+    "höchstens", "beispielsweise", "teilweise", "ausnahmsweise", "schrittweise", "zeitweise",
+    "stellenweise", "vorzugsweise", "anders", "gemeinsam", "zusammen", "gern", "gerne", "lieber",
+    "kurz", "bitte", "desto", "umso", "hinzu",
+    # fronted predicatives ("Wichtig ist, ...", "Fest steht: ...")
+    "klar", "unklar", "wichtig", "entscheidend", "richtig", "interessant", "spannend", "neu",
+    "schade", "fraglich", "möglich", "denkbar", "fest",
+}
+
+SIR_CLUSTER_THRESHOLD = 0.70
+
+# "dazu", "hierfür", "worauf": pronominal adverbs are adverbials, never subjects.
+PRONOMINAL_ADVERB_RE = re.compile(
+    r"(?:da|dar|hier|wo|wor)(?:an|auf|aus|bei|durch|für|gegen|hinter|in|mit|nach|neben|über|um|unter|von|vor|zu|zwischen)"
+)
+ADVERB_SUFFIXES = ("erweise", "mals", "falls", "dessen", "wärts")
+
+# A sentence may open with a coordinator or a one-word comma prefix; the Vorfeld follows it.
+COORDINATORS = {"und", "aber", "doch", "denn", "oder", "sondern"}
+COMMA_PREFIXES = {
+    "ja", "nein", "doch", "nun", "also", "gut", "klar", "okay", "ok", "na", "ach", "tja", "kurz",
+    "zugegeben", "ehrlich", "sicher", "richtig", "stimmt", "bitte", "danke", "übrigens", "apropos",
+}
+
+# German main clauses put the finite verb second. A personal or reflexive pronoun in second
+# position therefore means the sentence opens with the verb: imperative or question.
+VERB_FIRST_PRONOUNS = {
+    "ich", "du", "er", "sie", "es", "wir", "ihr", "man", "mich", "mir", "dich", "dir", "uns", "euch", "sich",
+}
+# ...unless the first word is a focus particle or opens a free relative clause ("Auch wir ...").
+NO_VERB_FIRST_OPENERS = {
+    "auch", "nur", "selbst", "sogar", "gerade", "besonders", "ausgerechnet", "allein", "einzig",
+    "lediglich", "eben", "genau", "nicht", "wer", "was", "welche", "welcher", "welches",
 }
 
 CONNECTORS = (
@@ -360,17 +433,52 @@ def syntactic_complexity_stats(sentences: list[str]) -> dict:
     }
 
 
-def first_token(sentence: str) -> str:
-    found = tokens(sentence)
-    return found[0].lower() if found else ""
+def is_non_subject_opener(word: str) -> bool:
+    return (
+        word in INITIAL_FUNCTION_WORDS
+        or PRONOMINAL_ADVERB_RE.fullmatch(word) is not None
+        or (len(word) > 6 and word.endswith(ADVERB_SUFFIXES))
+    )
+
+
+def opens_with_subject(sentence: str) -> bool:
+    """Lexical guess: does the Vorfeld hold the subject? Without a parser this stays a heuristic."""
+    matches = list(WORD_RE.finditer(sentence))
+    words = [match.group(0).lower() for match in matches]
+
+    def comma_follows(index: int) -> bool:
+        return index + 1 < len(matches) and "," in sentence[matches[index].end() : matches[index + 1].start()]
+
+    start = 0
+    if len(words) > 1 and (words[0] in COORDINATORS or (words[0] in COMMA_PREFIXES and comma_follows(0))):
+        start = 1
+    first = words[start]
+    if is_non_subject_opener(first):
+        return False
+    verb_first = (
+        start + 1 < len(words)
+        and words[start + 1] in VERB_FIRST_PRONOUNS
+        and first not in NO_VERB_FIRST_OPENERS
+        and not comma_follows(start)
+    )
+    return not verb_first
 
 
 def subject_initial_ratio(sentences: list[str]) -> float:
-    starters = [first_token(sentence) for sentence in sentences if first_token(sentence)]
-    if not starters:
+    candidates = [sentence for sentence in sentences if tokens(sentence)]
+    if not candidates:
         return 0.0
-    subject_initial = [starter for starter in starters if starter not in INITIAL_FUNCTION_WORDS]
-    return len(subject_initial) / len(starters)
+    return sum(1 for sentence in candidates if opens_with_subject(sentence)) / len(candidates)
+
+
+def subject_initial_cluster(subject_ratio: float, length_ratio: float, opener_repeats: int) -> bool:
+    """A high subject-initial ratio counts only together with flat rhythm or repeated openers.
+
+    On its own the ratio does not separate AI from human text. The 0.6 variance gate is
+    deliberately looser than the standalone 0.4 low-variance warning. Threshold and gate are
+    documented in docs/marker-aufnahmeprotokoll.md#öffentliche-kalibrierung-von-rhythmus-schwellen.
+    """
+    return subject_ratio > SIR_CLUSTER_THRESHOLD and (length_ratio < 0.6 or opener_repeats >= 2)
 
 
 def has_subjunction(sentence: str) -> bool:
@@ -520,15 +628,7 @@ def analyze(text: str, file: str | None = None, scope: str = "user_text", mode: 
             f"stddev/mean={rounded(length_ratio)} across {sentence_count} sentences",
             confidence="high",
         )
-    # SIR fires only as part of a cluster: high ratio AND (variance < 0.6 OR repeated openers).
-    # Standalone SIR > 0.75 fired on ~95% of a 21-post sample of humanized author posts
-    # (mislabeled "human" until 2026-07-19; genuine pre-2022 humans have median SIR 0.816,
-    # see docs/marker-aufnahmeprotokoll.md#öffentliche-kalibrierung-von-rhythmus-schwellen) and is not a valid KI discriminator on its
-    # own. The 0.6 variance gate is deliberately looser than the 0.4 low-variance warning:
-    # at 0.4 the cluster stops separating naive Claude texts (6/10 -> 0/10, measured
-    # 2026-08-18); cost is 4/20 genuine-human fires. Revalidated 2026-07 on the frozen
-    # 2026-07-01 corpus: median 0.887 -> 0.891, thresholds unchanged.
-    sir_cluster = subject_ratio > 0.85 and (length_ratio < 0.6 or len(opener_repeats) >= 2)
+    sir_cluster = subject_initial_cluster(subject_ratio, length_ratio, len(opener_repeats))
     if sentence_count >= 8 and sir_cluster:
         add_suspicion(
             raw_suspicions,

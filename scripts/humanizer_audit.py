@@ -198,7 +198,7 @@ def preflight_assessment(
         )
     if not short_sample and opener_count >= 2:
         score += add_driver(drivers, "repeated_openers", f"count={opener_count}", 2)
-    if not short_sample and subject_ratio > 0.85 and (stddev_ratio < 0.6 or opener_count >= 2):
+    if not short_sample and rhythm_lint.subject_initial_cluster(subject_ratio, stddev_ratio, opener_count):
         score += add_driver(drivers, "subject_initial_cluster", f"subject_initial_ratio={subject_ratio}", 1)
     if not short_sample and document.get("paragraph_sentence_counts_uniform"):
         score += add_driver(drivers, "uniform_paragraphs", "paragraph sentence counts are near-uniform", 1)

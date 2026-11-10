@@ -16,7 +16,7 @@ Mode: sachlich
 File: tests/fp_corpus/a_anaphoric_sie.md
 Preflight: risk=low, score=0, recommendation=no_rewrite_or_local_edit_only, combing_auto=false, quality_risk=may_degrade_text_quality, drivers=none
 Calibration: risk=low means no calibrated signal fired, not that the text is clean. Signal coverage is weakest for advertising, social-media and essay/thought-leadership registers, where AI patterns can pass unseen.
-Rhythm: sentences=9, mean=12.667, stddev=7.703, stddev/mean=0.608, short/medium/long=0.444/0.556/0.0, complexity_var=4.765, subject_initial=0.889, connectors=0, headings=0, colon_headings=0, uniform_paragraphs=false
+Rhythm: sentences=9, mean=12.667, stddev=7.703, stddev/mean=0.608, short/medium/long=0.444/0.556/0.0, complexity_var=4.765, subject_initial=0.778, connectors=0, headings=0, colon_headings=0, uniform_paragraphs=false
 StyleProfile: words=114, nominal_style_ratio=0.877, type_token_ratio=0.842, particles=0, emojis=0, delta_out_of_range=none
 Findings:
 unicode:

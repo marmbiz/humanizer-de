@@ -143,6 +143,41 @@ class RhythmLintTests(unittest.TestCase):
         )
         self.assertEqual(rhythm_lint.subject_initial_ratio(rhythm_lint.split_sentences(text)), 0.0)
 
+    def test_fronted_adverbials_and_imperative_are_not_subject_initial(self):
+        text = (
+            "Am vierten September beginnt das Fest im Garten. Seit Montag läuft die Anmeldung über das Portal. "
+            "Dazu brauchst du nur deinen Namen. Künftig planen wir zwei Termine im Jahr. "
+            "Zuerst prüft die Leitung den Antrag. Melde dich bis Freitag an. "
+            "Danach kommt die Bestätigung per Mail. Im Winter gibt es eine Pause."
+        )
+        self.assertEqual(rhythm_lint.subject_initial_ratio(rhythm_lint.split_sentences(text)), 0.0)
+
+    def test_opens_with_subject_reads_the_vorfeld(self):
+        cases = {
+            "Die Leitung prüft den Antrag.": True,
+            "Und das Team prüft die Akte.": True,
+            "Aber heute prüft das Team.": False,
+            "Ja, ich weiß das.": True,
+            "Auch wir prüfen die Akte.": True,
+            "Wer sich anmeldet, bekommt eine Mail.": True,
+            "Es gibt separate Felder.": True,
+            "Gibt es separate Felder?": False,
+            "Lassen Sie uns hoffnungsvoll bleiben.": False,
+            "Dem Team fehlt die Zeit.": False,
+            "Hierfür braucht man Geduld.": False,
+            "Fairerweise muss man das sagen.": False,
+            "Wichtig ist, dass alle kommen.": False,
+        }
+        for sentence, expected in cases.items():
+            with self.subTest(sentence=sentence):
+                self.assertEqual(rhythm_lint.opens_with_subject(sentence), expected)
+
+    def test_subject_initial_cluster_needs_flat_rhythm_or_repeated_openers(self):
+        self.assertFalse(rhythm_lint.subject_initial_cluster(0.9, 0.7, 0))
+        self.assertTrue(rhythm_lint.subject_initial_cluster(0.9, 0.5, 0))
+        self.assertTrue(rhythm_lint.subject_initial_cluster(0.9, 0.7, 2))
+        self.assertFalse(rhythm_lint.subject_initial_cluster(0.7, 0.5, 2))
+
     def test_varied_text_does_not_flag_pattern_55(self):
         text = (
             "Zunächst startet der Test. "

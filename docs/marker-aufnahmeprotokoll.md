@@ -37,11 +37,29 @@ lag bei 15,5 Wörtern. Zum Vergleich lagen zehn humanisierte KI-Texte bei 0,891 
 Menschenbaseline.
 
 Die beiden M55-Befunde zur Satzlängenvarianz und zum Subjektanteil setzen mindestens acht Sätze voraus. Der Linter meldet bei `stddev/mean < 0,4` allein
-oder bei `subject_initial_ratio > 0,85` nur zusammen mit `stddev/mean < 0,6` oder mindestens
-zwei wiederholten Satzanfängen. Eine konkrete Clusterprüfung vom 2026-08-18 ergab vier von
+oder bei `subject_initial_ratio > 0,70` nur zusammen mit `stddev/mean < 0,6` oder mindestens
+zwei wiederholten Satzanfängen. Bis 2026-11-10 lag diese Schwelle bei 0,85. Eine konkrete
+Clusterprüfung vom 2026-08-18 ergab damit vier von
 20 Menschentexten, sechs von zehn Claude-Texten und drei von zehn GPT-Texten; mit dem strengeren
 Tor 0,4 erkannte sie keinen der zehn Claude-Texte. Diese kleinen Genre-Mixe begründen die
 Schwellen, sind aber kein allgemeiner Recall-, Precision- oder Optimalitätsnachweis.
+
+Am 2026-11-10 änderte sich die Zählweise des Subjektanteils. Zuvor galt jeder Satz als
+subjektinitial, dessen erstes Wort nicht auf einer kurzen Liste stand; Sätze mit „Am“, „Im“,
+„Dazu“ oder „Künftig“ am Anfang und Imperative zählten deshalb mit. Jetzt erkennt der Linter
+verschmolzene Präpositionen, Pronominaladverbien, weitere Adverbien, eindeutige Dativ- und
+Akkusativformen sowie Verberstsätze mit Pronomen an zweiter Stelle. Ein einleitendes „Und“ oder
+„Aber“ überspringt er. Die Werte fallen dadurch niedriger aus, die alten Vergleichszahlen in
+diesem Abschnitt gelten nur für die alte Zählweise.
+
+Mit der neuen Zählweise lag der Median in 49 Menschentexten aus der Zeit vor 2022 bei 0,64, in
+je 50 naiven GPT- und Claude-Texten bei 0,67 und 0,74. Die Schwelle 0,70 löst den Cluster bei
+drei der 49 Menschentexte aus, bei 15 der 50 GPT-Texte und bei 34 der 50 Claude-Texte. Unter der
+alten Zählweise und Schwelle waren es neun, 14 und 21. In 32 weiteren Menschentexten, die an der
+Wahl der Schwelle nicht beteiligt waren, meldet der Cluster fünf, vorher vier. Die Schwelle ist
+an denselben Texten gewählt, an denen sie hier berichtet wird; unabhängig geprüft sind nur die
+32 Zusatztexte. Die Erkennung bleibt lexikalisch: Imperative ohne Pronomen („Nutze wenige
+Felder“) und vorangestellte Objekte ohne Artikel zählen weiter als subjektinitial.
 
 Die öffentliche synthetische Fehlalarm-Baseline liegt in `tests/fp_corpus/baseline.json` und
 ist über Corpus-Tests und `make detection-snapshot` reproduzierbar. Sie ist getrennt von der
