@@ -3,6 +3,13 @@
 Der neueste Eintrag steht im README unter [„Was ist neu?“](README.md#was-ist-neu).
 Hier stehen alle früheren Versionen; die GitHub-Releases konservieren die Originalnotizen.
 
+- **5.28.3** - Steht nach einem deutschen Anführungszeichen unten ein gerades Schlusszeichen, wie in
+  `„Nein"`, blendet die Musterprüfung den folgenden Text nicht mehr als Zitat aus. Bisher konnten zwei
+  solche Zeichen ein falsches Paar bilden. Fettungen und andere Muster dazwischen fielen dann aus der
+  Zählung. Auch die Partikel-Warnung schlägt seltener an. In den Modi Sachlich und Formal meldet sie
+  sich erst bei einer echten Häufung von Modalpartikeln statt bei jeder einzelnen. Ein „doch“ am
+  Satzanfang oder nach einem Komma zählt nicht mehr mit, weil es dort als Konjunktion steht.
+
 - **5.28.2** - Die optionale Präzisionsstufe verwendet jetzt eine gemeinsame Lade- und Cache-Logik.
   Dafür entfallen drei identische Modul-Loader. Auch der Hunspell-Check und der Detection-Snapshot
   kommen mit weniger Hilfslogik aus, ohne ihre Ausgabeformate oder Prüfregeln zu ändern.

@@ -390,12 +390,14 @@ Neue oder materiell erweiterte Lint-Regeln müssen das verbindliche
 
 ## Was ist neu?
 
-- **5.28.3** - Steht nach einem deutschen Anführungszeichen unten ein gerades Schlusszeichen, wie in
-  `„Nein"`, blendet die Musterprüfung den folgenden Text nicht mehr als Zitat aus. Bisher konnten zwei
-  solche Zeichen ein falsches Paar bilden. Fettungen und andere Muster dazwischen fielen dann aus der
-  Zählung. Auch die Partikel-Warnung schlägt seltener an. In den Modi Sachlich und Formal meldet sie
-  sich erst bei einer echten Häufung von Modalpartikeln statt bei jeder einzelnen. Ein „doch“ am
-  Satzanfang oder nach einem Komma zählt nicht mehr mit, weil es dort als Konjunktion steht.
+- **5.28.4** - Die Rhythmusprüfung zählt Satzanfänge jetzt genauer. Bisher galt fast jeder Satz als
+  subjektinitial, auch wenn er mit „Am“, „Im“, „Dazu“ oder einem Imperativ begann. Wer seine
+  Satzanfänge variierte, sah deshalb keinen besseren Wert. Jetzt erkennt der Linter verschmolzene
+  Präpositionen, Pronominaladverbien, weitere Adverbien und eindeutige Dativ- und Akkusativformen am
+  Satzanfang. Auch Fragen und Aufforderungen mit einem Pronomen an zweiter Stelle zählen nicht mehr
+  mit, und ein einleitendes „Und“ oder „Aber“ wird übersprungen. Weil die Werte dadurch niedriger
+  ausfallen, liegt die Schwelle für den Cluster-Befund bei 0,70 statt 0,85. Imperative ohne Pronomen
+  erkennt die Prüfung weiterhin nicht.
 
 Alle früheren Versionen: [CHANGELOG.md](CHANGELOG.md). Ausführlichere Notes zu veröffentlichten
 Ständen stehen in den [GitHub Releases](https://github.com/marmbiz/humanizer-de/releases).
